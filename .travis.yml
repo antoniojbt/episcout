@@ -4,12 +4,36 @@ language: R
 sudo: false
 cache: packages
 
+# r_packages
+# add dependencies here for testing, those in DESCRIPTION
+
+r_packages:
+-  dplyr
+-  tibble
+-  data.table
+-  compare
+-  stringi
+-  stringr
+-  lubridate
+-  purrr
+-  e1071
+-  Hmisc
+-  ggplot2
+-  cowplot
+
+r_binary_packages:
+- testthat
+- knitr
 
 # Add coverage testing:
 # https://covr.r-lib.org/
 r_github_packages:
-  - r-lib/covr
+- r-lib/covr
+
+#after_success:
+#- Rscript -e 'library(covr); coveralls()'
 
 after_success:
-  - Rscript -e 'covr::codecov()'
+- Rscript -e 'covr::codecov()'
+
 
