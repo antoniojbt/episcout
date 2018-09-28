@@ -38,25 +38,56 @@ dogs_over_cats()
 usethis::use_gpl3_license('Antonio Berlanga-Taylor')
 
 # Add suggestions for packages to load which are dependencies:
-pkgs <- c('dplyr',
-						'tibble',
-						'data.table',
-						'compare',
-						'stringi',
-						'stringr',
-						'lubridate',
-						'purrr',
-						'e1071',
-						'Hmisc',
-						'ggplot2',
-						'cowplot')
+pkgs <- c('covr',
+					'dplyr',
+					'tibble',
+					'data.table',
+					'compare',
+					'stringi',
+					'stringr',
+					'lubridate',
+					'purrr',
+					'e1071',
+					'Hmisc',
+					'ggplot2',
+					'cowplot')
+
 for (i in pkgs) {
 	use_package(i, 'Suggests')
 	}
 
+# Add documentation to functions:
 use_roxygen_md()
 # devtools::document()
+
+# Add documentation to package:
 use_readme_md()
 
-
+# Initialise a git repository:
 use_git()
+
+# In your github account you can then create a repository and:
+# git add *
+# git commit -m 'first message)
+# git remote add origin https://github.com/XXXX/package_XXXX
+# git push -u origin master
+
+# Manually update:
+# DESCRIPTION
+# README.md
+# .gitignore
+
+# Start adding documentation for the whole package:
+usethis::use_package_doc()
+
+
+# Create data:
+use_data_raw()
+use_data()
+
+# Prepare tests for functions:
+use_travis()
+#
+
+# See also:
+# https://github.com/AntonioJBT/template

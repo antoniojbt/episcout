@@ -22,6 +22,7 @@ Suggests:
     e1071,
     Hmisc,
     ggplot2,
-    cowplot
+    cowplot,
+    covr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0

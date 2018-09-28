@@ -1,8 +1,12 @@
+[![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
+
+[![Coverage Status](https://coveralls.io/repos/github/AntonioJBT/episcout/badge.svg?branch=master)](https://coveralls.io/github/AntonioJBT/episcout?branch=master)
+
 # episcout
 
 *UNDER DEVELOPMENT*
 
-Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations) with tens of variables.
+Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations with tens to hundreds of variables).
 
 These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table.
 
