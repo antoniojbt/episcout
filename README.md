@@ -1,5 +1,7 @@
 # episcout
 
+*UNDER DEVELOPMENT*
+
 Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations) with tens of variables.
 
 These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table.
