@@ -1,12 +1,12 @@
 Package: episcout
-Title: What the Package Does (One Line, Title Case)
+Title: episcout
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Antonio",
+           family = "Berlanga-Taylor",
            role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph).
+           email = "a.berlanga@imperial.ac.uk")
+Description: Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table. 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
