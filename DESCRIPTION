@@ -1,0 +1,27 @@
+Package: episcout
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "First",
+           family = "Last",
+           role = c("aut", "cre"),
+           email = "first.last@example.com")
+Description: What the package does (one paragraph).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    dplyr,
+    tibble,
+    data.table,
+    compare,
+    stringi,
+    stringr,
+    lubridate,
+    purrr,
+    e1071,
+    Hmisc,
+    ggplot2,
+    cowplot
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.0

@@ -1,0 +1,59 @@
+# Create an R package
+# https://r-mageddon.netlify.com/post/writing-an-r-package-from-scratch/?utm_medium=email&utm_source=topic+optin&utm_campaign=awareness&utm_content=20180912+data+nl&mkt_tok=eyJpIjoiT1dNMU16ZGtaamc0TXpRNCIsInQiOiJrXC9YZU1LdVhNRThpcGZuYWJRZ3hzc3kwWFlBOXJBUnRmelQ2WVN4eVdmRm9PZUFHK3VzTXdrandzXC92WnRzMWFZYXB0QUx2UGhYNHlzWGpnZlhzQ3NIWkRMNW1ibWFDS2hTSXBFTWNRdVp3a1wvYkxOUnNiZ3h4OHFMVDd2bWNTaSJ9
+
+# Load all packages needed:
+# pkgs <- c("devtools", "roxygen2", "usethis")
+# install.packages(pkgs)
+library(devtools) # load function
+library(roxygen2) # create documentation
+library(usethis) # create packages and functions more easily
+# See
+# http://usethis.r-lib.org/
+
+
+# Go to the directory where you want to create the package:
+# setwd('/Users/antoniob/Documents/github.dir/AntonioJBT/')
+
+# Create a package, use a good name!
+# http://r-pkgs.had.co.nz/package.html#naming
+usethis::create_package('episcout')
+
+# Create a first function:
+usethis::use_r('test_func.r')
+# This creates a file with the name of the function
+# Open it and create an actual function, follow the example from the
+# web page above
+
+# Load it up:
+devtools::load_code()
+
+# Try it here:
+dogs_over_cats()
+
+# Add documentation following the example (copy and paste into the function file)
+# Run devtools to automatically
+# devtools::document()
+
+# Add a licence:
+usethis::use_gpl3_license('Antonio Berlanga-Taylor')
+
+# Add suggestions for packages to load which are dependencies:
+pkgs <- c('dplyr',
+						'tibble',
+						'data.table',
+						'compare',
+						'stringi',
+						'stringr',
+						'lubridate',
+						'purrr',
+						'e1071',
+						'Hmisc',
+						'ggplot2',
+						'cowplot')
+for (i in pkgs) {
+	use_package(i, 'Suggests')
+	}
+
+use_roxygen_md()
+# devtools::document()
+use_readme_md()

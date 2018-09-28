@@ -1,0 +1,109 @@
+################
+# See:
+# https://docs.travis-ci.com/user/getting-started/
+################
+
+################
+# Use container-based infrastructure on Travis:
+# http://docs.travis-ci.com/user/workers/container-based-infrastructure/
+# http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+sudo: false
+
+# Alternatively:
+# See: https://github.com/CGATOxford/cgat/blob/master/.travis.yml
+# use VM infrastructure on Travis
+# exit code 137 indicates that your build is now taking more memory
+# or rather it's running alongside other builds requiring a lot of memory.
+# This can happen because your builds are running on container-based infrastructure and they will share the host's 4 GB memory.
+# To mitigate this situation, run your builds on our sudo-enabled Precise infrastructure.
+# Over there, your builds will run on a fully independent VM with 7.5 GB of (unshared) memory.
+
+#sudo: required
+#dist: precise
+################
+
+################
+# Specify runtime and versions
+# See: https://docs.travis-ci.com/user/customizing-the-build/#Specifying-Runtime-Versions
+language: python
+#python:
+#- "2.7"
+################
+
+################
+# Install dependencies:
+install: 
+    - "pip install -r requirements.txt" # --use-mirrors errors in Py3.5
+    - "pip install coverage" # coveralls.io continuously monitors test case coverage
+    - "pip install coveralls"
+
+################
+
+################
+# Set up the environment to run within the Travis VM (see the default packages it already has)
+# Do this with 'env:' options
+# https://docs.travis-ci.com/user/ci-environment/
+# https://docs.travis-ci.com/user/environment-variables/
+
+# And select how the builds will be run, how many, what language versions, etc.:
+# 'matrix:' options
+# https://docs.travis-ci.com/user/customizing-the-build/#Build-Matrix
+
+# And setup any exclusions or inclusions for the builds
+# 'include:' or 'exclude:
+
+# These within the 'matrix:' specification:
+
+matrix:
+  include:
+  - python: "2.7"
+    env: TEST_STYLE=1
+  - python: "3.5"
+    env: TEST_STYLE=1
+
+################
+
+
+################
+# Indicate what to do before script, what script to execute and what to do after this:
+# flake8 is wrapper for pep8, pyflakes and McCabe. 
+# pep8 checks the PEP 0008 style
+# pyflakes looks for e.g. unused imports or variables
+# McCabe warns about (unnecessary) complicated code
+
+# TO DO: How to get log, setup automatic fixes, etc.? This will cause Travis to error all the time for now:
+#before_script:
+#   flake8 .
+
+# command to run tests
+# TO DO: this is not working, check nosetests, cgat test_style.py script, etc.:
+script: 
+  - "sh run_travis_tests.sh"
+  - "coverage run --source=project_quickstart setup.py test"
+
+# TO DO: This doesn't work:
+after_success:
+    coveralls
+################
+
+# From https://github.com/johnmyleswhite/ProjectTemplate/blob/master/.travis.yml
+#language: r
+#sudo: required 
+#cache: packages
+#warnings_are_errors: true
+#addons:
+#  apt:
+#    sources:
+#      - ubuntu-toolchain-r-test
+#    packages:
+#      - gcc-4.9
+#      - g++-4.9
+#      - r-cran-rodbc
+#before_install: |
+#  mkdir ~/.R
+#  cat <<EOF > ~/.R/Makevars
+#  CXX=g++-4.9
+#  CXX1X=g++-4.9
+#  CXX1XSTD=-std=c++11
+#r_github_packages:
+#- johnmyleswhite/log4r

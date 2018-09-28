@@ -1,0 +1,8 @@
+# Dummy holder, update later
+# Use Travis testing for unit tests
+
+some_unit_test:
+       stdin: sample_data.data
+       outputs: [stdout]
+       references: [file_to_compare_against.gold_std]
+options: --log=test.log

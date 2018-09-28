@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1538139078118.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "11675592",
+    "lastKnownWriteTime" : 1538146348,
+    "last_content_update" : 1538146934065,
+    "path" : "~/Documents/github.dir/AntonioJBT/episcout/R/create_an_r_package.R",
+    "project_path" : "R/create_an_r_package.R",
+    "properties" : {
+        "cursorPosition" : "62,0",
+        "scrollLine" : "46",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

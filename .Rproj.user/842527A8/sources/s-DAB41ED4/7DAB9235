@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1538139089688.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "360553798",
+    "id" : "7DAB9235",
+    "lastKnownWriteTime" : 1538141211,
+    "last_content_update" : 1538141211798,
+    "path" : "~/Documents/github.dir/AntonioJBT/episcout/R/test_func.r",
+    "project_path" : "R/test_func.r",
+    "properties" : {
+        "cursorPosition" : "8,0",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
