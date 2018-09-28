@@ -1,6 +1,10 @@
 ######################
 # Create an R package
 # https://r-mageddon.netlify.com/post/writing-an-r-package-from-scratch/?utm_medium=email&utm_source=topic+optin&utm_campaign=awareness&utm_content=20180912+data+nl&mkt_tok=eyJpIjoiT1dNMU16ZGtaamc0TXpRNCIsInQiOiJrXC9YZU1LdVhNRThpcGZuYWJRZ3hzc3kwWFlBOXJBUnRmelQ2WVN4eVdmRm9PZUFHK3VzTXdrandzXC92WnRzMWFZYXB0QUx2UGhYNHlzWGpnZlhzQ3NIWkRMNW1ibWFDS2hTSXBFTWNRdVp3a1wvYkxOUnNiZ3h4OHFMVDd2bWNTaSJ9
+# https://kbroman.org/pkg_primer/
+# http://r-pkgs.had.co.nz/
+#
+
 
 # Load all packages needed:
 # pkgs <- c("devtools", "roxygen2", "usethis")
@@ -10,6 +14,22 @@ library(roxygen2) # create documentation
 library(usethis) # create packages and functions more easily
 # See
 # http://usethis.r-lib.org/
+######################
+
+######################
+# Workflow:
+# 1. Use this script to create all the necessary templates
+# 2. Edit all files and manually create the github reposirtory, hooks, etc.
+# 3. Update, version control and document as needed:
+  # Once the skeleton files, documentation and your functions are in place,
+  # update when needed using eg
+  # usethis::use_version()
+  # which will increase the version number in DESCRIPTION plus other helpful things
+  # See: http://usethis.r-lib.org/reference/use_version.html
+# 4. Follow the git cycle (eg git add, commit, pull, push)
+# TO DO: 5. Update documentation with:
+  # use_roxygen_md()
+# 6. Keep track of functions, vignette, tests
 ######################
 
 ######################
@@ -51,7 +71,7 @@ for (i in pkgs) {
 
 
 # Add documentation to package:
-use_readme_md()
+use_readme_md() # creates a readme and opens it for editing
 
 
 # Initialise a git repository:
@@ -72,10 +92,19 @@ use_git()
 ######################
 # Start adding documentation for the whole package:
 usethis::use_package_doc()
-use_vignette("intro")
-use_package_doc()
-use_cran_comments()
-use_readme_rmd()
+# Adds a dummy .R file that will prompt roxygen to generate basic
+# package-level documentation.
+# means user can type ?pkg
+# and devtools::document() plus roxygen will work their magic
+# TO DO: check what else is needed here?
+
+# Create a vignette template and open it:
+use_vignette(sprintf('introduction_%s', pkg_name))
+
+
+# If submitting to CRAN, track your efforts to comply:
+use_cran_comments(open = interactive())
+# Manually edit cran-comments.md as needed as you go along
 ######################
 
 
@@ -144,6 +173,23 @@ dogs_over_cats()
 use_roxygen_md()
 # devtools::document()
 ######################
+
+
+######################
+# Document the whole package (takes info from DESCRIPTION and functions):
+devtools::document()
+
+# Install your own package and check:
+devtools::install()
+package?#pkg_name
+######################
+
+######################
+# Add a logo to your README (if you really want to):
+logo_location <- ''
+# resizes and places in the correct package structure location:
+use_logo(logo_location)
+# Manually add the code to the README
 
 ######################
 # End:

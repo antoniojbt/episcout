@@ -1,6 +1,6 @@
-[![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
+#[![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
 
-[![Coverage Status](https://coveralls.io/repos/github/AntonioJBT/episcout/badge.svg?branch=master)](https://coveralls.io/github/AntonioJBT/episcout?branch=master)
+#[![Coverage Status](https://coveralls.io/repos/github/AntonioJBT/episcout/badge.svg?branch=master)](https://coveralls.io/github/AntonioJBT/episcout?branch=master)
 
 # episcout
 
@@ -52,4 +52,17 @@ class(desc_stats)
 lapply(desc_stats, class)
 desc_stats
 ```
+
+## Contribute
+
+- [Issue Tracker](github.com/AntonioJBT/episcout/issues)
+
+- Pull requests welcome!
+
+
+Support
+-------
+
+If you have any issues, pull requests, etc. please report them in the issue tracker. 
+
 

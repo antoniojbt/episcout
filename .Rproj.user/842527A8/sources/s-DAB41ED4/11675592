@@ -7,13 +7,13 @@
     "folds" : "",
     "hash" : "0",
     "id" : "11675592",
-    "lastKnownWriteTime" : 1538158606,
-    "last_content_update" : 1538158606714,
+    "lastKnownWriteTime" : 1538160879,
+    "last_content_update" : 1538160879034,
     "path" : "~/Documents/github.dir/AntonioJBT/episcout/R/create_an_r_package.R",
     "project_path" : "R/create_an_r_package.R",
     "properties" : {
-        "cursorPosition" : "52,30",
-        "scrollLine" : "37",
+        "cursorPosition" : "191,37",
+        "scrollLine" : "162",
         "tempName" : "Untitled1"
     },
     "relative_order" : 1,

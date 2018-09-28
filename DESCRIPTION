@@ -23,6 +23,9 @@ Suggests:
     Hmisc,
     ggplot2,
     cowplot,
-    covr
+    covr,
+    knitr,
+    rmarkdown
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
+VignetteBuilder: knitr
