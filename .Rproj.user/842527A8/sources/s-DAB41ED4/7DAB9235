@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "360553798",
+    "hash" : "0",
     "id" : "7DAB9235",
-    "lastKnownWriteTime" : 1538141211,
-    "last_content_update" : 1538141211798,
+    "lastKnownWriteTime" : 1538162743,
+    "last_content_update" : 1538162743422,
     "path" : "~/Documents/github.dir/AntonioJBT/episcout/R/test_func.r",
     "project_path" : "R/test_func.r",
     "properties" : {
-        "cursorPosition" : "8,0",
+        "cursorPosition" : "19,0",
         "scrollLine" : "0"
     },
     "relative_order" : 2,

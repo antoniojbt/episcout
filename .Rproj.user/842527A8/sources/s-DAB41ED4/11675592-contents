@@ -49,8 +49,8 @@ usethis::create_package(pkg_name)
 author <- 'Antonio Berlanga-Taylor'
 usethis::use_gpl3_license(author)
 
-
 # Add suggestions for packages to load which are dependencies:
+# https://kbroman.org/pkg_primer/pages/depends.html
 pkgs <- c('covr',
 					'dplyr',
 					'tibble',
@@ -69,10 +69,8 @@ for (i in pkgs) {
 	use_package(i, 'Suggests')
 	}
 
-
 # Add documentation to package:
 use_readme_md() # creates a readme and opens it for editing
-
 
 # Initialise a git repository:
 use_git()
@@ -90,6 +88,12 @@ use_git()
 ######################
 
 ######################
+# TO DO: continue here
+# TO DO:
+# add tests
+# documentation
+# separate each function into its own file
+
 # Start adding documentation for the whole package:
 usethis::use_package_doc()
 # Adds a dummy .R file that will prompt roxygen to generate basic
@@ -97,6 +101,7 @@ usethis::use_package_doc()
 # means user can type ?pkg
 # and devtools::document() plus roxygen will work their magic
 # TO DO: check what else is needed here?
+# see: https://kbroman.org/pkg_primer/pages/vignettes.html
 
 # Create a vignette template and open it:
 use_vignette(sprintf('introduction_%s', pkg_name))
@@ -107,14 +112,17 @@ use_cran_comments(open = interactive())
 # Manually edit cran-comments.md as needed as you go along
 ######################
 
-
 ######################
+# TO DO:
+# see: https://kbroman.org/pkg_primer/pages/data.html
 # Create package data:
 use_data_raw()
 use_data()
 ######################
 
 ######################
+# TO DO:
+# see: https://kbroman.org/pkg_primer/pages/tests.html
 # Prepare tests for functions:
 use_travis()
 # paste the travis shield to the README
@@ -156,8 +164,8 @@ write(travis_cat,
 # Create a first function:
 usethis::use_r('test_func.r')
 # This creates a file with the name of the function
-# Open it and create an actual function, follow the example from the
-# web page above
+# Open it and create an actual function, follow the examples from the
+# web pages above
 
 # Load it up:
 devtools::load_code()
@@ -165,9 +173,12 @@ devtools::load_code()
 # Try it here:
 dogs_over_cats()
 
-# Add documentation following the example (copy and paste into the function file)
-# Run devtools to automatically
+# TO DO:
+# Add documentation (directly in the function file)
+# See: https://kbroman.org/pkg_primer/pages/docs.html
+# Run devtools to automatically document with roxygen2
 # devtools::document()
+
 
 # Add documentation to functions:
 use_roxygen_md()
@@ -190,6 +201,27 @@ logo_location <- ''
 # resizes and places in the correct package structure location:
 use_logo(logo_location)
 # Manually add the code to the README
+######################
+
+######################
+# With everything in place run tests on your package (from the CLI):
+# system(sprintf('R CMD build %s', pkg_name))
+# if tests pass it will create eg pkg_name_version.tar.gz
+
+# Test with local install:
+# version <- 'xxx'
+# system(sprintf('R CMD INSTALL %s_%s.tar.gz', pkg_name, version))
+
+# Alternatively just do:
+devtools::build()
+devtools::install()
+######################
+
+######################
+# TO DO:
+# If all this works, put it on CRAN, see:
+# https://kbroman.org/pkg_primer/pages/cran.html
+######################
 
 ######################
 # End:
