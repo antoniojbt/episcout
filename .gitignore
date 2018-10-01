@@ -1,9 +1,8 @@
-inst/doc
 # R files to ignore:
 # History files
 .Rhistory
 .Rapp.history
-
+inst/doc
 # Session Data files
 .RData
 # Output files from R CMD check
@@ -22,6 +21,7 @@ inst/doc
 *.utf8.md
 *.knit.md
 .Rproj.user
+
 # Mac OS X and others:
 *.tar
 *.gz
