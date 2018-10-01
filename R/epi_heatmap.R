@@ -12,8 +12,14 @@
 # method should be a string that can be accepted by hmisc::rcorr()
 # df should be a data frame class object
 epi_heatmap_corr <- function(df, method = 'spearman') {
-	require(Hmisc)
-	require(data.table)
+	if (!requireNamespace('Hmisc', quietly = TRUE)) {
+		stop("Package Hmisc needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	if (!requireNamespace('data.table', quietly = TRUE)) {
+		stop("Package data.table needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
   cormat <- Hmisc::rcorr(as.matrix(df),
   								type = method)
   # Correlation values:
@@ -44,7 +50,10 @@ epi_heatmap_corr <- function(df, method = 'spearman') {
 # Designed to take the output of epi_heatmap_corr() as input
 # Leaves the original result of epi_heatmap_corr() unchanged.
 epi_heatmap_corr_triangle <- function(cormat_all) {
-	require(data.table)
+	if (!requireNamespace('data.table', quietly = TRUE)) {
+		stop("Package data.table needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	cormat_tri <- cormat_all
 	# Turn all lower triangle values to NA:
 	cormat_tri$cormat$r[lower.tri(cormat_tri$cormat$r)] <- NA
@@ -120,7 +129,10 @@ epi_heatmap_rename <- function(r_vals = 'melted_triangles$cormat_melted_triangle
 # Simple heatmap:
 # Pass the correlation values from a melted (long) correlation matrix
 epi_heatmap_simple <- function(cormat_melted_r, title = '', ...) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	heat_map <- ggplot(data = as.data.frame(cormat_melted_r),
 										 aes(x = Var1, y = Var2,
 										 		fill = value)) +
@@ -153,7 +165,10 @@ epi_heatmap <- function(cormat_melted_triangle_r,
 											 cor_method = 'Spearman',
 											 show_values = 'pval' # or 'corr'
 											 ) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	if (show_values == 'pval') {
 		show_data <- cormat_melted_triangle_pval
 		legend_title <- sprintf("%s correlation (colour scale)\nand unadjusted P-values",

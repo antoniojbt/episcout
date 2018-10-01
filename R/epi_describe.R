@@ -23,7 +23,7 @@
 # Outliers are detected with the Tukey method (above and below coef * IQR)
 # coef = 0 returns no outliers, see ?boxplot.stats
 # An alternative, not implemented, is to consider those eg > 5 * SD
-count_outliers <- function(num_vec, coef = 1.5, ...) {
+epi_count_outliers <- function(num_vec, coef = 1.5, ...) {
 	# get_SD <- sd(num_vec, na.rm = na.rm)
 	# count_above <- length(get_SD * )
 	outliers <- boxplot.stats(num_vec, ...)
@@ -31,7 +31,7 @@ count_outliers <- function(num_vec, coef = 1.5, ...) {
 	return(outliers)
 	}
 # Test:
-# count_outliers(num_vec = df$x)
+# epi_count_outliers(num_vec = df$x)
 ######################
 
 ######################
@@ -46,7 +46,10 @@ count_outliers <- function(num_vec, coef = 1.5, ...) {
 # Outliers are detected with the Tukey method (above and below 1.5 * IQR)
 # ... is passed to skewness() and kurtosis()
 epi_stats <- function(num_vec, na.rm = TRUE, coef = 1.5, ...) {
-	require(e1071)
+	if (!requireNamespace('e1071', quietly = TRUE)) {
+		stop("Package e1071 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	cond <- length(num_vec) > 3 & length(num_vec) < 5000
 	if (cond) {
 		normality <- shapiro.test(num_vec)
@@ -136,8 +139,14 @@ epi_summary <- function(df,
 												class_type = 'chr_fct', # 'int_num'
 												action = 'codes_only'   # 'exclude'
 												) {
-	require(purrr)
-	require(dplyr)
+	if (!requireNamespace('dplyr', quietly = TRUE)) {
+		stop("Package dplyr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	if (!requireNamespace('purrr', quietly = TRUE)) {
+		stop("Package purrr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	df <- as.tibble(df)
 	# Determine which group of columns to use:
 	if (class_type == 'chr_fct') {
@@ -196,13 +205,19 @@ epi_summary <- function(df,
 # Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric
 # column is assumed to be the preferred option
 # 'decreasing' is passed to order
-tidy_epi_sum <- function(epi_sum_df,
+epi_tidy_sum <- function(epi_sum_df,
 												 order_by,
 												 perc_n,
 												 digits = 2,
 												 decreasing = TRUE) {
-	require(dplyr)
-	require(tidyr)
+	if (!requireNamespace('dplyr', quietly = TRUE)) {
+		stop("Package dplyr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	if (!requireNamespace('tidyr', quietly = TRUE)) {
+		stop("Package tidyr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	df <- as.tibble(epi_sum_df)
 	df <- df %>%
 		tidyr::spread(., key = x, value = n)
@@ -240,7 +255,7 @@ tidy_epi_sum <- function(epi_sum_df,
 # perc_n <- nrow(df_cont_chr)
 # order_by <- 'percent'
 # # Test tidy_epi:
-# epi_sum_tidy <- tidy_epi_sum(epi_sum_df = epi_sum1,
+# epi_sum_tidy <- epi_tidy_sum(epi_sum_df = epi_sum1,
 # 														 order_by = order_by,
 # 														 perc_n = perc_n
 # 														 )
@@ -254,7 +269,7 @@ tidy_epi_sum <- function(epi_sum_df,
 # 												)
 # epi_sum2
 # # Test tidy_epi:
-# epi_sum_tidy <- tidy_epi_sum(epi_sum_df = epi_sum2,
+# epi_sum_tidy <- epi_tidy_sum(epi_sum_df = epi_sum2,
 # 														 order_by = order_by,
 # 														 perc_n = perc_n
 # 														 )
@@ -267,7 +282,7 @@ tidy_epi_sum <- function(epi_sum_df,
 # 												)
 # epi_sum3
 # # Test tidy_epi:
-# epi_sum_tidy <- tidy_epi_sum(epi_sum_df = epi_sum3,
+# epi_sum_tidy <- epi_tidy_sum(epi_sum_df = epi_sum3,
 # 														 order_by = order_by,
 # 														 perc_n = perc_n
 # 														 )
@@ -340,12 +355,12 @@ epi_fct_table <- function(df, vars_list) {
 # Only returns the p-value
 # Useful for adding to descriptive table of cohort for instance
 # Pass additional parameters if needed with '...'
-get_t_test <- function(x, y, ...) {
+epi_get_t_test <- function(x, y, ...) {
 	i <- t.test(x = x, y = y, ...)
 	return(i$p.value)
 }
 # Test:
-# get_t_test(seq(1:100),
+# epi_get_t_test(seq(1:100),
 # 					 seq(50:150),
 # 					 alternative = 'less'
 # 					 )
