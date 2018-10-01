@@ -110,7 +110,10 @@ epi_plots_to_grid <- function(plot_list,
 															ncol = NULL,
 															nrow = NULL,
 															...) {
-	require(cowplot)
+	if (!requireNamespace('cowplot', quietly = TRUE)) {
+		stop("Package cowplot needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	# plot_sizes <- grid_size(plot_list)
 	# print(plot_sizes)
 	my_plot_grid <- plot_grid(plotlist = plot_list,
@@ -140,7 +143,10 @@ epi_cow_save <- function(plot_grid,
 												 base_height = 11.69, # A4
 												 base_width = 8.27, # A4
 												 ...) {
-	require(cowplot)
+	if (!requireNamespace('cowplot', quietly = TRUE)) {
+		stop("Package cowplot needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	save_plot(filename = input_name,
 						plot = plot_grid,
 						# the ratio can be very skewed with many plots
@@ -160,7 +166,10 @@ epi_cow_save <- function(plot_grid,
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
 # For other options, save as object and build on the layers, see examples below
 epi_hist <- function(df, var_x, ...) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	# var_x <- enquo(var_x) # enquosure required for non-standard R object evaluation
 	hist_plot <- ggplot(data = df, aes_string(var_x)) + # aes_string() is soft-deprecated
 		geom_histogram(...) +
@@ -219,7 +228,10 @@ epi_boxplot_one <- function(df,
 														fill = 'grey80',
 														colour = 'grey20',#'black',
 														...) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	box_plot <- ggplot(data = df, aes_string(y = var_y)) + # aes_string() is soft-deprecated
 		geom_boxplot(outlier.alpha = out_alpha,
 								 fill = fill,
@@ -245,7 +257,10 @@ epi_boxplot_one <- function(df,
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
 # For other options, save as object and build on the layers, see examples for epi_hist
 epi_boxplot <- function(df, var_y, var_x, ...) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	box_plot <- ggplot(data = df, aes_string(y = var_y, x = var_x, fill = var_x)) + # aes_string() is soft-deprecated
 		stat_boxplot(geom = 'errorbar', width = 0.5) +
 		geom_boxplot(...) +
@@ -276,7 +291,10 @@ epi_boxplot <- function(df, var_y, var_x, ...) {
 # black borders for bars and no legend by default. These are hard-coded.
 # ... to pass additional parameters to geom_bar
 epi_bar_one <- function(df, var_x, ...) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	bar_plot <- ggplot(df, aes_string(x = var_x, fill = var_x)) +
 		geom_bar(stat = 'count', colour = 'black', ...) +
 		guides(fill = FALSE) +
@@ -297,7 +315,10 @@ epi_bar_one <- function(df, var_x, ...) {
 # the value of the passed column.
 # ... to pass additional parameters to geom_
 epi_bar <- function(df, var_y, var_x, ...) {
-	require(ggplot2)
+	if (!requireNamespace('ggplot2', quietly = TRUE)) {
+		stop("Package ggplot2 needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	bar_plot <- ggplot(df, aes_string(y = var_y, x = var_x, fill = var_x)) +
 		geom_bar(stat = 'identity', ...) +
 		guides(fill = FALSE)

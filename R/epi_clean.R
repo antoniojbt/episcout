@@ -32,8 +32,14 @@
 # Assumes the first row is a header.
 # Pass additional parameters if needed with '...'
 epi_read <- function(input_name, ...) {
-	require(tibble)
-	require(data.table)
+	if (!requireNamespace('tibble', quietly = TRUE)) {
+		stop("Package tibble needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	if (!requireNamespace('data.table', quietly = TRUE)) {
+		stop("Package data.table needed for this function to work. Please install it.",
+				 call. = FALSE)
+		}
 	as.tibble(as.data.frame(fread(input_name,
 																na.strings = c(-Inf, 'NULL', NULL,
 																							'.', # '', ' ',
@@ -53,7 +59,10 @@ epi_read <- function(input_name, ...) {
 # Similar to epi_write()
 # # Pass additional parameters if needed with '...'
 epi_write <- function(file_object, file_name, ...) {
-	require(data.table)
+	if (!requireNamespace('data.table', quietly = TRUE)) {
+		stop("Package data.table needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	fwrite(file_object,
 				 file_name,
 				 row.names = FALSE,
@@ -72,14 +81,14 @@ epi_write <- function(file_object, file_name, ...) {
 ######################
 # Generate a simple output name, splits at the last '.', drops the current suffix
 # and adds the one provided
-output_name <- function(input_name, suffix = '.tsv') {
+epi_output_name <- function(input_name, suffix = '.tsv') {
 	# Split infile name at the last '.':
 	output_name <- strsplit(input_name, "[.]\\s*(?=[^.]+$)", perl = TRUE)[[1]][1]
   output_name <- sprintf('%s%s', output_name, suffix)
   return(output_name)
   }
 # Test:
-# output_name('something.yep')
+# epi_output_name('something.yep')
 ######################
 
 ######################
@@ -93,7 +102,7 @@ output_name <- function(input_name, suffix = '.tsv') {
 #  Error in `[.data.frame`(df, 1:rows, cols) : undefined columns selected
 #  use cols = length(df), # or ncol(df)
 # TO DO: add number of rows and cols when printing
-head_and_tail <- function(df, rows = 5, cols = 5, last_cols = FALSE) {
+epi_head_and_tail <- function(df, rows = 5, cols = 5, last_cols = FALSE) {
 	df <- as.data.frame(df)
 	if (last_cols == TRUE) {
 		# Get the last columns:
@@ -109,13 +118,13 @@ head_and_tail <- function(df, rows = 5, cols = 5, last_cols = FALSE) {
 }
 # Test:
 # dim(df)
-# head_and_tail(df, rows = 2, cols = 2)
-# head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
+# epi_head_and_tail(df, rows = 2, cols = 2)
+# epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 ######################
 
 ######################
 # Print first few rows of each element of a list
-print_list_head <- function(list, rows = 3, max = length(list)) {
+epi_print_list_head <- function(list, rows = 3, max = length(list)) {
 	cat(sprintf('List has %s elements in total.\n', length(list)))
 	cat(sprintf('First %s rows of first %s elements in list: \n', rows, max))
 	for (item in 1:max) {
@@ -123,12 +132,12 @@ print_list_head <- function(list, rows = 3, max = length(list)) {
 	}
 }
 # Test:
-# print_list_head(as.list(df), 5, 4)
+# epi_print_list_head(as.list(df), 5, 4)
 ######################
 
 ######################
 # Print last few rows of each element of a list
-print_list_tail <- function(list, rows = 3, max = length(list)) {
+epi_print_list_tail <- function(list, rows = 3, max = length(list)) {
 	cat(sprintf('List has %s elements in total.\n', length(list)))
 	cat(sprintf('Last %s rows of first %s elements in list: \n', rows, max))
 	for (item in 1:max) {
@@ -136,14 +145,14 @@ print_list_tail <- function(list, rows = 3, max = length(list)) {
 	}
 }
 # Test:
-# print_list_tail(as.list(df), 5, 4)
+# epi_print_list_tail(as.list(df), 5, 4)
 ######################
 
 ######################
 # base R duplicated() does not return the originals (duplicated - 1)
 # https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r
 # Get all elements which are duplicated, including the originals:
-get_all_dups <- function(df, var, freq = 1) {
+epi_get_all_dups <- function(df, var, freq = 1) {
 	# Create a table with frequencies:
 	n_occur <- data.frame(table(df[[var]]))
 	# Check those which have mor than 1, these are duplicated:
@@ -154,9 +163,9 @@ get_all_dups <- function(df, var, freq = 1) {
 }
 # # Test:
 # dim(df)
-# head_and_tail(df, rows = 2, cols = 2)
+# epi_head_and_tail(df, rows = 2, cols = 2)
 # # Get all duplicates:
-# check_dups <- get_all_dups(df, 'var_id', 1)
+# check_dups <- epi_get_all_dups(df, 'var_id', 1)
 # dim(check_dups)
 # check_dups
 ######################
@@ -166,8 +175,11 @@ get_all_dups <- function(df, var, freq = 1) {
 # va_id is passed as a string and grep'd without regex
 # compare allows all transformations, sorting, etc. so can be loose
 # compare can miss differences like this though
-compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub_index_2) {
-	require(compare)
+epi_compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub_index_2) {
+	if (!requireNamespace('compare', quietly = TRUE)) {
+		stop("Package compare needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	val_id <- as.character(val_id)
 	dup_indices <- which(grepl(val_id,
 														 df_dups[[col_id]],
@@ -189,7 +201,7 @@ compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub_index_2) 
 # # Check a few duplicated individuals:
 # check_dups
 # val_id <- '2' # TO DO: '1' matches '1' and '10' despited fixed = TRUE
-# comp <- compare_dup_rows(check_dups, val_id, 'var_id', 1, 2)
+# comp <- epi_compare_dup_rows(check_dups, val_id, 'var_id', 1, 2)
 # comp
 # View(t(check_dups[comp$duplicate_indices, ]))
 # View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))
@@ -198,7 +210,7 @@ compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub_index_2) 
 ######################
 # Compare two columns which may have duplicated information
 # TO DO: test and complete, not working
-# compare_dup_cols <- function(df, col_1, col_2) {
+# epi_compare_dup_cols <- function(df, col_1, col_2) {
 # 	require(compare)
 # 	df[[col_1]] <- enc2utf8(df[[col_1]])
 # 	df[[col_2]] <- enc2utf8(df[[col_2]])
@@ -217,8 +229,11 @@ compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub_index_2) 
 
 ######################
 # Compare two strings and determine if 1 is substring of the other:
-compare_str <- function(df, row_n, fixed_chr_col, string_col) {
-	require(stringi)
+epi_compare_str <- function(df, row_n, fixed_chr_col, string_col) {
+	if (!requireNamespace('stringi', quietly = TRUE)) {
+		stop("Package stringi needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	fixed_chr <- as.character(df[row_n, fixed_chr_col])
 	string <- as.character(df[row_n, string_col])
 	# Match using fixed characters not regex:
@@ -244,24 +259,24 @@ compare_str <- function(df, row_n, fixed_chr_col, string_col) {
 # df_comp <- df3
 # val_id <- 1
 # df_comp[val_id, c(col_1, col_2)]
-# compare_str(df_comp, val_id, col_1, col_2)
+# epi_compare_str(df_comp, val_id, col_1, col_2)
 ######################
 
 ######################
 # Check if column is integer or numeric to use for counts column wise with dplyr:
-cond_numeric <- function(col) {
+epi_cond_numeric <- function(col) {
 	is.integer(col) == TRUE | is.numeric(col) == TRUE
 	}
 # Test:
 # df %>%
 # 	# select_if(is.integer) %>%
 # 	# select_if(is.numeric) %>%
-# 	select_if(~ cond_numeric(.))
+# 	select_if(~ epi_cond_numeric(.))
 ######################
 
 ######################
 # Check if column is character or factor to use for counts column wise with dplyr:
-cond_chr_fct <- function(col) {
+epi_cond_chr_fct <- function(col) {
 	is.character(col) == TRUE | is.factor(col) == TRUE
 }
 # Test:
@@ -273,14 +288,17 @@ cond_chr_fct <- function(col) {
 # df_cont_chr %>%
 # 	# select_if(is.character) %>%
 # 	# select_if(is.factor) %>%
-# 	select_if(~ cond_chr_fct(.))
+# 	select_if(~ epi_cond_chr_fct(.))
 ######################
 
 ######################
 # Check if column is Date
 # Use for counts column wise with dplyr for example
-cond_date <- function(col) {
-	require(lubridate)
+epi_cond_date <- function(col) {
+	if (!requireNamespace('lubridate', quietly = TRUE)) {
+		stop("Package lubridate needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	is.Date(col) == TRUE | is.POSIXt(col) == TRUE
 	}
 # Test:
@@ -288,7 +306,7 @@ cond_date <- function(col) {
 # df_date$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
 # df_date
 # df_date %>%
-# 	select_if(~ cond_date(.))
+# 	select_if(~ epi_cond_date(.))
 ######################
 
 ######################
@@ -296,7 +314,7 @@ cond_date <- function(col) {
 # Assumes df is sorted by id and eg if date is used, then earlier dates are first
 # Returns a dataframe with one column which can be merged with existing df
 # Useful when there are more than 2 replicates for each row.
-add_rep_num <- function(df, var_id, var_to_rep) {
+epi_add_rep_num <- function(df, var_id, var_to_rep) {
 	output <- data.frame(var_id = df[[var_id]],
 											 rep_num = rep(1, nrow(df)) # create a vector of 1's
 											 )
@@ -323,7 +341,7 @@ add_rep_num <- function(df, var_id, var_to_rep) {
 # var_id <- 'var_id'
 # var_to_rep <- 'var_to_rep'
 # df
-# res <- add_rep_num(df, 'var_id', 'var_to_rep')
+# res <- epi_add_rep_num(df, 'var_id', 'var_to_rep')
 # res
 # # Sanity check:
 # identical(as.character(res[[var_id]]),
@@ -332,14 +350,14 @@ add_rep_num <- function(df, var_id, var_to_rep) {
 # df2 <- as.tibble(cbind(df, 'rep_num' = res$rep_num))
 # # merge() will adds all rows from both data frames as there are duplicates
 # # so use cbind after making sure order is exact
-# head_and_tail(df2, rows = 3)
-# head_and_tail(df2, rows = 3, last_cols = TRUE)
+# epi_head_and_tail(df2, rows = 3)
+# epi_head_and_tail(df2, rows = 3, last_cols = TRUE)
 # df2
 ######################
 
 ######################
 # Change col names to baseline, time_1, time_2, etc.:
-add_colname_suffix <- function(df, id_col_num, suffix) {
+epi_add_colname_suffix <- function(df, id_col_num, suffix) {
 	col_names <- names(df)[-id_col_num]
 	col_names <- paste(col_names, suffix, sep = '')
 	# names(df)[start_at:ncol(df)] <- col_names
@@ -350,7 +368,7 @@ add_colname_suffix <- function(df, id_col_num, suffix) {
 # names(df2)
 # # Add .0 as suffix to all column names starting from column 2 (skip id col):
 # id_col <- 1
-# new_colnames <- add_colname_suffix(df2, id_col, '.0')
+# new_colnames <- epi_add_colname_suffix(df2, id_col, '.0')
 # new_colnames
 # # Rename them in my data frame:
 # names(df2)[-id_col] <- new_colnames
@@ -362,7 +380,7 @@ add_colname_suffix <- function(df, id_col_num, suffix) {
 # observations across columns
 # A column with the replicate/repeated observation/time-point number for each row
 # must be provided
-spread_repeated <- function(df, rep_num_col, id_col_num) {
+epi_spread_repeated <- function(df, rep_num_col, id_col_num) {
 	reps <- unique(df[[rep_num_col]])
 	output <- vector(mode = 'list')#, length = length(reps))
 	for (i in reps) {
@@ -381,7 +399,7 @@ spread_repeated <- function(df, rep_num_col, id_col_num) {
 # Test:
 # df3 <- df
 # df3
-# df3 <- spread_repeated(df3, 'var_to_rep', 1)
+# df3 <- epi_spread_repeated(df3, 'var_to_rep', 1)
 # df3
 ######################
 
@@ -394,7 +412,7 @@ spread_repeated <- function(df, rep_num_col, id_col_num) {
 # The function performs a full outer join with base R
 # merge(df1, df2, by = id_col, all = TRUE)
 # TO DO: if only two dfs in list, print message or do one merge
-merge_nested_dfs <- function(nested_list_dfs, id_col) {
+epi_merge_nested_dfs <- function(nested_list_dfs, id_col) {
 	# Initialise merge:
 	df1 <- nested_list_dfs[[1]]
 	df2 <- nested_list_dfs[[2]]
@@ -413,9 +431,9 @@ merge_nested_dfs <- function(nested_list_dfs, id_col) {
 # library(tibble)
 # nested_list_dfs <- purrr::flatten(list(df3, df3, df3))
 # id_col <- 'var_id'
-# print_list_head(nested_list_dfs, 2, 3)
-# print_list_tail(nested_list_dfs, 2, 3)
-# all_merged <- merge_nested_dfs(nested_list_dfs, id_col)
+# epi_print_list_head(nested_list_dfs, 2, 3)
+# epi_print_list_tail(nested_list_dfs, 2, 3)
+# all_merged <- epi_merge_nested_dfs(nested_list_dfs, id_col)
 # dim(all_merged)
 # as.tibble(all_merged)
 # names(all_merged)
@@ -435,9 +453,9 @@ merge_nested_dfs <- function(nested_list_dfs, id_col) {
 # 	filter(rep_num == 1)
 # baseline
 # # Sanity check, should be empty:
-# get_all_dups(baseline, 'var_id', 1)
+# epi_get_all_dups(baseline, 'var_id', 1)
 # # Change col names to baseline, time_1, time_2, etc.:
-# new_colnames <- add_colname_suffix(baseline, 1, '.0')
+# new_colnames <- epi_add_colname_suffix(baseline, 1, '.0')
 # names(baseline)[2:ncol(baseline)] <- new_colnames
 # names(baseline)
 #
@@ -445,9 +463,9 @@ merge_nested_dfs <- function(nested_list_dfs, id_col) {
 # time_1 <- df2 %>%
 # 	filter(rep_num == 2)
 # time_1
-# get_all_dups(time_1, 'var_id', 1)
+# epi_get_all_dups(time_1, 'var_id', 1)
 # # Change col names:
-# new_colnames <- add_colname_suffix(time_1, 1, '.1')
+# new_colnames <- epi_add_colname_suffix(time_1, 1, '.1')
 # names(time_1)[2:ncol(time_1)] <- new_colnames
 # names(time_1)
 #
@@ -460,8 +478,8 @@ merge_nested_dfs <- function(nested_list_dfs, id_col) {
 # dim(all_merged)
 # as.tibble(all_merged)
 # names(all_merged)
-# head_and_tail(all_merged)
-# head_and_tail(all_merged, last_cols = TRUE)
+# epi_head_and_tail(all_merged)
+# epi_head_and_tail(all_merged, last_cols = TRUE)
 # View(all_merged)
 ######################
 
@@ -478,7 +496,7 @@ merge_nested_dfs <- function(nested_list_dfs, id_col) {
 # [1] TRUE TRUE
 # which will give a warning message:
 # "... the condition has length > 1 and only the first element will be used"
-class_to_factor <- function(df, cutoff_unique = 10){
+epi_class_to_factor <- function(df, cutoff_unique = 10){
 	for (i in seq_along(df)) {
 		if (
 			# if num. of unique values is less than cut-off
@@ -504,8 +522,8 @@ class_to_factor <- function(df, cutoff_unique = 10){
 # length(unique(df_factor[[i]])) < cutoff_unique # should be TRUE
 # # and the class is not already a date:
 # class(df_factor[[i]]) != "Date" # should be FALSE
-# class_to_factor(df_factor) # should return date_col as Date
-# df_factor <- class_to_factor(df_factor, cutoff_unique = 10)
+# epi_class_to_factor(df_factor) # should return date_col as Date
+# df_factor <- epi_class_to_factor(df_factor, cutoff_unique = 10)
 # lapply(df_factor, class)
 # df_factor
 ######################
@@ -514,7 +532,10 @@ class_to_factor <- function(df, cutoff_unique = 10){
 # Transposes a data frame file and preserves row and column names:
 # Assumes there is an id column with unique IDs
 epi_transpose <- function(df, id_col_num) {
-	require(data.table)
+	if (!requireNamespace('data.table', quietly = TRUE)) {
+		stop("Package data.table needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	# Save original IDs from first column:
 	rows <- as.character(unlist(df[[id_col_num]]))
 	# Save original IDs from first row:
@@ -532,7 +553,7 @@ epi_transpose <- function(df, id_col_num) {
 # df_trans$id_col <- rownames(df_trans)
 # df_trans
 # id_col <- 6
-# df_t <- transpose_epi(df = df_trans, id_col)
+# df_t <- epi_transpose(df = df_trans, id_col)
 # class(df_t)
 # dim(df)
 # dim(df_t)
@@ -544,9 +565,15 @@ epi_transpose <- function(df, id_col_num) {
 # Check what types to expect for each column class:
 # Note that columns with more than one class will be counted each time
 # such as POSIX dates
-count_classes <- function(df) {
-	require(dplyr)
-	require(purrr)
+epi_count_classes <- function(df) {
+	if (!requireNamespace('dplyr', quietly = TRUE)) {
+		stop("Package dplyr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	if (!requireNamespace('purrr', quietly = TRUE)) {
+		stop("Package purrr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	df %>%
 		map(., class) %>%
 		flatten() %>% # this may double count if eg Date is POSIX as will have
@@ -557,7 +584,7 @@ count_classes <- function(df) {
 	}
 # Test:
 # df
-# count_classes(df)
+# epi_count_classes(df)
 #####################
 
 #####################
@@ -565,8 +592,11 @@ count_classes <- function(df) {
 # Uses stringr to match pattern provided and replace value in column with
 # string provided
 # Useful for partial matching for eg dates and replacing with NA
-replace_value <- function(df, col_id, pattern, replace_str = NA) {
-	require(stringr)
+epi_replace_value <- function(df, col_id, pattern, replace_str = NA) {
+	if (!requireNamespace('stringr', quietly = TRUE)) {
+		stop("Package stringr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
 	df[[col_id]] <- ifelse(str_detect(df[[col_id]], pattern = pattern) == TRUE,
 												 replace_str,
 												 df[[col_id]]
@@ -582,14 +612,14 @@ replace_value <- function(df, col_id, pattern, replace_str = NA) {
 # lapply(df_factor, class)
 # patterns <- c('2018', '2022')
 # pattern <- pattern <- sprintf('^%s', patterns[1]) # match values starting with string
-# replace_value(df_factor, 'date_col', pattern, NA)
+# epi_replace_value(df_factor, 'date_col', pattern, NA)
 # df_factor$date_col
 # # In a loop:
 # for (i in seq_along(df_factor)) {
 # 	for (p in patterns) {
 # 		# match values starting with string:
 # 		pattern <- sprintf('^%s', p)
-# 		df_factor[[i]] <- replace_value(df_factor, i, pattern, NA)
+# 		df_factor[[i]] <- epi_replace_value(df_factor, i, pattern, NA)
 # 	}
 # }
 # df_factor$date_col
