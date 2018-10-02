@@ -4,3 +4,8 @@
 ^LICENSE\.md$
 ^episcout\.Rproj$
 ^\.Rproj\.user$
+^\.dir_bash_history$
+^R/\.dir_bash_history$
+^man/\.dir_bash_history$
+^test/\.dir_bash_history$
+^vignettes/\.dir_bash_history$
