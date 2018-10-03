@@ -1,26 +1,4 @@
 ######################
-# base R duplicated() does not return the originals (duplicated - 1)
-# https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r
-# Get all elements which are duplicated, including the originals:
-epi_get_all_dups <- function(df, var, freq = 1) {
-	# Create a table with frequencies:
-	n_occur <- data.frame(table(df[[var]]))
-	# Check those which have mor than 1, these are duplicated:
-	dups <- n_occur$Freq > freq
-	# Extract them:
-	df_dups <- df[df[[var]] %in% n_occur$Var1[dups], ]
-	return(df_dups)
-}
-# # Test:
-# dim(df)
-# epi_head_and_tail(df, rows = 2, cols = 2)
-# # Get all duplicates:
-# check_dups <- epi_get_all_dups(df, 'var_id', 1)
-# dim(check_dups)
-# check_dups
-######################
-
-######################
 # Compare two rows which may have duplicated information
 # va_id is passed as a string and grep'd without regex
 # compare allows all transformations, sorting, etc. so can be loose
