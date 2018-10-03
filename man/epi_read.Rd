@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_read.R
 \name{epi_read}
 \alias{epi_read}
-\title{Wraps tibble and data.table with several assumptions as defaults}
+\title{Wraps as.tibble and data.table's fread with several assumptions as defaults}
 \usage{
 epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", " ",
   "NA", "NaN", NA, "<NA>"), header = TRUE, stringsAsFactors = FALSE,
@@ -11,9 +11,7 @@ epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", " ",
 \arguments{
 \item{input_name}{file to read as a string}
 
-\item{...}{pass any other data.table::fread() parameters
-
-Other parameters as specified by data.table::fread()}
+\item{...}{pass any other data.table::fread() parameters}
 }
 \value{
 A tibble
@@ -21,10 +19,21 @@ A tibble
 \description{
 epi_read() Read files with a consistent convenience function
 }
+\note{
+Other parameters as specified by data.table::fread()
+You are probably better off using the standard read.csv(),
+data.table::fread() or other functions unless you are
+reading in several similarly constructed files.
+Files are read with data.table first and then converted to a tibble.
+Columns will be read as integer, numeric or character only.
+White space is stripped. Strings are read as character only.
+Assumes the first row is a header.
+}
 \examples{
-Not run:
 
-\dontrun{super_data <- epi_read('super_data.tsv')}
+\dontrun{
+super_data <- epi_read('super_data.tsv')
+}
 
 }
 \seealso{
