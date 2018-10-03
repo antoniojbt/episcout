@@ -1,12 +1,19 @@
-#' @title Wraps tibble and data.table with several assumptions as defaults
+#' @title Wraps as.tibble and data.table's fread with several assumptions as defaults
 #'
-#' @description epi_read() read files with a consistent convenience function
+#' @description epi_read() Read files with a consistent convenience function
 #'
 #' @param input_name file to read as a string
 #'
 #' @param ... pass any other data.table::fread() parameters
 #'
 #' @note Other parameters as specified by data.table::fread()
+#' You are probably better off using the standard read.csv(),
+#' data.table::fread() or other functions unless you are
+#' reading in several similarly constructed files.
+#' Files are read with data.table first and then converted to a tibble.
+#' Columns will be read as integer, numeric or character only.
+#' White space is stripped. Strings are read as character only.
+#' Assumes the first row is a header.
 #'
 #' @return A tibble
 #'
