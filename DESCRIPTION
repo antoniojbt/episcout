@@ -25,7 +25,8 @@ Suggests:
     cowplot,
     covr,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr

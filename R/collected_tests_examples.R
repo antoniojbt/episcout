@@ -1,10 +1,25 @@
-# # Tests:
+# # Tests episcout
+
+# Test set df:
+n <- 20
+df <- data.frame(
+	var_id = rep(1:(n / 2), each = 2),
+	var_to_rep = rep(c('Pre', 'Post'), n / 2),
+	x = rnorm(n),
+	y = rbinom(n, 1, 0.50),
+	z = rpois(n, 2)
+)
+df
+
 #
+# epi_write(df,
+# 					'tests/simple_df_test_set.tsv')
+
 # #
 # epi_read()
 #
 # #
-# epi_write()
+
 #
 # #
 # dim(df)
