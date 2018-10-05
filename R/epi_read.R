@@ -1,6 +1,6 @@
-#' @title Wraps as.tibble and data.table's fread with several assumptions as defaults
+#' @title Read files with a consistent convenience function
 #'
-#' @description epi_read() Read files with a consistent convenience function
+#' @description epi_read() Wraps as.tibble and data.table's fread with several assumptions as defaults
 #'
 #' @param input_name file to read as a string
 #'
@@ -32,7 +32,7 @@
 
 epi_read <- function(input_name = '',
 										 na.strings = c(-Inf, 'NULL', NULL,
-										 							 '.', ' ',
+										 							 '.', '', # ensure white space is read as NA
 										 							 'NA', 'NaN', NA, '<NA>'),
 										 header = TRUE,
 										 stringsAsFactors = FALSE,
@@ -46,7 +46,7 @@ epi_read <- function(input_name = '',
 		stop("Package data.table needed for this function to work. Please install it.",
 				 call. = FALSE)
 		}
-	tibble::as.tibble(as.data.frame(data.table::fread(input_name,
+	tibble::as.tibble(as.data.frame(data.table::fread(input = input_name,
 																										na.strings = na.strings,
 																										header = header,
 																										stringsAsFactors = stringsAsFactors,
