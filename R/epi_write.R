@@ -1,6 +1,6 @@
-#' @title Wraps data.table's fwrite with several assumptions as defaults
+#' @title Write files with a consistent convenience function
 #'
-#' @description epi_write() Write files with a consistent convenience function
+#' @description epi_write() Wraps data.table's fwrite with several assumptions as defaults
 #'
 #' @param file_object Object to write
 #'
@@ -43,13 +43,13 @@ epi_write <- function(file_object = NULL,
 		stop("Package data.table needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
-	fwrite(file_object = file_object,
-				 file_name = file_name,
-				 row.names = row.names,
-				 quote = quote,
-				 sep = sep,
-				 na = na,
-				 col.names = col.names,
-				 ...
-	)
-}
+	data.table::fwrite(x = file_object,
+										 file = file_name,
+										 row.names = row.names,
+										 quote = quote,
+										 sep = sep,
+										 na = na,
+										 col.names = col.names,
+										 ...
+										 )
+	}
