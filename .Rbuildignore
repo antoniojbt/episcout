@@ -7,5 +7,6 @@
 ^\.dir_bash_history$
 ^R/\.dir_bash_history$
 ^man/\.dir_bash_history$
-^test/\.dir_bash_history$
+^tests/\.dir_bash_history$
 ^vignettes/\.dir_bash_history$
+^tests/testthat/\.dir_bash_history$

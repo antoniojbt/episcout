@@ -2,9 +2,9 @@
 % Please edit documentation in R/epi_read.R
 \name{epi_read}
 \alias{epi_read}
-\title{Wraps as.tibble and data.table's fread with several assumptions as defaults}
+\title{Read files with a consistent convenience function}
 \usage{
-epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", " ",
+epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", "",
   "NA", "NaN", NA, "<NA>"), header = TRUE, stringsAsFactors = FALSE,
   strip.white = TRUE, ...)
 }
@@ -17,7 +17,7 @@ epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", " ",
 A tibble
 }
 \description{
-epi_read() Read files with a consistent convenience function
+epi_read() Wraps as.tibble and data.table's fread with several assumptions as defaults
 }
 \note{
 Other parameters as specified by data.table::fread()
