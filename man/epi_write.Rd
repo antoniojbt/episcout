@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_write.R
 \name{epi_write}
 \alias{epi_write}
-\title{Wraps data.table's fwrite with several assumptions as defaults}
+\title{Write files with a consistent convenience function}
 \usage{
 epi_write(file_object = NULL, file_name = "", row.names = FALSE,
   quote = FALSE, sep = "\\t", na = "NA", col.names = TRUE, ...)
@@ -18,7 +18,7 @@ epi_write(file_object = NULL, file_name = "", row.names = FALSE,
 None
 }
 \description{
-epi_write() Write files with a consistent convenience function
+epi_write() Wraps data.table's fwrite with several assumptions as defaults
 }
 \note{
 Other parameters as specified by data.table::fwrite()
