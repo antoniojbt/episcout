@@ -32,24 +32,24 @@ test_that("Test expected output after epi_clean_get_dups", {
 
 ######################
 # TO DO: continue here
-print("Function being tested: epi_XX_XX")
-
-test_that("Test expected output after epi_XX_XX", {
-  # output is silent if successful
-  # matches values, attributes, and type:
-  expect_identical(func_test, expected_result)
-  # matches values and attributes, adjust with tolerance parameter:
-  expect_equal(func_test, expected_result)
-  expect_equal(2 * 2, 4)
-  # matches values only:
-  expect_equivalent(funct_test, verbatim_screen_output)
-  # match (partial) string output:
-  expect_output(str(dim(an_object), expected_result_as_string))
-  # match a more complex output stored in a file:
-  expect_output_file(str(airquality), "airq.txt", update = TRUE) # create a file
-  expect_output_file(str(airquality), "airq.txt") # compare the contents
-  # test non-Exported functions (triple colon):
-  expect_equal(my_pkg:::func_not_exported(airquality$Ozone), 37)
-  }
-  )
+# print("Function being tested: epi_XX_XX")
+#
+# test_that("Test expected output after epi_XX_XX", {
+#   # output is silent if successful
+#   # matches values, attributes, and type:
+#   expect_identical(func_test, expected_result)
+#   # matches values and attributes, adjust with tolerance parameter:
+#   expect_equal(func_test, expected_result)
+#   expect_equal(2 * 2, 4)
+#   # matches values only:
+#   expect_equivalent(funct_test, verbatim_screen_output)
+#   # match (partial) string output:
+#   expect_output(str(dim(an_object), expected_result_as_string))
+#   # match a more complex output stored in a file:
+#   expect_output_file(str(airquality), "airq.txt", update = TRUE) # create a file
+#   expect_output_file(str(airquality), "airq.txt") # compare the contents
+#   # test non-Exported functions (triple colon):
+#   expect_equal(my_pkg:::func_not_exported(airquality$Ozone), 37)
+#   }
+#   )
 ######################
