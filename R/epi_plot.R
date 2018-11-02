@@ -16,7 +16,7 @@
 # TO DO: move this to the same package
 # Source functions from custom R scripts:
 stats_utils <- '~/Documents/github.dir/EpiCompBio/stats_utils/stats_utils/'
-source(file.path(stats_utils, 'ggtheme.R'))
+#source(file.path(stats_utils, 'ggtheme.R'))
 ######################
 
 ######################
