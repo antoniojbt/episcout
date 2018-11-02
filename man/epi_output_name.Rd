@@ -4,11 +4,11 @@
 \alias{epi_output_name}
 \title{Create a name for plots and files to save}
 \usage{
-epi_output_name(input_name, suffix = ".tsv")
+epi_output_name(input_name = "", suffix = ".tsv")
 }
 \arguments{
-\item{input_name}{string to split, usually an input name eg data_a.tsv
-will generate}
+\item{input_name}{string to split, usually an input file name
+previously saved as an object}
 
 \item{suffix}{any string you wish to add, default is '.tsv'}
 }
