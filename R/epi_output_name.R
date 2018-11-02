@@ -3,8 +3,8 @@
 #' @description Generate a simple output name, given a string (filename)
 #' splits at the last '.', drops the current suffix and adds the one provided.
 #'
-#' @param input_name string to split, usually an input name eg data_a.tsv
-#' will generate
+#' @param input_name string to split, usually an input file name
+#' previously saved as an object
 #'
 #' @param suffix any string you wish to add, default is '.tsv'
 #'
@@ -24,7 +24,7 @@
 #' @export
 #'
 
-epi_output_name <- function(input_name,
+epi_output_name <- function(input_name = '',
 														suffix = '.tsv') {
 	# Split infile name at the last '.':
 	output_name <- strsplit(input_name, "[.]\\s*(?=[^.]+$)", perl = TRUE)[[1]][1]
