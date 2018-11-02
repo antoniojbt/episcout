@@ -3,6 +3,9 @@ context("episcout cleaning and utility")
 library(episcout)
 library(testthat)
 
+# Working directory for informal tests, should be from pkg/tests/testthat/:
+# setwd('/Users/antoniob/Documents/github.dir/AntonioJBT/episcout/tests/testthat/')
+
 # Function being tested: epi_read
 print('Function being tested: epi_read')
 
@@ -15,6 +18,8 @@ test_that("Test expected output after epi_read", {
 	expect_output(str(head(test_df, 1)), 'var_id    : int 1')
 	expect_output(str(head(test_df, 1)), 'var_to_rep: chr "Pre"')
 	expect_output(str(head(test_df, 1)), 'x         : num 0.435')
+	expect_output(str(tail(test_df, 1)), 'x         : num -1.82')
+	expect_output(str(tail(test_df, 1)), 'var_to_rep: chr "Post"')
 	}
 )
 

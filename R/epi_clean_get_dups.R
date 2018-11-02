@@ -1,6 +1,6 @@
 #' @title Get all duplicated rows including the originals
 #'
-#' epi_get_all_dups() Get all elements which are repeated,
+#' epi_clean_get_dups() Get all elements which are repeated,
 #' including the originals.
 #'
 #' @description base R duplicated() does not return the originals (duplicated - 1)
@@ -29,7 +29,7 @@
 #' dim(df)
 #' epi_head_and_tail(df, rows = 2, cols = 2)
 #' # Get all duplicates:
-#' check_dups <- epi_get_all_dups(df, 'var_id', 1)
+#' check_dups <- epi_clean_get_dups(df, 'var_id', 1)
 #' dim(check_dups)
 #' check_dups
 #' }
@@ -37,7 +37,7 @@
 #' @export
 #'
 
-epi_get_all_dups <- function(df = NULL,
+epi_clean_get_dups <- function(df = NULL,
 														 var = '',
 														 freq = 1
 														 ) {

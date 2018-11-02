@@ -60,7 +60,7 @@ epi_plot_list <- function(vars_to_plot) {
 # Preferably to have a grid size at most 2 cols by 3 rows for 6 plots total
 # Can pass more with max_cols and max_rows though
 # max_rows should be
-epi_grid_size <- function(plot_list, max_cols = 2, max_rows = 6) {
+epi_plot_grid_size <- function(plot_list, max_cols = 2, max_rows = 6) {
 	grid_size <- vector(mode = 'list', length = 2)
 	names(grid_size) <- c('ncol_grid', 'nrow_grid')
 	# single plot:
@@ -95,7 +95,7 @@ epi_grid_size <- function(plot_list, max_cols = 2, max_rows = 6) {
 # 	}
 # names(my_plot_list)
 # length(my_plot_list)
-# epi_grid_size(my_plot_list)
+# epi_plot_grid_size(my_plot_list)
 ######################
 
 ######################
@@ -138,7 +138,7 @@ epi_plots_to_grid <- function(plot_list,
 # Save plots to disk with cowplot::save_plot()
 # base height and width are for A4 size
 # ... to pass further parameters to cowplot::
-epi_cow_save <- function(plot_grid,
+epi_plot_cow_save <- function(plot_grid,
 												 input_name,
 												 base_height = 11.69, # A4
 												 base_width = 8.27, # A4
@@ -158,14 +158,14 @@ epi_cow_save <- function(plot_grid,
 	)
 	}
 # Test:
-# epi_cow_save(multi_plot_figure, 'epi_save_test.svg')
+# epi_plot_cow_save(multi_plot_figure, 'epi_plot_save_test.svg')
 ######################
 
 ######################
 # Histogram wrapper function using ggplot2
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
 # For other options, save as object and build on the layers, see examples below
-epi_hist <- function(df, var_x, ...) {
+epi_plot_hist <- function(df, var_x, ...) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -179,10 +179,10 @@ epi_hist <- function(df, var_x, ...) {
 	}
 # # Test:
 # df$x # continuous variable
-# my_hist_plot <- epi_hist(df, 'x') # no quotes for ggplot2 if only using aes()
+# my_hist_plot <- epi_plot_hist(df, 'x') # no quotes for ggplot2 if only using aes()
 # my_hist_plot
 # # Change the bins:
-# my_hist_plot <- epi_hist(df, 'x', breaks = seq(-3, 3, by = 1))
+# my_hist_plot <- epi_plot_hist(df, 'x', breaks = seq(-3, 3, by = 1))
 # my_hist_plot
 # # Add titles and axis names:
 # my_hist_plot <- my_hist_plot +
@@ -219,10 +219,10 @@ epi_hist <- function(df, var_x, ...) {
 ######################
 # Boxplot for one variable wrapper function using ggplot2
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
-# For other options, save as object and build on the layers, see examples for epi_hist
+# For other options, save as object and build on the layers, see examples for epi_plot_hist
 # ggplot2 boxplot for single var are a bit fiddly and ugly, use base with eg:
 # box_plot <- boxplot(df[[var_y]])
-epi_boxplot_one <- function(df,
+epi_plot_box_one <- function(df,
 														var_y,
 														out_alpha = 0.7,
 														fill = 'grey80',
@@ -246,17 +246,17 @@ epi_boxplot_one <- function(df,
 	}
 # # Test:
 # df$x # continuous variable
-# epi_boxplot_one(df, var_y = 'x')
+# epi_plot_box_one(df, var_y = 'x')
 # # Add notch:
-# epi_boxplot_one(df, var_y = 'x', notch = TRUE)
+# epi_plot_box_one(df, var_y = 'x', notch = TRUE)
 # # dev.off()
 ######################
 
 ######################
 # Boxplot for more than one variable wrapper function using ggplot2
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
-# For other options, save as object and build on the layers, see examples for epi_hist
-epi_boxplot <- function(df, var_y, var_x, ...) {
+# For other options, save as object and build on the layers, see examples for epi_plot_hist
+epi_plot_box <- function(df, var_y, var_x, ...) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -272,16 +272,16 @@ epi_boxplot <- function(df, var_y, var_x, ...) {
 # # Test:
 # df$x # continuous variable
 # df$var_to_rep # factor
-# epi_boxplot(df, var_x = 'var_to_rep', var_y = 'x')
+# epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
 # # Change colours, remove legend, etc.:
-# my_boxplot <- epi_boxplot(df, var_x = 'var_to_rep', var_y = 'x')
+# my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
 # my_boxplot +
 # 	# scale_fill_grey() +
 # 	scale_fill_brewer(palette = "Blues") +
 # 	# scale_fill_brewer(palette = "Dark2") +
 # 	theme(legend.position = "none") # Remove legend
 # # Add notch:
-# # my_boxplot <- epi_boxplot(df, var_x = 'var_to_rep', var_y = 'x', notch = TRUE)
+# # my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x', notch = TRUE)
 # # dev.off()
 ######################
 
@@ -290,7 +290,7 @@ epi_boxplot <- function(df, var_y, var_x, ...) {
 # Uses stat = 'count', coloured according to the x variable passed,
 # black borders for bars and no legend by default. These are hard-coded.
 # ... to pass additional parameters to geom_bar
-epi_bar_one <- function(df, var_x, ...) {
+epi_plot_bar_one <- function(df, var_x, ...) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -303,7 +303,7 @@ epi_bar_one <- function(df, var_x, ...) {
 	}
 # # Test:
 # lapply(df, class)
-# epi_bar_one(df, 'var_to_rep')
+# epi_plot_bar_one(df, 'var_to_rep')
 ######################
 
 ######################
@@ -314,7 +314,7 @@ epi_bar_one <- function(df, var_x, ...) {
 # stat = 'identity' uses the height of the bar to represent
 # the value of the passed column.
 # ... to pass additional parameters to geom_
-epi_bar <- function(df, var_y, var_x, ...) {
+epi_plot_bar <- function(df, var_y, var_x, ...) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -325,7 +325,7 @@ epi_bar <- function(df, var_y, var_x, ...) {
 	return(bar_plot)
 	}
 # Test:
-# epi_bar(df, var_y = 'y', var_x = 'var_to_rep')
+# epi_plot_bar(df, var_y = 'y', var_x = 'var_to_rep')
 ######################
 
 ######################
@@ -395,7 +395,7 @@ epi_bar <- function(df, var_y, var_x, ...) {
 
 ######################
 # Volcano plot, designed to take limma's output as input
-epi_volcano <- function(logFC,
+epi_plot_volcano <- function(logFC,
 												adj.P.Val,
 												main = NULL,
 												pch = 20,
@@ -412,5 +412,5 @@ epi_volcano <- function(logFC,
 }
 # Test
 # TO DO
-# epi_volcano()
+# epi_plot_volcano()
 ######################
