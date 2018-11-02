@@ -23,7 +23,7 @@
 # Outliers are detected with the Tukey method (above and below coef * IQR)
 # coef = 0 returns no outliers, see ?boxplot.stats
 # An alternative, not implemented, is to consider those eg > 5 * SD
-epi_count_outliers <- function(num_vec, coef = 1.5, ...) {
+epi_stat_count_outliers <- function(num_vec, coef = 1.5, ...) {
 	# get_SD <- sd(num_vec, na.rm = na.rm)
 	# count_above <- length(get_SD * )
 	outliers <- boxplot.stats(num_vec, ...)
@@ -31,7 +31,7 @@ epi_count_outliers <- function(num_vec, coef = 1.5, ...) {
 	return(outliers)
 	}
 # Test:
-# epi_count_outliers(num_vec = df$x)
+# epi_stat_count_outliers(num_vec = df$x)
 ######################
 
 ######################
@@ -94,7 +94,7 @@ epi_stats <- function(num_vec, na.rm = TRUE, coef = 1.5, ...) {
 # format(x, nsmall = digits) is used to ensure xx.00 are printed
 # This may not produce the right results for very large or small numbers
 # Also note that format() will change the class type to factor or character
-epi_format <- function(df, skip = NULL, digits = 2, ...) {
+epi_stat_format <- function(df, skip = NULL, digits = 2, ...) {
 	df <- as.data.frame(df)
 	if (!is.null(skip)) {
 		col_names <- names(df)[-skip]
@@ -117,12 +117,12 @@ epi_format <- function(df, skip = NULL, digits = 2, ...) {
 # desc_stats
 # dim(desc_stats)
 # # Some tests:
-# epi_format(desc_stats[, 1]) # Formats
-# epi_format(desc_stats[, 'chr']) # Doesn't format
-# epi_format(desc_stats[, 'NA_count'], digits = 0) # Formats but no digits
+# epi_stat_format(desc_stats[, 1]) # Formats
+# epi_stat_format(desc_stats[, 'chr']) # Doesn't format
+# epi_stat_format(desc_stats[, 'NA_count'], digits = 0) # Formats but no digits
 # # Test skip:
 # names(desc_stats)
-# epi_format(desc_stats, skip = c(1, 14))
+# epi_stat_format(desc_stats, skip = c(1, 14))
 ######################
 
 ######################
@@ -134,7 +134,7 @@ epi_format <- function(df, skip = NULL, digits = 2, ...) {
 # Columns are ordered according to order in contingency codes option
 # Rows are then ordered in decreasing order according to
 # column provided.
-epi_summary <- function(df,
+epi_stat_summary <- function(df,
 												codes = NULL,
 												class_type = 'chr_fct', # 'int_num'
 												action = 'codes_only'   # 'exclude'
@@ -194,18 +194,18 @@ epi_summary <- function(df,
 	# 	)
 	return(df)
 	}
-# Tests below with next tidy_epi_sum()
+# Tests below with next epi_stat_tidy_sum()
 #####################
 
 #####################
-# Tidy output from epi_summary functions to get a better summary
+# Tidy output from epi_stat_summary functions to get a better summary
 # Values are rounded to digits which defaults to 2
 # format(x, nsmall = digits) is used to ensure xx.00 are printed
 # Note that format() will likely change the class type
 # Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric
 # column is assumed to be the preferred option
 # 'decreasing' is passed to order
-epi_tidy_sum <- function(epi_sum_df,
+epi_stat_tidy_sum <- function(epi_stat_sum_df,
 												 order_by,
 												 perc_n,
 												 digits = 2,
@@ -218,7 +218,7 @@ epi_tidy_sum <- function(epi_sum_df,
 		stop("Package tidyr needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
-	df <- as.tibble(epi_sum_df)
+	df <- as.tibble(epi_stat_sum_df)
 	df <- df %>%
 		tidyr::spread(., key = x, value = n)
 	# Reorder columns as:
@@ -244,66 +244,66 @@ epi_tidy_sum <- function(epi_sum_df,
 # df_cont_chr
 # codes <- c('Pre', 'A', 'C', '1', '3')
 # # Test when codes are chr or factor and action is count only:
-# epi_sum1 <- epi_summary(df_cont_chr,
+# epi_stat_sum1 <- epi_stat_summary(df_cont_chr,
 # 												codes = codes,
 # 												class_type = 'chr_fct',
 # 												action = 'codes_only'
 # 												)
-# class(epi_sum1)
-# epi_sum1
+# class(epi_stat_sum1)
+# epi_stat_sum1
 # # Add total for percentage calculation and order col:
 # perc_n <- nrow(df_cont_chr)
 # order_by <- 'percent'
-# # Test tidy_epi:
-# epi_sum_tidy <- epi_tidy_sum(epi_sum_df = epi_sum1,
+# # Test epi_stat_tidy_sum:
+# epi_stat_sum_tidy <- epi_stat_tidy_sum(epi_stat_sum_df = epi_stat_sum1,
 # 														 order_by = order_by,
 # 														 perc_n = perc_n
 # 														 )
-# epi_sum_tidy
-# epi_format(epi_sum_tidy[['row_sums']])
+# epi_stat_sum_tidy
+# epi_stat_format(epi_stat_sum_tidy[['row_sums']])
 # # Test when codes are int or num and action is count only:
-# epi_sum2 <- epi_summary(df_cont_chr,
+# epi_stat_sum2 <- epi_stat_summary(df_cont_chr,
 # 												codes = codes,
 # 												class_type = 'int_num',
 # 												action = 'codes_only'
 # 												)
-# epi_sum2
-# # Test tidy_epi:
-# epi_sum_tidy <- epi_tidy_sum(epi_sum_df = epi_sum2,
+# epi_stat_sum2
+# # Test epi_stat_tidy_sum:
+# epi_stat_sum_tidy <- epi_stat_tidy_sum(epi_stat_sum_df = epi_stat_sum2,
 # 														 order_by = order_by,
 # 														 perc_n = perc_n
 # 														 )
-# epi_sum_tidy
+# epi_stat_sum_tidy
 # # Test when codes are chr or factor and action is exclude:
-# epi_sum3 <- epi_summary(df_cont_chr,
+# epi_stat_sum3 <- epi_stat_summary(df_cont_chr,
 # 												codes = codes,
 # 												class_type = 'chr_fct',
 # 												action = 'exclude'
 # 												)
-# epi_sum3
-# # Test tidy_epi:
-# epi_sum_tidy <- epi_tidy_sum(epi_sum_df = epi_sum3,
+# epi_stat_sum3
+# # Test epi_stat_tidy_sum:
+# epi_stat_sum_tidy <- epi_stat_tidy_sum(epi_stat_sum_df = epi_stat_sum3,
 # 														 order_by = order_by,
 # 														 perc_n = perc_n
 # 														 )
-# epi_sum_tidy
+# epi_stat_sum_tidy
 # # Test when codes are int or num and action is exclude:
-# epi_sum4 <- epi_summary(df_cont_chr,
+# epi_stat_sum4 <- epi_stat_summary(df_cont_chr,
 # 												codes = codes,
 # 												class_type = 'int_num',
 # 												action = 'exclude'
 # 												)
-# epi_sum4
-# as.data.frame(epi_sum4)
-# # Numeric data summary doesn't need to tidying so no epi_sum_tidy() test
+# epi_stat_sum4
+# as.data.frame(epi_stat_sum4)
+# # Numeric data summary doesn't need to tidying so no epi_stat_sum_tidy() test
 # # Test when the count is zero (returns empty rows):
 # codes <- c('Per', 'X', '55')
-# epi_sum_zero <- epi_summary(df_cont_chr,
+# epi_stat_sum_zero <- epi_stat_summary(df_cont_chr,
 # 												codes = codes,
 # 														class_type = 'chr_fct',
 # 														action = 'codes_only'
 # 														)
-# epi_sum_zero
+# epi_stat_sum_zero
 #####################
 
 
@@ -313,19 +313,19 @@ epi_tidy_sum <- function(epi_sum_df,
 # of factor variables.
 # vars_list is a string of variable names from df, a data frame
 # vars_list can be any list but only character and factor columns are used
-epi_fct_table <- function(df, vars_list) {
+epi_stat_fct_table <- function(df, vars_list) {
 	desc_stats_fct <- vector(mode = 'list', length = length(vars_list))
 	names(desc_stats_fct) <- vars_list
 	for (i in 1:length(vars_list)) {
 		# i <- 1
 		val <- vars_list[i]
 		# Get a table for one variable, use functions above:
-		desc_stats <- epi_summary(df[, val],
+		desc_stats <- epi_stat_summary(df[, val],
 														class_type = 'chr_fct',
 														action = 'exclude'
 														)
 	  # Tidy:
-	  desc_stats <- tidy_epi_sum(epi_sum_df = desc_stats,
+	  desc_stats <- epi_stat_tidy_sum(epi_stat_sum_df = desc_stats,
 														 order_by = '<NA>',
 														 perc_n = nrow(input_data[, vars_obesity])
 														 )
@@ -346,8 +346,8 @@ epi_fct_table <- function(df, vars_list) {
 	return(desc_stats_fct)
 	}
 # Test:
-# desc_stats_fct <- epi_fct_table()
-# epi_fct_table(df, vars_list)
+# desc_stats_fct <- epi_stat_fct_table()
+# epi_stat_fct_table(df, vars_list)
 #####################
 
 #####################
@@ -355,12 +355,12 @@ epi_fct_table <- function(df, vars_list) {
 # Only returns the p-value
 # Useful for adding to descriptive table of cohort for instance
 # Pass additional parameters if needed with '...'
-epi_get_t_test <- function(x, y, ...) {
+epi_stat_get_t_test <- function(x, y, ...) {
 	i <- t.test(x = x, y = y, ...)
 	return(i$p.value)
 }
 # Test:
-# epi_get_t_test(seq(1:100),
+# epi_stat_get_t_test(seq(1:100),
 # 					 seq(50:150),
 # 					 alternative = 'less'
 # 					 )
@@ -373,7 +373,7 @@ epi_get_t_test <- function(x, y, ...) {
 
 #####################
 # Extract values after limma differential analysis:
-epi_get_top <- function(fit,
+epi_stat_get_top <- function(fit,
 										coef = NULL,
 										adjust = 'BH',
 										number = Inf,
