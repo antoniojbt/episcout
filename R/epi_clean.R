@@ -1,41 +1,4 @@
 ######################
-# Compare two rows which may have duplicated information
-# va_id is passed as a string and grep'd without regex
-# compare allows all transformations, sorting, etc. so can be loose
-# compare can miss differences like this though
-epi_clean_compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub_index_2) {
-	if (!requireNamespace('compare', quietly = TRUE)) {
-		stop("Package compare needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	val_id <- as.character(val_id)
-	dup_indices <- which(grepl(val_id,
-														 df_dups[[col_id]],
-														 fixed = TRUE) # match as string, not regex
-											 )
-	# check_dups[dup_indices, 1:2]
-	comp <- compare::compare(df_dups[dup_indices[sub_index_1], ],
-													 df_dups[dup_indices[sub_index_2], ],
-													 allowAll = TRUE
-													 )
-	comp_diff <- which(comp$detailedResult == FALSE)
-	names_diff_cols <- names(which(comp$detailedResult == FALSE))
-	comp_results <- list('differing_cols' = comp_diff,
-											 'col_names' = names_diff_cols,
-											 'duplicate_indices' = dup_indices)
-	return(comp_results)
-}
-# # Test:
-# # Check a few duplicated individuals:
-# check_dups
-# val_id <- '2' # TO DO: '1' matches '1' and '10' despited fixed = TRUE
-# comp <- epi_clean_compare_dup_rows(check_dups, val_id, 'var_id', 1, 2)
-# comp
-# View(t(check_dups[comp$duplicate_indices, ]))
-# View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))
-######################
-
-######################
 # Compare two columns which may have duplicated information
 # TO DO: test and complete, not working
 # epi_clean_compare_dup_cols <- function(df, col_1, col_2) {
@@ -56,86 +19,87 @@ epi_clean_compare_dup_rows <- function(df_dups, val_id, col_id, sub_index_1, sub
 ######################
 
 ######################
-# Compare two strings and determine if 1 is substring of the other:
-epi_clean_compare_str <- function(df, row_n, fixed_chr_col, string_col) {
-	if (!requireNamespace('stringi', quietly = TRUE)) {
-		stop("Package stringi needed for this function to work. Please install it.",
+# Convert any chr class to factor if it has less than x unique results
+# Avoid converting dates to factors though, only works if already specified as date
+# it class is chr and number of unique values is less than the cut-off passed it'll
+# get converted to factor
+# Note that lubridate converted dates may return eg
+# "POSIXct" "POSIXt"
+# which with
+# class(df[[i]]) != 'Date'
+# will return a logical vector > 1 (ie
+# [1] TRUE TRUE
+# which will give a warning message:
+# "... the condition has length > 1 and only the first element will be used"
+epi_clean_class_to_factor <- function(df, cutoff_unique = 10){
+	for (i in seq_along(df)) {
+		if (
+			# if num. of unique values is less than cut-off
+			length(unique(df[[i]])) < cutoff_unique &
+			# and the class is not already a date:
+			class(df[[i]]) != 'Date'
+		) {
+			# Convert to factor:
+			df[[i]] <- as.factor(df[[i]])
+		}
+	}
+	return(df)
+}
+# # Test:
+# df_factor <- df
+# df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)#nrow(df_factor))
+# lapply(df_factor, class)
+# lapply(df_factor, function(x) length(unique(x)))
+# # Check conditions:
+# i <- 'date_col'
+# cutoff_unique <- 10
+# # if num. of unique values is less than cut-off:
+# length(unique(df_factor[[i]])) < cutoff_unique # should be TRUE
+# # and the class is not already a date:
+# class(df_factor[[i]]) != "Date" # should be FALSE
+# epi_clean_class_to_factor(df_factor) # should return date_col as Date
+# df_factor <- epi_clean_class_to_factor(df_factor, cutoff_unique = 10)
+# lapply(df_factor, class)
+# df_factor
+######################
+
+#####################
+# Replace values with string in a column
+# Uses stringr to match pattern provided and replace value in column with
+# string provided
+# Useful for partial matching for eg dates and replacing with NA
+epi_clean_replace_value <- function(df, col_id, pattern, replace_str = NA) {
+	if (!requireNamespace('stringr', quietly = TRUE)) {
+		stop("Package stringr needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
-	fixed_chr <- as.character(df[row_n, fixed_chr_col])
-	string <- as.character(df[row_n, string_col])
-	# Match using fixed characters not regex:
-	match_observed <- stri_detect(fixed = fixed_chr, str = string)
-	return(match_observed)
+	df[[col_id]] <- ifelse(str_detect(df[[col_id]], pattern = pattern) == TRUE,
+												 replace_str,
+												 df[[col_id]]
+	)
+	# df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
+	return(df[[col_id]])
 }
-
-# # test data:
-# letts <- paste(letters, collapse = ' ')
-# letts
-# substr(letts, 1, 5)
-# other_letts <- toupper(paste(letters, collapse = ' '))
-# df_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
-# 									'str' = rep(x = substr(letts, 1, 5), 10),
-# 									stringsAsFactors = FALSE)
-# df2_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
-# 									'str' = rep(x = substr(other_letts, 6, 10), 10),
-# 									stringsAsFactors = FALSE)
-# df3 <- rbind(df_comp, df2_comp)
-# df3
-# col_1 <- 'sub'
-# col_2 <- 'str'
-# df_comp <- df3
-# val_id <- 1
-# df_comp[val_id, c(col_1, col_2)]
-# epi_clean_compare_str(df_comp, val_id, col_1, col_2)
-######################
-
-######################
-# Check if column is integer or numeric to use for counts column wise with dplyr:
-epi_clean_cond_numeric <- function(col) {
-	is.integer(col) == TRUE | is.numeric(col) == TRUE
-	}
-# Test:
-# df %>%
-# 	# select_if(is.integer) %>%
-# 	# select_if(is.numeric) %>%
-# 	select_if(~ epi_clean_cond_numeric(.))
-######################
-
-######################
-# Check if column is character or factor to use for counts column wise with dplyr:
-epi_clean_cond_chr_fct <- function(col) {
-	is.character(col) == TRUE | is.factor(col) == TRUE
-}
-# Test:
-# col_chr <- data.frame('chr1' = rep(c('A', 'B')),
-# 											'chr2' = rep(c('C', 'D'))
-# 											)
-# df_cont_chr <- as.tibble(cbind(df, col_chr))
-# df_cont_chr
-# df_cont_chr %>%
-# 	# select_if(is.character) %>%
-# 	# select_if(is.factor) %>%
-# 	select_if(~ epi_clean_cond_chr_fct(.))
-######################
-
-######################
-# Check if column is Date
-# Use for counts column wise with dplyr for example
-epi_clean_cond_date <- function(col) {
-	if (!requireNamespace('lubridate', quietly = TRUE)) {
-		stop("Package lubridate needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	is.Date(col) == TRUE | is.POSIXt(col) == TRUE
-	}
-# Test:
-# df_date <- df
-# df_date$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
-# df_date
-# df_date %>%
-# 	select_if(~ epi_clean_cond_date(.))
-######################
+# # Test:
+# df_factor <- df
+# df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
+# # Convert to character first:
+# df_factor$date_col <- as.character(df_factor$date_col)
+# lapply(df_factor, class)
+# patterns <- c('2018', '2022')
+# pattern <- pattern <- sprintf('^%s', patterns[1]) # match values starting with string
+# epi_clean_replace_value(df_factor, 'date_col', pattern, NA)
+# df_factor$date_col
+# # In a loop:
+# for (i in seq_along(df_factor)) {
+# 	for (p in patterns) {
+# 		# match values starting with string:
+# 		pattern <- sprintf('^%s', p)
+# 		df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
+# 	}
+# }
+# df_factor$date_col
+#####################
 
 ######################
 # Add a column with count of duplicate (repeated screening, replicate count)
@@ -312,51 +276,6 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs, id_col) {
 ######################
 
 ######################
-# Convert any chr class to factor if it has less than x unique results
-# Avoid converting dates to factors though, only works if already specified as date
-# it class is chr and number of unique values is less than the cut-off passed it'll
-# get converted to factor
-# Note that lubridate converted dates may return eg
-# "POSIXct" "POSIXt"
-# which with
-# class(df[[i]]) != 'Date'
-# will return a logical vector > 1 (ie
-# [1] TRUE TRUE
-# which will give a warning message:
-# "... the condition has length > 1 and only the first element will be used"
-epi_clean_class_to_factor <- function(df, cutoff_unique = 10){
-	for (i in seq_along(df)) {
-		if (
-			# if num. of unique values is less than cut-off
-			length(unique(df[[i]])) < cutoff_unique &
-			# and the class is not already a date:
-			class(df[[i]]) != 'Date'
-			) {
-			# Convert to factor:
-			df[[i]] <- as.factor(df[[i]])
-		}
-	}
-	return(df)
-}
-# # Test:
-# df_factor <- df
-# df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)#nrow(df_factor))
-# lapply(df_factor, class)
-# lapply(df_factor, function(x) length(unique(x)))
-# # Check conditions:
-# i <- 'date_col'
-# cutoff_unique <- 10
-# # if num. of unique values is less than cut-off:
-# length(unique(df_factor[[i]])) < cutoff_unique # should be TRUE
-# # and the class is not already a date:
-# class(df_factor[[i]]) != "Date" # should be FALSE
-# epi_clean_class_to_factor(df_factor) # should return date_col as Date
-# df_factor <- epi_clean_class_to_factor(df_factor, cutoff_unique = 10)
-# lapply(df_factor, class)
-# df_factor
-######################
-
-######################
 # Transposes a data frame file and preserves row and column names:
 # Assumes there is an id column with unique IDs
 epi_clean_transpose <- function(df, id_col_num) {
@@ -388,67 +307,3 @@ epi_clean_transpose <- function(df, id_col_num) {
 # df_t
 # names(df_t)
 ######################
-
-#####################
-# Check what types to expect for each column class:
-# Note that columns with more than one class will be counted each time
-# such as POSIX dates
-epi_clean_count_classes <- function(df) {
-	if (!requireNamespace('dplyr', quietly = TRUE)) {
-		stop("Package dplyr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	if (!requireNamespace('purrr', quietly = TRUE)) {
-		stop("Package purrr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	df %>%
-		map(., class) %>%
-		flatten() %>% # this may double count if eg Date is POSIX as will have
-		              # more than one class
-		as.data.frame() %>%
-		t() %>%
-		table()
-	}
-# Test:
-# df
-# epi_clean_count_classes(df)
-#####################
-
-#####################
-# Replace values with string in a column
-# Uses stringr to match pattern provided and replace value in column with
-# string provided
-# Useful for partial matching for eg dates and replacing with NA
-epi_clean_replace_value <- function(df, col_id, pattern, replace_str = NA) {
-	if (!requireNamespace('stringr', quietly = TRUE)) {
-		stop("Package stringr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	df[[col_id]] <- ifelse(str_detect(df[[col_id]], pattern = pattern) == TRUE,
-												 replace_str,
-												 df[[col_id]]
-	)
-	# df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
-	return(df[[col_id]])
-}
-# # Test:
-# df_factor <- df
-# df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
-# # Convert to character first:
-# df_factor$date_col <- as.character(df_factor$date_col)
-# lapply(df_factor, class)
-# patterns <- c('2018', '2022')
-# pattern <- pattern <- sprintf('^%s', patterns[1]) # match values starting with string
-# epi_clean_replace_value(df_factor, 'date_col', pattern, NA)
-# df_factor$date_col
-# # In a loop:
-# for (i in seq_along(df_factor)) {
-# 	for (p in patterns) {
-# 		# match values starting with string:
-# 		pattern <- sprintf('^%s', p)
-# 		df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
-# 	}
-# }
-# df_factor$date_col
-#####################
