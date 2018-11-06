@@ -7,6 +7,7 @@ library(dplyr)
 library(tibble)
 library(lubridate)
 library(purrr)
+library(stringi)
 library(stringr)
 ######################
 
@@ -217,6 +218,29 @@ test_that("epi_clean_replace_value", {
   expect_output(str(head(df_factor$date_col)), 'NA "2019-01-01" "2020-01-01"')
   expect_output(str(tail(df_factor$date_col)), '"2022-01-01" NA "2019-01-01"')
 	}
+  )
+######################
+
+######################
+print("Function being tested: epi_clean_add_rep_num")
+
+test_that("epi_clean_add_rep_num", {
+	var_id <- 'var_id'
+	var_to_rep <- 'var_to_rep'
+	reps <- epi_clean_add_rep_num(df, 'var_id', 'var_to_rep')
+	# reps
+	# Sanity check:
+	identical(as.character(reps[[var_id]]),
+						as.character(df[[var_id]])) # should be TRUE
+	# Bind:
+	df2 <- as.tibble(cbind(df, 'rep_num' = reps$rep_num))
+	# merge() adds all rows from both data frames as there are duplicates
+	# so use cbind after making sure order is exact
+	epi_head_and_tail(df2, rows = 3, last_cols = TRUE)
+	expect_output(str(head(df2)), ' x         : num  0.586 0.709 -0.109 -0.453 0.606')
+	expect_output(str(head(df2)), 'rep_num   : num  1 2 1 2 1 2')
+	expect_output(str(tail(df2)), 'rep_num   : num  1 2 1 2 1 2')
+  }
   )
 ######################
 
