@@ -30,15 +30,15 @@ df <- data.frame(
 
 ######################
 # Set some variables used in more than one test:
-# input_file <- '../../inst/extdata/df.tsv'
+# input_file <- '../../inst/extdata/df.tsv' # relative to tests/testthat/
 input_file <- 'inst/extdata/df.tsv'
+test_df <- epi_read(input_file)
 ######################
 
 ######################
 print('Function being tested: epi_read')
 
 test_that("Test expected output after epi_read", {
-	test_df <- epi_read(input_file) # relative to tests/testthat/
 	# str(dim(test_df))
 	# str(head(test_df, 1))
 	expect_output(str(dim(test_df)), '20 5')

@@ -19,52 +19,6 @@
 #####################
 
 ######################
-#' Add a column with count of duplicate (repeated screening, replicate count)
-#' Assumes df is sorted by id and eg if date is used, then earlier dates are first
-#' Returns a dataframe with one column which can be merged with existing df
-#' Useful when there are more than 2 replicates for each row.
-epi_clean_add_rep_num <- function(df, var_id, var_to_rep) {
-	output <- data.frame(var_id = df[[var_id]],
-											 rep_num = rep(1, nrow(df)) # create a vector of 1's
-											 )
-	names(output)[1] <- var_id
-	for (i in 2:c(nrow(df))) {
-		# Starts at i = 2:
-		cond1 <- as.character(df[c(i), var_id]) == as.character(df[i - 1, var_id])
-		cond2 <- as.character(df[c(i), var_to_rep]) != as.character(df[i - 1, var_to_rep])
-		result <- if (cond1 & cond2) {
-			# If IDs are the same but the var_to_rep is different,
-			# add 1:
-			# df[i, rep_num_col] <- df[i - 1, rep_num_col] + 1
-      result <- output[i - 1, 'rep_num'] + 1
-		} else {
-			# Otherwise stay the same:
-			# df[i, rep_num_col] <- df[i, rep_num_col]
-			result <- output[i, 'rep_num']
-		}
-    output[i, 'rep_num'] <- result
-	}
-  return(output)
-}
-#' Test variables:
-#' var_id <- 'var_id'
-#' var_to_rep <- 'var_to_rep'
-#' df
-#' res <- epi_clean_add_rep_num(df, 'var_id', 'var_to_rep')
-#' res
-#' # Sanity check:
-#' identical(as.character(res[[var_id]]),
-#' 					as.character(df[[var_id]])) # should be TRUE
-#' # Bind:
-#' df2 <- as.tibble(cbind(df, 'rep_num' = res$rep_num))
-#' # merge() will adds all rows from both data frames as there are duplicates
-#' #' so use cbind after making sure order is exact
-#' epi_head_and_tail(df2, rows = 3)
-#' epi_head_and_tail(df2, rows = 3, last_cols = TRUE)
-#' df2
-######################
-
-######################
 #' Change col names to baseline, time_1, time_2, etc.:
 epi_clean_add_colname_suffix <- function(df, id_col_num, suffix) {
 	col_names <- names(df)[-id_col_num]
