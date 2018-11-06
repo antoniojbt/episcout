@@ -30,8 +30,8 @@ df <- data.frame(
 
 ######################
 # Set some variables used in more than one test:
-# input_file <- '../../inst/extdata/df.tsv' # relative to tests/testthat/
-input_file <- 'inst/extdata/df.tsv'
+input_file <- '../../inst/extdata/df.tsv' # has to be relative to tests/testthat/
+# input_file <- 'inst/extdata/df.tsv'
 test_df <- epi_read(input_file)
 ######################
 
@@ -100,6 +100,7 @@ test_that("Test expected output after epi_output_name", {
 	# str(str_output)
 	# expect_output(str(str_output), '../../inst/extdata/df.last_dot_only')
 	expect_output(str(str_output), 'inst/extdata/df.last_dot_only')
+	expect_equal(str_output, '../../inst/extdata/df.last_dot_only')
 	}
 )
 ######################
