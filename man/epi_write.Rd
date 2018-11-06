@@ -16,7 +16,7 @@ epi_write(file_object = NULL, file_name = "", row.names = FALSE,
 
 \item{quote}{as for data.table::fwrite(), default is FALSE}
 
-\item{sep}{as for data.table::fwrite(), default is '\t'}
+\item{sep}{as for data.table::fwrite(), default is tab separated}
 
 \item{na}{as for data.table::fwrite(), default is 'NA'}
 

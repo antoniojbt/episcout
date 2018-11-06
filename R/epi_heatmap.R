@@ -12,7 +12,8 @@
 # numerical variables method should be a string that
 # can be accepted by hmisc::rcorr() df should be a
 # data frame class object
-epi_heatmap_corr <- function(df, method = "spearman") {
+epi_heatmap_corr <- function(df = NULL,
+														 method = "spearman") {
     if (!requireNamespace("Hmisc", quietly = TRUE)) {
         stop("Package Hmisc needed for this function to work. Please install it.",
             call. = FALSE)
@@ -46,7 +47,7 @@ epi_heatmap_corr <- function(df, method = "spearman") {
 # (r) and p-values (P) Designed to take the output of
 # epi_heatmap_corr() as input Leaves the original
 # result of epi_heatmap_corr() unchanged.
-epi_heatmap_corr_triangle <- function(cormat_all) {
+epi_heatmap_corr_triangle <- function(cormat_all = NULL) {
     if (!requireNamespace("data.table", quietly = TRUE)) {
         stop("Package data.table needed for this function to work. Please install it.",
             call. = FALSE)
@@ -120,8 +121,9 @@ epi_heatmap_rename <- function(r_vals = "melted_triangles$cormat_melted_triangle
 ######################
 # Simple heatmap: Pass the correlation values from a
 # melted (long) correlation matrix
-epi_heatmap_simple <- function(cormat_melted_r, title = "",
-    ...) {
+epi_heatmap_simple <- function(cormat_melted_r = NULL,
+															 title = "",
+															 ...) {
     if (!requireNamespace("ggplot2", quietly = TRUE)) {
         stop("Package ggplot2 needed for this function to work. Please install it.",
             call. = FALSE)
@@ -151,9 +153,11 @@ epi_heatmap_simple <- function(cormat_melted_r, title = "",
 # to the legend title It expects the name of the
 # method used for correlation (eg 'Spearman') ... are
 # passed
-epi_heatmap <- function(cormat_melted_triangle_r, cormat_melted_triangle_pval,
-    cor_method = "Spearman", show_values = "pval"  # or 'corr'
-) {
+epi_heatmap <- function(cormat_melted_triangle_r = NULL,
+												cormat_melted_triangle_pval = NULL,
+												cor_method = "Spearman",
+												show_values = "pval" # or 'corr'
+												) {
     if (!requireNamespace("ggplot2", quietly = TRUE)) {
         stop("Package ggplot2 needed for this function to work. Please install it.",
             call. = FALSE)
