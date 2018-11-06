@@ -18,44 +18,6 @@
 #' Test:
 #####################
 
-#####################
-#' Replace values with string in a column
-#' Uses stringr to match pattern provided and replace value in column with
-#' string provided
-#' Useful for partial matching for eg dates and replacing with NA
-epi_clean_replace_value <- function(df, col_id, pattern, replace_str = NA) {
-	if (!requireNamespace('stringr', quietly = TRUE)) {
-		stop("Package stringr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	df[[col_id]] <- ifelse(str_detect(df[[col_id]], pattern = pattern) == TRUE,
-												 replace_str,
-												 df[[col_id]]
-	)
-	# df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
-	return(df[[col_id]])
-}
-#' # Test:
-#' df_factor <- df
-#' df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
-#' # Convert to character first:
-#' df_factor$date_col <- as.character(df_factor$date_col)
-#' lapply(df_factor, class)
-#' patterns <- c('2018', '2022')
-#' pattern <- pattern <- sprintf('^%s', patterns[1]) #' match values starting with string
-#' epi_clean_replace_value(df_factor, 'date_col', pattern, NA)
-#' df_factor$date_col
-#' # In a loop:
-#' for (i in seq_along(df_factor)) {
-#' 	for (p in patterns) {
-#' 		#' match values starting with string:
-#' 		pattern <- sprintf('^%s', p)
-#' 		df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
-#' 	}
-#' }
-#' df_factor$date_col
-#####################
-
 ######################
 #' Add a column with count of duplicate (repeated screening, replicate count)
 #' Assumes df is sorted by id and eg if date is used, then earlier dates are first

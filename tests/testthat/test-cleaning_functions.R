@@ -7,6 +7,7 @@ library(dplyr)
 library(tibble)
 library(lubridate)
 library(purrr)
+library(stringr)
 ######################
 
 # Working directory for informal tests, should be from pkg/tests/testthat/:
@@ -86,10 +87,10 @@ test_that("Test expected output after epi_clean_compare_str", {
 	df3 <- rbind(df_comp, df2_comp)
 	col_1 <- 'sub'
 	col_2 <- 'str'
-	df3[1, c(col_1, col_2)]
+	# df3[1, c(col_1, col_2)]
 	# df3
   # Test output expectations:
-	expect_output(str(epi_clean_compare_str(df3, val_id, col_1, col_2)), ' TRUE')
+	expect_output(str(epi_clean_compare_str(df3, 1, col_1, col_2)), ' TRUE')
 	expect_output(str(epi_clean_compare_str(df3, 11, col_1, col_2)), ' FALSE')
   }
   )
@@ -168,7 +169,7 @@ test_that("epi_clean_class_to_factor", {
 	# lapply(df_factor, function(x) length(unique(x)))
 	# Check conditions:
 	i <- 'date_col'
-	# cutoff_unique <- 10
+	cutoff_unique <- 10
 	# if num. of unique values is less than cut-off:
 	expect_output(str(
 		length(unique(df_factor[[i]])) < cutoff_unique), # should be TRUE
@@ -187,6 +188,35 @@ test_that("epi_clean_class_to_factor", {
 	expect_output(str(head(get_classes, 5)), 'chr "factor"')
 	expect_output(str(head(get_classes, 6)), 'chr "Date"')
   }
+  )
+######################
+
+######################
+print("Function being tested: epi_clean_replace_value")
+
+test_that("epi_clean_replace_value", {
+	df_factor <- df
+	df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
+	# Convert to character first:
+	df_factor$date_col <- as.character(df_factor$date_col)
+	# lapply(df_factor, class)
+	patterns <- c('2018', '2022')
+	# match values starting with string
+	pattern <- pattern <- sprintf('^%s', patterns[1])
+	# Convert first pattern to NA
+	# In a separate vector:
+	# convert_NA <- epi_clean_replace_value(df_factor, 'date_col', pattern, NA)
+	# convert_NA
+	# df_factor$date_col
+	# In place:
+	df_factor[['date_col']] <- epi_clean_replace_value(df_factor,
+																										 'date_col',
+																										 pattern,
+																										 NA)
+	# df_factor$date_col
+  expect_output(str(head(df_factor$date_col)), 'NA "2019-01-01" "2020-01-01"')
+  expect_output(str(tail(df_factor$date_col)), '"2022-01-01" NA "2019-01-01"')
+	}
   )
 ######################
 
