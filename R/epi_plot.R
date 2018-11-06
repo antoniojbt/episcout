@@ -42,7 +42,7 @@ stats_utils <- '~/Documents/github.dir/EpiCompBio/stats_utils/stats_utils/'
 ######################
 # Create lists to hold plots, have max 8 per list holder:
 # Assumes vars_to_plot is a string with variable names or possibly labels
-epi_plot_list <- function(vars_to_plot) {
+epi_plot_list <- function(vars_to_plot = NULL) {
 	plot_list <- vector(mode = 'list', length = length(vars_to_plot))
 	names(plot_list) <- vars_to_plot
 	return(plot_list)
@@ -60,7 +60,10 @@ epi_plot_list <- function(vars_to_plot) {
 # Preferably to have a grid size at most 2 cols by 3 rows for 6 plots total
 # Can pass more with max_cols and max_rows though
 # max_rows should be
-epi_plot_grid_size <- function(plot_list, max_cols = 2, max_rows = 6) {
+epi_plot_grid_size <- function(plot_list = NULL,
+															 max_cols = 2,
+															 max_rows = 6
+															 ) {
 	grid_size <- vector(mode = 'list', length = 2)
 	names(grid_size) <- c('ncol_grid', 'nrow_grid')
 	# single plot:
@@ -102,14 +105,15 @@ epi_plot_grid_size <- function(plot_list, max_cols = 2, max_rows = 6) {
 # Send a list of plots to a grid using cowplot
 # Makes assumptions and hard-codes preferences
 # Use ... to pass further options not listed.
-epi_plots_to_grid <- function(plot_list,
+epi_plots_to_grid <- function(plot_list = NULL,
 															align = 'hv',
 															axis = 'lrtb',
 															labels = 'AUTO',
 															label_size = 12,
 															ncol = NULL,
 															nrow = NULL,
-															...) {
+															...
+															) {
 	if (!requireNamespace('cowplot', quietly = TRUE)) {
 		stop("Package cowplot needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -138,11 +142,12 @@ epi_plots_to_grid <- function(plot_list,
 # Save plots to disk with cowplot::save_plot()
 # base height and width are for A4 size
 # ... to pass further parameters to cowplot::
-epi_plot_cow_save <- function(plot_grid,
-												 input_name,
-												 base_height = 11.69, # A4
-												 base_width = 8.27, # A4
-												 ...) {
+epi_plot_cow_save <- function(plot_grid = NULL,
+															input_name,
+															base_height = 11.69, # A4
+															base_width = 8.27, # A4
+															...
+															) {
 	if (!requireNamespace('cowplot', quietly = TRUE)) {
 		stop("Package cowplot needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -165,7 +170,10 @@ epi_plot_cow_save <- function(plot_grid,
 # Histogram wrapper function using ggplot2
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
 # For other options, save as object and build on the layers, see examples below
-epi_plot_hist <- function(df, var_x, ...) {
+epi_plot_hist <- function(df = NULL,
+													var_x = NULL,
+													...
+													) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -222,12 +230,13 @@ epi_plot_hist <- function(df, var_x, ...) {
 # For other options, save as object and build on the layers, see examples for epi_plot_hist
 # ggplot2 boxplot for single var are a bit fiddly and ugly, use base with eg:
 # box_plot <- boxplot(df[[var_y]])
-epi_plot_box_one <- function(df,
-														var_y,
-														out_alpha = 0.7,
-														fill = 'grey80',
-														colour = 'grey20',#'black',
-														...) {
+epi_plot_box_one <- function(df = NULL,
+														 var_y,
+														 out_alpha = 0.7,
+														 fill = 'grey80',
+														 colour = 'grey20',#'black',
+														 ...
+														 ) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -256,7 +265,11 @@ epi_plot_box_one <- function(df,
 # Boxplot for more than one variable wrapper function using ggplot2
 # ... passes arguments to geom_ such as breaks, colour, fill, alpha, etc.
 # For other options, save as object and build on the layers, see examples for epi_plot_hist
-epi_plot_box <- function(df, var_y, var_x, ...) {
+epi_plot_box <- function(df = NULL,
+												 var_y = NULL,
+												 var_x = NULL,
+												 ...
+												 ) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -290,7 +303,10 @@ epi_plot_box <- function(df, var_y, var_x, ...) {
 # Uses stat = 'count', coloured according to the x variable passed,
 # black borders for bars and no legend by default. These are hard-coded.
 # ... to pass additional parameters to geom_bar
-epi_plot_bar_one <- function(df, var_x, ...) {
+epi_plot_bar_one <- function(df = NULL,
+														 var_x = NULL,
+														 ...
+														 ) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -314,7 +330,11 @@ epi_plot_bar_one <- function(df, var_x, ...) {
 # stat = 'identity' uses the height of the bar to represent
 # the value of the passed column.
 # ... to pass additional parameters to geom_
-epi_plot_bar <- function(df, var_y, var_x, ...) {
+epi_plot_bar <- function(df = NULL,
+												 var_y = NULL,
+												 var_x = NULL,
+												 ...
+												 ) {
 	if (!requireNamespace('ggplot2', quietly = TRUE)) {
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -395,12 +415,12 @@ epi_plot_bar <- function(df, var_y, var_x, ...) {
 
 ######################
 # Volcano plot, designed to take limma's output as input
-epi_plot_volcano <- function(logFC,
-												adj.P.Val,
-												main = NULL,
-												pch = 20,
-												...
-												) {
+epi_plot_volcano <- function(logFC = NULL,
+														 adj.P.Val = NULL,
+														 main = NULL,
+														 pch = 20,
+														 ...
+														 ) {
 	volcano <- plot(2^(logFC),
 									-log10(adj.P.Val),
 									pch = pch,

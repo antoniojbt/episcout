@@ -15,7 +15,7 @@ dim(all_merged)
 as.tibble(all_merged)
 names(all_merged)}
 \usage{
-epi_clean_transpose(df, id_col_num)
+epi_clean_transpose(df = NULL, id_col_num = "")
 }
 \description{
 This function would be equivalent to iteratively doing:Create sets with distinct observations:

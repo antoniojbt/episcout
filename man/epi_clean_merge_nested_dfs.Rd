@@ -18,7 +18,7 @@ merge(df1, df2, by = id_col, all = TRUE)
 TO DO: if only two dfs in list, print message or do one merge
 }}
 \usage{
-epi_clean_merge_nested_dfs(nested_list_dfs, id_col)
+epi_clean_merge_nested_dfs(nested_list_dfs = NULL, id_col = "")
 }
 \description{
 Test:

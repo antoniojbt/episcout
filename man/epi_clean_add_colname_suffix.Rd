@@ -7,7 +7,7 @@ TO DO: test and complete, not working
 Test:
 Change col names to baseline, time_1, time_2, etc.:}
 \usage{
-epi_clean_add_colname_suffix(df, id_col_num, suffix)
+epi_clean_add_colname_suffix(df = NULL, id_col_num = 1, suffix = "")
 }
 \description{
 Compare two columns which may have duplicated information

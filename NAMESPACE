@@ -7,8 +7,3 @@ export(epi_list_tail)
 export(epi_output_name)
 export(epi_read)
 export(epi_write)
-importFrom("grDevices", "boxplot.stats")
-importFrom("graphics", "abline", "plot")
-importFrom("stats", "median", "na.omit", "quantile", "sd",
-           "shapiro.test", "t.test", "var")
-importFrom("utils", "head", "tail")

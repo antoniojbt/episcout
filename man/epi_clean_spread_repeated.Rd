@@ -5,12 +5,12 @@
 \title{Test
 
 df2 <- df
-names(df2)
-#' Add .0 as suffix to all column names starting from column 2 (skip id col):
+names(df2)Add .0 as suffix to all column names starting from column 2 (skip id col):
+
 id_col <- 1
 new_colnames <- epi_clean_add_colname_suffix(df2, id_col, '.0')
-new_colnames
-#' Rename them in my data frame:
+new_colnamesRename them in my data frame:
+
 names(df2)\link{-id_col} <- new_colnames
 names(df2)
 Create a single data frame with unique rows (individuals) and repeated
@@ -18,18 +18,18 @@ observations across columns
 A column with the replicate/repeated observation/time-point number for each row
 must be provided}
 \usage{
-epi_clean_spread_repeated(df, rep_num_col, id_col_num)
+epi_clean_spread_repeated(df = NULL, rep_num_col = 1, id_col_num = 2)
 }
 \description{
 Test
 
 df2 <- df
-names(df2)
-#' Add .0 as suffix to all column names starting from column 2 (skip id col):
+names(df2)Add .0 as suffix to all column names starting from column 2 (skip id col):
+
 id_col <- 1
 new_colnames <- epi_clean_add_colname_suffix(df2, id_col, '.0')
-new_colnames
-#' Rename them in my data frame:
+new_colnamesRename them in my data frame:
+
 names(df2)\link{-id_col} <- new_colnames
 names(df2)
 Create a single data frame with unique rows (individuals) and repeated

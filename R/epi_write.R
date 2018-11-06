@@ -10,7 +10,7 @@
 #'
 #' @param quote as for data.table::fwrite(), default is FALSE
 #'
-#' @param sep as for data.table::fwrite(), default is '\t'
+#' @param sep as for data.table::fwrite(), default is tab separated
 #'
 #' @param na as for data.table::fwrite(), default is 'NA'
 #'

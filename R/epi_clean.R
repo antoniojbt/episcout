@@ -20,7 +20,10 @@
 
 ######################
 #' Change col names to baseline, time_1, time_2, etc.:
-epi_clean_add_colname_suffix <- function(df, id_col_num, suffix) {
+epi_clean_add_colname_suffix <- function(df = NULL,
+																				 id_col_num = 1,
+																				 suffix = ''
+																				 ) {
 	col_names <- names(df)[-id_col_num]
 	col_names <- paste(col_names, suffix, sep = '')
 	# names(df)[start_at:ncol(df)] <- col_names
@@ -29,11 +32,11 @@ epi_clean_add_colname_suffix <- function(df, id_col_num, suffix) {
 #' # Test
 #' df2 <- df
 #' names(df2)
-#' #' Add .0 as suffix to all column names starting from column 2 (skip id col):
+#' # Add .0 as suffix to all column names starting from column 2 (skip id col):
 #' id_col <- 1
 #' new_colnames <- epi_clean_add_colname_suffix(df2, id_col, '.0')
 #' new_colnames
-#' #' Rename them in my data frame:
+#' # Rename them in my data frame:
 #' names(df2)[-id_col] <- new_colnames
 #' names(df2)
 ######################
@@ -43,7 +46,10 @@ epi_clean_add_colname_suffix <- function(df, id_col_num, suffix) {
 #' observations across columns
 #' A column with the replicate/repeated observation/time-point number for each row
 #' must be provided
-epi_clean_spread_repeated <- function(df, rep_num_col, id_col_num) {
+epi_clean_spread_repeated <- function(df = NULL,
+																			rep_num_col = 1,
+																			id_col_num = 2
+																			) {
 	reps <- unique(df[[rep_num_col]])
 	output <- vector(mode = 'list')#, length = length(reps))
 	for (i in reps) {
@@ -75,7 +81,9 @@ epi_clean_spread_repeated <- function(df, rep_num_col, id_col_num) {
 #' The function performs a full outer join with base R
 #' merge(df1, df2, by = id_col, all = TRUE)
 #' TO DO: if only two dfs in list, print message or do one merge
-epi_clean_merge_nested_dfs <- function(nested_list_dfs, id_col) {
+epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
+																			 id_col = ''
+																			 ) {
 	# Initialise merge:
 	df1 <- nested_list_dfs[[1]]
 	df2 <- nested_list_dfs[[2]]
@@ -149,7 +157,9 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs, id_col) {
 ######################
 #' Transposes a data frame file and preserves row and column names:
 #' Assumes there is an id column with unique IDs
-epi_clean_transpose <- function(df, id_col_num) {
+epi_clean_transpose <- function(df = NULL,
+																id_col_num = ''
+																) {
 	if (!requireNamespace('data.table', quietly = TRUE)) {
 		stop("Package data.table needed for this function to work. Please install it.",
 				 call. = FALSE)
