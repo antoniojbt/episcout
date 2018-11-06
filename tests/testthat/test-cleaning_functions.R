@@ -157,3 +157,36 @@ test_that("epi_clean_count_classes", {
   )
 ######################
 
+# TO DO: continue here
+######################
+print("Function being tested: epi_clean_class_to_factor")
+
+test_that("epi_clean_class_to_factor", {
+	df_factor <- df
+	df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)#nrow(df_factor))
+	# lapply(df_factor, class)
+	# lapply(df_factor, function(x) length(unique(x)))
+	# Check conditions:
+	i <- 'date_col'
+	# cutoff_unique <- 10
+	# if num. of unique values is less than cut-off:
+	expect_output(str(
+		length(unique(df_factor[[i]])) < cutoff_unique), # should be TRUE
+		'TRUE')
+	# and the class is not already a date:
+	expect_output(str(
+		class(df_factor[[i]]) != "Date"), # should be FALSE
+		'FALSE')
+	# Test column class changed, should return y and z as factors, date_col as Date:
+	df_factor <- epi_clean_class_to_factor(df_factor, cutoff_unique = 10)
+	get_classes <- lapply(df_factor, class)
+	expect_output(str(head(get_classes, 1)), 'chr "integer"')
+	expect_output(str(head(get_classes, 2)), 'chr "factor"')
+	expect_output(str(head(get_classes, 3)), 'chr "numeric"')
+	expect_output(str(head(get_classes, 4)), 'chr "factor"')
+	expect_output(str(head(get_classes, 5)), 'chr "factor"')
+	expect_output(str(head(get_classes, 6)), 'chr "Date"')
+  }
+  )
+######################
+
