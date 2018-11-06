@@ -24,14 +24,13 @@ df <- data.frame(
 # df
 
 # And save to disk with:
-# epi_write(df, 'inst/extdata/df.tsv')
+# epi_write(df, 'df.tsv')
 # df.tsv is then used for tests below
 ######################
 
 ######################
 # Set some variables used in more than one test:
-input_file <- '../../inst/extdata/df.tsv' # has to be relative to tests/testthat/
-# input_file <- 'inst/extdata/df.tsv'
+input_file <- 'df.tsv' # has to be relative to tests/testthat/
 test_df <- epi_read(input_file)
 ######################
 
@@ -98,9 +97,8 @@ print("Function being tested: epi_output_name")
 test_that("Test expected output after epi_output_name", {
 	str_output <- epi_output_name(input_name = input_file, suffix = '.last_dot_only')
 	# str(str_output)
-	# expect_output(str(str_output), '../../inst/extdata/df.last_dot_only')
-	expect_output(str(str_output), 'inst/extdata/df.last_dot_only')
-	expect_equal(str_output, '../../inst/extdata/df.last_dot_only')
+	expect_output(str(str_output), 'df.last_dot_only')
+	expect_equal(str_output, 'df.last_dot_only')
 	}
 )
 ######################

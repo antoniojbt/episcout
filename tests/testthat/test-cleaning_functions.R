@@ -28,7 +28,7 @@ df <- data.frame(
 # df
 
 # And save to disk with:
-# epi_write(df, 'inst/extdata/df.tsv')
+# epi_write(df, 'tests/testthat/df.tsv')
 # df.tsv is then used for tests below
 ######################
 
