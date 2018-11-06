@@ -44,10 +44,13 @@ epi_clean_count_classes <- function(df = NULL) {
 	if (!requireNamespace('purrr', quietly = TRUE)) {
 		stop("Package purrr needed for this function to work. Please install it.",
 				 call. = FALSE)
+	# if (!requireNamespace('magrittr', quietly = TRUE)) {
+	# 	stop("Package magrittr needed for this function to work. Please install it.",
+	# 			 call. = FALSE)
 	}
 	df %>%
-		map(., class) %>%
-		flatten() %>% # this may double count if eg Date is POSIX as will have
+		purrr::map(., class) %>%
+		purrr::flatten() %>% # this may double count if eg Date is POSIX as will have
 		# more than one class
 		as.data.frame() %>%
 		t() %>%

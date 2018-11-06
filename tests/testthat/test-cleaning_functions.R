@@ -9,6 +9,7 @@ library(lubridate)
 library(purrr)
 library(stringi)
 library(stringr)
+library(magrittr)
 ######################
 
 # Working directory for informal tests, should be from pkg/tests/testthat/:

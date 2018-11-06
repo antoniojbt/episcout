@@ -6,6 +6,16 @@
 #'
 #' @param file_name file name as a string
 #'
+#' @param row.names as for data.table::fwrite(), default is also FALSE
+#'
+#' @param quote as for data.table::fwrite(), default is FALSE
+#'
+#' @param sep as for data.table::fwrite(), default is '\t'
+#'
+#' @param na as for data.table::fwrite(), default is 'NA'
+#'
+#' @param col.names as for data.table::fwrite(), default is also TRUE
+#'
 #' @param ... pass any other data.table::fwrite() parameters
 #'
 #' @note Other parameters as specified by data.table::fwrite()

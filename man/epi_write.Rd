@@ -12,6 +12,16 @@ epi_write(file_object = NULL, file_name = "", row.names = FALSE,
 
 \item{file_name}{file name as a string}
 
+\item{row.names}{as for data.table::fwrite(), default is also FALSE}
+
+\item{quote}{as for data.table::fwrite(), default is FALSE}
+
+\item{sep}{as for data.table::fwrite(), default is '\t'}
+
+\item{na}{as for data.table::fwrite(), default is 'NA'}
+
+\item{col.names}{as for data.table::fwrite(), default is also TRUE}
+
 \item{...}{pass any other data.table::fwrite() parameters}
 }
 \value{

@@ -19,7 +19,7 @@
 #'
 #' @note Avoids converting dates to factors if class is already Date.
 #' Note that lubridate converted dates may return eg "POSIXct" "POSIXt"
-#' which return a logical vector > 1 (ie [1] TRUE TRUE)
+#' which return a logical vector > 1 (for each element)
 #' and give a warning message (that can be ignored):
 #' "... the condition has length > 1 and only the first element will be used"
 #'

@@ -1,8 +1,16 @@
 #' @title Read files with a consistent convenience function
 #'
-#' @description epi_read() Wraps as.tibble and data.table's fread with several assumptions as defaults
+#' @description epi_read() Wraps as.tibble and data.table's fread
 #'
 #' @param input_name file to read as a string
+#'
+#' @param na.strings as for data.table::fread() with extended defaults
+#'
+#' @param header as for data.table::fread(), default is TRUE
+#'
+#' @param stringsAsFactors as for data.table::fread(), default is also FALSE
+#'
+#' @param strip.white as for data.table::fread(), default is also TRUE
 #'
 #' @param ... pass any other data.table::fread() parameters
 #'

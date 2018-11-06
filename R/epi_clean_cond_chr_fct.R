@@ -16,7 +16,7 @@
 #'
 #' @seealso \code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_cond_date}},
 #' \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-#' \code{\link[dplyr]{is.character}}, \code{\link[dplyr]{is.factor}}
+#' \code{\link[base]{is.character}}, \code{\link[base]{is.factor}}
 #'
 #' @examples
 #'

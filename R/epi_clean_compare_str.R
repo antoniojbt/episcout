@@ -45,12 +45,11 @@
 #'												stringsAsFactors = FALSE)
 #' # Create a new data frame and rename columns:
 #' df3 <- rbind(df_comp, df2_comp)
-#' df3
 #' col_1 <- 'sub'
 #' col_2 <- 'str'
 #' val_id <- 1
-#' df3[val_id, c(col_1, col_2)]
-#' Should evaluate to TRUE:
+#' # df3[val_id, c(col_1, col_2)]
+#' # Should evaluate to TRUE:
 #' epi_clean_compare_str(df3, val_id, col_1, col_2)
 #' }
 #'
@@ -68,6 +67,6 @@ epi_clean_compare_str <- function(df = NULL,
 	string <- as.character(df[row_n, string_col])
 	fixed_chr <- as.character(df[row_n, fixed_chr_col])
 	# Match using fixed characters not regex:
-	match_observed <- stri_detect(str = string, fixed = fixed_chr, ...)
+	match_observed <- stringi::stri_detect(str = string, fixed = fixed_chr, ...)
 	return(match_observed)
 }

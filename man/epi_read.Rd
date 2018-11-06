@@ -11,13 +11,21 @@ epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", "",
 \arguments{
 \item{input_name}{file to read as a string}
 
+\item{na.strings}{as for data.table::fread() with extended defaults}
+
+\item{header}{as for data.table::fread(), default is TRUE}
+
+\item{stringsAsFactors}{as for data.table::fread(), default is also FALSE}
+
+\item{strip.white}{as for data.table::fread(), default is also TRUE}
+
 \item{...}{pass any other data.table::fread() parameters}
 }
 \value{
 A tibble
 }
 \description{
-epi_read() Wraps as.tibble and data.table's fread with several assumptions as defaults
+epi_read() Wraps as.tibble and data.table's fread
 }
 \note{
 Other parameters as specified by data.table::fread()
