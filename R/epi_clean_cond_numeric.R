@@ -16,7 +16,7 @@
 #'
 #' @seealso \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_date}},
 #' \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-#' \code{\link[dplyr]{is.integer}}, \code{\link[dplyr]{is.numeric}}
+#' \code{\link[base]{is.integer}}, \code{\link[base]{is.numeric}}
 #'
 #' @examples
 #'

@@ -12,7 +12,9 @@ epi_clean_compare_dup_rows(df_dups = NULL, val_id = "1", col_id = "",
 \arguments{
 \item{df_dups}{a data frame with duplicated entries to compare}
 
-\item{val_id}{is passed as a string and grep'd without regex}
+\item{val_id}{is a value that is thought to be duplicated (eg a repeating row ID),
+passed as a string. Grep is used to search for duplicates without regex with
+fixed = TRUE}
 
 \item{col_id}{is a string to indicate an ID column}
 
@@ -39,7 +41,7 @@ compare::compare can miss differences though so care is needed
 \dontrun{
 # Data frame object with rows thought to have duplicated entries:
 check_dups
-# Specify the
+# Specify the row ID to grep where duplicate values are expected:
 val_id <- '2'
 comp <- epi_clean_compare_dup_rows(check_dups, val_id, 'var_id', 1, 2)
 comp
@@ -48,7 +50,7 @@ View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))}
 
 }
 \seealso{
-\code{\link[compare]{compare}}.
+\code{\link[compare]{compare}}, \code{\link[base]{grepl}}
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

@@ -26,8 +26,6 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{functioname}}, or another package \code{\link[packagename]{functioname}}.
-#'
 #' @examples
 #'
 #' \dontrun{
