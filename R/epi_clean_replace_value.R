@@ -62,7 +62,7 @@ epi_clean_replace_value <- function(df = NULL,
 		stop("Package stringr needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
-	df[[col_id]] <- ifelse(str_detect(df[[col_id]], pattern = pattern) == TRUE,
+	df[[col_id]] <- ifelse(stringr::str_detect(df[[col_id]], pattern = pattern) == TRUE,
 												 replace_str,
 												 df[[col_id]]
 	)
