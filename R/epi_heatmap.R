@@ -128,7 +128,7 @@ epi_heatmap_simple <- function(cormat_melted_r = NULL,
         stop("Package ggplot2 needed for this function to work. Please install it.",
             call. = FALSE)
     }
-    heat_map <- ggplot(data = as.data.frame(cormat_melted_r),
+    heat_map <- ggplot2::ggplot(data = as.data.frame(cormat_melted_r),
         aes(x = Var1, y = Var2, fill = value)) + geom_tile() +
         labs(title = title, y = "", x = "") + theme_Publication() +
         theme(axis.text.x = element_text(angle = 90,
@@ -171,7 +171,7 @@ epi_heatmap <- function(cormat_melted_triangle_r = NULL,
         legend_title <- sprintf("%s correlation (colour scale \nand numbers)",
             cor_method)
     }
-    heatmap_triangle <- ggplot(data = cormat_melted_triangle_r,
+    heatmap_triangle <- ggplot2::ggplot(data = cormat_melted_triangle_r,
         aes(x = Var2, y = Var1, fill = value)) + geom_tile(color = "light grey") +
         scale_fill_gradient2(low = "blue", high = "red",
             mid = "white", midpoint = 0, limit = c(-1,

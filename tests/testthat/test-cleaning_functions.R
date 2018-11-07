@@ -10,6 +10,7 @@ library(purrr)
 library(stringi)
 library(stringr)
 library(magrittr)
+library(data.table)
 ######################
 
 # Working directory for informal tests, should be from pkg/tests/testthat/:
@@ -305,3 +306,28 @@ test_that("epi_clean_merge_nested_dfs", {
   )
 ######################
 
+
+######################
+print("Function being tested: epi_clean_transpose")
+
+test_that("epi_clean_transpose", {
+	df$id_col <- rownames(df)
+	# df
+	id_col <- 6
+	df_t <- epi_clean_transpose(df, id_col)
+	# class(df_t)
+	# dim(df)
+	# dim(df_t)
+	# df_t
+	# names(df_t)
+  # df_t[, 1] # should contain the original column headers
+	expect_output(str(class(df_t)), 'data.frame')
+  expect_output(str(dim(df)), '20 6')
+  expect_output(str(dim(df_t)), '5 21')
+  expect_output(str(names(df_t)), '"V1" "1" "2" "3" "4" "5" "6" "7"')
+  expect_output(str(df_t[, 1]), '"var_to_rep" "x" "y" "z" "id_col"')
+  expect_output(str(epi_head_and_tail(df_t)), 'chr  "1" "Pre" "0.585528817843856" "1"')
+  expect_output(str(epi_head_and_tail(df_t)), 'chr  "2" "Post" "-0.453497173462763" "1" ...')
+  }
+  )
+######################
