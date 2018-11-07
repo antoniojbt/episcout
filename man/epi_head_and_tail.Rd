@@ -13,7 +13,8 @@ epi_head_and_tail(df = NULL, rows = 5, cols = 5, last_cols = FALSE)
 
 \item{cols}{Number of columns to print, default is 5}
 
-\item{last_cols}{Print the last columns instead of the first few, default is FALSE}
+\item{last_cols}{Print the last columns instead of the first few,
+default is FALSE}
 }
 \description{
 epi_() Read files with a consistent convenience function
@@ -25,7 +26,17 @@ a tibble or data.frame, or any object that can be coerced to a data.frame
 \examples{
 
 \dontrun{
+n <- 20
+df <- data.frame(
+	var_id = rep(1:(n / 2), each = 2),
+	var_to_rep = rep(c('Pre', 'Post'), n / 2),
+	x = rnorm(n),
+	y = rbinom(n, 1, 0.50),
+	z = rpois(n, 2)
+)
+df
 dim(df)
+epi_head_and_tail(df)
 epi_head_and_tail(df, rows = 2, cols = 2)
 epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 }
