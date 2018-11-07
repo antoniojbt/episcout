@@ -1,6 +1,4 @@
-<!---
 [![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
---->
 
 <!---
 [![Coverage Status](https://coveralls.io/repos/github/AntonioJBT/episcout/badge.svg?branch=master)](https://coveralls.io/github/AntonioJBT/episcout?branch=master)
