@@ -71,8 +71,8 @@ test_that("Test expected output after epi_head_and_tail", {
 	# epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 	expect_output(epi_head_and_tail(df, rows = 2, cols = 2), '2       1       Post')
 	expect_output(epi_head_and_tail(df, rows = 2, cols = 2), '20     10       Post')
-	expect_output(epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE), '1   0.5855288 1 3')
-	expect_output(epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE), '20  0.2987237 0 1')
+	expect_output(epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE), '1  0.5855288 1 3')
+	expect_output(epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE), '20 0.2987237 0 1')
 	}
 	)
 ######################
