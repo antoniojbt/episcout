@@ -246,3 +246,62 @@ test_that("epi_clean_add_rep_num", {
   )
 ######################
 
+######################
+print("Function being tested: epi_clean_add_colname_suffix")
+
+test_that("epi_clean_add_colname_suffix", {
+	# names(df)
+	# Add .0 as suffix to all column names starting from column 2 (skip id col):
+	id_col <- 1
+	new_colnames <- epi_clean_add_colname_suffix(df, id_col, '.0')
+	# new_colnames
+	# Rename them in my data frame:
+	names(df)[-id_col] <- new_colnames
+	# names(df)
+	expect_output(str(names(df)), '"var_id" "var_to_rep.0" "x.0" "y.0"')
+  }
+  )
+######################
+
+######################
+print("Function being tested: epi_clean_spread_repeated")
+
+test_that("epi_clean_spread_repeated", {
+	df_spread <- epi_clean_spread_repeated(df, 'var_to_rep', 1)
+	# df_spread
+  expect_output(str(df_spread[1]), '0.586 -0.109 0.606 0.63 -0.284')
+  expect_output(str(df_spread[1]), '1 1 0 0 0 1 0 1 1 0')
+  expect_output(str(df_spread[2]), '0.709 -0.453 -1.818 -0.276 -0.919')
+  expect_output(str(df_spread[2]), '1 3 1 1 4 2 1 2 2 1')
+  }
+  )
+######################
+
+######################
+print("Function being tested: epi_clean_merge_nested_dfs")
+
+test_that("epi_clean_merge_nested_dfs", {
+	# Create a nested list of dataframes using the repeated measurements variable:
+	df_spread <- epi_clean_spread_repeated(df, 'var_to_rep', 1)
+	# Returns a nested list
+	# Run an example with epi_clean_merge_nested_dfs()
+	# to create a single dataframe with repeated observations spread and
+	# no duplicate IDs (create a wide instead of a long dataframe):
+	nested_list_dfs <- purrr::flatten(list(df_spread, df_spread, df_spread))
+	id_col <- 'var_id'
+	# epi_list_head(nested_list_dfs, 2, 3)
+	# epi_list_tail(nested_list_dfs, 2, 3)
+	all_merged <- epi_clean_merge_nested_dfs(nested_list_dfs, id_col)
+	# dim(all_merged)
+	# as.tibble(all_merged)
+	# names(all_merged)
+	# str(all_merged)
+	# epi_head_and_tail(all_merged, rows = 5, cols = 3)
+	expect_output(str(all_merged), '10 obs. of  25 variables')
+	expect_output(str(all_merged), '0.586 -0.109 0.606 0.63 -0.284') # x.Pre
+	expect_output(str(all_merged), '0.709 -0.453 -1.818 -0.276 -0.919') # x.Post_4
+	expect_output(str(all_merged), '1 3 1 1 4 2 1 2 2 1') # z.Post_6
+  }
+  )
+######################
+

@@ -3,9 +3,13 @@
 #' @description epi_() Read files with a consistent convenience function
 #'
 #' @param df data.frame as input
+#'
 #' @param rows Number of rows to print, default is 5
+#'
 #' @param cols Number of columns to print, default is 5
-#' @param last_cols Print the last columns instead of the first few, default is FALSE
+#'
+#' @param last_cols Print the last columns instead of the first few,
+#' default is FALSE
 #'
 #' @note Similar to data.table printing of a data.table object but works for
 #' a tibble or data.frame, or any object that can be coerced to a data.frame
@@ -15,12 +19,20 @@
 #' @examples
 #'
 #' \dontrun{
+#' n <- 20
+#' df <- data.frame(
+#' 	var_id = rep(1:(n / 2), each = 2),
+#' 	var_to_rep = rep(c('Pre', 'Post'), n / 2),
+#' 	x = rnorm(n),
+#' 	y = rbinom(n, 1, 0.50),
+#' 	z = rpois(n, 2)
+#' )
+#' df
 #' dim(df)
+#' epi_head_and_tail(df)
 #' epi_head_and_tail(df, rows = 2, cols = 2)
 #' epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 #' }
-#'
-#' @export
 #'
 
 # TO DO: add error catch if number of rows is less than default, if so
@@ -30,13 +42,14 @@
 # if:
 #  Error in `[.data.frame`(df, 1:rows, cols) : undefined columns selected
 #  use cols = length(df), # or ncol(df)
-# TO DO: add number of rows and cols when printing
 
 epi_head_and_tail <- function(df = NULL,
 															rows = 5,
 															cols = 5,
 															last_cols = FALSE) {
 	df <- as.data.frame(df)
+	print(sprintf('Total number of rows: %s', nrow(df)))
+  print(sprintf('Total number of columns: %s', ncol(df)))
 	if (last_cols == TRUE) {
 		# Get the last columns:
 		cols <- ((ncol(df) - cols):ncol(df))
@@ -45,7 +58,7 @@ epi_head_and_tail <- function(df = NULL,
 		cols <- 1:cols
 	}
 	heads <- df[1:rows, cols]
-	last_rows <- ((nrow(df) - rows):nrow(df))
+	last_rows <- ((nrow(df) - (rows - 1)):nrow(df))
 	tails <- df[last_rows, cols]
 	print(rbind(heads, tails))
 }
