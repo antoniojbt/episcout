@@ -16,6 +16,7 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
+#' @keywords internal
 
 # Note that A4 paper measures 210x297 millimeters or 8.27x11.69 inches
 

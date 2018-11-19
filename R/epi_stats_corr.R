@@ -18,7 +18,7 @@
 #'
 #' @seealso \code{\link{epi_stats_corr_triangle}}, \code{\link{epi_stats_corr_rename}},
 #' \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}},
-#' \code{\link[packagename]{Hmisc::rcorr}}, \code{\link[packagename]{data.table::melt}}
+#' \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
 #'
 #' @examples
 #'

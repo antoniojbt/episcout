@@ -26,3 +26,4 @@ Some colour codes:
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }
+\keyword{internal}
