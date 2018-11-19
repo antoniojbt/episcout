@@ -27,7 +27,10 @@ Suggests:
     covr,
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    scales,
+    grid,
+    ggthemes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr

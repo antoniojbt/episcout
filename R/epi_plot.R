@@ -15,7 +15,7 @@
 ######################
 # TO DO: move this to the same package
 # Source functions from custom R scripts:
-stats_utils <- '~/Documents/github.dir/EpiCompBio/stats_utils/stats_utils/'
+# stats_utils <- '~/Documents/github.dir/EpiCompBio/stats_utils/stats_utils/'
 #source(file.path(stats_utils, 'ggtheme.R'))
 ######################
 
@@ -181,7 +181,7 @@ epi_plot_hist <- function(df = NULL,
 	# var_x <- enquo(var_x) # enquosure required for non-standard R object evaluation
 	hist_plot <- ggplot(data = df, aes_string(var_x)) + # aes_string() is soft-deprecated
 		geom_histogram(...) +
-		theme_Publication() + # Needs ggtheme.R functions in this package
+		epi_plot_theme_2() + # Needs ggtheme.R functions in this package
 	  labs(y = 'Count')
 	return(hist_plot)
 	}
@@ -279,7 +279,7 @@ epi_plot_box <- function(df = NULL,
 		geom_boxplot(...) +
 		geom_jitter(shape = 16, position = position_jitter(0.2), alpha = 0.5) +
 		stat_summary(fun.y = mean, geom = "point", shape = 23, size = 4) +
-		theme_Publication()
+		epi_plot_theme_2()
 	return(box_plot)
 	}
 # # Test:

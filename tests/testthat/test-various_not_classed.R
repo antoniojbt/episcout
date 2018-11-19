@@ -14,13 +14,12 @@ library(testthat)
 # Test set df:
 set.seed(12345)
 n <- 20
-df <- data.frame(
-	var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c('Pre', 'Post'), n / 2),
-	x = rnorm(n),
-	y = rbinom(n, 1, 0.50),
-	z = rpois(n, 2)
-	)
+df <- data.frame(var_id = rep(1:(n / 2), each = 2),
+								 var_to_rep = rep(c("Pre", "Post"), n / 2),
+								 x = rnorm(n),
+								 y = rbinom(n, 1, 0.50),
+								 z = rpois(n, 2)
+								 )
 # df
 
 # And save to disk with:
