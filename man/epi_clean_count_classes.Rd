@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_count_classes.R
 \name{epi_clean_count_classes}
 \alias{epi_clean_count_classes}
-\title{Get a count of column types from a data frame
-
-epi_clean_count_classes()}
+\title{Get a count of column types from a data frame}
 \usage{
 epi_clean_count_classes(df = NULL)
 }
@@ -42,7 +40,8 @@ epi_clean_count_classes(df)
 
 }
 \seealso{
-\code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_class_to_factor}},
+\code{\link{epi_clean_cond_numeric}},
+\code{\link{epi_clean_class_to_factor}},
 \code{\link{epi_clean_cond_date}}.
 }
 \author{

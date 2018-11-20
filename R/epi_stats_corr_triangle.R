@@ -1,7 +1,5 @@
 #' @title Get the lower triangle from a correlation matrix
 #'
-#' epi_stats_corr_triangle() get one set of values from a full correlation matrix
-#'
 #' @description Keep only the lower triangle of the correlation matrix
 #' Useful to create a nicer heatmap. Requires the original, unmelted correlation
 #' matrix with both correlation (r) and p-values (P).

@@ -1,7 +1,5 @@
 #' @title Check whether column type is integer or numeric
 #'
-#' epi_clean_cond_numeric()
-#'
 #' @description Check if column is integer or numeric (TRUE). Useful when
 #' extracting columns from a large data frame using dplyr
 #' (ie get all integer and numeric columns)

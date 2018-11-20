@@ -1,9 +1,8 @@
 #' @title Plot a triangle heatmap using ggplot2
 #'
-#' epi_plot_heatmap_triangle() plots the lower triangle of a correlation matrix
-#'
 #' @description Plot correlations between numeric variables as a triangle heatmap
-#' using ggplot2. Prettier plot than a simple heatmap.
+#' using ggplot2. Prettier plot than a simple heatmap with only the lower
+#' triangle of a correlation matrix.
 #' Pass the correlation values from a melted (long) correlation matrix as
 #' input. Requires a data.frame with correlations and a data.frame with matching p-values.
 #' Column headers in both must be called Var1 and Var2. Use the output from

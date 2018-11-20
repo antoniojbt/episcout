@@ -13,26 +13,6 @@
 ######################
 
 ######################
-# TO DO: move this to the same package
-# Source functions from custom R scripts:
-# stats_utils <- '~/Documents/github.dir/EpiCompBio/stats_utils/stats_utils/'
-#source(file.path(stats_utils, 'ggtheme.R'))
-######################
-
-######################
-# Test set df:
-# n <- 20
-# df <- data.frame(
-# 	var_id = rep(1:(n / 2), each = 2),
-#   var_to_rep = rep(c('Pre', 'Post'), n / 2),
-# 	x = rnorm(n),
-# 	y = rbinom(n, 1, 0.50),
-# 	z = rpois(n, 2)
-# 	)
-# df
-######################
-
-######################
 # TO DO: plot names, labels and saving
 # plot_name <- svg(sprintf('%s_%s_%s.svg', input_name, x_var_name, y_var_name))
 # ggsave(plot_name)

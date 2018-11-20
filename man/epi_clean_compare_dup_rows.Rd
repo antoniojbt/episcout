@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_compare_dup_rows.R
 \name{epi_clean_compare_dup_rows}
 \alias{epi_clean_compare_dup_rows}
-\title{Compare two rows which may be duplicated
-
-epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows}
+\title{Compare two rows which may be duplicated}
 \usage{
 epi_clean_compare_dup_rows(df_dups = NULL, val_id = "1", col_id = "",
   sub_index_1 = 1, sub_index_2 = 2, allowAll = TRUE, ...)
@@ -31,10 +29,11 @@ returns a list object with the differing columns ('differing_cols'),
 their names ('col_names') and the duplicated indices
 }
 \description{
-Compare two rows which may have duplicated information
+Compare two rows which may have duplicated information.
+epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows.
 compare::compare allows all transformations, sorting, etc. so can be loose.
-This function is intended to make manual inspection easier
-compare::compare can miss differences though so care is needed
+This function is intended to make manual inspection easier,
+compare::compare can miss differences though so care is needed.
 }
 \examples{
 

@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_cond_date.R
 \name{epi_clean_cond_date}
 \alias{epi_clean_cond_date}
-\title{Check if column is date using lubridate
-
-epi_clean_cond_date()}
+\title{Check if column is date using lubridate}
 \usage{
 epi_clean_cond_date(col = NULL)
 }
@@ -41,9 +39,11 @@ epi_clean_cond_date(df_date[, 'date_col']) # should be 'TRUE'
 
 }
 \seealso{
-\code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_class_to_factor}},
+\code{\link{epi_clean_cond_numeric}},
+\code{\link{epi_clean_class_to_factor}},
 \code{\link{epi_clean_count_classes}},
-\code{\link[base]{is.character}}, \code{\link[base]{is.factor}}
+\code{\link[base]{is.character}},
+\code{\link[base]{is.factor}}.
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

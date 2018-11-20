@@ -25,7 +25,8 @@ epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", "",
 A tibble
 }
 \description{
-epi_read() Wraps as.tibble and data.table's fread
+epi_read() reads files with a consistent convenience function.
+Wraps as.tibble and data.table's fread.
 }
 \note{
 Other parameters as specified by data.table::fread()

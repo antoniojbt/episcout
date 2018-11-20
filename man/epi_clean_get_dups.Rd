@@ -2,10 +2,7 @@
 % Please edit documentation in R/epi_clean_get_dups.R
 \name{epi_clean_get_dups}
 \alias{epi_clean_get_dups}
-\title{Get all duplicated rows including the originals
-
-epi_clean_get_dups() Get all elements which are repeated,
-including the originals.}
+\title{Get all duplicated rows including the originals}
 \usage{
 epi_clean_get_dups(df = NULL, var = "", freq = 1)
 }
@@ -21,8 +18,8 @@ plus any repeating values)}
 a data.frame with original and duplicated rows
 }
 \description{
-base R duplicated() does not return the originals (duplicated - 1)
-See for example https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r
+base R duplicated() does not return the originals (duplicated - 1).
+See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
 }
 \note{
 \preformatted{Creates a table with frequencies, checks those which have more than 1

@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_merge_nested_dfs.R
 \name{epi_clean_merge_nested_dfs}
 \alias{epi_clean_merge_nested_dfs}
-\title{Recursively merge data frames that are stored as lists within a list
-
-epi_clean_merge_nested_dfs()}
+\title{Recursively merge data frames that are stored as lists within a list}
 \usage{
 epi_clean_merge_nested_dfs(nested_list_dfs = NULL, id_col = "")
 }
@@ -125,7 +123,8 @@ View(all_merged)
 
 }
 \seealso{
-\code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_spread_repeated}},
+\code{\link{epi_clean_add_colname_suffix}},
+\code{\link{epi_clean_spread_repeated}},
 \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
 }
 \author{

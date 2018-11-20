@@ -1,6 +1,7 @@
 #' @title Write files with a consistent convenience function
 #'
-#' @description epi_write() Wraps data.table's fwrite with several assumptions as defaults
+#' @description epi_write() writes files with a consistent convenience function.
+#' Wraps data.table's fwrite with several assumptions as defaults.
 #'
 #' @param file_object Object to write
 #'

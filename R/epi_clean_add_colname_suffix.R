@@ -1,7 +1,5 @@
 #' @title Add a suffix to column names
 #'
-#' epi_clean_add_colname_suffix()
-#'
 #' @description Add a suffix to column names except for an ID header.
 #' Useful if changing labels to include eg baseline, time_1, time_2, etc.
 #'

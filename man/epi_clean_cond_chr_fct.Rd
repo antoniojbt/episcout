@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_cond_chr_fct.R
 \name{epi_clean_cond_chr_fct}
 \alias{epi_clean_cond_chr_fct}
-\title{Check if column is character or factor
-
-epi_clean_cond_chr_fct()}
+\title{Check if column is character or factor}
 \usage{
 epi_clean_cond_chr_fct(col = NULL)
 }
@@ -37,7 +35,7 @@ epi_clean_cond_chr_fct(df_cont_chr[, 'x']) # should be 'FALSE'
 \seealso{
 \code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_cond_date}},
 \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-\code{\link[base]{is.character}}, \code{\link[base]{is.factor}}
+\code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

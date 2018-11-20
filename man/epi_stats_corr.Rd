@@ -2,10 +2,7 @@
 % Please edit documentation in R/epi_stats_corr.R
 \name{epi_stats_corr}
 \alias{epi_stats_corr}
-\title{Get a correlation matrix with p-values
-
-epi_stats_corr() wraps Hmisc::rcorr(), melts the matrix and returns correlation
-and p-values.}
+\title{Get a correlation matrix with p-values}
 \usage{
 epi_stats_corr(df = NULL, method = "spearman")
 }
@@ -22,6 +19,8 @@ and the melted p-values (cormat_melted_pval).
 }
 \description{
 Get a correlation matrix using Hmisc for many numerical variables.
+epi_stats_corr() wraps Hmisc::rcorr(), melts the matrix and
+returns correlation and p-values.
 }
 \examples{
 
@@ -44,9 +43,12 @@ class(cormat_all)
 }
 }
 \seealso{
-\code{\link{epi_stats_corr_triangle}}, \code{\link{epi_stats_corr_rename}},
-\code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}},
-\code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
+\code{\link{epi_stats_corr_triangle}},
+\code{\link{epi_stats_corr_rename}},
+\code{\link{epi_plot_heatmap}},
+\code{\link{epi_plot_heatmap_triangle}},
+\code{\link[Hmisc]{rcorr}},
+\code{\link[data.table]{melt}}.
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

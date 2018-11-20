@@ -1,7 +1,5 @@
 #' @title Add a replicate number to rows with repeated IDs
 #'
-#' epi_clean_add_rep_num()
-#'
 #' @description Add a column with count of duplicate/replicate (ie for
 #' repeated screening, replicate counts, etc.). Assumes the dataframe passed
 #' is sorted logically with repeating IDs next to each other and

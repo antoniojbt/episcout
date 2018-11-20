@@ -1,7 +1,5 @@
 #' @title Plot a simple heatmap using ggplot2
 #'
-#' epi_plot_heatmap()
-#'
 #' @description Plot correlations between numeric variables as a heatmap using
 #' ggplot2. Pass the correlation values from a melted (long) correlation matrix as
 #' input.
