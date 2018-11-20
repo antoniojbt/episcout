@@ -55,6 +55,8 @@
 #' df_factor
 #' }
 #'
+#' @export
+#'
 
 epi_clean_class_to_factor <- function(df = NULL,
 																			cutoff_unique = 10

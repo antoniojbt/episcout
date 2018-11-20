@@ -34,6 +34,9 @@
 #' epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 #' }
 #'
+#' @importFrom utils head tail
+#'
+#' @export
 
 # TO DO: add error catch if number of rows is less than default, if so
 # set default to nrow(df)

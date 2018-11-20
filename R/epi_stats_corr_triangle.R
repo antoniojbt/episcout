@@ -35,6 +35,8 @@
 #' melted_triangles$cormat_melted_triangle_pval
 #' class(melted_triangles)
 #' }
+#' @export
+#'
 
 epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
 

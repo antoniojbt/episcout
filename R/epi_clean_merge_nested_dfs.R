@@ -116,6 +116,8 @@
 #' View(all_merged)
 #' }
 #'
+#' @export
+#'
 
 epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
 																			 id_col = ''

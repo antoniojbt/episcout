@@ -40,6 +40,8 @@
 #' names(df_t)
 #' }
 #'
+#' @export
+#'
 
 epi_clean_transpose <- function(df = NULL,
 																id_col_num = ''

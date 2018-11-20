@@ -28,6 +28,8 @@
 #' epi_clean_cond_chr_fct(df_cont_chr[, 'x']) # should be 'FALSE'
 #' }
 #'
+#' @export
+#'
 
 epi_clean_cond_chr_fct <- function(col = NULL) {
 	is.character(col) == TRUE | is.factor(col) == TRUE

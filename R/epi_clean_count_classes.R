@@ -34,6 +34,10 @@
 #' epi_clean_count_classes(df)
 #' }
 #'
+#' @export
+#'
+#' @importFrom magrittr %>%
+#'
 
 epi_clean_count_classes <- function(df = NULL) {
 	if (!requireNamespace('dplyr', quietly = TRUE)) {

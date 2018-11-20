@@ -51,6 +51,8 @@
 #' df_factor$date_col
 #' }
 #'
+#' @export
+#'
 
 epi_clean_replace_value <- function(df = NULL,
 																		col_id = '',
