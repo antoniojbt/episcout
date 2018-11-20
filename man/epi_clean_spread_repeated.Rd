@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_clean_spread_repeated.R
 \name{epi_clean_spread_repeated}
 \alias{epi_clean_spread_repeated}
-\title{epi_clean_spread_repeated()}
+\title{Spread repeated observations}
 \usage{
 epi_clean_spread_repeated(df = NULL, rep_col = "", id_col_num = 1)
 }
@@ -15,9 +15,10 @@ epi_clean_spread_repeated(df = NULL, rep_col = "", id_col_num = 1)
 }
 \value{
 a nested list with as many sub-lists as unique values contained in the
-column passed as rep_col. Column headers are renamed using \code{\link{epi_clean_add_colname_suffix}}
-and will contain suffixes taken from the unique values in rep_col. The ID column
-passed as id_col_num is included in each sub-list.
+column passed as rep_col. Column headers are renamed using
+\code{\link{epi_clean_add_colname_suffix}} and will contain suffixes taken from
+the unique values in rep_col.
+The ID column passed as id_col_num is included in each sub-list.
 }
 \description{
 Create a single data frame with unique rows (individuals) and

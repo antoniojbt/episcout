@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_replace_value.R
 \name{epi_clean_replace_value}
 \alias{epi_clean_replace_value}
-\title{Replace values with string in a column
-
-epi_clean_replace_value()}
+\title{Replace values with string in a column}
 \usage{
 epi_clean_replace_value(df = NULL, col_id = "", pattern = "",
   replace_str = NA)
@@ -59,7 +57,8 @@ df_factor$date_col
 
 }
 \seealso{
-\code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_add_colname_suffix}},
+\code{\link{epi_clean_add_rep_num}},
+\code{\link{epi_clean_add_colname_suffix}},
 \code{\link[stringr]{str_detect}}.
 }
 \author{

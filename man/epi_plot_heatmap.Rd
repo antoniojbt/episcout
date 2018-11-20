@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_plot_heatmap.R
 \name{epi_plot_heatmap}
 \alias{epi_plot_heatmap}
-\title{Plot a simple heatmap using ggplot2
-
-epi_plot_heatmap()}
+\title{Plot a simple heatmap using ggplot2}
 \usage{
 epi_plot_heatmap(cormat_melted = "cormat_all$cormat_melted_r",
   title = "")

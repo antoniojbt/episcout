@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_transpose.R
 \name{epi_clean_transpose}
 \alias{epi_clean_transpose}
-\title{Transposes a dataframe preserving row and column names
-
-epi_clean_transpose()}
+\title{Transposes a dataframe preserving row and column names}
 \usage{
 epi_clean_transpose(df = NULL, id_col_num = "")
 }

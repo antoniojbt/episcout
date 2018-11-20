@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_add_rep_num.R
 \name{epi_clean_add_rep_num}
 \alias{epi_clean_add_rep_num}
-\title{Add a replicate number to rows with repeated IDs
-
-epi_clean_add_rep_num()}
+\title{Add a replicate number to rows with repeated IDs}
 \usage{
 epi_clean_add_rep_num(df = NULL, var_id = NULL, var_to_rep = "")
 }

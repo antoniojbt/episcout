@@ -1,6 +1,7 @@
 #' @title Read files with a consistent convenience function
 #'
-#' @description epi_read() Wraps as.tibble and data.table's fread
+#' @description epi_read() reads files with a consistent convenience function.
+#' Wraps as.tibble and data.table's fread.
 #'
 #' @param input_name file to read as a string
 #'

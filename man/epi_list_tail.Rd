@@ -2,8 +2,7 @@
 % Please edit documentation in R/epi_list_tail.R
 \name{epi_list_tail}
 \alias{epi_list_tail}
-\title{Print the last few rows of each element of a list
-epi_list_tail() Prettier print of lists}
+\title{Print the last few rows of each element of a list}
 \usage{
 epi_list_tail(list = list, rows = 3, max = length(list))
 }
@@ -16,8 +15,7 @@ epi_list_tail(list = list, rows = 3, max = length(list))
 length of the list passed}
 }
 \description{
-Print the last few rows of each element of a list
-epi_list_tail() Prettier print of lists
+epi_list_tail() Prettier print of lists for head and tail
 }
 \examples{
 

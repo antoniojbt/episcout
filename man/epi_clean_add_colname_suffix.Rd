@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_add_colname_suffix.R
 \name{epi_clean_add_colname_suffix}
 \alias{epi_clean_add_colname_suffix}
-\title{Add a suffix to column names
-
-epi_clean_add_colname_suffix()}
+\title{Add a suffix to column names}
 \usage{
 epi_clean_add_colname_suffix(df = NULL, id_col_num = 1, suffix = "")
 }

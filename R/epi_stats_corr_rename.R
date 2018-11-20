@@ -1,7 +1,5 @@
 #' @title Rename variables from melted triangles and convert to factors
 #'
-#' epi_stats_corr_rename()
-#'
 #' @description Rename variables from melted triangles and convert to factors
 #' for plotting. Requires correlation matrices with r and p-values with columns
 #' named 'Var1' and 'Var2'. The output of epi_stats_corr_triangle() can be

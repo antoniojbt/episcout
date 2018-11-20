@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_stats_corr_rename.R
 \name{epi_stats_corr_rename}
 \alias{epi_stats_corr_rename}
-\title{Rename variables from melted triangles and convert to factors
-
-epi_stats_corr_rename()}
+\title{Rename variables from melted triangles and convert to factors}
 \usage{
 
   epi_stats_corr_rename(r_vals = "melted_triangles$cormat_melted_triangle_r",

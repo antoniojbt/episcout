@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_stats_corr_triangle.R
 \name{epi_stats_corr_triangle}
 \alias{epi_stats_corr_triangle}
-\title{Get the lower triangle from a correlation matrix
-
-epi_stats_corr_triangle() get one set of values from a full correlation matrix}
+\title{Get the lower triangle from a correlation matrix}
 \usage{
 epi_stats_corr_triangle(cormat = "cormat_all$cormat")
 }

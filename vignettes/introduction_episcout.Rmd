@@ -1,5 +1,5 @@
 ---
-title: "Examples of how to use episcout"
+title: "Examples of how to episcout"
 author: "Antonio Berlanga-Taylor"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -18,17 +18,23 @@ knitr::opts_chunk$set(
 
 Welcome to episcout!
 
-This is really just a package that wraps up many functions that are used frequently during cleaning, exploring and visualising data sets.
+This package is under development...(!)
+
+This package that wraps up many functions that are used frequently during cleaning, exploring and visualising data sets.
 
 It was developed using a combination of (mainly) tidyverse packages and a mixture of base R functions and data.table.
 
-Many parameters are given as defaults out of personal preference and in order to process hundreds of thousands of observations from hundreds of variables from multiple data sets. Convenience and speed are higher up the agenda here.
-
-This may not be your case and the choices made may not suit you. If so simply defer to your preferred and standard R packages.
+Many parameters are given as defaults out of personal preference and in order to process hundreds of thousands of observations from hundreds of variables from multiple data sets. Convenience and standardisation are higher up the agenda. This may not be your case and the choices made may not suit you. If so simply defer to your preferred R packages.
 
 Below are a number of examples of how to use episcout functions.
 
-All functions start with 'epi_'.
+All functions start with "epi\_".
+
+Currently there are functions for:
+- pre-processing: epi\_clean\_\*
+- descriptive statistics: epi\_stats\_\*
+- visualising: epi\_plot\_\*
+
 
 ## Some dummy data
 

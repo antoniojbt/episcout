@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_list_head.R
 \name{epi_list_head}
 \alias{epi_list_head}
-\title{Print first few rows of each element of a list
-
-epi_list_head() Prettier print of lists}
+\title{Print first few rows of each element of a list}
 \usage{
 epi_list_head(list = NULL, rows = 3, max = length(list))
 }
@@ -17,9 +15,7 @@ epi_list_head(list = NULL, rows = 3, max = length(list))
 length of the list passed}
 }
 \description{
-Print first few rows of each element of a list
-
-epi_list_head() Prettier print of lists
+epi_list_tail() Prettier print of lists for head and tail
 }
 \examples{
 

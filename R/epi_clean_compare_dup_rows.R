@@ -1,11 +1,10 @@
 #' @title Compare two rows which may be duplicated
 #'
-#' epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows
-#'
-#' @description Compare two rows which may have duplicated information
+#' @description Compare two rows which may have duplicated information.
+#' epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows.
 #' compare::compare allows all transformations, sorting, etc. so can be loose.
-#' This function is intended to make manual inspection easier
-#' compare::compare can miss differences though so care is needed
+#' This function is intended to make manual inspection easier,
+#' compare::compare can miss differences though so care is needed.
 #'
 #' @param df_dups a data frame with duplicated entries to compare
 #'

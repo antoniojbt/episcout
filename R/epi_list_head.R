@@ -1,6 +1,6 @@
 #' @title Print first few rows of each element of a list
 #'
-#' epi_list_head() Prettier print of lists
+#' @description epi_list_tail() Prettier print of lists for head and tail
 #'
 #' @param list a list object to print
 #' @param rows Number of rows to print, default is 3

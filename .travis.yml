@@ -1,4 +1,18 @@
+#####
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+# Travis by default runs eg:
+# install:
+# - R -e 'devtools::install_deps(dep = T)'
+
+# script:
+# - R CMD build .
+# - R CMD check *tar.gz
+
+# and it looks like it already runs sessionInfo(), see:
+# https://github.com/travis-ci/travis-build/blob/master/lib/travis/build/script/r.rb
+#####
+
 
 language: R
 sudo: false
@@ -29,9 +43,6 @@ r_binary_packages:
 # https://covr.r-lib.org/
 r_github_packages:
 - r-lib/covr
-
-#after_success:
-#- Rscript -e 'library(covr); coveralls()'
 
 after_success:
 - Rscript -e 'covr::codecov()'

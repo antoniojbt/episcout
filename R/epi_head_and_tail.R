@@ -1,6 +1,6 @@
 #' @title Print the first few rows and last few rows of a data frame
 #'
-#' @description epi_() Read files with a consistent convenience function
+#' @description epi_head_and_tail() prints the first and last few rows of a data.frame
 #'
 #' @param df data.frame as input
 #'

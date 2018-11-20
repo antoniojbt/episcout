@@ -1,7 +1,5 @@
 #' @title Transposes a dataframe preserving row and column names
 #'
-#' epi_clean_transpose()
-#'
 #' @description Transposes a dataframe preserving row and column names. Based on
 #' data.table transpose. Assumes there is an id column with unique IDs
 #'

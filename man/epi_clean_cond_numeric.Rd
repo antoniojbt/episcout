@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_cond_numeric.R
 \name{epi_clean_cond_numeric}
 \alias{epi_clean_cond_numeric}
-\title{Check whether column type is integer or numeric
-
-epi_clean_cond_numeric()}
+\title{Check whether column type is integer or numeric}
 \usage{
 epi_clean_cond_numeric(col = NULL)
 }

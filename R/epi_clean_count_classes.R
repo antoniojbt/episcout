@@ -1,7 +1,5 @@
 #' @title Get a count of column types from a data frame
 #'
-#' epi_clean_count_classes()
-#'
 #' @description Count by column type in a data frame. Uses dplyr and purrr, useful
 #' when handling large data frames (hundreds of columns and thousands of observations
 #' for example).
@@ -16,7 +14,8 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_class_to_factor}},
+#' @seealso \code{\link{epi_clean_cond_numeric}},
+#' \code{\link{epi_clean_class_to_factor}},
 #' \code{\link{epi_clean_cond_date}}.
 #'
 #' @examples

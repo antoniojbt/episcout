@@ -1,11 +1,10 @@
 #' @title Compare two strings
 #'
+#' @description Compare two strings and determine if one is substring of the other.
 #' epi_clean_compare_str() uses stringi::stri_detect(). Developed when comparing
 #' a database of observed and matched values for drug treatments from the BNF.
 #' Can be used generically as a light wrapper for stri_detect().
-#' stri_detect() if there is at least one match to a corresponding pattern.
-#'
-#' @description Compare two strings and determine if one is substring of the other
+#' stri_detect() determines if there is at least one match to a corresponding pattern.
 #'
 #' @param df a data frame object containing rows with strings to compare
 #'

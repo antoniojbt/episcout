@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_clean_class_to_factor.R
 \name{epi_clean_class_to_factor}
 \alias{epi_clean_class_to_factor}
-\title{Convert column class to factor if unique values below cutoff
-
-epi_clean_class_to_factor()}
+\title{Convert column class to factor if unique values below cutoff}
 \usage{
 epi_clean_class_to_factor(df = NULL, cutoff_unique = 10)
 }
@@ -44,7 +42,8 @@ x = rnorm(n),
 y = rbinom(n, 1, 0.50),
 z = rpois(n, 2)
 )
-df_factor$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)#nrow(df_factor))
+df_factor$date_col <- seq(as.Date("2018/1/1"),
+by = "year", length.out = 5)#nrow(df_factor))
 # Check the current classes:
 lapply(df_factor, class)
 # Check how many unique values within each column:

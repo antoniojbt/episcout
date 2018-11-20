@@ -28,7 +28,8 @@ epi_write(file_object = NULL, file_name = "", row.names = FALSE,
 None
 }
 \description{
-epi_write() Wraps data.table's fwrite with several assumptions as defaults
+epi_write() writes files with a consistent convenience function.
+Wraps data.table's fwrite with several assumptions as defaults.
 }
 \note{
 Other parameters as specified by data.table::fwrite()

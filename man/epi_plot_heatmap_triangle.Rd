@@ -2,9 +2,7 @@
 % Please edit documentation in R/epi_plot_heatmap_triangle.R
 \name{epi_plot_heatmap_triangle}
 \alias{epi_plot_heatmap_triangle}
-\title{Plot a triangle heatmap using ggplot2
-
-epi_plot_heatmap_triangle() plots the lower triangle of a correlation matrix}
+\title{Plot a triangle heatmap using ggplot2}
 \usage{
 epi_plot_heatmap_triangle(cormat_melted_triangle_r = NULL,
   cormat_melted_triangle_pval = NULL, cor_method = "Spearman",
@@ -27,7 +25,8 @@ Returns a heatmap as a ggplot2 object
 }
 \description{
 Plot correlations between numeric variables as a triangle heatmap
-using ggplot2. Prettier plot than a simple heatmap.
+using ggplot2. Prettier plot than a simple heatmap with only the lower
+triangle of a correlation matrix.
 Pass the correlation values from a melted (long) correlation matrix as
 input. Requires a data.frame with correlations and a data.frame with matching p-values.
 Column headers in both must be called Var1 and Var2. Use the output from

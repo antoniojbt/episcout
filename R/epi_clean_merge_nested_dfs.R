@@ -1,7 +1,5 @@
 #' @title Recursively merge data frames that are stored as lists within a list
 #'
-#' epi_clean_merge_nested_dfs()
-#'
 #' @description Recursively merge data frames that are stored as lists within a list.
 #' Flattens with purrr::flatten() if there is more than one level. Assumes:
 #' - there are are 3 or more data frames to merge
@@ -26,7 +24,8 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_spread_repeated}},
+#' @seealso \code{\link{epi_clean_add_colname_suffix}},
+#' \code{\link{epi_clean_spread_repeated}},
 #' \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
 #'
 #' @examples

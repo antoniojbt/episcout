@@ -1,10 +1,7 @@
 #' @title Get all duplicated rows including the originals
 #'
-#' epi_clean_get_dups() Get all elements which are repeated,
-#' including the originals.
-#'
-#' @description base R duplicated() does not return the originals (duplicated - 1)
-#' See for example https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r
+#' @description base R duplicated() does not return the originals (duplicated - 1).
+#' See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
 #'
 #' @param df A data.frame to extract duplicates from
 #'

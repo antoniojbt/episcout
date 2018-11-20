@@ -17,7 +17,7 @@ epi_head_and_tail(df = NULL, rows = 5, cols = 5, last_cols = FALSE)
 default is FALSE}
 }
 \description{
-epi_() Read files with a consistent convenience function
+epi_head_and_tail() prints the first and last few rows of a data.frame
 }
 \note{
 Similar to data.table printing of a data.table object but works for
