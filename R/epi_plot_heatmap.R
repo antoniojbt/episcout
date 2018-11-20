@@ -43,6 +43,8 @@
 #' epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_pval)
 #' ggsave('my_heatmap.svg')
 #' }
+#' @export
+#'
 
 epi_plot_heatmap <- function(cormat_melted = 'cormat_all$cormat_melted_r',
 														 title = ''

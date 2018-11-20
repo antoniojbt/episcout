@@ -39,6 +39,8 @@
 #' names(df2)
 #' }
 #'
+#' @export
+#'
 
 epi_clean_add_colname_suffix <- function(df = NULL,
 																				 id_col_num = 1,

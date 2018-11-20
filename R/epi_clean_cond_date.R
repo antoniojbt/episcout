@@ -36,6 +36,8 @@
 #' epi_clean_cond_date(df_date[, 'date_col']) # should be 'TRUE'
 #' }
 #'
+#' @export
+#'
 
 epi_clean_cond_date <- function(col = NULL) {
 	if (!requireNamespace('lubridate', quietly = TRUE)) {

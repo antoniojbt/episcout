@@ -33,6 +33,9 @@
 #' epi_clean_cond_numeric(df[, 'x']) # should be TRUE
 #' }
 #'
+#' @export
+#'
+
 # TO DO: switch so that these functions return the df with numeric columns?
 # ie
 # epi_clean_cond_numeric <- function(df= NULL,

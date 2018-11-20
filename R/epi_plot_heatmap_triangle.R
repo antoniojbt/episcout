@@ -65,6 +65,8 @@
 #'        )
 #'
 #'}
+#' @export
+#'
 
 epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
 																			cormat_melted_triangle_pval = NULL,

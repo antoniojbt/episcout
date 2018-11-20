@@ -51,6 +51,8 @@
 #' df2
 #' }
 #'
+#' @export
+#'
 
 epi_clean_add_rep_num <- function(df = NULL,
 																	var_id = NULL,

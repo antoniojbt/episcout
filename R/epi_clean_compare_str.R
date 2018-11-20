@@ -52,6 +52,8 @@
 #' epi_clean_compare_str(df3, val_id, col_1, col_2)
 #' }
 #'
+#' @export
+#'
 
 epi_clean_compare_str <- function(df = NULL,
 																	row_n = 1,

@@ -41,6 +41,7 @@ cormat_all$cormat$r
 cormat_all$cormat_melted_r
 class(cormat_all)
 }
+
 }
 \seealso{
 \code{\link{epi_stats_corr_triangle}},

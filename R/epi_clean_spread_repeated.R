@@ -38,6 +38,8 @@
 #' df_spread
 #' }
 #'
+#' @export
+#'
 
 epi_clean_spread_repeated <- function(df = NULL,
 																			rep_col = '',

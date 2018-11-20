@@ -41,6 +41,8 @@
 #' View(t(check_dups[comp$duplicate_indices, ]))
 #' View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))}
 #'
+#' @export
+#'
 
 epi_clean_compare_dup_rows <- function(df_dups = NULL,
 																			 val_id = '1',

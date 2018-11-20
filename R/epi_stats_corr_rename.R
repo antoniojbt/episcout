@@ -58,6 +58,8 @@
 #' 																					 )
 #' renamed_triangles
 #' }
+#' @export
+#'
 
 epi_stats_corr_rename <- function(r_vals = 'melted_triangles$cormat_melted_triangle_r',
 																	p_vals = 'melted_triangles$cormat_melted_triangle_pval',

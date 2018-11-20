@@ -41,6 +41,9 @@
 #' cormat_all$cormat_melted_r
 #' class(cormat_all)
 #' }
+#'
+#' @export
+#'
 
 epi_stats_corr <- function(df = NULL,
 													 method = 'spearman'
