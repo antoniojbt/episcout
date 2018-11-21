@@ -87,45 +87,45 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
             cor_method)
     }
     heatmap_triangle <- ggplot2::ggplot(data = cormat_melted_triangle_r,
-    																		aes(x = Var2,
-    																				y = Var1,
-    																				fill = value)
+    																		ggplot2::aes(x = Var2,
+    																								 y = Var1,
+    																								 fill = value)
     																		) +
-    	geom_tile(color = 'light grey') +
-    	scale_fill_gradient2(low = 'blue',
-    											 high = 'red',
-        									 mid = 'white',
-        									 midpoint = 0,
-        									 limit = c(-1, 1),
-        									 space = 'Lab',
-        									 name = legend_title
-    											 ) +
+    	ggplot2::geom_tile(color = 'light grey') +
+    	ggplot2::scale_fill_gradient2(low = 'blue',
+    																high = 'red',
+    																mid = 'white',
+    																midpoint = 0,
+    																limit = c(-1, 1),
+    																space = 'Lab',
+    																name = legend_title
+    																) +
     	epi_plot_theme_2() +
-    	theme(axis.text.x = element_text(angle = 90,
-    																	 vjust = 0.5),
-    				plot.title = element_text(hjust = 0.5)
-    				) +
+    	ggplot2::theme(axis.text.x = element_text(angle = 90,
+    																						vjust = 0.5),
+    								 plot.title = element_text(hjust = 0.5)
+    								 ) +
     	coord_fixed() + # Write values can be 'pval' or 'corr':
-    	geom_text(data = show_data,
-    						aes(x = Var2,
-    								y = Var1,
-    								label = value),
-    						color = 'black',
-    						size = 3) +
-    	theme(axis.title.x = element_blank(),
-    				axis.text.x = element_text(angle = 90),
-            axis.title.y = element_blank(),
-    				panel.grid.major = element_blank(),
-            panel.border = element_blank(),
-    				panel.background = element_rect(),
-            axis.ticks = element_blank(),
-    				legend.justification = c(1, 0),
-    				legend.position = c(0.5, 0.8),
-    				legend.direction = 'horizontal') +
-    	guides(fill = guide_colorbar(barwidth = 12,
-    															 barheight = 2,
-    															 title.position = 'top',
-    															 title.hjust = 0.5)
-    				 )
+    	ggplot2::geom_text(data = show_data,
+    										 ggplot2::aes(x = Var2,
+    										 						 y = Var1,
+    										 						 label = value),
+    										 color = 'black',
+    										 size = 3) +
+    	ggplot2::theme(axis.title.x = element_blank(),
+    								 axis.text.x = element_text(angle = 90),
+    								 axis.title.y = element_blank(),
+    								 panel.grid.major = element_blank(),
+    								 panel.border = element_blank(),
+    								 panel.background = element_rect(),
+    								 axis.ticks = element_blank(),
+    								 legend.justification = c(1, 0),
+    								 legend.position = c(0.5, 0.8),
+    								 legend.direction = 'horizontal') +
+    	ggplot2::guides(fill = guide_colorbar(barwidth = 12,
+    																				barheight = 2,
+    																				title.position = 'top',
+    																				title.hjust = 0.5)
+    									)
     return(heatmap_triangle)
     }

@@ -30,7 +30,8 @@ Suggests:
     testthat,
     scales,
     grid,
-    ggthemes
+    ggthemes,
+    limma
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr
