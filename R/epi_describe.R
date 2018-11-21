@@ -402,24 +402,25 @@ epi_stat_get_t_test <- function(x = NULL,
 
 #####################
 # Extract values after limma differential analysis:
-epi_stat_get_top <- function(fit = NULL,
-														 coef = NULL,
-														 adjust = 'BH',
-														 number = Inf,
-														 ...
-														 ) {
-	if (!requireNamespace('limma', quietly = TRUE)) {
-		stop("Package limma needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	top <- limma::topTable(fit = fit,
-												 adjust.method = adjust,
-												 coef = coef,
-												 number = number,
-												 ...
-												 )
-	return(top)
-	}
+# TO DO: exclude for now, limma not in R 3.4 and 3.5? Causes travis to error
+# epi_stat_get_top <- function(fit = NULL,
+# 														 coef = NULL,
+# 														 adjust = 'BH',
+# 														 number = Inf,
+# 														 ...
+# 														 ) {
+# 	if (!requireNamespace('limma', quietly = TRUE)) {
+# 		stop("Package limma needed for this function to work. Please install it.",
+# 				 call. = FALSE)
+# 	}
+# 	top <- limma::topTable(fit = fit,
+# 												 adjust.method = adjust,
+# 												 coef = coef,
+# 												 number = number,
+# 												 ...
+# 												 )
+# 	return(top)
+# 	}
 # Test:
 # TO DO
 #####################
