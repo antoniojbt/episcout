@@ -89,3 +89,52 @@ test_that("epi_plot_cow_save", {
   )
 ######################
 
+######################
+print("Function being tested: epi_plot_hist")
+
+test_that("epi_plot_hist", {
+  # TO DO: test plot output
+  #
+  }
+  )
+######################
+
+######################
+print("Function being tested: epi_plot_box")
+
+test_that("epi_plot_box", {
+	# TO DO: test plot output
+	#
+}
+)
+######################
+
+######################
+print("Function being tested: epi_plot_bar")
+
+test_that("epi_plot_bar", {
+	# TO DO: test plot output
+	#
+}
+)
+######################
+
+######################
+print("Function being tested: epi_plot_volcano")
+
+test_that("epi_plot_volcano", {
+	# TO DO: test plot output
+	#
+}
+)
+######################
+
+######################
+print("Function being tested: epi_plot_XXX")
+
+test_that("epi_plot_XXX", {
+	# TO DO: test plot output
+	#
+}
+)
+######################
