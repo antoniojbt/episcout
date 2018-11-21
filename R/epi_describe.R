@@ -23,6 +23,9 @@
 # Outliers are detected with the Tukey method (above and below coef * IQR)
 # coef = 0 returns no outliers, see ?boxplot.stats
 # An alternative, not implemented, is to consider those eg > 5 * SD
+# Not sure where these are needed for R's check():
+# @importFrom grDevices boxplot.stats
+
 epi_stat_count_outliers <- function(num_vec = NULL,
 																		coef = 1.5,
 																		...) {
@@ -47,6 +50,8 @@ epi_stat_count_outliers <- function(num_vec = NULL,
 # Skewness: negative/longer left tail, positive/longer right tail, >1 usually means non-normality
 # Outliers are detected with the Tukey method (above and below 1.5 * IQR)
 # ... is passed to skewness() and kurtosis()
+# @importFrom stats median na.omit quantile sd shapiro.test var
+
 epi_stats <- function(num_vec = NULL,
 											na.rm = TRUE,
 											coef = 1.5,
@@ -112,7 +117,7 @@ epi_stat_format <- function(df = NULL,
 		col_names <- names(df)
 		}
 	for (i in col_names) {
-		if (cond_numeric(df[[i]])) {
+		if (epi_clean_cond_numeric(df[[i]])) {
 			df[[i]] <- format(round(df[[i]], digits), nsmall = digits, ...)
 			}
 		}
@@ -145,10 +150,10 @@ epi_stat_format <- function(df = NULL,
 # Rows are then ordered in decreasing order according to
 # column provided.
 epi_stat_summary <- function(df = NULL,
-												codes = NULL,
-												class_type = 'chr_fct', # 'int_num'
-												action = 'codes_only'   # 'exclude'
-												) {
+														 codes = NULL,
+														 class_type = 'chr_fct', # 'int_num'
+														 action = 'codes_only'   # 'exclude'
+														 ) {
 	if (!requireNamespace('dplyr', quietly = TRUE)) {
 		stop("Package dplyr needed for this function to work. Please install it.",
 				 call. = FALSE)
@@ -157,12 +162,12 @@ epi_stat_summary <- function(df = NULL,
 		stop("Package purrr needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
-	df <- as.tibble(df)
+	df <- tibble::as.tibble(df)
 	# Determine which group of columns to use:
 	if (class_type == 'chr_fct') {
-		cond <- expression(cond_chr_fct(.))
+		cond <- expression(epi_clean_cond_chr_fct(.))
 		} else if (class_type == 'int_num') {
-		cond <- expression(cond_numeric(.))
+		cond <- expression(epi_clean_cond_numeric(.))
 		} else {
 			stop('class_type parameter not specified correctly?')
 		}
@@ -187,13 +192,17 @@ epi_stat_summary <- function(df = NULL,
 		sum_func <- expression(dplyr::count(data.frame(x = .x), x))
 		}
 	df <- df %>%
-		select_if(~ eval(cond)) %>%
-		map(~ eval(map_func)) %>%
-		map(~ eval(sum_func)) # Returns a list
+		dplyr::select_if(~ eval(cond)) %>%
+		purrr::map(~ eval(map_func)) %>%
+		purrr::map(~ eval(sum_func)) # Returns a list
 	# Convert to dataframe with the same names for the var of interest:
-	df <- as.data.frame(map_df(df, rownames_to_column, 'var', .id = 'id'))
+	df <- as.data.frame(purrr::map_df(df,
+																		tibble::rownames_to_column,
+																		'var',
+																		.id = 'id')
+											)
 	# Returns a list if sum_func is summary()
-	df <- as.tibble(as.data.frame(df))
+	df <- tibble::as.tibble(as.data.frame(df))
 	# Drop 'var' col as not needed:
 	df$var <- NULL
 	# Make the rownames a column and order columns:
@@ -229,13 +238,16 @@ epi_stat_tidy_sum <- function(epi_stat_sum_df  = NULL,
 		stop("Package tidyr needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
-	df <- as.tibble(epi_stat_sum_df)
-	df <- df %>%
-		tidyr::spread(., key = x, value = n)
+	if (!requireNamespace('tibble', quietly = TRUE)) {
+		stop("Package tibble needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	df <- tibble::as.tibble(epi_stat_sum_df)
+	df <- df %>% tidyr::spread(., key = x, value = n)
 	# Reorder columns as:
 	df <- df %>%
-		select(id, # assumes there is a column called 'id'
-					 everything()
+		dplyr::select(id, # assumes there is a column called 'id'
+									dplyr::everything()
 					 )
 	# Add row sum:
 	df$row_sums <- rowSums(df[, -1], na.rm = TRUE) # assumes the first column is 'id'
@@ -340,7 +352,7 @@ epi_stat_fct_table <- function(df = NULL,
 	  # Tidy:
 	  desc_stats <- epi_stat_tidy_sum(epi_stat_sum_df = desc_stats,
 														 order_by = '<NA>',
-														 perc_n = nrow(input_data[, vars_obesity])
+														 perc_n = nrow(df[, vars_list])
 														 )
 	  # No need to format digits as should all be counts/integers
 	  # Remove columns not informative:
@@ -368,6 +380,7 @@ epi_stat_fct_table <- function(df = NULL,
 # Only returns the p-value
 # Useful for adding to descriptive table of cohort for instance
 # Pass additional parameters if needed with '...'
+# @importFrom stats t.test
 epi_stat_get_t_test <- function(x = NULL,
 																y = NULL,
 																...
@@ -395,12 +408,16 @@ epi_stat_get_top <- function(fit = NULL,
 														 number = Inf,
 														 ...
 														 ) {
-	top <- topTable(fit = fit,
-									adjust.method = adjust,
-									coef = coef,
-									number = number,
-									...
-									)
+	if (!requireNamespace('limma', quietly = TRUE)) {
+		stop("Package limma needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	top <- limma::topTable(fit = fit,
+												 adjust.method = adjust,
+												 coef = coef,
+												 number = number,
+												 ...
+												 )
 	return(top)
 	}
 # Test:
