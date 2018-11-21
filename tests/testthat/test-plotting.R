@@ -104,22 +104,22 @@ my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
 
 ######################
 # # Bar plots of one and two variables:
-df
-lapply(df, class)
-# Barplot for single variable:
-summary(df$var_to_rep)
-epi_plot_bar(df, 'var_to_rep')
-# Barplot for two variables:
-epi_head_and_tail(df[, c('var_to_rep', 'y')], cols = 2)
-as.tibble(df) %>% count(y)
-as.tibble(df) %>% count(var_to_rep)
-as.tibble(df) %>% group_by(var_to_rep) %>% count(y)
-epi_plot_bar(df,
-						 var_y = 'y',
-						 var_x = 'z',
-						 x_lab = '',
-						 fill = 'var_to_rep'
-						 )
+# df
+# lapply(df, class)
+# # Barplot for single variable:
+# summary(df$var_to_rep)
+# epi_plot_bar(df, 'var_to_rep')
+# # Barplot for two variables:
+# epi_head_and_tail(df[, c('var_to_rep', 'y')], cols = 2)
+# as.tibble(df) %>% count(y)
+# as.tibble(df) %>% count(var_to_rep)
+# as.tibble(df) %>% group_by(var_to_rep) %>% count(y)
+# epi_plot_bar(df,
+# 						 var_y = 'y',
+# 						 var_x = 'z',
+# 						 x_lab = '',
+# 						 fill = 'var_to_rep'
+# 						 )
 ######################
 
 ######################
