@@ -41,7 +41,7 @@ r_packages:
 -  Hmisc
 -  ggplot2
 -  cowplot
--  limma
+# -  limma # not available in 3.5.1, only used for topTable in stats, add to DESCRIPTION when ready
 
 r_binary_packages:
 - testthat
