@@ -54,18 +54,18 @@ epi_plot_heatmap <- function(cormat_melted = 'cormat_all$cormat_melted_r',
 				 call. = FALSE)
 	}
 	heat_map <- ggplot2::ggplot(data = as.data.frame(cormat_melted),
-															aes(x = Var1,
-																	y = Var2,
-																	fill = value)
+															ggplot2::aes(x = Var1,
+																					 y = Var2,
+																					 fill = value)
 															) +
-		geom_tile() +
-		labs(title = title,
-				 y = '',
-				 x = '') +
+		ggplot2::geom_tile() +
+		ggplot2::labs(title = title,
+									y = '',
+									x = '') +
 		epi_plot_theme_2() +
-		theme(axis.text.x = element_text(angle = 90,
-																		 vjust = 0.5),
-					plot.title = element_text(hjust = 0.5)
-					)
+		ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
+																											 vjust = 0.5),
+									 plot.title = ggplot2::element_text(hjust = 0.5)
+									 )
 	return(heat_map)
 }

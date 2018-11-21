@@ -24,6 +24,7 @@ cache: packages
 jobs:
   include:
   - r: release
+    warnings_are_errors: false
 #  - os: osx
 #  - r: devel
   - r: 3.4
