@@ -11,11 +11,13 @@ These are mostly wrapper and convenience functions to pre-process (wrangle, expl
 
 ## Installation
 
+<!--- 
 You can install the released version of episcout from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("episcout")
 ```
+--->
 
 ## Example
 
