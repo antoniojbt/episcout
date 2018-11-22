@@ -86,33 +86,3 @@
 # 				 method = 'number',
 # 				 type = "lower")
 ######################
-
-######################
-# Volcano plot, designed to take limma's output as input
-# Assumes small effect sizes with vertical line cuts at 0.8 and 1.2
-# @importFrom graphics abline plot
-
-epi_plot_volcano <- function(logFC = NULL,
-														 adj.P.Val = NULL,
-														 main = NULL,
-														 pch = 20,
-														 h_abline = 2,
-														 v_abline = c(0.8, 1.2),
-														 ...
-														 ) {
-	volcano <- plot(2^(logFC),
-									-log10(adj.P.Val),
-									pch = pch,
-									main = main,
-									abline(h = h_abline,
-												 v = v_abline
-												 ),
-									...
-									)
-	return(volcano)
-	}
-
-# Test
-# TO DO
-# epi_plot_volcano()
-######################
