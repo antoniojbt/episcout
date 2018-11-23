@@ -7,7 +7,7 @@
 epi_clean_cond_chr_fct(col = NULL)
 }
 \arguments{
-\item{col}{column header as string or integer. This will be passed to
+\item{col}{column header. This will be passed to
 is.character(col) and is.factor(col)}
 }
 \value{
@@ -17,14 +17,14 @@ or factor
 \description{
 Check if column is character or factor (TRUE). Useful when
 extracting columns from a large data frame using dplyr
-(ie get all integer and numeric columns)
+(ie get all character and factor columns)
 }
 \examples{
 
 \dontrun{
 col_chr <- data.frame('chr1' = rep(c('A', 'B')),
-											'chr2' = rep(c('C', 'D'))
-											)
+                      'chr2' = rep(c('C', 'D'))
+						 )
 df_cont_chr <- as.tibble(cbind(df, col_chr))
 df_cont_chr \%>\% select_if(~ epi_clean_cond_chr_fct(.))
 epi_clean_cond_chr_fct(df_cont_chr[[2]]) # should be 'TRUE'

@@ -7,7 +7,7 @@
 epi_clean_cond_date(col = NULL)
 }
 \arguments{
-\item{col}{column header as string or integer. This will be passed to
+\item{col}{column header. This will be passed to
 lubridate::is.Date(col) and lubridate::is.POSIXt(col)}
 }
 \value{

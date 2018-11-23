@@ -7,7 +7,7 @@
 epi_clean_cond_numeric(col = NULL)
 }
 \arguments{
-\item{col}{column header as string or integer. This will be passed to
+\item{col}{column header. This will be passed to
 is.integer(col) and is.numeric(col)}
 }
 \value{

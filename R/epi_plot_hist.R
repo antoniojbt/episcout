@@ -77,6 +77,10 @@ epi_plot_hist <- function(df = NULL,
 		stop("Package ggplot2 needed for this function to work. Please install it.",
 				 call. = FALSE)
 	}
+	if (!requireNamespace('ggthemes', quietly = TRUE)) {
+		stop("Package ggthemes needed for this function to work. Please install it.",
+				 call. = FALSE)
+    }
 	# var_x <- enquo(var_x) # enquosure required for non-standard R object evaluation
 	hist_plot <- ggplot2::ggplot(data = df,
 															 ggplot2::aes_string(var_x)
