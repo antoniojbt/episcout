@@ -4,7 +4,7 @@
 #' extracting columns from a large data frame using dplyr
 #' (ie get all date type columns)
 #'
-#' @param col column header as string or integer. This will be passed to
+#' @param col column header. This will be passed to
 #' lubridate::is.Date(col) and lubridate::is.POSIXt(col)
 #'
 #' @return boolean TRUE/FALSE indicating whether column passed is type date

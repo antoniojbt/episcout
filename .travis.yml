@@ -22,38 +22,43 @@ cache: packages
 # add dependencies here for testing, those in DESCRIPTION
 
 jobs:
-  include:
-  - r: release
-#    warnings_are_errors: false
-#  - os: osx
-#  - r: devel
-  - r: 3.4
+    include:
+        - r: release
+          # warnings_are_errors: false
+        # - os: osx
+     # - r: devel
+        - r: 3.4
 
 r_packages:
--  dplyr
--  tibble
--  data.table
--  compare
--  stringi
--  stringr
--  lubridate
--  purrr
--  e1071
--  Hmisc
--  ggplot2
--  cowplot
-# -  limma # not available in 3.5.1, only used for topTable in stats, add to DESCRIPTION when ready
+    - dplyr
+    - tibble
+    - data.table
+    - compare
+    - stringi
+    - stringr
+    - lubridate
+    - purrr
+    - e1071
+    - Hmisc
+    - ggplot2
+    - cowplot
+    # -  limma # not available in 3.5.1, only used for topTable in stats, add to DESCRIPTION when ready
+    - future
+    - doFuture
+    - foreach
+    - iterators
+    - parallel
 
 r_binary_packages:
-- testthat
-- knitr
+    - testthat
+    - knitr
 
 # Add coverage testing:
 # https://covr.r-lib.org/
 r_github_packages:
-- r-lib/covr
+    - r-lib/covr
 
 after_success:
-- Rscript -e 'covr::codecov()'
+    - Rscript -e 'covr::codecov()'
 
 

@@ -4,7 +4,7 @@
 #' extracting columns from a large data frame using dplyr
 #' (ie get all integer and numeric columns)
 #'
-#' @param col column header as string or integer. This will be passed to
+#' @param col column header. This will be passed to
 #' is.integer(col) and is.numeric(col)
 #'
 #' @return boolean TRUE/FALSE indicating whether column passed is type integer
