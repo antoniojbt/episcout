@@ -26,12 +26,25 @@
 # Not sure where these are needed for R's check():
 # @importFrom grDevices boxplot.stats
 
+# TO DO: add:
+# SD * eg 5
+# (IQR * 1.5) * 1.5 inner (or 3 for outer)
+# See:
+# https://stats.stackexchange.com/questions/350256/iterative-outlier-diagnostic?rq=1
+# regression - Iterative outlier diagnostic - Cross Validated
+# https://stats.stackexchange.com/questions/38001/detecting-outliers-using-standard-deviations?rq=1
+# Detecting outliers using standard deviations - Cross Validated
+# https://stats.stackexchange.com/questions/175999/determine-outliers-using-iqr-or-standard-deviation?rq=1
+# Determine outliers using IQR or standard deviation? - Cross Validated
+# https://stats.stackexchange.com/questions/1519/on-univariate-outlier-tests-or-dixon-q-versus-grubbs?rq=1
+# hypothesis testing - On univariate outlier tests (or: Dixon Q versus Grubbs) - Cross Validated
+
 epi_stat_count_outliers <- function(num_vec = NULL,
 																		coef = 1.5,
 																		...) {
 	# get_SD <- sd(num_vec, na.rm = na.rm)
 	# count_above <- length(get_SD * )
-	outliers <- boxplot.stats(num_vec, ...)
+	outliers <- boxplot.stats(num_vec, coef = coef, ...)
 	outliers <- length(outliers$out)
 	return(outliers)
 	}
@@ -51,6 +64,10 @@ epi_stat_count_outliers <- function(num_vec = NULL,
 # Outliers are detected with the Tukey method (above and below 1.5 * IQR)
 # ... is passed to skewness() and kurtosis()
 # @importFrom stats median na.omit quantile sd shapiro.test var
+
+# TO DO:
+# add outlier_counts perc of total for column excluding NAs (?)
+# add total n - NA (?) as column
 
 epi_stats <- function(num_vec = NULL,
 											na.rm = TRUE,

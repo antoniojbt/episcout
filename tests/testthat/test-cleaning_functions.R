@@ -332,3 +332,22 @@ test_that("epi_clean_transpose", {
   }
   )
 ######################
+
+######################
+print("Function being tested: epi_clean_make_names")
+
+test_that("epi_clean_make_names", {
+	string <- c('mean', '.j_j', '...', 'if',
+	  					'while', 'TRUE', 'NULL', '_jj',
+		  				'  j', '.2way'
+							)
+  valid_names <- epi_clean_make_names(string)
+  # valid_names
+  str_ref <- c('mean', 'X_j_j', 'X___', 'if_',
+  						 'while_', 'TRUE_', 'NULL_', 'X_jj',
+  						 'X__j', 'X_2way'
+  						 )
+  expect_identical(valid_names, str_ref)
+  }
+)
+######################
