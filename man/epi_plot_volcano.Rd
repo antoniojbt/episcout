@@ -23,6 +23,9 @@ Default is an empty string.}
 
 \item{...}{Pass any other arguments to base plot()}
 }
+\value{
+Prints a volcano plot to screen
+}
 \description{
 epi_plot_volcano()
 Designed to take limma's topTable output as input.

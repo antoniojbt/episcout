@@ -53,6 +53,68 @@ epi_stat_count_outliers <- function(num_vec = NULL,
 ######################
 
 ######################
+# Create a unique ID column as not all rows have substudy_part_id
+# Takes a data.frame and two columns names as input
+# Returns the data.frame with a new ID column using 'col_1''sep''col_2'
+# The ID column is return as the first column
+# Test:
+# df2 <- epi_clean_unique_id(input_data, 'substudy_part_id', 'BARCODE', sep = '_')
+# epi_head_and_tail(df2)
+# Add rownumber pastes the row number as part of the ID, useful to quickly create unique IDs when NAs are present
+# with multiple ID columns.
+
+epi_clean_unique_id <- function(df = NULL,
+																col_1 = '',
+																col_2 = '',
+																sep = '_',
+																add_rownames = FALSE
+																) {
+	if (!requireNamespace('dplyr', quietly = TRUE)) {
+		stop("Package dplyr needed for this function to work. Please install it.",
+				 call. = FALSE)
+	}
+	if (add_rownames == TRUE) {
+	df$unique_id <- paste(df[[col_1]], df[[col_2]], rownames(df), sep = sep)
+	df <- df %>% dplyr::select(unique_id, dplyr::everything())
+	# print(sprintf('Number of NAs in new column: %s', sum(is.na((df[ ,1])))))
+	} else if (add_rownames == FALSE) {
+		df$unique_id <- paste(df[[col_1]], df[[col_2]], sep = sep)
+		df <- df %>% dplyr::select(unique_id, dplyr::everything())
+		}
+	names(df)[1] <- paste(col_1, col_2, sep = sep)
+	return(df)
+}
+######################
+
+######################
+# Get percentage of NAs per row or column for a dataframe
+# Returns a data.frame
+epi_stats_na_perc <- function(df = NULL,
+															margin = 2 # 2 for columns, 1 for rows
+) {
+	# For columns:
+	if (margin == 2) {
+		na_perc_all <- as.list(apply(X = df, MARGIN = margin, function(x) sum(is.na(x))))
+	  na_perc_all <- as.data.frame(na_perc_all)
+	  na_perc_all <- as.data.frame(t(na_perc_all))
+	  names(na_perc_all)[1] <- 'na_counts'
+	  na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[1]) * 100
+	}
+	# For rows:
+	else if (margin == 1) {
+		na_perc_all <- apply(X = df, MARGIN = margin, function(x) sum(is.na(x)))
+		na_perc_all <- as.data.frame(na_perc_all)
+		names(na_perc_all)[1] <- 'na_counts'
+		na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[2]) * 100
+		}
+	return(na_perc_all)
+}
+# na_perc_all <- epi_stats_na_perc(df)
+# class(na_perc_all)
+# na_perc_all
+######################
+
+######################
 # Get summary descriptive statistics for numeric/integer column.
 # na.rm is TRUE by default
 # Normality is tested with Shapiro-Wilk (small values indicate non-normality)

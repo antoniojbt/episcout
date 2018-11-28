@@ -28,7 +28,7 @@
 #' '  j', '.2way')
 #' valid_names <- epi_clean_make_names(string)
 #' valid_names
-#'
+#' epi_clean_make_names(valid_names) # There shouldn't be anything to correct
 #' }
 #'
 #' @export
