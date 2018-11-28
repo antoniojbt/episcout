@@ -116,10 +116,10 @@ else if (!is.null(var_y)) {
 																									fill = condition)
 															) +
 		# geom_bar(geom_bar) +
-		geom_bar(position = 'dodge',
-						 stat = 'identity',
-						 ...
-						 ) +
+		ggplot2::geom_bar(position = 'dodge',
+											stat = 'identity',
+											...
+											) +
 		ggplot2::guides(fill = guides_fill) +
 		ggplot2::labs(y = y_lab, x = x_lab)
 

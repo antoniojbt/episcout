@@ -12,7 +12,7 @@
 #' @param v_abline add straight lines, base plot() abline parameter. Default is c(0.8, 1.2).
 #' @param ... Pass any other arguments to base plot()
 #'
-#' @return
+#' @return Prints a volcano plot to screen
 #'
 #' @note Assumes small effect sizes with vertical line cuts at 0.8 and 1.2 logFC.
 #' The horizontal line cuts at a p-value of 0.05.
