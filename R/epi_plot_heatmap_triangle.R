@@ -87,8 +87,8 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
             cor_method)
     }
     heatmap_triangle <- ggplot2::ggplot(data = cormat_melted_triangle_r,
-    																		ggplot2::aes(x = Var2,
-    																								 y = Var1,
+    																		ggplot2::aes(x = Var1,
+    																								 y = Var2,
     																								 fill = value)
     																		) +
     	ggplot2::geom_tile(color = 'light grey') +
@@ -107,9 +107,9 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
     								 ) +
     	coord_fixed() + # Write values can be 'pval' or 'corr':
     	ggplot2::geom_text(data = show_data,
-    										 ggplot2::aes(x = Var2,
-    										 						 y = Var1,
-    										 						 label = value),
+    										 ggplot2::aes(x = Var1,
+    										 						  y = Var2,
+    										 						  label = value),
     										 color = 'black',
     										 size = 3) +
     	ggplot2::theme(axis.title.x = element_blank(),
