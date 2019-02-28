@@ -21,7 +21,7 @@ install.packages("episcout")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example of things you can do with episcout:
 
 ``` r
 # A data frame:
