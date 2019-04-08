@@ -44,21 +44,21 @@
 #'
 
 epi_clean_transpose <- function(df = NULL,
-																id_col_num = ''
-																) {
-	if (!requireNamespace('data.table', quietly = TRUE)) {
-		stop("Package data.table needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	# Save original IDs from first column:
-	rows <- as.character(unlist(df[[id_col_num]]))
-	# Save original IDs from first row:
-	cols <- as.character(colnames(df))
-	# Transpose file without first column (containing IDs):
-	df_t <- data.table::as.data.table(data.table::transpose(df[, -id_col_num]))
-	# Insert original IDs as new colnames in transposed:
-	colnames(df_t) <- rows
-	# Insert original IDs as first column into transposed:
-	df_t <- cbind(as.character(cols[-1]), df_t) # Exclude first label
-	return(as.data.frame(df_t))
-	}
+                                id_col_num = ''
+                                ) {
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop("Package data.table needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  # Save original IDs from first column:
+  rows <- as.character(unlist(df[[id_col_num]]))
+  # Save original IDs from first row:
+  cols <- as.character(colnames(df))
+  # Transpose file without first column (containing IDs):
+  df_t <- data.table::as.data.table(data.table::transpose(df[, -id_col_num]))
+  # Insert original IDs as new colnames in transposed:
+  colnames(df_t) <- rows
+  # Insert original IDs as first column into transposed:
+  df_t <- cbind(as.character(cols[-1]), df_t) # Exclude first label
+  return(as.data.frame(df_t))
+  }

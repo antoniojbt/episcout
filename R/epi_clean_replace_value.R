@@ -42,11 +42,11 @@
 #' df_factor$date_col
 #' # In a loop:
 #' for (i in seq_along(df_factor)) {
-#' 	for (p in patterns) {
-#' 		# match values starting with string:
-#' 		pattern <- sprintf('^%s', p)
-#' 		df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
-#' 	}
+#'   for (p in patterns) {
+#'     # match values starting with string:
+#'     pattern <- sprintf('^%s', p)
+#'     df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
+#'   }
 #' }
 #' df_factor$date_col
 #' }
@@ -55,19 +55,19 @@
 #'
 
 epi_clean_replace_value <- function(df = NULL,
-																		col_id = '',
-																		pattern = '',
-																		replace_str = NA
-																		) {
-	if (!requireNamespace('stringr', quietly = TRUE)) {
-		stop("Package stringr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	df[[col_id]] <- ifelse(stringr::str_detect(df[[col_id]],
-																						 pattern = pattern) == TRUE,
-												 replace_str,
-												 df[[col_id]]
-	)
-	# df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
-	return(df[[col_id]])
+                                    col_id = '',
+                                    pattern = '',
+                                    replace_str = NA
+                                    ) {
+  if (!requireNamespace('stringr', quietly = TRUE)) {
+    stop("Package stringr needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  df[[col_id]] <- ifelse(stringr::str_detect(df[[col_id]],
+                                             pattern = pattern) == TRUE,
+                         replace_str,
+                         df[[col_id]]
+  )
+  # df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
+  return(df[[col_id]])
 }

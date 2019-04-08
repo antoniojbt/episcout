@@ -19,12 +19,12 @@
 #'
 
 epi_list_head <- function(list = NULL,
-													rows = 3,
-													max = length(list)
-													) {
-	cat(sprintf('List has %s elements in total.\n', length(list)))
-	cat(sprintf('First %s rows of first %s elements in list: \n', rows, max))
-	for (item in 1:max) {
-		print(head(list[[item]], rows))
-	}
+                          rows = 3,
+                          max = length(list)
+                          ) {
+  cat(sprintf('List has %s elements in total.\n', length(list)))
+  cat(sprintf('First %s rows of first %s elements in list: \n', rows, max))
+  for (item in 1:max) {
+    print(head(list[[item]], rows))
+  }
 }

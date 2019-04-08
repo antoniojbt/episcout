@@ -30,22 +30,22 @@
 #'
 
 # epi_stats_count_outliers <- function(df = NULL,
-# 																		 method = 'SD',
-# 																		 na.rm = TRUE,
-# 																		 ...
-# 																		 ) {
+#                                      method = 'SD',
+#                                      na.rm = TRUE,
+#                                      ...
+#                                      ) {
 # Use this instead or library or require inside functions:
 # if (!requireNamespace('some_pkg', quietly = TRUE)) {
 #   stop('Package some_pkg needed for this function to work. Please install it.',
 #   call. = FALSE)
 # }
-# 	if(method == 'SD') {
+#   if(method == 'SD') {
 #   print('something')
-# 		sd <- sd(df[[col]], na.rm = na.rm)
-# 		outlier <-
+#     sd <- sd(df[[col]], na.rm = na.rm)
+#     outlier <-
 #   } else if (method = 'IQR') {
 #
-#   }	else {
+#   }  else {
 #       print('No method choses')
 #       }
 #   return(something_I_need)

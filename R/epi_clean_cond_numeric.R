@@ -22,11 +22,11 @@
 #' set.seed(12345)
 #' n <- 20
 #' df <- data.frame(
-#' 	var_id = rep(1:(n / 2), each = 2),
-#' 	var_to_rep = rep(c('Pre', 'Post'), n / 2),
-#' 	x = rnorm(n),
-#' 	y = rbinom(n, 1, 0.50),
-#' 	z = rpois(n, 2)
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c('Pre', 'Post'), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df %>% select_if(~ epi_clean_cond_numeric(.))
 #' epi_clean_cond_numeric(df[[2]]) # should be FALSE
@@ -39,12 +39,12 @@
 # TO DO: switch so that these functions return the df with numeric columns?
 # ie
 # epi_clean_cond_numeric <- function(df= NULL,
-# 																	 col = NULL
-# 																	 ) {
-# 	df %<>% select_if(is.integer(col) == TRUE | is.numeric(col) == TRUE)
-# 	return(df_numeric)
-# 	}
+#                                    col = NULL
+#                                    ) {
+#   df %<>% select_if(is.integer(col) == TRUE | is.numeric(col) == TRUE)
+#   return(df_numeric)
+#   }
 
 epi_clean_cond_numeric <- function(col = NULL) {
-	is.integer(col) == TRUE | is.numeric(col) == TRUE
+  is.integer(col) == TRUE | is.numeric(col) == TRUE
 }

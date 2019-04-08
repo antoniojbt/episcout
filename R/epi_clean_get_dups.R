@@ -10,7 +10,7 @@
 #' @param freq Frequency count, an integer. Defaults to 1 (so will return original
 #' plus any repeating values)
 #'
-#' @note 	Creates a table with frequencies, checks those which have more than 1
+#' @note   Creates a table with frequencies, checks those which have more than 1
 #' (or value passed to freq and considers these as variables with duplicates)
 #' and extracts them.
 #'
@@ -35,14 +35,14 @@
 #'
 
 epi_clean_get_dups <- function(df = NULL,
-														 var = '',
-														 freq = 1
-														 ) {
-	# Create a table with frequencies:
-	n_occur <- data.frame(table(df[[var]]))
-	# Check those which have mor than 1, these are duplicated:
-	dups <- n_occur$Freq > freq
-	# Extract them:
-	df_dups <- df[df[[var]] %in% n_occur$Var1[dups], ]
-	return(df_dups)
+                             var = '',
+                             freq = 1
+                             ) {
+  # Create a table with frequencies:
+  n_occur <- data.frame(table(df[[var]]))
+  # Check those which have mor than 1, these are duplicated:
+  dups <- n_occur$Freq > freq
+  # Extract them:
+  df_dups <- df[df[[var]] %in% n_occur$Var1[dups], ]
+  return(df_dups)
 }

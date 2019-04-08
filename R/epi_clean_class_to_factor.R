@@ -59,18 +59,18 @@
 #'
 
 epi_clean_class_to_factor <- function(df = NULL,
-																			cutoff_unique = 10
-																			){
-	for (i in seq_along(df)) {
-		if (
-			# if num. of unique values is less than cut-off
-			length(unique(df[[i]])) < cutoff_unique &
-			# and the class is not already a date:
-			class(df[[i]]) != 'Date'
-		) {
-			# Convert to factor:
-			df[[i]] <- as.factor(df[[i]])
-		}
-	}
-	return(df)
+                                      cutoff_unique = 10
+                                      ){
+  for (i in seq_along(df)) {
+    if (
+      # if num. of unique values is less than cut-off
+      length(unique(df[[i]])) < cutoff_unique &
+      # and the class is not already a date:
+      class(df[[i]]) != 'Date'
+    ) {
+      # Convert to factor:
+      df[[i]] <- as.factor(df[[i]])
+    }
+  }
+  return(df)
 }

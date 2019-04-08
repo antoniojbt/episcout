@@ -28,9 +28,9 @@
 #' df <- data.frame(
 #' var_id = rep(1:(n / 2), each = 2),
 #' var_to_rep = rep(c('Pre', 'Post'), n / 2),
-#' 	x = rnorm(n),
-#' 	y = rbinom(n, 1, 0.50),
-#' 	z = rpois(n, 2)
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df
 #' df_spread <- epi_clean_spread_repeated(df, 'var_to_rep', 1)
@@ -42,21 +42,21 @@
 #'
 
 epi_clean_spread_repeated <- function(df = NULL,
-																			rep_col = '',
-																			id_col_num = 1
-																			) {
-	reps <- unique(df[[rep_col]])
-	output <- vector(mode = 'list')#, length = length(reps))
-	for (i in reps) {
-		# Create sets with distinct observations, use rep_num_col to filter rows:
-		rep_df <- df[which(df[[rep_col]] == i), ]
-		# Sanity check, should return an empty tibble:
-		# print(get_all_dups(rep_df, id_col, 1))
-		# Change col names to baseline, time_1, time_2, etc.:
-		suffix <- sprintf('.%s', i)
-		new_colnames <- epi_clean_add_colname_suffix(rep_df, id_col_num, suffix)
-		names(rep_df)[-id_col_num] <- new_colnames
-		output[[i]] <- rep_df
-	}
-	return(output)
-	}
+                                      rep_col = '',
+                                      id_col_num = 1
+                                      ) {
+  reps <- unique(df[[rep_col]])
+  output <- vector(mode = 'list')#, length = length(reps))
+  for (i in reps) {
+    # Create sets with distinct observations, use rep_num_col to filter rows:
+    rep_df <- df[which(df[[rep_col]] == i), ]
+    # Sanity check, should return an empty tibble:
+    # print(get_all_dups(rep_df, id_col, 1))
+    # Change col names to baseline, time_1, time_2, etc.:
+    suffix <- sprintf('.%s', i)
+    new_colnames <- epi_clean_add_colname_suffix(rep_df, id_col_num, suffix)
+    names(rep_df)[-id_col_num] <- new_colnames
+    output[[i]] <- rep_df
+  }
+  return(output)
+  }

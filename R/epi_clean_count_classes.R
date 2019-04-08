@@ -24,11 +24,11 @@
 #' set.seed(12345)
 #' n <- 20
 #' df <- data.frame(
-#' 	var_id = rep(1:(n / 2), each = 2),
+#'   var_id = rep(1:(n / 2), each = 2),
 #' var_to_rep = rep(c('Pre', 'Post'), n / 2),
-#' 	x = rnorm(n),
-#' 	y = rbinom(n, 1, 0.50),
-#' 	z = rpois(n, 2)
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
 #' epi_clean_count_classes(df)
@@ -40,22 +40,22 @@
 #'
 
 epi_clean_count_classes <- function(df = NULL) {
-	if (!requireNamespace('dplyr', quietly = TRUE)) {
-		stop("Package dplyr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	if (!requireNamespace('purrr', quietly = TRUE)) {
-		stop("Package purrr needed for this function to work. Please install it.",
-				 call. = FALSE)
-	# if (!requireNamespace('magrittr', quietly = TRUE)) {
-	# 	stop("Package magrittr needed for this function to work. Please install it.",
-	# 			 call. = FALSE)
-	}
-	df %>%
-		purrr::map(., class) %>%
-		purrr::flatten() %>% # this may double count if eg Date is POSIX as will have
-		# more than one class
-		as.data.frame() %>%
-		t() %>%
-		table()
+  if (!requireNamespace('dplyr', quietly = TRUE)) {
+    stop("Package dplyr needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  if (!requireNamespace('purrr', quietly = TRUE)) {
+    stop("Package purrr needed for this function to work. Please install it.",
+         call. = FALSE)
+  # if (!requireNamespace('magrittr', quietly = TRUE)) {
+  #   stop("Package magrittr needed for this function to work. Please install it.",
+  #        call. = FALSE)
+  }
+  df %>%
+    purrr::map(., class) %>%
+    purrr::flatten() %>% # this may double count if eg Date is POSIX as will have
+    # more than one class
+    as.data.frame() %>%
+    t() %>%
+    table()
 }

@@ -24,9 +24,9 @@
 #' df2 <- data.frame(
 #' var_id = rep(1:(n / 2), each = 2),
 #' var_to_rep = rep(c('Pre', 'Post'), n / 2),
-#' 	x = rnorm(n),
-#' 	y = rbinom(n, 1, 0.50),
-#' 	z = rpois(n, 2)
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' # df2
 #' names(df2)
@@ -46,8 +46,8 @@ epi_clean_add_colname_suffix <- function(df = NULL,
                                          id_col_num = 1,
                                          suffix = ''
                                          ) {
-	col_names <- names(df)[-id_col_num]
-	col_names <- paste(col_names, suffix, sep = '')
-	# names(df)[start_at:ncol(df)] <- col_names
-	return(col_names)
-	}
+  col_names <- names(df)[-id_col_num]
+  col_names <- paste(col_names, suffix, sep = '')
+  # names(df)[start_at:ncol(df)] <- col_names
+  return(col_names)
+  }

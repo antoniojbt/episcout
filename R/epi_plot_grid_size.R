@@ -28,31 +28,31 @@
 #'
 
 epi_plot_grid_size <- function(plot_list = NULL,
-															 max_cols = 2,
-															 max_rows = 6
-															 ) {
-	grid_size <- vector(mode = 'list', length = 2)
-	names(grid_size) <- c('ncol_grid', 'nrow_grid')
-	# single plot:
-	if (length(plot_list) == 1) {
-		grid_size$ncol_grid <- 1
-		grid_size$nrow_grid <- length(plot_list) # which should be 1
-	} else {# multi-plots but max per page
-		# prefer cols over rows, fix as two and then vary rows:
-		grid_size$ncol_grid <- max_cols
-		grid_size$nrow_grid <- min(floor(length(plot_list) / grid_size$ncol_grid),
-															 floor(max_rows / max_cols))
-		# # Give a warning if many plots in list:
-		# if (length(plot_list) > max_rows) {
-		# 	# print('Could not determine sizes')
-		# 	print(sprintf('You may have more than %s plots in your list.', max_rows))
-		# 	print(sprintf('Probably best to create one grid page per %s plots.', max_rows))
-		# 	print(sprintf('%s is hard coded into this function.', max_rows))
-		# 	print(sprintf('Only returning %s x %s.', grid_size$ncol_grid,
-		# 								                           grid_size$nrow_grid
-		# 								)
-		# )
-		# }
-	}
-	return(grid_size)
+                               max_cols = 2,
+                               max_rows = 6
+                               ) {
+  grid_size <- vector(mode = 'list', length = 2)
+  names(grid_size) <- c('ncol_grid', 'nrow_grid')
+  # single plot:
+  if (length(plot_list) == 1) {
+    grid_size$ncol_grid <- 1
+    grid_size$nrow_grid <- length(plot_list) # which should be 1
+  } else {# multi-plots but max per page
+    # prefer cols over rows, fix as two and then vary rows:
+    grid_size$ncol_grid <- max_cols
+    grid_size$nrow_grid <- min(floor(length(plot_list) / grid_size$ncol_grid),
+                               floor(max_rows / max_cols))
+    # # Give a warning if many plots in list:
+    # if (length(plot_list) > max_rows) {
+    #   # print('Could not determine sizes')
+    #   print(sprintf('You may have more than %s plots in your list.', max_rows))
+    #   print(sprintf('Probably best to create one grid page per %s plots.', max_rows))
+    #   print(sprintf('%s is hard coded into this function.', max_rows))
+    #   print(sprintf('Only returning %s x %s.', grid_size$ncol_grid,
+    #                                            grid_size$nrow_grid
+    #                 )
+    # )
+    # }
+  }
+  return(grid_size)
 }

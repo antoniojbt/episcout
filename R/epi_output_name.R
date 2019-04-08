@@ -25,9 +25,9 @@
 #'
 
 epi_output_name <- function(input_name = '',
-														suffix = '.tsv') {
-	# Split infile name at the last '.':
-	output_name <- strsplit(input_name, "[.]\\s*(?=[^.]+$)", perl = TRUE)[[1]][1]
-	output_name <- sprintf('%s%s', output_name, suffix)
-	return(output_name)
+                            suffix = '.tsv') {
+  # Split infile name at the last '.':
+  output_name <- strsplit(input_name, "[.]\\s*(?=[^.]+$)", perl = TRUE)[[1]][1]
+  output_name <- sprintf('%s%s', output_name, suffix)
+  return(output_name)
 }

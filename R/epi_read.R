@@ -40,29 +40,29 @@
 #'
 
 epi_read <- function(input_name = '',
-										 na.strings = c(-Inf, 'NULL', NULL,
-										 							 '.', '', # ensure white space is read as NA
-										 							 'NA', 'NaN', NA, '<NA>'),
-										 header = TRUE,
-										 stringsAsFactors = FALSE,
-										 strip.white = TRUE,
-										 ...) {
-	if (!requireNamespace('tibble', quietly = TRUE)) {
-		stop("Package tibble needed for this function to work. Please install it.",
-				 call. = FALSE)
-		}
-	if (!requireNamespace('data.table', quietly = TRUE)) {
-		stop("Package data.table needed for this function to work. Please install it.",
-				 call. = FALSE)
-		}
-	tibble::as.tibble(as.data.frame(data.table::fread(input = input_name,
-																										na.strings = na.strings,
-																										header = header,
-																										stringsAsFactors = stringsAsFactors,
-																										strip.white = strip.white,
-																										...
-																										)
-																	)
+                     na.strings = c(-Inf, 'NULL', NULL,
+                                    '.', '', # ensure white space is read as NA
+                                    'NA', 'NaN', NA, '<NA>'),
+                     header = TRUE,
+                     stringsAsFactors = FALSE,
+                     strip.white = TRUE,
+                     ...) {
+  if (!requireNamespace('tibble', quietly = TRUE)) {
+    stop("Package tibble needed for this function to work. Please install it.",
+         call. = FALSE)
+    }
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop("Package data.table needed for this function to work. Please install it.",
+         call. = FALSE)
+    }
+  tibble::as.tibble(as.data.frame(data.table::fread(input = input_name,
+                                                    na.strings = na.strings,
+                                                    header = header,
+                                                    stringsAsFactors = stringsAsFactors,
+                                                    strip.white = strip.white,
+                                                    ...
+                                                    )
+                                  )
 
-										)
-	}
+                    )
+  }

@@ -29,13 +29,13 @@
 # require(ggplot2)
 #
 # airquality %>%
-# 	group_by(Day) %>%
-# 	summarise(mean_wind = mean(Wind)) %>%
-# 	ggplot() +
-# 	geom_area(aes(x = Day, y = mean_wind)) +
-# 	labs(title = "Area Chart of Average Wind per Day",
-# 			 subtitle = "using airquality data",
-# 			 y = "Mean Wind")
+#   group_by(Day) %>%
+#   summarise(mean_wind = mean(Wind)) %>%
+#   ggplot() +
+#   geom_area(aes(x = Day, y = mean_wind)) +
+#   labs(title = "Area Chart of Average Wind per Day",
+#        subtitle = "using airquality data",
+#        y = "Mean Wind")
 ######################
 
 ######################
@@ -46,8 +46,8 @@
 # title('Wind and Temperature in NYC in September of 1973')
 #
 # ggplot(screen_data, aes(FIBRINOGEN, age)) +
-# 	geom_point(shape=1) +    # Use hollow circles
-# 	geom_smooth(method=lm)   # Add linear regression line, (by default includes 95% confidence region)
+#   geom_point(shape=1) +    # Use hollow circles
+#   geom_smooth(method=lm)   # Add linear regression line, (by default includes 95% confidence region)
 # ggsave('scatter_FIBRINOGEN_age.pdf')
 #
 # # Scatterplot and legend:
@@ -58,12 +58,12 @@
 # plot_name <- sprintf('%s_%s_%s_scatterplot.svg', input_name, x_var, y_var)
 # # Plot:
 # ggplot(input_data, aes(x = input_data[, x_var], y = input_data[, y_var], colour = var3_factor)) +
-# 	geom_point() +
-# 	geom_smooth(method = lm) +
-# 	ylab(y_var_label) +
-# 	xlab(x_var_label) +
-# 	labs(colour = var3) +
-# 	theme_classic()
+#   geom_point() +
+#   geom_smooth(method = lm) +
+#   ylab(y_var_label) +
+#   xlab(x_var_label) +
+#   labs(colour = var3) +
+#   theme_classic()
 # # Save:
 # ggsave(plot_name)
 # # Prevent Rplots.pdf from being generated. ggsave() without weight/height opens a device.
@@ -83,6 +83,6 @@
 #
 # # with numbers and lower
 # corrplot(corr_matrix,
-# 				 method = 'number',
-# 				 type = "lower")
+#          method = 'number',
+#          type = "lower")
 ######################

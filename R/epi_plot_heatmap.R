@@ -35,7 +35,7 @@
 #'                                            melted_triangles$cormat_melted_triangle_pval,
 #'                                            vars_list = vars_list,
 #'                                            var_labels = var_labels
-#' 																					 )
+#'                                            )
 #' library(ggplot2)
 #' library(ggthemes)
 #' epi_plot_heatmap(cormat_all$cormat_melted_r)
@@ -47,25 +47,25 @@
 #'
 
 epi_plot_heatmap <- function(cormat_melted = 'cormat_all$cormat_melted_r',
-														 title = ''
-														 ) {
-	if (!requireNamespace('ggplot2', quietly = TRUE)) {
-		stop('Package ggplot2 needed for this function to work. Please install it.',
-				 call. = FALSE)
-	}
-	heat_map <- ggplot2::ggplot(data = as.data.frame(cormat_melted),
-															ggplot2::aes(x = Var1,
-																					 y = Var2,
-																					 fill = value)
-															) +
-		ggplot2::geom_tile() +
-		ggplot2::labs(title = title,
-									y = '',
-									x = '') +
-		epi_plot_theme_2() +
-		ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
-																											 vjust = 0.5),
-									 plot.title = ggplot2::element_text(hjust = 0.5)
-									 )
-	return(heat_map)
+                             title = ''
+                             ) {
+  if (!requireNamespace('ggplot2', quietly = TRUE)) {
+    stop('Package ggplot2 needed for this function to work. Please install it.',
+         call. = FALSE)
+  }
+  heat_map <- ggplot2::ggplot(data = as.data.frame(cormat_melted),
+                              ggplot2::aes(x = Var1,
+                                           y = Var2,
+                                           fill = value)
+                              ) +
+    ggplot2::geom_tile() +
+    ggplot2::labs(title = title,
+                  y = '',
+                  x = '') +
+    epi_plot_theme_2() +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
+                                                       vjust = 0.5),
+                   plot.title = ggplot2::element_text(hjust = 0.5)
+                   )
+  return(heat_map)
 }

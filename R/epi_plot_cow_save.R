@@ -27,22 +27,22 @@
 #' set.seed(12345)
 #' n <- 20
 #' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-#' 								 var_to_rep = rep(c("Pre", "Post"), n / 2),
-#' 								 x = rnorm(n),
-#' 								 y = rbinom(n, 1, 0.50),
-#' 								 z = rpois(n, 2)
+#'                  var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'                  x = rnorm(n),
+#'                  y = rbinom(n, 1, 0.50),
+#'                  z = rpois(n, 2)
 #' )
 #' df
 #' df[, 'var_id'] <- as.character(df[, 'var_id'])
 #' vars_to_plot <- df %>%
-#' 	select_if(epi_clean_cond_numeric) %>%
-#' 	names()
+#'   select_if(epi_clean_cond_numeric) %>%
+#'   names()
 #' my_plot_list <- epi_plot_list(vars_to_plot)
 #' my_plot_list
 #' # Generate plots:
 #' for (i in names(my_plot_list)) {
-#' 	print(i)
-#' 	my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
+#'   print(i)
+#'   my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
 #' }
 #' # Pass to a grid and save to file:
 #' # length(my_plot_list)
@@ -55,22 +55,22 @@
 #'
 
 epi_plot_cow_save <- function(file_name = NULL,
-															plot_grid = NULL,
-															base_height = 11.69, # A4
-															base_width = 8.27, # A4
-															...
-															) {
-	if (!requireNamespace('cowplot', quietly = TRUE)) {
-		stop("Package cowplot needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	cowplot::save_plot(filename = file_name,
-										 plot = plot_grid,
-										 # the ratio can be very skewed with many plots
-										 # axis labels appear out of proportion and not scaled
-										 # base_aspect_ratio = 3,
-										 base_height = base_height,
-										 base_width = base_width,
-										 ...
-	)
+                              plot_grid = NULL,
+                              base_height = 11.69, # A4
+                              base_width = 8.27, # A4
+                              ...
+                              ) {
+  if (!requireNamespace('cowplot', quietly = TRUE)) {
+    stop("Package cowplot needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  cowplot::save_plot(filename = file_name,
+                     plot = plot_grid,
+                     # the ratio can be very skewed with many plots
+                     # axis labels appear out of proportion and not scaled
+                     # base_aspect_ratio = 3,
+                     base_height = base_height,
+                     base_width = base_width,
+                     ...
+  )
 }
