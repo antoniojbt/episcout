@@ -55,44 +55,44 @@
 #'                                            melted_triangles$cormat_melted_triangle_pval,
 #'                                            vars_list = vars_list,
 #'                                            var_labels = var_labels
-#' 																					 )
+#'                                            )
 #' renamed_triangles
 #' }
 #' @export
 #'
 
 epi_stats_corr_rename <- function(r_vals = 'melted_triangles$cormat_melted_triangle_r',
-																	p_vals = 'melted_triangles$cormat_melted_triangle_pval',
-																	vars_list = vars_list,
-																	var_labels = var_labels,
-																	digits = 2
-																	) {
-	r_vals$Var1 <- factor(r_vals$Var1,
-												levels = vars_list,
-												labels = var_labels
-												)
-	r_vals$Var2 <- factor(r_vals$Var2,
-												levels = vars_list,
-												labels = var_labels
-												)
-	# head_and_tail(cormat_melted_triangle_r, cols = 3)
-	# summary(cormat_melted_triangle_r) Rename p-values:
-	p_vals$Var1 <- factor(p_vals$Var1,
-												levels = vars_list,
-												labels = var_labels
-												)
-	p_vals$Var2 <- factor(p_vals$Var2,
-												levels = vars_list,
-												labels = var_labels
-												)
-	# head_and_tail(cormat_melted_triangle_pval,
-	#               cols = 3)
-	# summary(cormat_melted_triangle_pval)
-	# Add rounded correlation coefficients to plot:
-	r_vals$value <- round(r_vals$value, 2)
-	p_vals$value <- round(p_vals$value, 2)
-	# Return the renamed and as factor melted triangles:
-	melted_triangles <- list(cormat_melted_triangle_r = r_vals,
-													 cormat_melted_triangle_pval = p_vals)
-	return(melted_triangles)
-	}
+                                  p_vals = 'melted_triangles$cormat_melted_triangle_pval',
+                                  vars_list = vars_list,
+                                  var_labels = var_labels,
+                                  digits = 2
+                                  ) {
+  r_vals$Var1 <- factor(r_vals$Var1,
+                        levels = vars_list,
+                        labels = var_labels
+                        )
+  r_vals$Var2 <- factor(r_vals$Var2,
+                        levels = vars_list,
+                        labels = var_labels
+                        )
+  # head_and_tail(cormat_melted_triangle_r, cols = 3)
+  # summary(cormat_melted_triangle_r) Rename p-values:
+  p_vals$Var1 <- factor(p_vals$Var1,
+                        levels = vars_list,
+                        labels = var_labels
+                        )
+  p_vals$Var2 <- factor(p_vals$Var2,
+                        levels = vars_list,
+                        labels = var_labels
+                        )
+  # head_and_tail(cormat_melted_triangle_pval,
+  #               cols = 3)
+  # summary(cormat_melted_triangle_pval)
+  # Add rounded correlation coefficients to plot:
+  r_vals$value <- round(r_vals$value, 2)
+  p_vals$value <- round(p_vals$value, 2)
+  # Return the renamed and as factor melted triangles:
+  melted_triangles <- list(cormat_melted_triangle_r = r_vals,
+                           cormat_melted_triangle_pval = p_vals)
+  return(melted_triangles)
+  }

@@ -39,22 +39,22 @@
 #'
 
 epi_plot_volcano <- function(logFC = NULL,
-														 adj.P.Val = NULL,
-														 main = '',
-														 pch = 20,
-														 h_abline = 2,
-														 v_abline = c(0.8, 1.2),
-														 ...
-														 ) {
-	volcano <- plot(2^(logFC), # TO DO: check this is correct as limma gives
-									           # estimate of the log2-fold-change 'logFC'
-									-log10(adj.P.Val),
-									pch = pch,
-									main = main,
-									abline(h = h_abline,
-												 v = v_abline),
-									...
-									)
-	return(volcano)
+                             adj.P.Val = NULL,
+                             main = '',
+                             pch = 20,
+                             h_abline = 2,
+                             v_abline = c(0.8, 1.2),
+                             ...
+                             ) {
+  volcano <- plot(2^(logFC), # TO DO: check this is correct as limma gives
+                             # estimate of the log2-fold-change 'logFC'
+                  -log10(adj.P.Val),
+                  pch = pch,
+                  main = main,
+                  abline(h = h_abline,
+                         v = v_abline),
+                  ...
+                  )
+  return(volcano)
 }
 

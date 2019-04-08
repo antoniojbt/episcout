@@ -47,7 +47,7 @@
 #'                                            melted_triangles$cormat_melted_triangle_pval,
 #'                                            vars_list = vars_list,
 #'                                            var_labels = var_labels
-#' 																					 )
+#'                                            )
 #' library(ggplot2)
 #' library(ggthemes)
 #' epi_plot_heatmap(cormat_all$cormat_melted_r)
@@ -69,10 +69,10 @@
 #'
 
 epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
-																			cormat_melted_triangle_pval = NULL,
-																			cor_method = 'Spearman',
-																			show_values = 'pval' # or 'corr'
-																			) {
+                                      cormat_melted_triangle_pval = NULL,
+                                      cor_method = 'Spearman',
+                                      show_values = 'pval' # or 'corr'
+                                      ) {
     if (!requireNamespace('ggplot2', quietly = TRUE)) {
         stop('Package ggplot2 needed for this function to work. Please install it.',
             call. = FALSE)
@@ -87,45 +87,45 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
             cor_method)
     }
     heatmap_triangle <- ggplot2::ggplot(data = cormat_melted_triangle_r,
-    																		ggplot2::aes(x = Var1,
-    																								 y = Var2,
-    																								 fill = value)
-    																		) +
-    	ggplot2::geom_tile(color = 'light grey') +
-    	ggplot2::scale_fill_gradient2(low = 'blue',
-    																high = 'red',
-    																mid = 'white',
-    																midpoint = 0,
-    																limit = c(-1, 1),
-    																space = 'Lab',
-    																name = legend_title
-    																) +
-    	epi_plot_theme_2() +
-    	ggplot2::theme(axis.text.x = element_text(angle = 90,
-    																						vjust = 0.5),
-    								 plot.title = element_text(hjust = 0.5)
-    								 ) +
-    	coord_fixed() + # Write values can be 'pval' or 'corr':
-    	ggplot2::geom_text(data = show_data,
-    										 ggplot2::aes(x = Var1,
-    										 						  y = Var2,
-    										 						  label = value),
-    										 color = 'black',
-    										 size = 3) +
-    	ggplot2::theme(axis.title.x = element_blank(),
-    								 axis.text.x = element_text(angle = 90),
-    								 axis.title.y = element_blank(),
-    								 panel.grid.major = element_blank(),
-    								 panel.border = element_blank(),
-    								 panel.background = element_rect(),
-    								 axis.ticks = element_blank(),
-    								 legend.justification = c(1, 0),
-    								 legend.position = c(0.5, 0.8),
-    								 legend.direction = 'horizontal') +
-    	ggplot2::guides(fill = guide_colorbar(barwidth = 12,
-    																				barheight = 2,
-    																				title.position = 'top',
-    																				title.hjust = 0.5)
-    									)
+                                        ggplot2::aes(x = Var1,
+                                                     y = Var2,
+                                                     fill = value)
+                                        ) +
+      ggplot2::geom_tile(color = 'light grey') +
+      ggplot2::scale_fill_gradient2(low = 'blue',
+                                    high = 'red',
+                                    mid = 'white',
+                                    midpoint = 0,
+                                    limit = c(-1, 1),
+                                    space = 'Lab',
+                                    name = legend_title
+                                    ) +
+      epi_plot_theme_2() +
+      ggplot2::theme(axis.text.x = element_text(angle = 90,
+                                                vjust = 0.5),
+                     plot.title = element_text(hjust = 0.5)
+                     ) +
+      coord_fixed() + # Write values can be 'pval' or 'corr':
+      ggplot2::geom_text(data = show_data,
+                         ggplot2::aes(x = Var1,
+                                       y = Var2,
+                                       label = value),
+                         color = 'black',
+                         size = 3) +
+      ggplot2::theme(axis.title.x = element_blank(),
+                     axis.text.x = element_text(angle = 90),
+                     axis.title.y = element_blank(),
+                     panel.grid.major = element_blank(),
+                     panel.border = element_blank(),
+                     panel.background = element_rect(),
+                     axis.ticks = element_blank(),
+                     legend.justification = c(1, 0),
+                     legend.position = c(0.5, 0.8),
+                     legend.direction = 'horizontal') +
+      ggplot2::guides(fill = guide_colorbar(barwidth = 12,
+                                            barheight = 2,
+                                            title.position = 'top',
+                                            title.hjust = 0.5)
+                      )
     return(heatmap_triangle)
     }

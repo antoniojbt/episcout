@@ -43,24 +43,24 @@
 #'
 
 epi_write <- function(file_object = NULL,
-											file_name = '',
-											row.names = FALSE,
-											quote = FALSE,
-											sep = '\t',
-											na = 'NA',
-											col.names = TRUE,
-											...) {
-	if (!requireNamespace('data.table', quietly = TRUE)) {
-		stop("Package data.table needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	data.table::fwrite(x = file_object,
-										 file = file_name,
-										 row.names = row.names,
-										 quote = quote,
-										 sep = sep,
-										 na = na,
-										 col.names = col.names,
-										 ...
-										 )
-	}
+                      file_name = '',
+                      row.names = FALSE,
+                      quote = FALSE,
+                      sep = '\t',
+                      na = 'NA',
+                      col.names = TRUE,
+                      ...) {
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop("Package data.table needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  data.table::fwrite(x = file_object,
+                     file = file_name,
+                     row.names = row.names,
+                     quote = quote,
+                     sep = sep,
+                     na = na,
+                     col.names = col.names,
+                     ...
+                     )
+  }

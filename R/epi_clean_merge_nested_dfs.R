@@ -81,8 +81,8 @@
 #'
 #' # See how many replicates there are:
 #' df2 %>%
-#' 	transmute(as.factor(rep_num)) %>%
-#' 	summary()
+#'   transmute(as.factor(rep_num)) %>%
+#'   summary()
 #'
 #' # Generate a data frame for each:
 #' baseline <- df2 %>% filter(rep_num == 1)
@@ -120,23 +120,23 @@
 #'
 
 epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
-																			 id_col = ''
-																			 ) {
-	# Initialise merge:
-	df1 <- nested_list_dfs[[1]]
-	df2 <- nested_list_dfs[[2]]
-	temp_df <- merge(df1, df2, by = id_col, all = TRUE, suffixes = c('df_1', 'df_2'))
-	# Loop through nested data frames and merge each to previous merged df:
-	for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
-		# the initial merge
-		suffix_2 <- sprintf('_%s', i)
-		df2 <- nested_list_dfs[[i]] # new df to merge, starting at 3
-		temp_df <- merge(temp_df,
-										 df2,
-										 by = id_col,
-										 all = TRUE,
-										 suffix = c('', suffix_2)
-										 )
-		}
-	return(temp_df)
-	}
+                                       id_col = ''
+                                       ) {
+  # Initialise merge:
+  df1 <- nested_list_dfs[[1]]
+  df2 <- nested_list_dfs[[2]]
+  temp_df <- merge(df1, df2, by = id_col, all = TRUE, suffixes = c('df_1', 'df_2'))
+  # Loop through nested data frames and merge each to previous merged df:
+  for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
+    # the initial merge
+    suffix_2 <- sprintf('_%s', i)
+    df2 <- nested_list_dfs[[i]] # new df to merge, starting at 3
+    temp_df <- merge(temp_df,
+                     df2,
+                     by = id_col,
+                     all = TRUE,
+                     suffix = c('', suffix_2)
+                     )
+    }
+  return(temp_df)
+  }

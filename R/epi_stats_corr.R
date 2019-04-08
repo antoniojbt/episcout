@@ -46,26 +46,26 @@
 #'
 
 epi_stats_corr <- function(df = NULL,
-													 method = 'spearman'
-													 ) {
-	if (!requireNamespace('Hmisc', quietly = TRUE)) {
-		stop('Package Hmisc needed for this function to work. Please install it.',
-				 call. = FALSE)
-		}
-	if (!requireNamespace('data.table', quietly = TRUE)) {
-		stop('Package data.table needed for this function to work. Please install it.',
-				 call. = FALSE)
-	}
-	cormat <- Hmisc::rcorr(as.matrix(df), type = method)
-	# Correlation values:
-	cormat_melted_r <- data.table::melt(cormat$r)
-	# P-values separately:
-	cormat_melted_pval <- data.table::melt(cormat$P)
-	# Sanity: identical(rownames(cormat_melted_r),
-	# rownames(cormat_melted_pval))
-	cormat_all <- list(cormat = cormat,
-										 cormat_melted_r = cormat_melted_r,
-										 cormat_melted_pval = cormat_melted_pval
-	)
-	return(cormat_all)
-	}
+                           method = 'spearman'
+                           ) {
+  if (!requireNamespace('Hmisc', quietly = TRUE)) {
+    stop('Package Hmisc needed for this function to work. Please install it.',
+         call. = FALSE)
+    }
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop('Package data.table needed for this function to work. Please install it.',
+         call. = FALSE)
+  }
+  cormat <- Hmisc::rcorr(as.matrix(df), type = method)
+  # Correlation values:
+  cormat_melted_r <- data.table::melt(cormat$r)
+  # P-values separately:
+  cormat_melted_pval <- data.table::melt(cormat$P)
+  # Sanity: identical(rownames(cormat_melted_r),
+  # rownames(cormat_melted_pval))
+  cormat_all <- list(cormat = cormat,
+                     cormat_melted_r = cormat_melted_r,
+                     cormat_melted_pval = cormat_melted_pval
+  )
+  return(cormat_all)
+  }

@@ -21,11 +21,11 @@
 #' \dontrun{
 #' n <- 20
 #' df <- data.frame(
-#' 	var_id = rep(1:(n / 2), each = 2),
-#' 	var_to_rep = rep(c('Pre', 'Post'), n / 2),
-#' 	x = rnorm(n),
-#' 	y = rbinom(n, 1, 0.50),
-#' 	z = rpois(n, 2)
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c('Pre', 'Post'), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df
 #' dim(df)
@@ -47,21 +47,21 @@
 #  use cols = length(df), # or ncol(df)
 
 epi_head_and_tail <- function(df = NULL,
-															rows = 5,
-															cols = 5,
-															last_cols = FALSE) {
-	df <- as.data.frame(df)
-	print(sprintf('Total number of rows: %s', nrow(df)))
+                              rows = 5,
+                              cols = 5,
+                              last_cols = FALSE) {
+  df <- as.data.frame(df)
+  print(sprintf('Total number of rows: %s', nrow(df)))
   print(sprintf('Total number of columns: %s', ncol(df)))
-	if (last_cols == TRUE) {
-		# Get the last columns:
-		cols <- ((ncol(df) - cols):ncol(df))
-	} else {
-		# Otherwise get the first columns:
-		cols <- 1:cols
-	}
-	heads <- df[1:rows, cols]
-	last_rows <- ((nrow(df) - (rows - 1)):nrow(df))
-	tails <- df[last_rows, cols]
-	print(rbind(heads, tails))
+  if (last_cols == TRUE) {
+    # Get the last columns:
+    cols <- ((ncol(df) - cols):ncol(df))
+  } else {
+    # Otherwise get the first columns:
+    cols <- 1:cols
+  }
+  heads <- df[1:rows, cols]
+  last_rows <- ((nrow(df) - (rows - 1)):nrow(df))
+  tails <- df[last_rows, cols]
+  print(rbind(heads, tails))
 }

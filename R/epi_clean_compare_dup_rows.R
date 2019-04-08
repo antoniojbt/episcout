@@ -45,32 +45,32 @@
 #'
 
 epi_clean_compare_dup_rows <- function(df_dups = NULL,
-																			 val_id = '1',
-																			 col_id = '',
-																			 sub_index_1 = 1,
-																			 sub_index_2 = 2,
-																			 allowAll = TRUE,
-																			 ...
-																			 	) {
-	if (!requireNamespace('compare', quietly = TRUE)) {
-		stop("Package compare needed for this function to work. Please install it.",
-				 call. = FALSE)
-	}
-	val_id <- as.character(val_id)
-	dup_indices <- which(grepl(val_id,
-														 df_dups[[col_id]],
-														 fixed = TRUE) # match as string, not regex
-	)
-	# check_dups[dup_indices, 1:2]
-	comp <- compare::compare(df_dups[dup_indices[sub_index_1], ],
-													 df_dups[dup_indices[sub_index_2], ],
-													 allowAll = TRUE,
-													 ...
-	)
-	comp_diff <- which(comp$detailedResult == FALSE)
-	names_diff_cols <- names(which(comp$detailedResult == FALSE))
-	comp_results <- list('differing_cols' = comp_diff,
-											 'col_names' = names_diff_cols,
-											 'duplicate_indices' = dup_indices)
-	return(comp_results)
+                                       val_id = '1',
+                                       col_id = '',
+                                       sub_index_1 = 1,
+                                       sub_index_2 = 2,
+                                       allowAll = TRUE,
+                                       ...
+                                         ) {
+  if (!requireNamespace('compare', quietly = TRUE)) {
+    stop("Package compare needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  val_id <- as.character(val_id)
+  dup_indices <- which(grepl(val_id,
+                             df_dups[[col_id]],
+                             fixed = TRUE) # match as string, not regex
+  )
+  # check_dups[dup_indices, 1:2]
+  comp <- compare::compare(df_dups[dup_indices[sub_index_1], ],
+                           df_dups[dup_indices[sub_index_2], ],
+                           allowAll = TRUE,
+                           ...
+  )
+  comp_diff <- which(comp$detailedResult == FALSE)
+  names_diff_cols <- names(which(comp$detailedResult == FALSE))
+  comp_results <- list('differing_cols' = comp_diff,
+                       'col_names' = names_diff_cols,
+                       'duplicate_indices' = dup_indices)
+  return(comp_results)
 }

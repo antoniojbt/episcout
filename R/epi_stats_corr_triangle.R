@@ -40,25 +40,25 @@
 
 epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
 
-	if (!requireNamespace('data.table', quietly = TRUE)) {
-		stop('Package data.table needed for this function to work. Please install it.',
-				 call. = FALSE)
-	}
-	cormat_tri_r <- as.matrix(cormat$r)
-	cormat_tri_P <- as.matrix(cormat$P)
-	# Turn all upper triangle values to NA:
-	cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
-	# Melt and remove NAs:
-	cormat_melted_triangle_r <- data.table::melt(cormat_tri_r,
-																							 na.rm = TRUE)
-	# And the same for p-values:
-	cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
-	# Melt:
-	cormat_melted_triangle_pval <- data.table::melt(cormat_tri_P,
-																									na.rm = TRUE)
-	# Return melted triangles:
-	melted_triangles <- list(cormat_melted_triangle_r = cormat_melted_triangle_r,
-													 cormat_melted_triangle_pval = cormat_melted_triangle_pval
-													 )
-	return(melted_triangles)
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop('Package data.table needed for this function to work. Please install it.',
+         call. = FALSE)
+  }
+  cormat_tri_r <- as.matrix(cormat$r)
+  cormat_tri_P <- as.matrix(cormat$P)
+  # Turn all upper triangle values to NA:
+  cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
+  # Melt and remove NAs:
+  cormat_melted_triangle_r <- data.table::melt(cormat_tri_r,
+                                               na.rm = TRUE)
+  # And the same for p-values:
+  cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
+  # Melt:
+  cormat_melted_triangle_pval <- data.table::melt(cormat_tri_P,
+                                                  na.rm = TRUE)
+  # Return melted triangles:
+  melted_triangles <- list(cormat_melted_triangle_r = cormat_melted_triangle_r,
+                           cormat_melted_triangle_pval = cormat_melted_triangle_pval
+                           )
+  return(melted_triangles)
 }

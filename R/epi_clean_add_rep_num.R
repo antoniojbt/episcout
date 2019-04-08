@@ -32,8 +32,8 @@
 #' var_id = rep(1:(n / 2), each = 2),
 #' var_to_rep = rep(c('Pre', 'Post'), n / 2),
 #' x = rnorm(n),
-#' 	y = rbinom(n, 1, 0.50),
-#' 	z = rpois(n, 2)
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' var_id <- 'var_id'
 #' var_to_rep <- 'var_to_rep'
@@ -41,7 +41,7 @@
 #' reps
 #' # Sanity check:
 #' identical(as.character(reps[[var_id]]),
-#' 					as.character(df[[var_id]])) # should be TRUE
+#'           as.character(df[[var_id]])) # should be TRUE
 #' # Bind:
 #' df2 <- as.tibble(cbind(df, 'rep_num' = reps$rep_num))
 #' # merge() adds all rows from both data frames as there are duplicates
@@ -55,29 +55,29 @@
 #'
 
 epi_clean_add_rep_num <- function(df = NULL,
-																	var_id = NULL,
-																	var_to_rep = ''
-																	) {
-	output <- data.frame(var_id = df[[var_id]],
-											 rep_num = rep(1, nrow(df)) # create a vector of 1's
-	)
-	names(output)[1] <- var_id
-	for (i in 2:c(nrow(df))) {
-		# Starts at i = 2:
-		cond1 <- as.character(df[c(i), var_id]) == as.character(df[i - 1, var_id])
-		cond2 <- as.character(df[c(i), var_to_rep]) != as.character(df[i - 1,
-																																	 var_to_rep])
-		result <- if (cond1 & cond2) {
-			# If IDs are the same but the var_to_rep is different,
-			# add 1:
-			# df[i, rep_num_col] <- df[i - 1, rep_num_col] + 1
-			result <- output[i - 1, 'rep_num'] + 1
-		} else {
-			# Otherwise stay the same:
-			# df[i, rep_num_col] <- df[i, rep_num_col]
-			result <- output[i, 'rep_num']
-		}
-		output[i, 'rep_num'] <- result
-	}
-	return(output)
-	}
+                                  var_id = NULL,
+                                  var_to_rep = ''
+                                  ) {
+  output <- data.frame(var_id = df[[var_id]],
+                       rep_num = rep(1, nrow(df)) # create a vector of 1's
+  )
+  names(output)[1] <- var_id
+  for (i in 2:c(nrow(df))) {
+    # Starts at i = 2:
+    cond1 <- as.character(df[c(i), var_id]) == as.character(df[i - 1, var_id])
+    cond2 <- as.character(df[c(i), var_to_rep]) != as.character(df[i - 1,
+                                                                   var_to_rep])
+    result <- if (cond1 & cond2) {
+      # If IDs are the same but the var_to_rep is different,
+      # add 1:
+      # df[i, rep_num_col] <- df[i - 1, rep_num_col] + 1
+      result <- output[i - 1, 'rep_num'] + 1
+    } else {
+      # Otherwise stay the same:
+      # df[i, rep_num_col] <- df[i, rep_num_col]
+      result <- output[i, 'rep_num']
+    }
+    output[i, 'rep_num'] <- result
+  }
+  return(output)
+  }
