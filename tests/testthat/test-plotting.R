@@ -21,23 +21,23 @@ library(ggthemes)
 set.seed(12345)
 n <- 20
 df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-								 var_to_rep = rep(c("Pre", "Post"), n / 2),
-															x = rnorm(n),
-															y = rbinom(n, 1, 0.50),
-															z = rpois(n, 2)
+                 var_to_rep = rep(c("Pre", "Post"), n / 2),
+                              x = rnorm(n),
+                              y = rbinom(n, 1, 0.50),
+                              z = rpois(n, 2)
                  )
 # df
 df[, 'var_id'] <- as.character(df[, 'var_id'])
 vars_to_plot <- df %>%
-	select_if(epi_clean_cond_numeric) %>%
-	names()
+  select_if(epi_clean_cond_numeric) %>%
+  names()
 my_plot_list <- epi_plot_list(vars_to_plot)
 # my_plot_list
 # Generate plots:
 for (i in names(my_plot_list)) {
-	# print(i)
-	# my_plot_list[[i]] <- ggplot2::qplot(data = df, y = , geom = 'boxplot')
-	my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
+  # print(i)
+  # my_plot_list[[i]] <- ggplot2::qplot(data = df, y = , geom = 'boxplot')
+  my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
 }
 # Not in use but keep tests:
 # Calculate how many plots can be passed to one grid (one page):
@@ -58,13 +58,13 @@ my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
 # my_hist_plot
 # # Add titles and axis names:
 # my_hist_plot <- my_hist_plot +
-# 	labs(title = "Histogram for X") +
-# 	labs(x = "X", y = "Count")
+#   labs(title = "Histogram for X") +
+#   labs(x = "X", y = "Count")
 # my_hist_plot
 # # Add axis limits:
 # my_hist_plot <- my_hist_plot +
-# 	xlim(c(-4, 4)) +
-# 	ylim(c(0, 10))
+#   xlim(c(-4, 4)) +
+#   ylim(c(0, 10))
 # my_hist_plot
 # # Histogram with density curve:
 # my_hist_plot <- my_hist_plot + geom_density(col = 2)
@@ -73,12 +73,12 @@ my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
 # # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
 # my_hist_plot <- my_hist_plot +
 # # Density instead of count on y-axis:
-# 	geom_histogram(aes( y = ..density..),
-# 							   binwidth = 0.5,
-# 							   colour = "black",
-# 								 fill = "white") +
-# 	geom_density(alpha = 0.2, fill = "#FF6666") + # Overlay with transparent density plot
-# 	ylab('Density')
+#   geom_histogram(aes( y = ..density..),
+#                  binwidth = 0.5,
+#                  colour = "black",
+#                  fill = "white") +
+#   geom_density(alpha = 0.2, fill = "#FF6666") + # Overlay with transparent density plot
+#   ylab('Density')
 # my_hist_plot
 ######################
 
@@ -95,10 +95,10 @@ my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
 # # Change colours, remove legend, etc.:
 # my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
 # my_boxplot +
-# 	# scale_fill_grey() +
+#   # scale_fill_grey() +
 # scale_fill_brewer(palette = "Blues") +
-# 	# scale_fill_brewer(palette = "Dark2") +
-# 	theme(legend.position = "none") # Remove legend
+#   # scale_fill_brewer(palette = "Dark2") +
+#   theme(legend.position = "none") # Remove legend
 # # dev.off()
 ######################
 
@@ -115,18 +115,18 @@ my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
 # as.tibble(df) %>% count(var_to_rep)
 # as.tibble(df) %>% group_by(var_to_rep) %>% count(y)
 # epi_plot_bar(df,
-# 						 var_y = 'y',
-# 						 var_x = 'z',
-# 						 x_lab = '',
-# 						 fill = 'var_to_rep'
-# 						 )
+#              var_y = 'y',
+#              var_x = 'z',
+#              x_lab = '',
+#              fill = 'var_to_rep'
+#              )
 ######################
 
 ######################
 print("Function being tested: epi_plot_list")
 
 test_that("epi_plot_list", {
-	expect_output(str(names(my_plot_list)), '"x" "y" "z"')
+  expect_output(str(names(my_plot_list)), '"x" "y" "z"')
   }
   )
 ######################
@@ -135,8 +135,8 @@ test_that("epi_plot_list", {
 print("Function being tested: epi_plot_grid_size")
 
 test_that("epi_plot_grid_size", {
-	expect_output(str(grid_size), 'ncol_grid: num 2')
-	expect_output(str(grid_size), 'nrow_grid: num 1')
+  expect_output(str(grid_size), 'ncol_grid: num 2')
+  expect_output(str(grid_size), 'nrow_grid: num 1')
   }
   )
 ######################
@@ -176,8 +176,8 @@ test_that("epi_plot_hist", {
 print("Function being tested: epi_plot_box")
 
 test_that("epi_plot_box", {
-	# TO DO: test plot output, see code above
-	#
+  # TO DO: test plot output, see code above
+  #
 }
 )
 ######################
@@ -186,8 +186,8 @@ test_that("epi_plot_box", {
 print("Function being tested: epi_plot_bar")
 
 test_that("epi_plot_bar", {
-	# TO DO: test plot output, see code above
-	#
+  # TO DO: test plot output, see code above
+  #
 }
 )
 ######################
@@ -196,8 +196,8 @@ test_that("epi_plot_bar", {
 print("Function being tested: epi_plot_volcano")
 
 test_that("epi_plot_volcano", {
-	# TO DO: test plot output, needs example code
-	#
+  # TO DO: test plot output, needs example code
+  #
 }
 )
 ######################
@@ -206,8 +206,8 @@ test_that("epi_plot_volcano", {
 print("Function being tested: epi_plot_XXX")
 
 test_that("epi_plot_XXX", {
-	# TO DO: test plot output
-	#
+  # TO DO: test plot output
+  #
 }
 )
 ######################
