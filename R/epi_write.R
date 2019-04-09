@@ -43,7 +43,7 @@
 #'
 
 epi_write <- function(file_object = NULL,
-                      file_name = '',
+                      file_name = 'my_file.tsv',
                       row.names = FALSE,
                       quote = FALSE,
                       sep = '\t',
