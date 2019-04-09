@@ -87,34 +87,6 @@ epi_clean_unique_id <- function(df = NULL,
 ######################
 
 ######################
-# Get percentage of NAs per row or column for a dataframe
-# Returns a data.frame
-epi_stats_na_perc <- function(df = NULL,
-                              margin = 2 # 2 for columns, 1 for rows
-) {
-  # For columns:
-  if (margin == 2) {
-    na_perc_all <- as.list(apply(X = df, MARGIN = margin, function(x) sum(is.na(x))))
-    na_perc_all <- as.data.frame(na_perc_all)
-    na_perc_all <- as.data.frame(t(na_perc_all))
-    names(na_perc_all)[1] <- 'na_counts'
-    na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[1]) * 100
-  }
-  # For rows:
-  else if (margin == 1) {
-    na_perc_all <- apply(X = df, MARGIN = margin, function(x) sum(is.na(x)))
-    na_perc_all <- as.data.frame(na_perc_all)
-    names(na_perc_all)[1] <- 'na_counts'
-    na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[2]) * 100
-    }
-  return(na_perc_all)
-}
-# na_perc_all <- epi_stats_na_perc(df)
-# class(na_perc_all)
-# na_perc_all
-######################
-
-######################
 # Get summary descriptive statistics for numeric/integer column.
 # na.rm is TRUE by default
 # Normality is tested with Shapiro-Wilk (small values indicate non-normality)
