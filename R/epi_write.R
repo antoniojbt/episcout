@@ -5,7 +5,7 @@
 #'
 #' @param file_object Object to write
 #'
-#' @param file_name file name as a string
+#' @param file_name file name as a string, default is 'my_file.tsv'
 #'
 #' @param row.names as for data.table::fwrite(), default is also FALSE
 #'

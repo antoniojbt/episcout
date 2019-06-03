@@ -1,8 +1,9 @@
-#' @title Get counts and percentage of NAs per row or column for a dataframe
+#' @title Get counts and percentage of NAs
 #'
-#' @description imp_desc_missingness() gets the total counts and percentage for missing values
+#' @description epi_stats_na_perc() gets the total counts and percentage for missing values
+#' across rows or columns
 #'
-#' @param df A dataframe
+#' @param df A dataframe with missing values
 #'
 #' @param margin 2 for columns, 1 for rows. Default is columns
 #'
@@ -10,18 +11,24 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{functioname}},
-#' \code{\link[base]{is.na}}.
+#' @seealso \code{\link[base]{complete.cases}}
 #'
 #' @examples
 #'
 #' \dontrun{
-#' data('employee')
-#' head(employee)
-#' na_cols <- epi_stats_na_perc(employee, margin = 2)
-#' na_cols
-#' na_rows <- epi_stats_na_perc(employee, margin = 1)
-#' na_rows
+#'library(mice)
+#'dim(nhanes)
+#'epi_head_and_tail(nhanes, cols = 4)
+#' # Get summary of counts and percentages for missing values across columns:
+#'na_cols <- epi_stats_na_perc(nhanes, margin = 2)
+#'na_cols
+#' # Get summary of counts and percentages for missing values across rows:
+#'na_rows <- epi_stats_na_perc(nhanes, margin = 1)
+#'epi_head_and_tail(na_rows, cols = 2)
+#'summary(na_rows)
+#'length(which(na_rows$na_counts == 0))
+#' # which should be equal to:
+#'length(which(complete.cases(nhanes)))
 #' }
 #'
 #' @export
