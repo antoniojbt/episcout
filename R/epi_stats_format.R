@@ -1,6 +1,6 @@
-#' @title Format a dataframe with numerical/integer columns
+#' @title Format a dataframe with numerical or integer columns
 #'
-#' @description epi_stats_format() format columns so that digits appear
+#' @description epi_stats_format() formats columns so that digits appear
 #' even if they are x.00. Useful for saving a table with descriptive statistics.
 #' A data frame with an id column is expected. Check if column
 #' is numeric or integer, other types are not formatted. Pass a vector
@@ -10,41 +10,22 @@
 # This may not produce the right results for very large or small numbers
 # Also note that format() will change the class type to factor or character
 #'
-#' @param df
-#' @param skip
-#' @param digits Default is 2.
-#' @param ...
+#' @param df Data.frame with summary to clean up.
+#' @param skip Columns to skip, pass as a string. Default is NULL.
+#' @param digits Number of digits to print. Default is 2.
+#' @param ... Any other parameter that can be passed to round().
 #'
-#' @return
-#'
-#' @note
+#' @return A data.frame with formatted and rounded values.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{functioname}},
-#' \code{\link[packagename]{functioname}}.
+#' @seealso \code{\link{epi_stats_summary}},
+#' \code{\link{epi_stats_tidy}},
+#' \code{\link{epi_clean_cond_numeric}},
+#' \code{\link[base]{format}},
+#' \code{\link[base]{round}}.
 #'
-#' @examples
-#'
-#' \dontrun{
-#'
-# desc_stats
-# # Add non-numeric columns:
-# desc_stats <- cbind('id_col' = 1,
-#                     desc_stats,
-#                     'chr' = 'a_string')
-# desc_stats
-# dim(desc_stats)
-# # Some tests:
-# epi_stats_format(desc_stats[, 1]) # Formats
-# epi_stats_format(desc_stats[, 'chr']) # Doesn't format
-# epi_stats_format(desc_stats[, 'NA_count'], digits = 0) # Formats but no digits
-# # Test skip:
-# names(desc_stats)
-# epi_stats_format(desc_stats, skip = c(1, 14))
-#'
-#'
-#' }
+#' @example vignettes/summary_funcs_examples.R
 #'
 #' @export
 #'

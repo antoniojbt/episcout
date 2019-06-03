@@ -1,4 +1,4 @@
-#' @title Get summary statistics from a data frame
+#' @title Get summary statistics from a data frame with multiple columns
 #'
 #' @description epi_stats_summary() provides summary descriptive statistics
 #' for columns belonging to either character and factor (class_type = 'chr_fct')
@@ -8,7 +8,7 @@
 #' Rows are then ordered in decreasing order according to column provided.
 #'
 #' @param df Data frame
-#' @param codes Specify codes to summarise or exclude. Default is NULL.
+#' @param codes Specify codes to summarise or exclude as string. Default is NULL.
 #' @param class_type Class of variables to summarise, 'chr_fct' or 'int_num'.
 #' Default is character and factor.
 #' @param action Values to summarise, 'codes_only' or 'exclude'. Default is 'exclude'.
@@ -24,14 +24,11 @@
 #'
 #' @seealso \code{\link{epi_stats_numeric}},
 #' \code{\link{epi_stats_format}},
-#' \code{\link{epi_stats_tidy_sum}}.
+#' \code{\link{epi_stats_tidy}},
+#' \code{\link{epi_clean_cond_chr_fct}},
+#' \code{\link{epi_clean_cond_numeric}}.
 #'
-#' @examples
-#'
-#' \dontrun{
-#'# See example in
-#'
-#' }
+#' @example vignettes/summary_funcs_examples.R
 #'
 #' @export
 #'

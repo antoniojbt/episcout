@@ -1,41 +1,37 @@
 #' @title Tidy up a data.frame with summary values
 #'
-#' @description epi_stats_tidy() cleans up the ouput from epi_stats_summary and
-#' epi_stats_numeric functions. Values are rounded to digits (default is 2).
+#' @description epi_stats_tidy() cleans up the ouput from epi_stats_summary() and
+#' epi_stats_numeric(). Values are rounded to digits (default is 2).
 #' format(x, nsmall = digits) is used to ensure xx.00 are printed.
 #' Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric
 #' column is assumed to be the preferred option. 'decreasing' is passed to order.
 #'
-#' @param sum_df  Data.frame with summary to clean up
-#' @param order_by Column to order results by. Default is empty  = '',
-#' @param perc_n = NULL,
+#' @param sum_df Data.frame with summary to clean up.
+#' @param order_by Column to order results by. Default is 'percent'.
+#' @param perc_n Number of rows from original dataframe to calculate percentage. Must
+#' be passed manually.
 #' @param digits = 2,
-#' @param decreasing = TRUE
-#' @param
+#' @param decreasing Sort values by decreasing order. Default is TRUE.
 #'
-#' @return
+#' @return Returns a dataframe as a tibble with values ordered and spread.
+#' Adds row sums and percentage.
 #'
 #' @note Note that format() will likely change the class type.
-#' Assumes that the first column is 'id'
+# Assumes that the first column is 'id'
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{functioname}},
-#' \code{\link[packagename]{functioname}}.
+#' @seealso \code{\link{epi_stats_summary}},
+#' \code{\link{epi_stats_format}},
+#' \code{\link{epi_stats_numeric}}.
 #'
-#' @examples
-#'
-#' \dontrun{
-#'
-#'
-#'
-#' }
+#' @example vignettes/summary_funcs_examples.R
 #'
 #' @export
 #'
 
 epi_stats_tidy <- function(sum_df  = NULL,
-                           order_by = '',
+                           order_by = 'percent',
                            perc_n = NULL,
                            digits = 2,
                            decreasing = TRUE
@@ -52,6 +48,11 @@ epi_stats_tidy <- function(sum_df  = NULL,
     stop("Package tibble needed for this function to work. Please install it.",
          call. = FALSE)
   }
+	if (is.null(perc_n)) {
+		stop("perc_n must be passed in order to calculate percentage. It will be the
+			sample size (number of rows) from the original data frame.")
+	}
+
   df <- tibble::as.tibble(sum_df)
   df <- df %>% tidyr::spread(., key = x, value = n)
   # Reorder columns as:
