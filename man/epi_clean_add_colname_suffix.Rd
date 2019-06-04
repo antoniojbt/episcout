@@ -28,9 +28,9 @@ n <- 20
 df2 <- data.frame(
 var_id = rep(1:(n / 2), each = 2),
 var_to_rep = rep(c('Pre', 'Post'), n / 2),
-	x = rnorm(n),
-	y = rbinom(n, 1, 0.50),
-	z = rpois(n, 2)
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 # df2
 names(df2)

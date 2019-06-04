@@ -75,11 +75,11 @@ library(ggthemes)
 set.seed(12345)
 n <- 20
 df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-								 var_to_rep = rep(c("Pre", "Post"), n / 2),
-								 x = rnorm(n),
-								 y = rbinom(n, 1, 0.50),
-								 z = rpois(n, 2)
-								 )
+                 var_to_rep = rep(c("Pre", "Post"), n / 2),
+                 x = rnorm(n),
+                 y = rbinom(n, 1, 0.50),
+                 z = rpois(n, 2)
+                 )
 df
 df$x # continuous variable
 epi_plot_box(df, var_y = 'x')
@@ -93,10 +93,10 @@ epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
 # Change colours, remove legend, etc.:
 my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
 my_boxplot +
-	# scale_fill_grey() +
+  # scale_fill_grey() +
 scale_fill_brewer(palette = "Blues") +
-	# scale_fill_brewer(palette = "Dark2") +
-	theme(legend.position = "none") # Remove legend
+  # scale_fill_brewer(palette = "Dark2") +
+  theme(legend.position = "none") # Remove legend
 # dev.off()
 }
 

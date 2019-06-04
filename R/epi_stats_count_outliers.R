@@ -15,7 +15,7 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[base]{boxplot.stats}}
+#' @seealso \code{\link[grDevices]{boxplot.stats}}
 #'
 #' @examples
 #'

@@ -101,13 +101,13 @@ epi_clean_unique_id <- function(df = NULL,
 # Useful for adding to descriptive table of cohort for instance
 # Pass additional parameters if needed with '...'
 # @importFrom stats t.test
-epi_stats_get_t_test <- function(x = NULL,
-                                y = NULL,
-                                ...
-                                ) {
-  i <- t.test(x = x, y = y, ...)
-  return(i$p.value)
-}
+# epi_stats_get_t_test <- function(x = NULL,
+#                                 y = NULL,
+#                                 ...
+#                                 ) {
+#   i <- t.test(x = x, y = y, ...)
+#   return(i$p.value)
+# }
 # Test:
 # epi_stat_get_t_test(seq(1:100),
 #            seq(50:150),

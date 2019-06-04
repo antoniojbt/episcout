@@ -11,7 +11,7 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[base]{sessionInfo}},
+#' @seealso \code{\link[utils]{sessionInfo}},
 #' \code{\link[episcout]{epi_utils_session}}.
 #'
 #' @examples
@@ -31,6 +31,7 @@
 #'
 #' @export
 #'
+#' @importFrom utils capture.output sessionInfo
 
 epi_utils_log <- function(output_prefix = NULL) {
   # Filename to save current R session, data and objects at the end:

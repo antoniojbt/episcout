@@ -46,11 +46,11 @@ epi_clean_replace_value(df_factor, 'date_col', pattern, NA)
 df_factor$date_col
 # In a loop:
 for (i in seq_along(df_factor)) {
-	for (p in patterns) {
-		# match values starting with string:
-		pattern <- sprintf('^\%s', p)
-		df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
-	}
+  for (p in patterns) {
+    # match values starting with string:
+    pattern <- sprintf('^\%s', p)
+    df_factor[[i]] <- epi_clean_replace_value(df_factor, i, pattern, NA)
+  }
 }
 df_factor$date_col
 }

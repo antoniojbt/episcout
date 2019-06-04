@@ -22,9 +22,7 @@ base R duplicated() does not return the originals (duplicated - 1).
 See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
 }
 \note{
-\preformatted{Creates a table with frequencies, checks those which have more than 1
-}
-
+Creates a table with frequencies, checks those which have more than 1
 (or value passed to freq and considers these as variables with duplicates)
 and extracts them.
 }

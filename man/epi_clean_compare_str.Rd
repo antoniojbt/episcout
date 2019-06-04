@@ -33,9 +33,7 @@ Can be used generically as a light wrapper for stri_detect().
 stri_detect() determines if there is at least one match to a corresponding pattern.
 }
 \note{
-\preformatted{fixed_chr_col and string_col are extracted as characters and compared
-}
-
+fixed_chr_col and string_col are extracted as characters and compared
 as fixed characters, not with regex. The value in string_col will be the
 character vector with strings to search in.
 }
@@ -46,11 +44,11 @@ test data:
 letts <- paste(letters, collapse = ' ')
 other_letts <- toupper(paste(letters, collapse = ' '))
 df_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
-											 'str' = rep(x = substr(letts, 1, 5), 10),
-										 stringsAsFactors = FALSE)
+                       'str' = rep(x = substr(letts, 1, 5), 10),
+                      stringsAsFactors = FALSE)
 df2_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
-												'str' = rep(x = substr(other_letts, 6, 10), 10),
-											stringsAsFactors = FALSE)
+                        'str' = rep(x = substr(other_letts, 6, 10), 10),
+                       stringsAsFactors = FALSE)
 # Create a new data frame and rename columns:
 df3 <- rbind(df_comp, df2_comp)
 col_1 <- 'sub'
