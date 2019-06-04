@@ -67,6 +67,10 @@ df_cont_chr$y <- as.factor(df_cont_chr$y)
 
 # Designate some values as codes to be counted separately:
 codes <- c('Pre', 'A', 'C', '1', '3')
+
+# Add total for percentage calculation and order column to tidy up results:
+perc_n <- nrow(df_cont_chr)
+order_by <- 'percent'
 #####
 ######################
 
@@ -140,9 +144,6 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
 
   #####
-  # Add total for percentage calculation and order column to tidy up results:
-  perc_n <- nrow(df_cont_chr)
-  order_by <- 'percent'
   stat_sum_tidy <- epi_stats_tidy(sum_df = stat_sum1,
                                   order_by = order_by,
                                   perc_n = perc_n
@@ -157,80 +158,102 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   }
   )
 
-# # TO DO: continue here
-# test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
-#   #####
-#   # Count integer or numeric codes:
-#   stat_sum2 <- epi_stats_summary(df_cont_chr,
-#                                  codes = codes,
-#                                  class_type = 'int_num',
-#                                  action = 'codes_only'
-#                                  )
-#   stat_sum2
-#   # Tidy and format them:
-#   stat_sum_tidy <- epi_stats_tidy(sum_df = stat_sum2,
-#                                   order_by = order_by,
-#                                   perc_n = perc_n
-#                                   )
-#   stat_sum_tidy
-#   epi_stats_format(stat_sum_tidy, digits = 0)
-#   epi_stats_format(stat_sum_tidy, digits = 2, skip = c(2, 3))
-#   #####
-#   }
-#   )
-#
-# # TO DO:
-# test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
-# #####
-# # Get summary stats excluding contingency codes for character and factor columns:
-# stat_sum3 <- epi_stats_summary(df_cont_chr,
-#                                codes = codes,
-#                                class_type = 'chr_fct',
-#                                action = 'exclude'
-#                                )
-# stat_sum3
-# # Tidy and format:
-# stat_sum_tidy <- epi_stats_tidy(sum_df = stat_sum3,
-#                                 order_by = order_by,
-#                                 perc_n = perc_n
-#                                 )
-# stat_sum_tidy
-# epi_stats_format(stat_sum_tidy, digits = 0)
-# epi_stats_format(stat_sum_tidy, digits = 1)
-# #####
-#   }
-#   )
-#
-# # TO DO:
-# test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
-# #####
-# # Get summary stats for numeric/integer columns
-# # while excluding certain codes/values:
-# stat_sum4 <- epi_stats_summary(df = df_cont_chr,
-#                                codes = codes,
-#                                class_type = 'int_num',
-#                                action = 'exclude'
-#                                )
-# class(stat_sum4)
-# stat_sum4
-# # Numeric data summary doesn't need tidying but could be formatted:
-# epi_stats_format(stat_sum4, digits = 2)
-# #####
-#   }
-#   )
-#
-# # TO DO:
-# test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
-# #####
-# # If there are no codes to return the result is an empty data.frame (tibble):
-# codes <- c('Per', 'X', '55')
-# stat_sum_zero <- epi_stats_summary(df_cont_chr,
-#                                    codes = codes,
-#                                    class_type = 'chr_fct',
-#                                    action = 'codes_only'
-#                                    )
-# stat_sum_zero
-# #####
-#   }
-#   )
-# ######################
+test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
+  #####
+  # Count integer or numeric codes:
+  stat_sum2 <- epi_stats_summary(df_cont_chr,
+                                 codes = codes,
+                                 class_type = 'int_num',
+                                 action = 'codes_only'
+                                 )
+  # stat_sum2
+  expect_equal(class(stat_sum2)[1], "tbl_df")
+  expect_equal(as.character(stat_sum2[1, 1]), "var_id")
+  expect_equal(as.character(stat_sum2[4, 3]), "172")
+  # Tidy and format them:
+  stat_sum_tidy <- epi_stats_tidy(sum_df = stat_sum2,
+                                  order_by = order_by,
+                                  perc_n = perc_n
+                                  )
+  # stat_sum_tidy
+  expect_equal(class(stat_sum_tidy)[3], "data.frame")
+  # Format them if needed:
+  digit_0 <- epi_stats_format(stat_sum_tidy, digits = 0)
+  expect_equal(as.character(digit_0[1, 5]), "45")
+  digit_2 <- epi_stats_format(stat_sum_tidy, digits = 2)
+  expect_equal(as.character(digit_2[1, 5]), "45.10")
+  #####
+  }
+  )
+
+test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
+  #####
+  # Get summary stats excluding contingency codes for character and factor columns:
+  stat_sum3 <- epi_stats_summary(df_cont_chr,
+                                 codes = codes,
+                                 class_type = 'chr_fct',
+                                 action = 'exclude'
+                                 )
+  # stat_sum3
+  expect_equal(class(stat_sum3)[2], "tbl")
+  expect_equal(as.character(stat_sum3[1, 2]), "Post")
+  expect_equal(as.character(stat_sum3[2, 3]), "503")
+
+  # Tidy and format:
+  stat_sum_tidy <- epi_stats_tidy(sum_df = stat_sum3,
+                                  order_by = order_by,
+                                  perc_n = perc_n
+                                  )
+  # stat_sum_tidy
+  expect_equal(class(stat_sum_tidy)[3], "data.frame")
+  # Format them if needed:
+  digit_0 <- epi_stats_format(stat_sum_tidy, digits = 0)
+  expect_equal(as.character(digit_0[1, 5]), " NA")
+  digit_2 <- epi_stats_format(stat_sum_tidy, digits = 2)
+  expect_equal(as.character(digit_2[1, 2]), "503.00")
+  #####
+  }
+  )
+
+test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
+  #####
+  # Get summary stats for numeric/integer columns
+  # while excluding certain codes/values:
+  stat_sum4 <- epi_stats_summary(df = df_cont_chr,
+                                 codes = codes,
+                                 class_type = 'int_num',
+                                 action = 'exclude'
+                                 )
+  # stat_sum4
+  # as.data.frame(stat_sum4)
+  # dim(stat_sum4)
+  expect_equal(class(stat_sum4)[2], "tbl")
+  expect_equal(as.character(stat_sum4[1, 2]), "2")
+  expect_equal(as.character(stat_sum4[2, 3]), "-0.595973467759379")
+  expect_equal(as.character(stat_sum4[2, 7]), "3.33073330557046")
+  expect_equal(as.character(colnames(stat_sum4)[16]), "NA_percentage")
+  # Numeric data summary doesn't need tidying but could be formatted:
+  digit_2 <- epi_stats_format(stat_sum4, digits = 2)
+  expect_equal(as.character(digit_2[1, 2]), " 2.00")
+  expect_equal(as.character(digit_2[3, 16]), "0.00")
+  #####
+  }
+  )
+
+test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
+  #####
+  # If there are no codes to return the result is an empty data.frame (tibble):
+  codes <- c('Per', 'X', '55')
+  stat_sum_zero <- epi_stats_summary(df_cont_chr,
+                                     codes = codes,
+                                     class_type = 'chr_fct',
+                                     action = 'codes_only'
+                                     )
+  # as.data.frame(stat_sum_zero)
+  # class(stat_sum_zero)
+  expect_equal(class(stat_sum_zero)[2], "tbl")
+  expect_equal(as.character(as.data.frame(stat_sum_zero))[1], "character(0)")
+  #####
+  }
+  )
+######################
