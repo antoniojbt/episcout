@@ -1,5 +1,5 @@
 [![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
-[![Coverage status](https://codecov.io/gh/AntonioJBT/episcout/branch/master/graph/badge.svg)](https://codecov.io/github/AntonioJBT/episcout?branch=master)
+[![codecov](https://codecov.io/gh/AntonioJBT/episcout/branch/master/graph/badge.svg)](https://codecov.io/gh/AntonioJBT/episcout)
 
 # episcout
 
