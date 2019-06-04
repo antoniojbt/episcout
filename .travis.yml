@@ -49,6 +49,7 @@ r_packages:
     - foreach
     - iterators
     - parallel
+    - tidyr
 
 r_binary_packages:
     - testthat
