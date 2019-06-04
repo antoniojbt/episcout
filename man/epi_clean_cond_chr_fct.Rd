@@ -22,6 +22,7 @@ extracting columns from a large data frame using dplyr
 \examples{
 
 \dontrun{
+library(dplyr)
 col_chr <- data.frame('chr1' = rep(c('A', 'B')),
                       'chr2' = rep(c('C', 'D'))
              )
@@ -33,9 +34,12 @@ epi_clean_cond_chr_fct(df_cont_chr[, 'x']) # should be 'FALSE'
 
 }
 \seealso{
-\code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_cond_date}},
-\code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-\code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
+\code{\link[episcout]{epi_clean_cond_numeric}},
+\code{\link[episcout]{epi_clean_cond_date}},
+\code{\link[episcout]{epi_clean_class_to_factor}},
+\code{\link[episcout]{epi_clean_count_classes}},
+\code{\link[base]{is.character}},
+\code{\link[base]{is.factor}}.
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

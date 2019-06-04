@@ -16,51 +16,6 @@
 # df
 ######################
 
-#####################
-# Create a table with factor variables together
-# This is a loop that creates a descriptive table with counts
-# of factor variables.
-# vars_list is a string of variable names from df, a data frame
-# vars_list can be any list but only character and factor columns are used
-epi_stats_fct_table <- function(df = NULL,
-                               vars_list = ''
-                               ) {
-  desc_stats_fct <- vector(mode = 'list', length = length(vars_list))
-  names(desc_stats_fct) <- vars_list
-  for (i in 1:length(vars_list)) {
-    # i <- 1
-    val <- vars_list[i]
-    # Get a table for one variable, use functions above:
-    desc_stats <- epi_stats_summary(df[, val],
-                            class_type = 'chr_fct',
-                            action = 'exclude'
-                            )
-    # Tidy:
-    desc_stats <- epi_stats_tidy_sum(sum_df = desc_stats,
-                             order_by = '<NA>',
-                             perc_n = nrow(df[, vars_list])
-                             )
-    # No need to format digits as should all be counts/integers
-    # Remove columns not informative:
-    desc_stats$row_sums <- NULL
-    desc_stats$percent <- NULL
-    # Rename NA column:
-    names(desc_stats)[grep(x = names(desc_stats), '<NA>', fixed = TRUE)] <- 'NA_count'
-    # Move headers to first row:
-    desc_stats <- rbind(colnames(desc_stats), desc_stats)
-    # Get rid of 'id' in row, leave blank:
-    desc_stats[1, 'id'] <- ' '
-    # Append as last rows:
-    desc_stats_fct[[i]] <- desc_stats
-    desc_stats_fct
-    }
-  return(desc_stats_fct)
-  }
-# Test:
-# desc_stats_fct <- epi_stat_fct_table()
-# epi_stat_fct_table(df, vars_list)
-#####################
-
 ######################
 # Create a unique ID column as not all rows have substudy_part_id
 # Takes a data.frame and two columns names as input
@@ -174,3 +129,24 @@ epi_clean_unique_id <- function(df = NULL,
 #     # "\t", xxx_var, '\n',
 #     append = FALSE)
 #####################
+
+#####################
+# Compare two columns which may have duplicated information
+# TO DO: test and complete, not working
+# epi_clean_compare_dup_cols <- function(df, col_1, col_2) {
+#   require(compare)
+#   df[[col_1]] <- enc2utf8(df[[col_1]])
+#   df[[col_2]] <- enc2utf8(df[[col_2]])
+#   comp <- compare::compare(df[[col_1]],
+#                            df[[col_2]],
+#                            allowAll = TRUE)
+#   comp_diff <- which(comp$detailedResult == FALSE)
+#   names_diff_rows <- names(which(comp$detailedResult == FALSE))
+#   comp_results <- list('differing_rows' = comp_diff,
+#                        'rows_names' = names_diff_rows
+#                        )
+#   return(comp_results)
+# }
+# Test:
+#####################
+
