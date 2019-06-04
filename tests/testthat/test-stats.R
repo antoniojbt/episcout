@@ -3,6 +3,11 @@ context("episcout stats function tests")
 ######################
 library(episcout)
 library(testthat)
+library(e1071)
+library(dplyr)
+library(purrr)
+library(tibble)
+library(tidyr)
 ######################
 
 ######################

@@ -46,6 +46,10 @@ epi_stats_summary <- function(df = NULL,
     stop("Package purrr needed for this function to work. Please install it.",
          call. = FALSE)
   }
+ if (!requireNamespace('tibble', quietly = TRUE)) {
+  stop("Package tibble needed for this function to work. Please install it.",
+       call. = FALSE)
+  }
   df <- tibble::as.tibble(df)
   # Determine which group of columns to use:
   if (class_type == 'chr_fct') {
