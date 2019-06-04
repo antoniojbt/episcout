@@ -12,13 +12,17 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_cond_date}},
-#' \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-#' \code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
+#' @seealso \code{\link[episcout]{epi_clean_cond_numeric}},
+#' \code{\link[episcout]{epi_clean_cond_date}},
+#' \code{\link[episcout]{epi_clean_class_to_factor}},
+#' \code{\link[episcout]{epi_clean_count_classes}},
+#' \code{\link[base]{is.character}},
+#' \code{\link[base]{is.factor}}.
 #'
 #' @examples
 #'
 #' \dontrun{
+#' library(dplyr)
 #' col_chr <- data.frame('chr1' = rep(c('A', 'B')),
 #'                       'chr2' = rep(c('C', 'D'))
 #'              )
