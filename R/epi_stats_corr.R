@@ -25,6 +25,8 @@
 #' @examples
 #'
 #' \dontrun{
+#' library(Hmisc)
+#' library(data.table)
 #' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
 #' var_to_rep = rep(c("Pre", "Post"), n / 2),
 #' x = rnorm(n),

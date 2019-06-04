@@ -23,6 +23,7 @@ data.table transpose. Assumes there is an id column with unique IDs
 \examples{
 
 \dontrun{
+library(data.table)
 # Generate some data:
 n <- 20
 df <- data.frame(
@@ -45,8 +46,10 @@ names(df_t)
 
 }
 \seealso{
-\code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_spread_repeated}},
-\code{\link{epi_clean_merge_nested_dfs}}, \code{\link[data.table]{transpose}},
+\code{\link{epi_clean_add_colname_suffix}},
+\code{\link{epi_clean_spread_repeated}},
+\code{\link{epi_clean_merge_nested_dfs}},
+\code{\link[data.table]{transpose}},
 \code{\link[data.table]{as.data.table}}.
 }
 \author{
