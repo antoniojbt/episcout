@@ -23,6 +23,7 @@
 #' @examples
 #'
 #' \dontrun{
+#' library(stringr)
 #' string <- c('mean', '.j_j', '...', 'if',
 #' 'while', 'TRUE', 'NULL', '_jj',
 #' '  j', '.2way')
