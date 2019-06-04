@@ -86,8 +86,8 @@ epi_head_and_tail(df2, rows = 3, last_cols = TRUE)
 
 # See how many replicates there are:
 df2 \%>\%
-	transmute(as.factor(rep_num)) \%>\%
-	summary()
+  transmute(as.factor(rep_num)) \%>\%
+  summary()
 
 # Generate a data frame for each:
 baseline <- df2 \%>\% filter(rep_num == 1)

@@ -4,13 +4,14 @@
 \alias{epi_write}
 \title{Write files with a consistent convenience function}
 \usage{
-epi_write(file_object = NULL, file_name = "", row.names = FALSE,
-  quote = FALSE, sep = "\\t", na = "NA", col.names = TRUE, ...)
+epi_write(file_object = NULL, file_name = "my_file.tsv",
+  row.names = FALSE, quote = FALSE, sep = "\\t", na = "NA",
+  col.names = TRUE, ...)
 }
 \arguments{
 \item{file_object}{Object to write}
 
-\item{file_name}{file name as a string}
+\item{file_name}{file name as a string, default is 'my_file.tsv'}
 
 \item{row.names}{as for data.table::fwrite(), default is also FALSE}
 

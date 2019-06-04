@@ -28,11 +28,11 @@ Note that columns with more than one class will be counted each time
 set.seed(12345)
 n <- 20
 df <- data.frame(
-	var_id = rep(1:(n / 2), each = 2),
+  var_id = rep(1:(n / 2), each = 2),
 var_to_rep = rep(c('Pre', 'Post'), n / 2),
-	x = rnorm(n),
-	y = rbinom(n, 1, 0.50),
-	z = rpois(n, 2)
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 df$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
 epi_clean_count_classes(df)

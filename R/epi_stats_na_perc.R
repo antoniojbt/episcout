@@ -11,7 +11,7 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[base]{complete.cases}}
+#' @seealso \code{\link[stats]{complete.cases}}
 #'
 #' @examples
 #'

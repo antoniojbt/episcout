@@ -63,11 +63,11 @@ as.tibble(df) \%>\% count(y)
 as.tibble(df) \%>\% count(var_to_rep)
 as.tibble(df) \%>\% group_by(var_to_rep) \%>\% count(y)
 epi_plot_bar(df,
-						 var_y = 'y',
-						 var_x = 'z',
-						 x_lab = '',
-						 fill = 'var_to_rep'
-						 )
+             var_y = 'y',
+             var_x = 'z',
+             x_lab = '',
+             fill = 'var_to_rep'
+             )
 }
 
 }
