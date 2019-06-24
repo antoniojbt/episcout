@@ -1,5 +1,7 @@
 #comment: false
 
+codecov:
+
 coverage:
   status:
     project:
