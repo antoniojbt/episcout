@@ -72,7 +72,7 @@ epi_utils_multicore <- function(num_cores = NULL,
   if (is.null(num_cores)) {
     num_cores <- max(1, parallel::detectCores() - 1)
   } else {
-    num_cores = num_cores
+    num_cores <- num_cores
   }
 
   doFuture::registerDoFuture()

@@ -10,7 +10,7 @@ Description: Facilitates cleaning, exploring and visualising large-ish datasets 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-Imports:    
+Imports: 
     graphics,
     utils,
     stats,
@@ -42,5 +42,5 @@ Suggests:
     iterators,
     parallel
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr

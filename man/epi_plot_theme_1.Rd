@@ -2,9 +2,27 @@
 % Please edit documentation in R/epi_plot_themes.R
 \name{epi_plot_theme_1}
 \alias{epi_plot_theme_1}
+\alias{epi_plot_theme_2}
+\alias{scale_fill_epi_plot_theme_2}
+\alias{scale_colour_epi_plot_theme_2}
 \title{ggthemes for episcout}
 \usage{
 epi_plot_theme_1(base_size = 11, base_family = "Times")
+
+epi_plot_theme_2(base_size = 13, base_family = "Times")
+
+scale_fill_epi_plot_theme_2(...)
+
+scale_colour_epi_plot_theme_2(...)
+}
+\arguments{
+\item{base_size}{passed to element_text() for the font size. Default is 11 for
+epi_plot_theme_1 and 13 for epi_plot_theme_2}
+
+\item{base_family}{passed to theme() for font family. Default is Times.}
+
+\item{...}{additional arguments passed to ggplot2::discrete_scale() for
+scale_colour_epi_plot_theme_1 and scale_colour_epi_plot_theme_2}
 }
 \value{
 None, these functions are called from plotting functions.
@@ -26,4 +44,3 @@ Some colour codes:
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }
-\keyword{internal}
