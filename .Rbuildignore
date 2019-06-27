@@ -14,3 +14,5 @@
 ^tests/testthat/\.dir_bash_history$
 ^blurbs_and_old_code
 ^\.lintr$
+^doc$
+^Meta$

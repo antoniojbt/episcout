@@ -77,8 +77,6 @@
 #' @export
 #'
 
-# TO DO: check group bar plot works correctly
-
 epi_plot_bar <- function(df = NULL,
                          var_x = NULL,
                          var_y = '',

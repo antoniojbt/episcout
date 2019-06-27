@@ -222,32 +222,42 @@ test_that("epi_plot_bar", {
 ######################
 
 ######################
-print("Function being tested: epi_plot_hist")
+print("Functions being tested: epi_plot_heatmap and epi_plot_heatmap_triangle")
 
-test_that("epi_plot_hist", {
-  # TO DO: test plot output
-  #
+test_that("epi_plot_heatmap", {
+	# Set-up data:
+	df[, 'y'] <- as.integer(df[, 'y'])
+	df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))
+  df_corr <- df_corr[, -1] # exclude var_id
+  cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
+  melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
+  vars_list <- c('x', 'y', 'z')
+  var_labels <- c('numeric', 'binomial', 'poisson')
+  renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
+                                             melted_triangles$cormat_melted_triangle_pval,
+                                             vars_list = vars_list,
+                                             var_labels = var_labels
+                                             )
+
+  # Test epi_plot_heatmap:
+  # Correlation values:
+  heat_r <- epi_plot_heatmap(cormat_all$cormat_melted_r)
+  vdiffr::expect_doppelganger("epi_plot_heat_r", heat_r)
+  # As a triangle:
+  heat_r_triangle <- epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_r)
+  vdiffr::expect_doppelganger("epi_plot_heat_r_triangle", heat_r_triangle)
+  # P-values as a triangle:
+  heat_p_triangle <- epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_pval)
+  vdiffr::expect_doppelganger("epi_plot_heat_p_triangle", heat_p_triangle)
+
+  # Test epi_plot_heatmap_triangle:
+  # Nicer triangle:
+  nicer_triangle <- epi_plot_heatmap_triangle(renamed_triangles$cormat_melted_triangle_r,
+                            renamed_triangles$cormat_melted_triangle_pval,
+                            show_values = 'pval'#'corr'
+                            )
+  vdiffr::expect_doppelganger("epi_plot_heat_nicer_triangle", nicer_triangle)
   }
-  )
-######################
-
-######################
-print("Function being tested: epi_plot_box")
-
-test_that("epi_plot_box", {
-  # TO DO: test plot output, see code above
-  #
-}
-)
-######################
-
-######################
-print("Function being tested: epi_plot_bar")
-
-test_that("epi_plot_bar", {
-  # TO DO: test plot output, see code above
-  #
-}
 )
 ######################
 
@@ -256,17 +266,16 @@ print("Function being tested: epi_plot_volcano")
 
 test_that("epi_plot_volcano", {
   # TO DO: test plot output, needs example code
-  #
+  # Deprecated, just use limma::volcanoplot()
 }
 )
 ######################
 
-######################
-print("Function being tested: epi_plot_XXX")
+# TO DO: missing tests for, moved this to blurbs, update properly and move back to R/
+# epi_plot_en_masse
 
-test_that("epi_plot_XXX", {
-  # TO DO: test plot output
-  #
-}
-)
-######################
+# TO DO: Within epi_plot_themes.R, which should be tested with the plots:
+# epi_plot_theme_1()
+# epi_plot_theme_2()
+# scale_colour_epi_plot_theme_2()
+# scale_fill_epi_plot_theme_2()

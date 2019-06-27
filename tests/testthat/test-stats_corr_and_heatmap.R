@@ -92,11 +92,3 @@ test_that("epi_stats_corr_rename", {
   )
 ######################
 
-# # TO DO: missing tests for
-# epi_plot_heatmap()
-# epi_plot_heatmap_triangle()
-# # Within epi_plot_themes.R, which should be tested with the plots:
-# epi_plot_theme_1()
-# epi_plot_theme_2()
-# scale_colour_epi_plot_theme_2()
-# scale_fill_epi_plot_theme_2()

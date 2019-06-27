@@ -162,7 +162,6 @@ test_that("epi_clean_count_classes", {
   )
 ######################
 
-# TO DO: continue here
 ######################
 print("Function being tested: epi_clean_class_to_factor")
 
