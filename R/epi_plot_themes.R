@@ -14,11 +14,11 @@
 #'
 #' @note For examples see eg \code{\link{epi_plot_heatmap_triangle}} and others.
 #' If creating your own themes see for instance:
-#' \url{https://cran.r-project.org/web/packages/ggthemes/vignettes/ggthemes.html}{ggthemes},
-#' \url{http://sape.inf.usi.ch/quick-reference/ggplot2/themes}{ggplot2 themes}.
+#' \href{https://cran.r-project.org/web/packages/ggthemes/vignettes/ggthemes.html}{ggthemes},
+#' \href{http://sape.inf.usi.ch/quick-reference/ggplot2/themes}{ggplot2 themes}.
 #' Some colour codes:
-#' \url{http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/}{Colors (ggplot2)},
-#' \url{http://sape.inf.usi.ch/quick-reference/ggplot2/colour}{ggplot2 Quick Reference}
+#' \href{http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/}{Colors ggplot2},
+#' \href{http://sape.inf.usi.ch/quick-reference/ggplot2/colour}{ggplot2 Quick Reference}
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'

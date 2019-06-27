@@ -37,7 +37,7 @@
 #' y = rbinom(n, 1, 0.50),
 #' z = rpois(n, 2)
 #' )
-#' df_corr <- df %>%select_if(~ epi_clean_cond_numeric(.))
+#' df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))
 #' df_corr <- df_corr[, -1] # exclude var_id
 #' cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
 #' melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
