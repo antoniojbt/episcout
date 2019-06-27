@@ -1,9 +1,9 @@
-context("episcout plot function tests")
-
 ######################
 library(episcout)
 library(testthat)
+library(vdiffr)
 library(dplyr)
+library(reshape2)
 library(magrittr)
 library(ggplot2)
 library(cowplot)
@@ -16,6 +16,29 @@ library(ggthemes)
 ######################
 
 ######################
+# Dummy tests for workflow with ggplot2, testthat and vdiffr for image regression testing
+# See create_an_r_package_2.R for more info and references
+# Workflow:
+# Add test cases in eg XXXX/episcout/tests/testthat/test-plotting.R such as:
+context("dummy_tests_vdiffr") # this will be the name that the folder wil get as eg
+                         # XXXX/episcout/tests/figs/distributions
+test_that("histograms draw correctly - vdiffr dummy run", {
+  hist_ggplot <- ggplot(mtcars, aes(disp)) + geom_histogram()
+  vdiffr::expect_doppelganger("ggplot2 histogram", hist_ggplot)
+
+  hist_base <- function() hist(mtcars$disp)
+  vdiffr::expect_doppelganger("Base graphics histogram", hist_base)
+})
+# Run:
+# vdiffr::manage_cases(filter = 'plot')
+# within RStudio to get the vdiffr widget and validate images manually
+# Run devtools::test() as usual to test
+# Update as needed for failed tests
+# Consider these as monitoring tools with regression testing as opposed to strict
+# unit tests
+######################
+
+######################
 # Set a test set:
 # Test set df:
 set.seed(12345)
@@ -24,15 +47,36 @@ df <- data.frame(var_id = rep(1:(n / 2), each = 2),
                  var_to_rep = rep(c("Pre", "Post"), n / 2),
                               x = rnorm(n),
                               y = rbinom(n, 1, 0.50),
-                              z = rpois(n, 2)
+                              z = rpois(n, 2),
+	                            w = sample(1:20, 20)
                  )
+df$id_unique <- paste0(df[['var_id']], '_', df[['var_to_rep']])
 # df
 df[, 'var_id'] <- as.character(df[, 'var_id'])
+# str(df)
+######################
+
+######################
+context("episcout_plots")
+# ALl episcout reference plots will/should be saved in
+# XXXX/episcout/tests/figs/episcout_plots
+print("episcout plot function tests")
+print("Function being tested: epi_plot_list")
+
 vars_to_plot <- df %>%
   select_if(epi_clean_cond_numeric) %>%
   names()
 my_plot_list <- epi_plot_list(vars_to_plot)
 # my_plot_list
+
+test_that("epi_plot_list", {
+  expect_output(str(names(my_plot_list)), '"x" "y" "z"')
+  }
+  )
+######################
+
+######################
+print("Function being tested: epi_plot_grid_size")
 # Generate plots:
 for (i in names(my_plot_list)) {
   # print(i)
@@ -43,96 +87,6 @@ for (i in names(my_plot_list)) {
 # Calculate how many plots can be passed to one grid (one page):
 grid_size <- epi_plot_grid_size(my_plot_list)
 # grid_size
-# Pass to a grid and save to file:
-# length(my_plot_list)
-my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
-# epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
-######################
-
-######################
-# # Test for histogram:
-# my_hist_plot <- epi_plot_hist(df, 'x') # pass with quotes as using ggplot2::aes_string()
-# my_hist_plot
-# # Change the bins:
-# my_hist_plot <- epi_plot_hist(df, 'x', breaks = seq(-3, 3, by = 1))
-# my_hist_plot
-# # Add titles and axis names:
-# my_hist_plot <- my_hist_plot +
-#   labs(title = "Histogram for X") +
-#   labs(x = "X", y = "Count")
-# my_hist_plot
-# # Add axis limits:
-# my_hist_plot <- my_hist_plot +
-#   xlim(c(-4, 4)) +
-#   ylim(c(0, 10))
-# my_hist_plot
-# # Histogram with density curve:
-# my_hist_plot <- my_hist_plot + geom_density(col = 2)
-# my_hist_plot
-# # Histogram overlaid with kernel density curve:
-# # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
-# my_hist_plot <- my_hist_plot +
-# # Density instead of count on y-axis:
-#   geom_histogram(aes( y = ..density..),
-#                  binwidth = 0.5,
-#                  colour = "black",
-#                  fill = "white") +
-#   geom_density(alpha = 0.2, fill = "#FF6666") + # Overlay with transparent density plot
-#   ylab('Density')
-# my_hist_plot
-######################
-
-######################
-# # Boxplot of one variable:
-# epi_plot_box(df, var_y = 'x')
-# # Add notch:
-# epi_plot_box(df, var_y = 'x', notch = TRUE)
-
-# # Boxplot for x and y variables:
-# df$x # continuous variable
-# df$var_to_rep # factor
-# epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
-# # Change colours, remove legend, etc.:
-# my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
-# my_boxplot +
-#   # scale_fill_grey() +
-# scale_fill_brewer(palette = "Blues") +
-#   # scale_fill_brewer(palette = "Dark2") +
-#   theme(legend.position = "none") # Remove legend
-# # dev.off()
-######################
-
-######################
-# # Bar plots of one and two variables:
-# df
-# lapply(df, class)
-# # Barplot for single variable:
-# summary(df$var_to_rep)
-# epi_plot_bar(df, 'var_to_rep')
-# # Barplot for two variables:
-# epi_head_and_tail(df[, c('var_to_rep', 'y')], cols = 2)
-# as.tibble(df) %>% count(y)
-# as.tibble(df) %>% count(var_to_rep)
-# as.tibble(df) %>% group_by(var_to_rep) %>% count(y)
-# epi_plot_bar(df,
-#              var_y = 'y',
-#              var_x = 'z',
-#              x_lab = '',
-#              fill = 'var_to_rep'
-#              )
-######################
-
-######################
-print("Function being tested: epi_plot_list")
-
-test_that("epi_plot_list", {
-  expect_output(str(names(my_plot_list)), '"x" "y" "z"')
-  }
-  )
-######################
-
-######################
-print("Function being tested: epi_plot_grid_size")
 
 test_that("epi_plot_grid_size", {
   expect_output(str(grid_size), 'ncol_grid: num 2')
@@ -143,21 +97,125 @@ test_that("epi_plot_grid_size", {
 
 ######################
 print("Function being tested: epi_plots_to_grid")
+# Pass to a grid and save to file:
+# length(my_plot_list)
+my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
 
 test_that("epi_plots_to_grid", {
-# TO DO: see code above
-# my_plot_grid # output is a plot to screen
+  vdiffr::expect_doppelganger("epi_plots_to_grid", my_plot_grid)
+  }
+  )
+######################
+
+######################
+print("Function being tested: epi_plot_cow_save")
+
+test_that("epi_plot_cow_save", {
+  # TO DO: output is a plot saved to disk, see code above
+  # epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
   }
   )
 ######################
 
 
 ######################
-print("Function being tested: epi_plot_cow_save")
+# Test for histogram:
+print("Function being tested: epi_plot_hist")
 
-test_that("epi_plot_cow_save", {
-# TO DO: output is a plot saved to disk, see code above
-# epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
+test_that("epi_plot_hist", {
+  # my_hist_plot <- epi_plot_hist(df, 'x') # pass with quotes as using ggplot2::aes_string()
+  # Change the bins:
+  my_hist_plot <- epi_plot_hist(df, 'x', breaks = seq(-3, 3, by = 1))
+  # Add titles and axis names:
+  my_hist_plot <- my_hist_plot +
+    labs(title = "Histogram for X") +
+    labs(x = "X", y = "Count")
+  # Add axis limits:
+  my_hist_plot <- my_hist_plot +
+    xlim(c(-4, 4)) +
+    ylim(c(0, 10))
+  # my_hist_plot
+  vdiffr::expect_doppelganger("epi_plot_hist_1", my_hist_plot)
+
+  # Histogram with density curve:
+  my_hist_plot <- my_hist_plot + geom_density(col = 2)
+  # my_hist_plot
+  vdiffr::expect_doppelganger("epi_plot_hist_density", my_hist_plot)
+
+  # Histogram overlaid with kernel density curve:
+  # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
+  my_hist_plot <- my_hist_plot +
+  # Density instead of count on y-axis:
+    geom_histogram(aes( y = ..density..),
+                   binwidth = 0.5,
+                   colour = "black",
+                   fill = "white") +
+    geom_density(alpha = 0.2, fill = "#FF6666") + # Overlay with transparent density plot
+    ylab('Density')
+  # my_hist_plot
+  vdiffr::expect_doppelganger("epi_plot_hist_kernel", my_hist_plot)
+  }
+  )
+######################
+
+######################
+print("Function being tested: epi_plot_box")
+
+test_that("epi_plot_box", {
+  # Boxplot of one variable:
+  my_boxplot <- epi_plot_box(df, var_y = 'x')
+  vdiffr::expect_doppelganger("epi_plot_box_1_var", my_boxplot)
+
+  # Add notch:
+  my_boxplot <- epi_plot_box(df, var_y = 'x', notch = TRUE)
+  vdiffr::expect_doppelganger("epi_plot_box_1_var_notch", my_boxplot)
+
+  # Boxplot for x and y variables:
+  # df$x # continuous variable
+  # df$var_to_rep # factor
+  my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
+  vdiffr::expect_doppelganger("epi_plot_box_2_var", my_boxplot)
+
+  # Change colours, remove legend, etc.:
+  my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
+  my_boxplot +
+    # scale_fill_grey() +
+    scale_fill_brewer(palette = "Blues") +
+    # scale_fill_brewer(palette = "Dark2") +
+    theme(legend.position = "none") # Remove legend
+  # my_boxplot
+  vdiffr::expect_doppelganger("epi_plot_box_2_var_colours", my_boxplot)
+  }
+  )
+
+######################
+
+######################
+# Bar plots of one and two variables:
+print("Function being tested: epi_plot_bar")
+test_that("epi_plot_bar", {
+  # df
+  # lapply(df, class)
+  # Barplot for single variable:
+  # summary(df$var_to_rep)
+  plot_bar <- epi_plot_bar(df, 'var_to_rep')
+  plot_bar
+  vdiffr::expect_doppelganger("epi_plot_bar_1_var", plot_bar)
+
+  # Barplot for two variables side by side:
+  df_bar <- reshape2::melt(df[, c('w', 'z', 'id_unique')], id.vars = 'id_unique')
+  epi_head_and_tail(df, cols = 7)
+  epi_head_and_tail(df_bar, cols = 3)
+  ggplot(df_bar, aes(x = id_unique, y = value, fill = variable)) +
+        geom_bar(stat = 'identity', position = 'dodge') +
+  	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  plot_bar <- epi_plot_bar(df_bar,
+                           var_x = 'id_unique',
+                           var_y = 'value',
+                           fill = 'variable') +
+  	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+	plot_bar
+  vdiffr::expect_doppelganger("epi_plot_bar_2_var", plot_bar)
   }
   )
 ######################

@@ -12,7 +12,6 @@
 #' @param guides_fill Fill for ggplot2 guides. Default is FALSE.
 #' @param y_lab y-axis label. Default is 'Count'.
 #' @param x_lab x-axis label. Default is x_var.
-#' @param condition Variable name for grouped bar plots.
 #' @param ... pass further arguments to ggplot2::geom_bar()
 #'
 #' @return Prints a ggplot2 barplot
@@ -40,22 +39,7 @@
 #'
 #' \dontrun{
 #' # Bar plots of one and two variables:
-#' df
-#' lapply(df, class)
-#' # Barplot for single variable:
-#' summary(df$var_to_rep)
-#' epi_plot_bar(df, 'var_to_rep')
-#' # Barplot for two variables:
-#' epi_head_and_tail(df[, c('var_to_rep', 'y')], cols = 2)
-#' as.tibble(df) %>% count(y)
-#' as.tibble(df) %>% count(var_to_rep)
-#' as.tibble(df) %>% group_by(var_to_rep) %>% count(y)
-#' epi_plot_bar(df,
-#'              var_y = 'y',
-#'              var_x = 'z',
-#'              x_lab = '',
-#'              fill = 'var_to_rep'
-#'              )
+
 #' }
 #'
 #' @export
@@ -66,13 +50,11 @@
 epi_plot_bar <- function(df = NULL,
                          var_x = NULL,
                          var_y = '',
-                         fill = var_x,
+                         fill = NULL,
                          bar_colour = 'black',
                          guides_fill = FALSE,
                          y_lab = 'Count',
                          x_lab = var_x,
-                         condition = NULL,
-                         # geom_bar = '',
                          ...
                          ) {
   if (!requireNamespace('ggplot2', quietly = TRUE)) {
@@ -92,37 +74,19 @@ epi_plot_bar <- function(df = NULL,
     ggplot2::guides(fill = guides_fill) +
     ggplot2::labs(y = y_lab, x = x_lab)
   return(bar_plot_one)
-}
-# If both x and y are passed, plot of two variables:
-else if (!is.null(var_y)) {
-  # if (geom_bar == 'group') {
-  # # Grouped:
-  #   geom_bar <- geom_bar(position = 'dodge',
-  #                        stat = 'identity',
-  #                        ...
-  #                        )
-  # } else if (geom_bar == 'stack') {
-  # # Stacked
-  #   geom_bar <- aes(stat = 'identity', ...)
-  # } else if (geom_bar == 'stack_perc') {
-  # # Stacked Percent
-  #   geom_bar <- aes(stat = 'identity',
-  #                        position = 'fill',
-  #                        ...)
-  #   }
+  }
+  # If both x and y are passed, plot of two variables:
+  else if (!is.null(var_y)) {
   bar_plot <- ggplot2::ggplot(df,
-                              ggplot2::aes_string(y = var_y,
-                                                  x = var_x,
-                                                  fill = condition)
-                              ) +
-    # geom_bar(geom_bar) +
-    ggplot2::geom_bar(position = 'dodge',
-                      stat = 'identity',
+  	                          ggplot2::aes_string(x = var_x,
+  	                          	                  y = var_y,
+  	                          	                  fill = fill)
+  	                          	                 ) +
+    ggplot2::geom_bar(stat = 'identity',
+                      position = 'dodge',
                       ...
                       ) +
-    ggplot2::guides(fill = guides_fill) +
     ggplot2::labs(y = y_lab, x = x_lab)
-
   return(bar_plot)
-}
+ }
 }

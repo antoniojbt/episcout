@@ -27,27 +27,27 @@
 # Add rownumber pastes the row number as part of the ID, useful to quickly create unique IDs when NAs are present
 # with multiple ID columns.
 
-epi_clean_unique_id <- function(df = NULL,
-                                col_1 = '',
-                                col_2 = '',
-                                sep = '_',
-                                add_rownames = FALSE
-                                ) {
-  if (!requireNamespace('dplyr', quietly = TRUE)) {
-    stop("Package dplyr needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  if (add_rownames == TRUE) {
-  df$unique_id <- paste(df[[col_1]], df[[col_2]], rownames(df), sep = sep)
-  df <- df %>% dplyr::select(unique_id, dplyr::everything())
-  # print(sprintf('Number of NAs in new column: %s', sum(is.na((df[ ,1])))))
-  } else if (add_rownames == FALSE) {
-    df$unique_id <- paste(df[[col_1]], df[[col_2]], sep = sep)
-    df <- df %>% dplyr::select(unique_id, dplyr::everything())
-    }
-  names(df)[1] <- paste(col_1, col_2, sep = sep)
-  return(df)
-}
+# epi_clean_unique_id <- function(df = NULL,
+#                                 col_1 = '',
+#                                 col_2 = '',
+#                                 sep = '_',
+#                                 add_rownames = FALSE
+#                                 ) {
+#   if (!requireNamespace('dplyr', quietly = TRUE)) {
+#     stop("Package dplyr needed for this function to work. Please install it.",
+#          call. = FALSE)
+#   }
+#   if (add_rownames == TRUE) {
+#   df$unique_id <- paste(df[[col_1]], df[[col_2]], rownames(df), sep = sep)
+#   df <- df %>% dplyr::select(unique_id, dplyr::everything())
+#   # print(sprintf('Number of NAs in new column: %s', sum(is.na((df[ ,1])))))
+#   } else if (add_rownames == FALSE) {
+#     df$unique_id <- paste(df[[col_1]], df[[col_2]], sep = sep)
+#     df <- df %>% dplyr::select(unique_id, dplyr::everything())
+#     }
+#   names(df)[1] <- paste(col_1, col_2, sep = sep)
+#   return(df)
+# }
 ######################
 
 #####################
