@@ -38,8 +38,40 @@
 #' @examples
 #'
 #' \dontrun{
-#' # Bar plots of one and two variables:
-
+#' # Set up an example:
+#' set.seed(12345)
+#' n <- 20
+#' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
+#'                  var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'                               x = rnorm(n),
+#'                               y = rbinom(n, 1, 0.50),
+#'                               z = rpois(n, 2),
+#' 	                            w = sample(1:20, 20)
+#'                  )
+#' df$id_unique <- paste0(df[['var_id']], '_', df[['var_to_rep']])
+#' df[, 'var_id'] <- as.character(df[, 'var_id'])
+#' df[, 'y'] <- as.factor(df[, 'y'])
+#' str(df)
+#'
+#' # Barplot for single variable:
+#' summary(df$var_to_rep)
+#' plot_bar <- epi_plot_bar(df, 'var_to_rep')
+#' plot_bar
+#'
+#' # Barplot for two variables side by side:
+#' df_bar <- reshape2::melt(df[, c('w', 'z', 'id_unique')], id.vars = 'id_unique')
+#' epi_head_and_tail(df, cols = 7)
+#' epi_head_and_tail(df_bar, cols = 3)
+#' plot_bar <- epi_plot_bar(df_bar,
+#'                          var_x = 'id_unique',
+#'                          var_y = 'value',
+#'                          fill = 'variable') +
+#' 	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#' plot_bar
+#' # Which should be the same as:
+#' ggplot(df_bar, aes(x = id_unique, y = value, fill = variable)) +
+#'        geom_bar(stat = 'identity', position = 'dodge') +
+#'  	theme(axis.text.x = element_text(angle = 90, hjust = 1))
 #' }
 #'
 #' @export
