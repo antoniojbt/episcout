@@ -72,4 +72,10 @@ Support
 
 If you have any issues, pull requests, etc. please report them in the issue tracker. 
 
+## News
 
+- Version 0.1.1
+  First release
+
+In development: 
+- Version 0.1.2
