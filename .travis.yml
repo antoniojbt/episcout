@@ -13,13 +13,9 @@
 # https://github.com/travis-ci/travis-build/blob/master/lib/travis/build/script/r.rb
 #####
 
-
 language: R
 sudo: false
 cache: packages
-
-# r_packages
-# add dependencies here for testing, those in DESCRIPTION
 
 matrix:
   fast_finish: true
@@ -54,9 +50,6 @@ matrix:
 #     - sudo tlmgr install framed titling
 #   osx_image: xcode10.2
 #   language: shell
-
-
-# https://towardsdatascience.com/travis-ci-for-r-advanced-guide-719cb2d9e0e5
 
 r_packages:
     - dplyr
