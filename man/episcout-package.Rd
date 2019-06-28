@@ -4,7 +4,7 @@
 \name{episcout-package}
 \alias{episcout}
 \alias{episcout-package}
-\title{episcout: episcout}
+\title{episcout: Quickly Clean, Explore and Visualise Large Epidemiological Datasets}
 \description{
 Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table.
 }

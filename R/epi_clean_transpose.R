@@ -8,7 +8,7 @@
 #'
 #' @param id_col_num Index to identify the column with IDs
 #'
-#' @return A tranposed dataframe with the first column containing the tranposed
+#' @return A transposed dataframe with the first column containing the transposed
 #' values of the column passed as id_col_num.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
