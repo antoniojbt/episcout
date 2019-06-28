@@ -22,7 +22,7 @@ cache: packages
 # add dependencies here for testing, those in DESCRIPTION
 
 matrix:
-#  fast_finish: true
+  fast_finish: true
   include:
   - r: devel
     warnings_are_errors: false
