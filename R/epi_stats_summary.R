@@ -18,7 +18,7 @@
 #' @note Desgined with data frames that require pre-processing and likely
 #' have contingency and database codes. Action 'exclude' excludes the string values
 #' provided from the summary. Useful to quickly assess what a data.frame contains,
-#' types of values in each column and summary statitics if excluding codes.
+#' types of values in each column and summary statistics if excluding codes.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'

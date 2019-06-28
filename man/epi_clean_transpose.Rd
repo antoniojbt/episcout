@@ -13,7 +13,7 @@ as data.frame.}
 \item{id_col_num}{Index to identify the column with IDs}
 }
 \value{
-A tranposed dataframe with the first column containing the tranposed
+A transposed dataframe with the first column containing the transposed
 values of the column passed as id_col_num.
 }
 \description{

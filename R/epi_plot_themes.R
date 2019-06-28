@@ -14,7 +14,7 @@
 #'
 #' @note For examples see eg \code{\link{epi_plot_heatmap_triangle}} and others.
 #' If creating your own themes see for instance:
-#' \href{https://cran.r-project.org/web/packages/ggthemes/vignettes/ggthemes.html}{ggthemes},
+#' \href{https://github.com/jrnold/ggthemes}{ggthemes},
 #' \href{http://sape.inf.usi.ch/quick-reference/ggplot2/themes}{ggplot2 themes}.
 #' Some colour codes:
 #' \href{http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/}{Colors ggplot2},

@@ -13,7 +13,7 @@ epi_plot_list(vars_to_plot = NULL)
 a list object
 }
 \description{
-Create a list to hold plots for later plotting (in a mutli-
+Create a list to hold plots for later plotting (in a multi-
 plot figure for example). Allows maximum 8 plots per list holder.
 }
 \note{

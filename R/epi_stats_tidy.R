@@ -1,6 +1,6 @@
 #' @title Tidy up a data.frame with summary values
 #'
-#' @description epi_stats_tidy() cleans up the ouput from epi_stats_summary() and
+#' @description epi_stats_tidy() cleans up the output from epi_stats_summary() and
 #' epi_stats_numeric(). Values are rounded to digits (default is 2).
 #' format(x, nsmall = digits) is used to ensure xx.00 are printed.
 #' Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric

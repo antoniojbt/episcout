@@ -1,5 +1,5 @@
 Package: episcout
-Title: episcout
+Title: Quickly Clean, Explore and Visualise Large Epidemiological Datasets
 Version: 0.1.1
 Authors@R: 
     person(given = "Antonio",
@@ -29,7 +29,6 @@ Suggests:
     Hmisc,
     ggplot2,
     cowplot,
-    covr,
     knitr,
     rmarkdown,
     testthat,
@@ -41,7 +40,10 @@ Suggests:
     foreach,
     iterators,
     parallel,
-    vdiffr
+    vdiffr,
+    magrittr,
+    reshape2,
+    covr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
