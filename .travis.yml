@@ -24,27 +24,37 @@ cache: packages
 matrix:
   fast_finish: true
   include:
-  - r: devel
+  - name: "R release on Linux"
+    r: release
+    dist: trusty
     warnings_are_errors: false
     env:
-    - VDIFFR_RUN_TESTS=false
-    - _R_CHECK_SYSTEM_CLOCK_=false
-  - r: release
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - name: "R devel on Linux"
+    r: devel
+    dist: trusty
     warnings_are_errors: false
     env:
-    - VDIFFR_RUN_TESTS=false
-    - _R_CHECK_SYSTEM_CLOCK_=false
-  - r: 3.4
-  - r: 3.5
-#  - r: 3.6
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - name: "R 3.4 on Linux"
+    r: 3.4
+    dist: trusty
+ - name: "R 3.5 on Linux"
+    r: 3.5
+    dist: trusty
+ - name: "R 3.6 on Linux"
+    r: 3.6
+    dist: trusty    
+ - name: "R 3.6 on macOS"
+   r: 3.6
+   os: osx
+#   before_install:
+#     - sudo tlmgr install framed titling
+#   osx_image: xcode10.2
+#   language: shell
 
-#matrix:
-#  include:
-#  - r: release
-#    os: osx
-#    osx_image: xcode7.3
-#    before_install:
-#      - sudo tlmgr install framed titling
 
 # https://towardsdatascience.com/travis-ci-for-r-advanced-guide-719cb2d9e0e5
 
