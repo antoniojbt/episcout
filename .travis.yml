@@ -20,32 +20,48 @@ cache: packages
 matrix:
   fast_finish: true
   include:
-  - name: "R release on Linux"
-    r: release
+#  - name: "R devel on Linux"
+  - r: devel
     dist: trusty
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-  - name: "R devel on Linux"
-    r: devel
+#  - name: "R release on Linux"
+  - r: release
     dist: trusty
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-  - name: "R 3.4 on Linux"
-    r: 3.4
+#  - name: "R 3.4 on Linux"
+  - r: 3.4
     dist: trusty
-  - name: "R 3.5 on Linux"
-    r: 3.5
+#  - name: "R 3.5 on Linux"
+  - r: 3.5
     dist: trusty
-  - name: "R 3.6 on Linux"
-    r: 3.6
-    dist: trusty    
-  - name: "R 3.6 on macOS"
-    r: 3.6
+#  - name: "R 3.6 on Linux"
+#  - r: 3.6
+#    dist: trusty
+  - r: devel
     os: osx
+    warnings_are_errors: false
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: release
+    os: osx
+    warnings_are_errors: false
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.4
+    os: osx
+  - r: 3.5
+    os: osx 
+#  - r: 3.6
+#    os: osx 
+
 #   before_install:
 #     - sudo tlmgr install framed titling
 #   osx_image: xcode10.2
