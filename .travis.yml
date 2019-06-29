@@ -37,15 +37,15 @@ matrix:
   - name: "R 3.4 on Linux"
     r: 3.4
     dist: trusty
- - name: "R 3.5 on Linux"
+  - name: "R 3.5 on Linux"
     r: 3.5
     dist: trusty
- - name: "R 3.6 on Linux"
+  - name: "R 3.6 on Linux"
     r: 3.6
     dist: trusty    
- - name: "R 3.6 on macOS"
-   r: 3.6
-   os: osx
+  - name: "R 3.6 on macOS"
+    r: 3.6
+    os: osx
 #   before_install:
 #     - sudo tlmgr install framed titling
 #   osx_image: xcode10.2
