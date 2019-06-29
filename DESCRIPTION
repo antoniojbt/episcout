@@ -40,9 +40,9 @@ Suggests:
     iterators,
     parallel,
     vdiffr,
-    magrittr,
     reshape2,
-    covr
+    covr,
+    magrittr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
