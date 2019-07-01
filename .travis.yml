@@ -41,6 +41,7 @@ matrix:
 #    dist: trusty    
   - r: devel
     os: osx
+    osx_image: xcode10.2
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
@@ -53,6 +54,7 @@ matrix:
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: 3.4
     os: osx
+    osx_image: xcode10.2
   - r: 3.5
     os: osx 
 #  - r: 3.6
