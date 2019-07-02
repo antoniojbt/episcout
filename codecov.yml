@@ -8,8 +8,8 @@ coverage:
     project:
       default:
         target: auto
-        threshold: null #1%
+        threshold: 1%
     patch:
       default:
         target: auto
-        threshold: null #1%
+        threshold: 1%
