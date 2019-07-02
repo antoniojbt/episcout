@@ -20,36 +20,61 @@ cache: packages
 matrix:
   fast_finish: true
   include:
-  - name: "R release on Linux"
-    r: release
+# set vdiffr to false on all as frequently causes errors on travis but not locally
+  - r: devel
     dist: trusty
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-  - name: "R devel on Linux"
-    r: devel
+  - r: release
     dist: trusty
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.6
+    dist: trusty
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.5
+    dist: trusty
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.4
+    dist: trusty
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  allow_failures: # getting warnings and cannot download on several osx
+# also set vdiffr to false on all   
+  - r: devel
+    os: osx
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-  - name: "R 3.4 on Linux"
-    r: 3.4
-    dist: trusty
- - name: "R 3.5 on Linux"
-    r: 3.5
-    dist: trusty
- - name: "R 3.6 on Linux"
-    r: 3.6
-    dist: trusty    
- - name: "R 3.6 on macOS"
-   r: 3.6
-   os: osx
-#   before_install:
-#     - sudo tlmgr install framed titling
-#   osx_image: xcode10.2
-#   language: shell
+  - r: release
+    os: osx
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.6
+    os: osx 
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.5
+    os: osx
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.4
+    os: osx
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
 
 r_packages:
     - dplyr
@@ -64,7 +89,6 @@ r_packages:
     - Hmisc
     - ggplot2
     - cowplot
-    # -  limma # not available in 3.5.1, only used for topTable in stats, add to DESCRIPTION when ready
     - future
     - doFuture
     - foreach
@@ -78,12 +102,5 @@ r_binary_packages:
     - testthat
     - knitr
 
-# Add coverage testing:
-# https://covr.r-lib.org/
-#r_github_packages:
-#    - r-lib/covr
-
 after_success:
     - Rscript -e 'library(covr); covr::codecov()'
-
-
