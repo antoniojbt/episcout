@@ -29,36 +29,45 @@ matrix:
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: release
     dist: trusty
-    warnings_are_errors: false
+  - r: 3.6
+    dist: trusty
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.5
+    dist: trusty
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: 3.4
     dist: trusty
-  - r: 3.5
-    dist: trusty
-#  - r: 3.6
-#    dist: trusty    
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
   - r: devel
     os: osx
-    osx_image: xcode10.2
+#    osx_image: xcode10.2
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: release
     os: osx
-    warnings_are_errors: false
+  - r: 3.6
+    os: osx 
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
+  - r: 3.5
+    os: osx
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: 3.4
     os: osx
-    osx_image: xcode10.2
-  - r: 3.5
-    os: osx 
-#  - r: 3.6
-#    os: osx 
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
 
 r_packages:
     - dplyr
