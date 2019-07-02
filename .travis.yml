@@ -20,7 +20,7 @@ cache: packages
 matrix:
   fast_finish: true
   include:
-#  - name: "R devel on Linux" # Avoid as obscures info en ENVs on travis CI page
+# set vdiffr to false on all as frequently causes errors on travis but not locally
   - r: devel
     dist: trusty
     warnings_are_errors: false
@@ -29,6 +29,9 @@ matrix:
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: release
     dist: trusty
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
   - r: 3.6
     dist: trusty
     env:
@@ -44,15 +47,20 @@ matrix:
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
+
+  allow_failures: # getting warnings and cannot download on several osx
+# also set vdiffr to false on all   
   - r: devel
     os: osx
-#    osx_image: xcode10.2
     warnings_are_errors: false
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: release
     os: osx
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
   - r: 3.6
     os: osx 
     env:
