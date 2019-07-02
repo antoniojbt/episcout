@@ -36,7 +36,7 @@
 #'
 #' @export
 #'
-# @importFrom magrittr %>%
+# @importFrom magrittr "%>%"
 # This errors. check() complains as NOTE though
 #'
 

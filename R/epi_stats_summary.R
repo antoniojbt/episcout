@@ -32,6 +32,7 @@
 #'
 #' @export
 #'
+# @importFrom magrittr "%>%"
 
 epi_stats_summary <- function(df = NULL,
                               codes = NULL,
