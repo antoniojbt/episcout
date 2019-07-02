@@ -47,7 +47,6 @@ matrix:
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-
   allow_failures: # getting warnings and cannot download on several osx
 # also set vdiffr to false on all   
   - r: devel
