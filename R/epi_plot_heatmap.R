@@ -56,9 +56,9 @@ epi_plot_heatmap <- function(cormat_melted = 'cormat_all$cormat_melted_r',
          call. = FALSE)
   }
   heat_map <- ggplot2::ggplot(data = as.data.frame(cormat_melted),
-                              ggplot2::aes(x = Var1,
-                                           y = Var2,
-                                           fill = value)
+                              ggplot2::aes_string(x = 'Var1',
+                                                  y = 'Var2',
+                                                  fill = 'value')
                               ) +
     ggplot2::geom_tile() +
     ggplot2::labs(title = title,

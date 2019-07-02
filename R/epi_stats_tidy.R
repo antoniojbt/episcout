@@ -54,10 +54,11 @@ epi_stats_tidy <- function(sum_df  = NULL,
 	}
 
   df <- tibble::as.tibble(sum_df)
-  df <- df %>% tidyr::spread(., key = x, value = n)
+  # standard eval version with spread_ to avoid NSE and R CMD check NOTEs:
+  df <- df %>% tidyr::spread_(., key_col = 'x', value_col = 'n')
   # Reorder columns as:
   df <- df %>%
-    dplyr::select(id, # assumes there is a column called 'id'
+    dplyr::select(rlang::.data[['id']], # assumes there is a column called 'id'
                   dplyr::everything()
            )
   # Add row sum:

@@ -13,7 +13,9 @@ LazyData: true
 Imports: 
     utils,
     stats,
-    grDevices
+    grDevices,
+    magrittr,
+    rlang (>= 0.1.2)
 Suggests: 
     dplyr,
     tibble,
@@ -42,7 +44,7 @@ Suggests:
     vdiffr,
     reshape2,
     covr,
-    magrittr
+    roxygen2
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 VignetteBuilder: knitr
