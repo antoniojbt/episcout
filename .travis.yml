@@ -18,7 +18,7 @@ sudo: false
 cache: packages
 
 matrix:
-  fast_finish: true
+#  fast_finish: true
   include:
 # set vdiffr to false on all as frequently causes errors on travis but not locally
   - r: devel
