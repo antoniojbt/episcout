@@ -18,13 +18,41 @@ knitr::opts_chunk$set(
 
 Welcome to episcout!
 
-This package is under development...(!)
+episcout has many functions that can be used to quickly explore data sets. It is particularly useful during cleaning, describing and visualising data sets of tens of thousands of rows with tens to hundreds of columns.
 
-This package that wraps up many functions that are used frequently during cleaning, exploring and visualising data sets.
+It was developed using a combination of tidyverse packages, base R functions and data.table.
 
-It was developed using a combination of (mainly) tidyverse packages and a mixture of base R functions and data.table.
+It suggests many packages but does not force you to import them as there are many functions available.
 
-Many parameters are given as defaults out of personal preference and in order to process hundreds of thousands of observations from hundreds of variables from multiple data sets. Convenience and standardisation are higher up the agenda. This may not be your case and the choices made may not suit you. If so simply defer to your preferred R packages.
+If you want to install all of them however, do:
+
+```{r}
+install.packages(c('dplyr',
+                   'tibble',
+                   'tidyr',
+                   'data.table',
+                   'compare',
+                   'stringi',
+                   'stringr',
+                   'lubridate',
+                   'purrr',
+                   'e1071',
+                   'Hmisc',
+                   'ggplot2',
+                   'cowplot',
+                   'scales',
+                   'ggthemes',
+                   'future',
+                   'doFuture',
+                   'foreach',
+                   'iterators',
+                   'magrittr',
+                   'reshape2'
+		   )
+		 )
+```
+
+Many parameters are given as defaults, admittedly with quite a bit of personal preference, but with the aim of processing hundreds of thousands of observations from hundreds of variables from multiple data sets a bit faster. Hence, convenience and standardisation are often preferred. This may not be your case however but it is simple enough to defer to your preferred R packages.
 
 Below are a number of examples of how to use episcout functions.
 
@@ -34,9 +62,9 @@ Currently there are functions for:
 - pre-processing: epi\_clean\_\*
 - descriptive statistics: epi\_stats\_\*
 - visualising: epi\_plot\_\*
+- various: epi\_read() ; epi\_write() etc.
 
-
-## Some dummy data
+## A few examples with dummy data
 
 ```{r}
 # Test set df:
@@ -54,28 +82,9 @@ df
 
 **Just starting this vignette...**
 
+## Cleaning
 
-## Figures
+## Describing
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+## Visualising
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
-```
-
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
-```
