@@ -26,7 +26,8 @@ It suggests many packages but does not force you to import them as there are man
 
 If you want to install all of them however, do:
 
-```{r}
+```{r eval = FALSE}
+# Remove 'eval = FALSE' to run
 install.packages(c('dplyr',
                    'tibble',
                    'tidyr',
