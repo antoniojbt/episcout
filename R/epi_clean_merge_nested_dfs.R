@@ -125,11 +125,42 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   # Initialise merge:
   df1 <- nested_list_dfs[[1]]
   df2 <- nested_list_dfs[[2]]
-  temp_df <- merge(df1, df2, by = id_col, all = TRUE, suffixes = c('df_1', 'df_2'))
+  print('Merging first two data frames')
+  if (!is.null(names(nested_list_dfs))) {
+    suffix_1 <- paste0('_', names(nested_list_dfs)[1])
+    suffix_2 <- paste0('_', names(nested_list_dfs)[2])
+    print(sprintf('Using suffixes: %s and %s',
+                  suffix_1,
+                  suffix_2)
+          )
+  } else {
+    suffix_1 <- '_1'
+    suffix_2 <- '_2'
+    print(sprintf('No names for list passed, using %s and %s as suffixes',
+                  suffix_1,
+                  suffix_2)
+          )
+  }
+  temp_df <- merge(df1, df2,
+                   by = id_col,
+                   all = TRUE,
+                   suffixes = c(suffix_1, suffix_2)
+                   )
   # Loop through nested data frames and merge each to previous merged df:
+  # TO DO: if there were truly many and large DFs could add a parallel option
+  print('Merging further dataframes.')
+  print('Suffixes are only used if there are clashes.')
+  print('Check column names and manually rename the last dataframe columns
+         if necessary')
+  # print(sprintf('Using suffixes: %s and %s', suffix_1, suffix_2))
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
-    # the initial merge
-    suffix_2 <- sprintf('_%s', i)
+                                         # the initial merge
+    if (!is.null(names(nested_list_dfs))) {
+      # suffix_1 should just be blank as will be a merged df already
+      suffix_2 <- paste0('_', names(nested_list_dfs)[i])
+      } else {
+        suffix_2 <- sprintf('_%s', i)
+      }
     df2 <- nested_list_dfs[[i]] # new df to merge, starting at 3
     temp_df <- merge(temp_df,
                      df2,
@@ -137,6 +168,7 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
                      all = TRUE,
                      suffix = c('', suffix_2)
                      )
+    # option suffix is only used if there is a clash
     }
   return(temp_df)
   }
