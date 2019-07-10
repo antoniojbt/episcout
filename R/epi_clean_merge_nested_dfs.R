@@ -122,21 +122,25 @@
 epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
                                        id_col = ''
                                        ) {
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop("Package data.table needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
   # Initialise merge:
   df1 <- nested_list_dfs[[1]]
   df2 <- nested_list_dfs[[2]]
-  temp_df <- merge(df1, df2, by = id_col, all = TRUE, suffixes = c('df_1', 'df_2'))
+  temp_df <- data.table::merge(df1, df2, by = id_col, all = TRUE, suffixes = c('df_1', 'df_2'))
   # Loop through nested data frames and merge each to previous merged df:
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
     # the initial merge
     suffix_2 <- sprintf('_%s', i)
     df2 <- nested_list_dfs[[i]] # new df to merge, starting at 3
-    temp_df <- merge(temp_df,
-                     df2,
-                     by = id_col,
-                     all = TRUE,
-                     suffix = c('', suffix_2)
-                     )
+    temp_df <- data.table::merge(temp_df,
+                                 df2,
+                                 by = id_col,
+                                 all = TRUE,
+                                 suffix = c('', suffix_2)
+                                )
     }
   return(temp_df)
   }
