@@ -4,17 +4,24 @@
 \alias{epi_clean_merge_nested_dfs}
 \title{Recursively merge data frames that are stored as lists within a list}
 \usage{
-epi_clean_merge_nested_dfs(nested_list_dfs = NULL, id_col = "")
+epi_clean_merge_nested_dfs(nested_list_dfs = NULL, id_col = "",
+  all.x = TRUE, ...)
 }
 \arguments{
 \item{nested_list_dfs}{A nested list of dataframes to merge, such as the output
 from \code{\link{epi_clean_spread_repeated}}.}
 
 \item{id_col}{A string to identify the column to merge by. This is passed to
-the by parameter in merge().}
+the by parameter in merge(). Requires all dataframes to have the same column
+name.}
+
+\item{all.x}{corresponds to merge() all.x parameter. TRUE by default.}
+
+\item{...}{any further arguments that merge.data.frame or merge.data.table can
+take.}
 }
 \value{
-A dataframe in wide format with each sub-dataframe contained as a
+A data.table in wide format with each sub-dataframe contained as a
 sub-list
 }
 \description{
@@ -32,7 +39,9 @@ This function helps with spreading and gathering long and wide dataframes.
 You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as
 well as similar base functions and other packages such as data.table depending
 on your problem. See example below in case you have a messier dataframe which
-doesn't easily yield to existing workflows and functions.
+doesn't easily yield to existing workflows and functions. Note that
+merge.data.table is dispatched (as opposed to merge.data.frame). To get all = TRUE,
+pass all.x = TRUE and all.y = TRUE.
 }
 \examples{
 

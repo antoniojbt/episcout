@@ -11,16 +11,24 @@
 #' from \code{\link{epi_clean_spread_repeated}}.
 #'
 #' @param id_col A string to identify the column to merge by. This is passed to
-#' the by parameter in merge().
+#' the by parameter in merge(). Requires all dataframes to have the same column
+#' name.
 #'
-#' @return A dataframe in wide format with each sub-dataframe contained as a
+#' @param all.x corresponds to merge() all.x parameter. TRUE by default.
+#'
+#' @param ... any further arguments that merge.data.frame or merge.data.table can
+#' take.
+#'
+#' @return A data.table in wide format with each sub-dataframe contained as a
 #' sub-list
 #'
 #' @note This function helps with spreading and gathering long and wide dataframes.
 #' You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as
 #' well as similar base functions and other packages such as data.table depending
 #' on your problem. See example below in case you have a messier dataframe which
-#' doesn't easily yield to existing workflows and functions.
+#' doesn't easily yield to existing workflows and functions. Note that
+#' merge.data.table is dispatched (as opposed to merge.data.frame). To get all = TRUE,
+#' pass all.x = TRUE and all.y = TRUE.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -120,13 +128,24 @@
 #'
 
 epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
-                                       id_col = ''
+                                       id_col = '',
+                                       all.x = TRUE,
+                                       ...
                                        ) {
+  if (!requireNamespace('data.table', quietly = TRUE)) {
+    stop("Package data.table needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
   # Initialise merge:
-  df1 <- nested_list_dfs[[1]]
-  df2 <- nested_list_dfs[[2]]
+  df1 <- data.table::as.data.table(nested_list_dfs[[1]])
+  df2 <- data.table::as.data.table(nested_list_dfs[[2]])
   print('Merging first two data frames')
-  if (!is.null(names(nested_list_dfs))) {
+  # If there are names in list but they are duplicated:
+  if (!is.null(names(nested_list_dfs)) & any(duplicated(names(nested_list_dfs)))) {
+   warning('Duplicated names in list passed. Using default suffixes.')
+  }
+  # If there are names and no duplicates:
+  if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
     suffix_1 <- paste0('_', names(nested_list_dfs)[1])
     suffix_2 <- paste0('_', names(nested_list_dfs)[2])
     print(sprintf('Using suffixes: %s and %s',
@@ -136,15 +155,17 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   } else {
     suffix_1 <- '_1'
     suffix_2 <- '_2'
-    print(sprintf('No names for list passed, using %s and %s as suffixes',
+    print(sprintf('Duplicated names or no names in list passed,
+                   using %s and %s as suffixes',
                   suffix_1,
                   suffix_2)
           )
   }
   temp_df <- merge(df1, df2,
                    by = id_col,
-                   all = TRUE,
-                   suffixes = c(suffix_1, suffix_2)
+                   all.x = all.x,
+                   suffixes = c(suffix_1, suffix_2),
+                   ...
                    )
   # Loop through nested data frames and merge each to previous merged df:
   # TO DO: if there were truly many and large DFs could add a parallel option
@@ -152,21 +173,21 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   print('Suffixes are only used if there are clashes.')
   print('Check column names and manually rename the last dataframe columns
          if necessary')
-  # print(sprintf('Using suffixes: %s and %s', suffix_1, suffix_2))
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
                                          # the initial merge
-    if (!is.null(names(nested_list_dfs))) {
+  if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
       # suffix_1 should just be blank as will be a merged df already
       suffix_2 <- paste0('_', names(nested_list_dfs)[i])
       } else {
         suffix_2 <- sprintf('_%s', i)
       }
-    df2 <- nested_list_dfs[[i]] # new df to merge, starting at 3
+    df2 <- data.table::as.data.table(nested_list_dfs[[i]]) # new df to merge, starting at 3
     temp_df <- merge(temp_df,
                      df2,
                      by = id_col,
-                     all = TRUE,
-                     suffix = c('', suffix_2)
+                     all.x = all.x,
+                     suffixes = c('', suffix_2),
+                     ...
                      )
     # option suffix is only used if there is a clash
     }
