@@ -171,25 +171,25 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   # TO DO: if there were truly many and large DFs could add a parallel option
   print('Merging further dataframes.')
   print('Suffixes are only used if there are clashes.')
-  print('Check column names and manually rename the last dataframe columns
-         if necessary')
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
                                          # the initial merge
-  if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
-      # suffix_1 should just be blank as will be a merged df already
-      suffix_2 <- paste0('_', names(nested_list_dfs)[i])
-      } else {
-        suffix_2 <- sprintf('_%s', i)
-      }
-    df2 <- data.table::as.data.table(nested_list_dfs[[i]]) # new df to merge, starting at 3
-    temp_df <- merge(temp_df,
-                     df2,
-                     by = id_col,
-                     all.x = all.x,
-                     suffixes = c('', suffix_2),
-                     ...
-                     )
+    if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
+        # suffix_1 should just be blank as will be a merged df already
+        suffix_2 <- paste0('_', names(nested_list_dfs)[i])
+        } else {
+          suffix_2 <- sprintf('_%s', i)
+        }
+      print(sprintf('Suffix to use: %s', suffix_2))
+      df2 <- data.table::as.data.table(nested_list_dfs[[i]]) # new df to merge, starting at 3
+      temp_df <- merge(temp_df,
+                       df2,
+                       by = id_col,
+                       all.x = all.x,
+                       suffixes = c('', suffix_2),
+                       ...
+                       )
     # option suffix is only used if there is a clash
     }
   return(temp_df)
+  print('Done merging')
   }
