@@ -190,6 +190,6 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
                        )
     # option suffix is only used if there is a clash
     }
-  return(temp_df)
   print('Done merging')
+  return(temp_df)
   }
