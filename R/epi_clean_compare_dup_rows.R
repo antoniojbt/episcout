@@ -62,15 +62,16 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
                              fixed = TRUE) # match as string, not regex
   )
   # check_dups[dup_indices, 1:2]
-  comp <- compare::compare(df_dups[dup_indices[sub_index_1], ],
-                           df_dups[dup_indices[sub_index_2], ],
+  comp <- compare::compare(df_dups[dup_indices[sub_index_1], , drop = FALSE],
+                           df_dups[dup_indices[sub_index_2], , drop = FALSE],
                            allowAll = TRUE,
                            ...
-  )
+                           )
   comp_diff <- which(comp$detailedResult == FALSE)
   names_diff_cols <- names(which(comp$detailedResult == FALSE))
   comp_results <- list('differing_cols' = comp_diff,
                        'col_names' = names_diff_cols,
-                       'duplicate_indices' = dup_indices)
+                       'duplicate_indices' = dup_indices
+                       )
   return(comp_results)
 }
