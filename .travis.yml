@@ -13,7 +13,7 @@
 # https://github.com/travis-ci/travis-build/blob/master/lib/travis/build/script/r.rb
 #####
 
-language: R
+language: r
 sudo: false
 cache: packages
 
