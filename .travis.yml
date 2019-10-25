@@ -19,7 +19,7 @@ cache: packages
 
 matrix:
   fast_finish: true
-#  include:
+  include:
 # set vdiffr to false on all as frequently causes errors on travis but not locally
   - r: devel
     dist: trusty
@@ -42,26 +42,21 @@ matrix:
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-#  - r: 3.4 # cowplot now only >= R 3.5
-#    dist: trusty
-#    env:
-#      - VDIFFR_RUN_TESTS=false
-#      - _R_CHECK_SYSTEM_CLOCK_=false
   allow_failures: # getting warnings and cannot download on several osx
-# also set vdiffr to false on all   
-    - r: devel
-      os: osx
-      warnings_are_errors: false
-      env:
-        - VDIFFR_RUN_TESTS=false
-        - _R_CHECK_SYSTEM_CLOCK_=false
+# also set vdiffr to false on all
+  - r: devel
+    os: osx
+    warnings_are_errors: false
+    env:
+      - VDIFFR_RUN_TESTS=false
+      - _R_CHECK_SYSTEM_CLOCK_=false
   - r: release
     os: osx
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
   - r: 3.6
-    os: osx 
+    os: osx
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
@@ -70,11 +65,6 @@ matrix:
     env:
       - VDIFFR_RUN_TESTS=false
       - _R_CHECK_SYSTEM_CLOCK_=false
-#  - r: 3.4 # cowplot now only >= R 3.5
-#    os: osx
-#    env:
-#      - VDIFFR_RUN_TESTS=false
-#      - _R_CHECK_SYSTEM_CLOCK_=false
 
 r_packages:
     - dplyr
@@ -97,10 +87,8 @@ r_packages:
     - tidyr
     - covr
     - vdiffr
-
-r_binary_packages:
-    - testthat
     - knitr
+    - testthat
 
 after_success:
     - Rscript -e 'library(covr); covr::codecov()'
