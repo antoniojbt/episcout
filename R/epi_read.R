@@ -55,7 +55,7 @@ epi_read <- function(input_name = '',
     stop("Package data.table needed for this function to work. Please install it.",
          call. = FALSE)
     }
-  tibble::as.tibble(as.data.frame(data.table::fread(input = input_name,
+  tibble::as_tibble(as.data.frame(data.table::fread(input = input_name,
                                                     na.strings = na.strings,
                                                     header = header,
                                                     stringsAsFactors = stringsAsFactors,

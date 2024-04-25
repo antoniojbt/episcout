@@ -89,8 +89,8 @@ epi_stats_corr_rename <- function(r_vals = 'melted_triangles$cormat_melted_trian
   #               cols = 3)
   # summary(cormat_melted_triangle_pval)
   # Add rounded correlation coefficients to plot:
-  r_vals$value <- round(r_vals$value, 2)
-  p_vals$value <- round(p_vals$value, 2)
+  r_vals$value <- round(r_vals$value, digits)
+  p_vals$value <- round(p_vals$value, digits)
   # Return the renamed and as factor melted triangles:
   melted_triangles <- list(cormat_melted_triangle_r = r_vals,
                            cormat_melted_triangle_pval = p_vals)

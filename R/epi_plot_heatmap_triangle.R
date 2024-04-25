@@ -31,6 +31,7 @@
 #' @examples
 #'
 #' \dontrun{
+#' n <- 100
 #' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
 #' var_to_rep = rep(c("Pre", "Post"), n / 2),
 #' x = rnorm(n),
@@ -67,6 +68,8 @@
 #'}
 #' @export
 #'
+
+# TO DO: add option of not showing labels as looks cluttered with too many
 
 epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
                                       cormat_melted_triangle_pval = NULL,
