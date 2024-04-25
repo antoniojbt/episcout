@@ -46,11 +46,24 @@ epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
   }
   cormat_tri_r <- as.matrix(cormat$r)
   cormat_tri_P <- as.matrix(cormat$P)
+  # TO DO: fix warning message: "The melt generic in data.table has been passed a matrix and will attempt to redirect to the relevant reshape2 method"
+  # reshape2 is deprecated, switching to data.table has knock-on errors though in
+  # epi_stats_corr_rename()
+  # epi_plot_heatmap()
+  # epi_plot_heatmap_triangle()
+  #
+  # cormat_tri_r <- data.table::as.data.table(cormat$r)
+  # cormat_tri_r <- cormat$r
+  # cormat_tri_P <- data.table::as.data.table(cormat$P)
+  # cormat_tri_P <- cormat$P
+
   # Turn all upper triangle values to NA:
   cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
   # Melt and remove NAs:
+  # TO DO: Fix warning message, "Consider providing at least one of 'id' or 'measure' vars"
   cormat_melted_triangle_r <- data.table::melt(cormat_tri_r,
                                                na.rm = TRUE)
+  # Usually no NAs for correlation values though, indices will not match for cormat_tri_r and cormat_tri_P files
   # And the same for p-values:
   cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
   # Melt:

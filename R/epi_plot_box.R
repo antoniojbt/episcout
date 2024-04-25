@@ -20,7 +20,7 @@
 #' Default is 0.2.
 #' @param jitter_alpha ggplot2::geom_jitter parameter used for 2 variable boxplot only.
 #' Default is 0.5.
-#' @param sum_fun.y ggplot2::stat_summary parameter used for 2 variable boxplot only.
+#' @param sum_fun ggplot2::stat_summary parameter used for 2 variable boxplot only.
 #' Default is mean.
 #' @param sum_geom ggplot2::stat_summary parameter used for 2 variable boxplot only.
 #' Default is "point".
@@ -34,7 +34,7 @@
 #' @return Prints a ggplot2 boxplot
 #'
 #' @note For other options, save as object and build on the layers.
-#' var_x and var_y are passed to ggplot2::aes_string.
+#' var_x and var_y are passed to ggplot2::aes.
 #' For colour and fill see ggplot2::fill for further information.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
@@ -93,7 +93,7 @@ epi_plot_box <- function(df = NULL,
                          jitter_shape = 16,
                          jitter_position = 0.2,
                          jitter_alpha = 0.5,
-                         sum_fun.y = mean,
+                         sum_fun = mean,
                          sum_geom = "point",
                          sum_shape = 23,
                          sum_size = 4,
@@ -107,11 +107,15 @@ epi_plot_box <- function(df = NULL,
     stop("Package ggthemes needed for this function to work. Please install it.",
          call. = FALSE)
   }
+  if (!requireNamespace('rlang', quietly = TRUE)) {
+    stop("Package rlang needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
   # If only y is passed, boxplot of one variable:
   if (var_x == '') {
   box_plot_one <- ggplot2::ggplot(data = df,
-                                  ggplot2::aes_string(y = var_y)
-                                  ) + # aes_string() is soft-deprecated
+                                  ggplot2::aes(y = !!sym(var_y))
+                                  ) +
     ggplot2::geom_boxplot(outlier.alpha = outlier_alpha,
                           fill = fill,
                           colour = colour,
@@ -127,18 +131,20 @@ epi_plot_box <- function(df = NULL,
   # If both x and y are passed, boxplot of two variables:
   else if (!is.null(var_x)) {
       box_plot <- ggplot2::ggplot(data = df,
-                                  ggplot2::aes_string(y = var_y,
-                                                      x = var_x,
-                                                      fill = var_x)
-      ) + # aes_string() is soft-deprecated
+                                  ggplot2::aes(y = !!sym(var_y), #.data[[var_y]]),
+                                               x = !!sym(var_x), #.data[[var_x]],
+                                               fill = .data[[var_x]])
+                                               ) +
         ggplot2::stat_boxplot(geom = stat_geom, width = stat_width) +
         ggplot2::geom_boxplot(outlier.alpha = outlier_alpha,
                               ...) +
-        ggplot2::geom_jitter(shape = jitter_shape,
+        ggplot2::geom_jitter(#ggplot2::aes(x = .data[[var_x]], y = .data[[var_y]]),
+                             shape = jitter_shape,
                              position = ggplot2::position_jitter(jitter_position),
                              alpha = jitter_alpha
                              ) +
-        ggplot2::stat_summary(fun.y = sum_fun.y,
+        ggplot2::stat_summary(#ggplot2::aes(x = .data[[var_x]], y = .data[[var_y]]),
+                              fun = sum_fun,
                               geom = sum_geom,
                               shape = sum_shape,
                               size = sum_size
