@@ -1,6 +1,7 @@
-#' Apply Factor Levels and Labels Based on a Lookup Table
+
+#' @title Apply Factor Levels and Labels Based on a Lookup Table
 #'
-#' This function takes a dataframe and a lookup dataframe that contains the
+#' @description This function takes a dataframe and a lookup dataframe that contains the
 #' mapping of factors' levels and labels for specific variables. It applies
 #' these levels and labels to the corresponding variables in the target dataframe.
 #'
@@ -21,6 +22,8 @@
 #' # result_df <- epi_clean_label(data_df, lookup_df)
 #'
 #' @export
+#'
+
 epi_clean_label <- function(data_df, lookup_df) {
     # Ensure the lookup dataframe is in the correct format
     lookup_df <- lookup_df %>%
@@ -31,7 +34,7 @@ epi_clean_label <- function(data_df, lookup_df) {
         if (v %in% names(data_df)) {
             # Get levels and labels for this variable
             levels_and_labels <- lookup_df %>%
-                filter(variable == v) %>%
+                filter(variable == !!sym(v)) %>%
                 select(level, label) %>%
                 arrange(as.numeric(level))  # Ensure levels are in the correct order
 

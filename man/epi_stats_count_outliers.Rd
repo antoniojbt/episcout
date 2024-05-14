@@ -47,5 +47,5 @@ summary(df$x)
 \code{\link[grDevices]{boxplot.stats}}
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

@@ -4,8 +4,7 @@
 \alias{epi_plot_heatmap}
 \title{Plot a simple heatmap using ggplot2}
 \usage{
-epi_plot_heatmap(cormat_melted = "cormat_all$cormat_melted_r",
-  title = "")
+epi_plot_heatmap(cormat_melted = "cormat_all$cormat_melted_r", title = "")
 }
 \arguments{
 \item{cormat_melted}{a matrix object (usually the output of Hmisc::rcorr()
@@ -56,5 +55,5 @@ ggsave('my_heatmap.svg')
 \code{\link{epi_plot_heatmap_triangle}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

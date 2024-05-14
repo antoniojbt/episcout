@@ -2,6 +2,7 @@ context("episcout stats function tests")
 
 ######################
 library(testthat)
+library(dplyr)
 ######################
 
 ######################

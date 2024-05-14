@@ -4,8 +4,7 @@
 \alias{epi_clean_replace_value}
 \title{Replace values with string in a column}
 \usage{
-epi_clean_replace_value(df = NULL, col_id = "", pattern = "",
-  replace_str = NA)
+epi_clean_replace_value(df = NULL, col_id = "", pattern = "", replace_str = NA)
 }
 \arguments{
 \item{df}{data frame object with string values in column to match and replace}
@@ -62,5 +61,5 @@ df_factor$date_col
 \code{\link[stringr]{str_detect}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

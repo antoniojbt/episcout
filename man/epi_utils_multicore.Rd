@@ -4,8 +4,13 @@
 \alias{epi_utils_multicore}
 \title{Setup a parallel run}
 \usage{
-epi_utils_multicore(num_cores = NULL, future_plan = "multiprocess",
-  gc = TRUE, verbose = TRUE, ...)
+epi_utils_multicore(
+  num_cores = NULL,
+  future_plan = "multiprocess",
+  gc = TRUE,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{num_cores}{Number of cores to use. Default cores - 1.}
@@ -50,5 +55,5 @@ future_v
 \code{\link[future]{availableWorkers}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

@@ -41,5 +41,5 @@ length(which(complete.cases(nhanes)))
 \code{\link[stats]{complete.cases}}
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

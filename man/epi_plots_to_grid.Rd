@@ -4,8 +4,16 @@
 \alias{epi_plots_to_grid}
 \title{Send a list of plots to a grid object}
 \usage{
-epi_plots_to_grid(plot_list = NULL, align = "hv", axis = "lrtb",
-  labels = "AUTO", label_size = 12, ncol = NULL, nrow = NULL, ...)
+epi_plots_to_grid(
+  plot_list = NULL,
+  align = "hv",
+  axis = "lrtb",
+  labels = "AUTO",
+  label_size = 12,
+  ncol = NULL,
+  nrow = NULL,
+  ...
+)
 }
 \arguments{
 \item{plot_list}{List of plots to be arranged into the grid.}
@@ -43,5 +51,5 @@ See example in \code{\link{epi_plot_cow_save}} and ggplot2 wrappers epi_plot_*()
 \code{\link[cowplot]{save_plot}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

@@ -4,8 +4,12 @@
 \alias{epi_stats_summary}
 \title{Get summary statistics from a data frame with multiple columns}
 \usage{
-epi_stats_summary(df = NULL, codes = NULL, class_type = "chr_fct",
-  action = "exclude")
+epi_stats_summary(
+  df = NULL,
+  codes = NULL,
+  class_type = "chr_fct",
+  action = "exclude"
+)
 }
 \arguments{
 \item{df}{Data frame}
@@ -178,5 +182,5 @@ stat_sum_zero
 \code{\link{epi_clean_cond_numeric}}.
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

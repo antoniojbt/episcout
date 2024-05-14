@@ -4,9 +4,14 @@
 \alias{epi_read}
 \title{Read files with a consistent convenience function}
 \usage{
-epi_read(input_name = "", na.strings = c(-Inf, "NULL", NULL, ".", "",
-  "NA", "NaN", NA, "<NA>"), header = TRUE, stringsAsFactors = FALSE,
-  strip.white = TRUE, ...)
+epi_read(
+  input_name = "",
+  na.strings = c(-Inf, "NULL", NULL, ".", "", "NA", "NaN", NA, "<NA>"),
+  header = TRUE,
+  stringsAsFactors = FALSE,
+  strip.white = TRUE,
+  ...
+)
 }
 \arguments{
 \item{input_name}{file to read as a string}
@@ -49,5 +54,5 @@ super_data <- epi_read('super_data.tsv')
 \code{\link[data.table]{fread}}, \code{\link[tibble]{as.tibble}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

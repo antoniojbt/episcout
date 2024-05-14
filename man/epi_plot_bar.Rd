@@ -4,9 +4,17 @@
 \alias{epi_plot_bar}
 \title{Barplot wrapper function using ggplot2}
 \usage{
-epi_plot_bar(df = NULL, var_x = NULL, var_y = "", fill = NULL,
-  bar_colour = "black", guides_fill = FALSE, y_lab = "Count",
-  x_lab = var_x, ...)
+epi_plot_bar(
+  df = NULL,
+  var_x = NULL,
+  var_y = "",
+  fill = NULL,
+  bar_colour = "black",
+  guides_fill = "none",
+  y_lab = "Count",
+  x_lab = var_x,
+  ...
+)
 }
 \arguments{
 \item{df}{data.frame with x var to plot}
@@ -20,7 +28,7 @@ If passing both var_y and var_x, it uses var_x.}
 
 \item{bar_colour}{Aesthetics for ggplot2. Default is 'black' if only var_x.}
 
-\item{guides_fill}{Fill for ggplot2 guides. Default is FALSE.}
+\item{guides_fill}{Fill for ggplot2 guides. Default is 'none'.}
 
 \item{y_lab}{y-axis label. Default is 'Count'.}
 
@@ -95,5 +103,5 @@ ggplot(df_bar, aes(x = id_unique, y = value, fill = variable)) +
 \code{\link[ggplot2]{geom_bar}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

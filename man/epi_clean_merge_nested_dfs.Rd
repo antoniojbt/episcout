@@ -4,8 +4,12 @@
 \alias{epi_clean_merge_nested_dfs}
 \title{Recursively merge data frames that are stored as lists within a list}
 \usage{
-epi_clean_merge_nested_dfs(nested_list_dfs = NULL, id_col = "",
-  all.x = TRUE, ...)
+epi_clean_merge_nested_dfs(
+  nested_list_dfs = NULL,
+  id_col = "",
+  all.x = TRUE,
+  ...
+)
 }
 \arguments{
 \item{nested_list_dfs}{A nested list of dataframes to merge, such as the output
@@ -137,5 +141,5 @@ View(all_merged)
 \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

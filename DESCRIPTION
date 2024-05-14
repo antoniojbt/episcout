@@ -47,5 +47,5 @@ Suggests:
     covr,
     roxygen2
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
 VignetteBuilder: knitr
+RoxygenNote: 7.3.1

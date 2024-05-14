@@ -45,5 +45,5 @@ class(melted_triangles)
 \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

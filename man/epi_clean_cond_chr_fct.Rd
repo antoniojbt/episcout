@@ -42,5 +42,5 @@ epi_clean_cond_chr_fct(df_cont_chr[, 'x']) # should be 'FALSE'
 \code{\link[base]{is.factor}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

@@ -27,12 +27,7 @@ Normality is tested with Shapiro-Wilk (small values indicate
 non-normality). Testing normality can be contentious, likely uninformative
 and with Shapiro-Wilk can only be done for sample size between 3-5000.
 The package e1071 is used for skewness and kurtosis.
-For skewness: negative/longer left tail, positive/longer right tail,
-
-1 usually means non-normality. For kurtosis consider lower values,
-broader shape and longer tails (platy ~<3), normal (meso ~3)
-and slender/no tails (lepto ~<3). Outliers are detected with the Tukey
-method (above and below 1.5 * IQR). na.rm is TRUE by default for all tests.
+For skewness: negative/longer left tail, positive/longer right tail,1 usually means non-normality. For kurtosis consider lower values,broader shape and longer tails (platy ~<3), normal (meso ~3)and slender/no tails (lepto ~<3). Outliers are detected with the Tukeymethod (above and below 1.5 * IQR). na.rm is TRUE by default for all tests.
 }
 \examples{
 #####
@@ -178,5 +173,5 @@ stat_sum_zero
 \code{\link[e1071]{kurtosis}}.
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

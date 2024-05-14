@@ -4,8 +4,13 @@
 \alias{epi_plot_cow_save}
 \title{Save a grid of plots}
 \usage{
-epi_plot_cow_save(file_name = NULL, plot_grid = NULL,
-  base_height = 11.69, base_width = 8.27, ...)
+epi_plot_cow_save(
+  file_name = NULL,
+  plot_grid = NULL,
+  base_height = 11.69,
+  base_width = 8.27,
+  ...
+)
 }
 \arguments{
 \item{file_name}{Name of the file to save}
@@ -67,5 +72,5 @@ epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
 \code{\link[cowplot]{save_plot}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }
