@@ -4,10 +4,13 @@
 \alias{epi_stats_corr_rename}
 \title{Rename variables from melted triangles and convert to factors}
 \usage{
-
-  epi_stats_corr_rename(r_vals = "melted_triangles$cormat_melted_triangle_r",
+epi_stats_corr_rename(
+  r_vals = "melted_triangles$cormat_melted_triangle_r",
   p_vals = "melted_triangles$cormat_melted_triangle_pval",
-  vars_list = vars_list, var_labels = var_labels, digits = 2)
+  vars_list = vars_list,
+  var_labels = var_labels,
+  digits = 2
+)
 }
 \arguments{
 \item{r_vals}{Correlation values in melted (long) format.
@@ -72,5 +75,5 @@ renamed_triangles
 \code{\link[Hmisc]{rcorr}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

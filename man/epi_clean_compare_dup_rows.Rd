@@ -4,8 +4,15 @@
 \alias{epi_clean_compare_dup_rows}
 \title{Compare two rows which may be duplicated}
 \usage{
-epi_clean_compare_dup_rows(df_dups = NULL, val_id = "1", col_id = "",
-  sub_index_1 = 1, sub_index_2 = 2, allowAll = TRUE, ...)
+epi_clean_compare_dup_rows(
+  df_dups = NULL,
+  val_id = "1",
+  col_id = "",
+  sub_index_1 = 1,
+  sub_index_2 = 2,
+  allowAll = TRUE,
+  ...
+)
 }
 \arguments{
 \item{df_dups}{a data frame with duplicated entries to compare}

@@ -4,9 +4,16 @@
 \alias{epi_write}
 \title{Write files with a consistent convenience function}
 \usage{
-epi_write(file_object = NULL, file_name = "my_file.tsv",
-  row.names = FALSE, quote = FALSE, sep = "\\t", na = "NA",
-  col.names = TRUE, ...)
+epi_write(
+  file_object = NULL,
+  file_name = "my_file.tsv",
+  row.names = FALSE,
+  quote = FALSE,
+  sep = "\\t",
+  na = "NA",
+  col.names = TRUE,
+  ...
+)
 }
 \arguments{
 \item{file_object}{Object to write}
@@ -52,5 +59,5 @@ epi_write(some_dataframe, 'some_dataframe.tsv')
 \code{\link[data.table]{fwrite}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

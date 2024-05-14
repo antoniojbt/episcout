@@ -4,8 +4,13 @@
 \alias{epi_clean_compare_str}
 \title{Compare two strings}
 \usage{
-epi_clean_compare_str(df = NULL, row_n = 1, string_col = "",
-  fixed_chr_col = "", ...)
+epi_clean_compare_str(
+  df = NULL,
+  row_n = 1,
+  string_col = "",
+  fixed_chr_col = "",
+  ...
+)
 }
 \arguments{
 \item{df}{a data frame object containing rows with strings to compare}

@@ -4,11 +4,24 @@
 \alias{epi_plot_box}
 \title{Boxplot wrapper function using ggplot2}
 \usage{
-epi_plot_box(df = NULL, var_y = NULL, var_x = "",
-  outlier_alpha = 0.7, fill = "grey80", colour = "grey20",
-  stat_geom = "errorbar", stat_width = 0.5, jitter_shape = 16,
-  jitter_position = 0.2, jitter_alpha = 0.5, sum_fun.y = mean,
-  sum_geom = "point", sum_shape = 23, sum_size = 4, ...)
+epi_plot_box(
+  df = NULL,
+  var_y = NULL,
+  var_x = "",
+  outlier_alpha = 0.7,
+  fill = "grey80",
+  colour = "grey20",
+  stat_geom = "errorbar",
+  stat_width = 0.5,
+  jitter_shape = 16,
+  jitter_position = 0.2,
+  jitter_alpha = 0.5,
+  sum_fun = mean,
+  sum_geom = "point",
+  sum_shape = 23,
+  sum_size = 4,
+  ...
+)
 }
 \arguments{
 \item{df}{data.frame with x var to plot}
@@ -39,7 +52,7 @@ Default is 0.2.}
 \item{jitter_alpha}{ggplot2::geom_jitter parameter used for 2 variable boxplot only.
 Default is 0.5.}
 
-\item{sum_fun.y}{ggplot2::stat_summary parameter used for 2 variable boxplot only.
+\item{sum_fun}{ggplot2::stat_summary parameter used for 2 variable boxplot only.
 Default is mean.}
 
 \item{sum_geom}{ggplot2::stat_summary parameter used for 2 variable boxplot only.
@@ -63,7 +76,7 @@ a number of set preferences, see below.
 }
 \note{
 For other options, save as object and build on the layers.
-var_x and var_y are passed to ggplot2::aes_string.
+var_x and var_y are passed to ggplot2::aes.
 For colour and fill see ggplot2::fill for further information.
 }
 \examples{
@@ -109,5 +122,5 @@ scale_fill_brewer(palette = "Blues") +
 \code{\link[ggplot2]{geom_boxplot}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

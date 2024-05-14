@@ -4,9 +4,12 @@
 \alias{epi_plot_heatmap_triangle}
 \title{Plot a triangle heatmap using ggplot2}
 \usage{
-epi_plot_heatmap_triangle(cormat_melted_triangle_r = NULL,
-  cormat_melted_triangle_pval = NULL, cor_method = "Spearman",
-  show_values = "pval")
+epi_plot_heatmap_triangle(
+  cormat_melted_triangle_r = NULL,
+  cormat_melted_triangle_pval = NULL,
+  cor_method = "Spearman",
+  show_values = "pval"
+)
 }
 \arguments{
 \item{cormat_melted_triangle_r}{a matrix object with correlation values
@@ -37,6 +40,7 @@ method used for correlation (eg 'Spearman')
 \examples{
 
 \dontrun{
+n <- 100
 df <- data.frame(var_id = rep(1:(n / 2), each = 2),
 var_to_rep = rep(c("Pre", "Post"), n / 2),
 x = rnorm(n),
@@ -77,5 +81,5 @@ ggsave('epi_heatmap_triangle.svg',
 \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

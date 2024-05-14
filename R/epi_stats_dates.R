@@ -73,11 +73,13 @@
 #' \code{\link{epi_stats_format}},
 #' \code{\link{epi_stats_numeric}}.
 #'
-# TO DO:
+#' TO DO:
 ##' @example vignettes/summary_funcs_examples.R
 #'
 #' @export
 #'
+#' @importFrom stats IQR filter
+
 
 epi_stats_dates <- function(date_vector) {
     # Ensure the input is a Date or IDate class:
