@@ -34,7 +34,7 @@ epi_clean_label <- function(data_df, lookup_df) {
         if (v %in% names(data_df)) {
             # Get levels and labels for this variable
             levels_and_labels <- lookup_df %>%
-                filter(variable == !!sym(v)) %>%
+                filter(variable == !!sym(v)) %>% # This errors, as does !!sym(v)
                 select(level, label) %>%
                 arrange(as.numeric(level))  # Ensure levels are in the correct order
 
