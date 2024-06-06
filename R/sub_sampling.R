@@ -40,9 +40,12 @@ data_f_1 <- data_f[data_f[[outcome_var]] == 1, ]
 dim(data_f_0)
 dim(data_f_1)
 
-# Calculate percent needed of the total size:
-sample_size_0 <- round(0.01 * nrow(data_f_0))
-sample_size_1 <- round(0.01 * nrow(data_f_1))
+# Calculate percent needed of the total size, var defined in other script:
+# perc_needed <- 0.0001
+sample_size <- perc_needed * nrow(data_f)
+sample_size
+sample_size_0 <- round(perc_needed * nrow(data_f_0))
+sample_size_1 <- round(perc_needed * nrow(data_f_1))
 
 # Sample without replacement using the normalized weights
 set.seed(123)  # for reproducibility
@@ -51,7 +54,7 @@ set.seed(123)  # for reproducibility
 sample_indices_0 <- sample(1:nrow(data_f_0), size = sample_size_0, replace = FALSE)
 sample_indices_1 <- sample(1:nrow(data_f_1), size = sample_size_1, replace = FALSE)
 
-length(sample_indices_0) 
+length(sample_indices_0)
 length(sample_indices_1)
 
 # Actual sub-samples:
