@@ -77,46 +77,103 @@
 #' @export
 #'
 
-epi_plot_bar <- function(df = NULL,
-                         var_x = NULL,
-                         var_y = '',
-                         fill = NULL,
-                         bar_colour = 'black',
-                         guides_fill = 'none',
-                         y_lab = 'Count',
-                         x_lab = var_x,
-                         ...
-) {
-  if (!requireNamespace('ggplot2', quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  # If only y is passed, plot of one variable:
-  if (var_y == '') {
-    bar_plot_one <- ggplot2::ggplot(df,
-                                    ggplot2::aes(x = !!sym(var_x), #.data[[var_y]]),
-                                                 fill = var_x)
-    ) +
-      ggplot2::geom_bar(stat = 'count',
-                        colour = bar_colour,
-                        ...
-      ) +
-      ggplot2::guides(fill = guides_fill) +
-      ggplot2::labs(y = y_lab, x = x_lab)
-    return(bar_plot_one)
-  }
-  # If both x and y are passed, plot of two variables:
-  else if (!is.null(var_y)) {
-    bar_plot <- ggplot2::ggplot(df,
-                                ggplot2::aes(x = !!sym(var_x),
-                                             y = !!sym(var_y),
-                                             fill = fill)
-    ) +
-      ggplot2::geom_bar(stat = 'identity',
-                        position = 'dodge',
-                        ...
-      ) +
-      ggplot2::labs(y = y_lab, x = x_lab)
-    return(bar_plot)
-  }
+# epi_plot_bar <- function(df = NULL,
+#                          var_x = NULL,
+#                          var_y = '',
+#                          fill = NULL,
+#                          bar_colour = 'black',
+#                          guides_fill = 'none',
+#                          y_lab = 'Count',
+#                          x_lab = var_x,
+#                          ...
+# ) {
+#   if (!requireNamespace('ggplot2', quietly = TRUE)) {
+#     stop("Package ggplot2 needed for this function to work. Please install it.",
+#          call. = FALSE)
+#   }
+#   # If only y is passed, plot of one variable:
+#   if (var_y == '') {
+#     bar_plot_one <- ggplot2::ggplot(df,
+#                                     ggplot2::aes(x = !!sym(var_x), #.data[[var_y]]),
+#                                                  fill = var_x)
+#     ) +
+#       ggplot2::geom_bar(stat = 'count',
+#                         colour = bar_colour,
+#                         ...
+#       ) +
+#       ggplot2::guides(fill = guides_fill) +
+#       ggplot2::labs(y = y_lab, x = x_lab)
+#     return(bar_plot_one)
+#   }
+#   # If both x and y are passed, plot of two variables:
+#   else if (!is.null(var_y)) {
+#     bar_plot <- ggplot2::ggplot(df,
+#                                 ggplot2::aes(x = !!sym(var_x),
+#                                              y = !!sym(var_y),
+#                                              fill = fill)
+#     ) +
+#       ggplot2::geom_bar(stat = 'identity',
+#                         position = 'dodge',
+#                         ...
+#       ) +
+#       ggplot2::labs(y = y_lab, x = x_lab)
+#     return(bar_plot)
+#   }
+# }
+
+epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
+                         bar_colour = "black", guides_fill = "none",
+                         y_lab = "Count", x_lab = var_x,
+                         custom_palette = NULL,  # Default to NULL
+                         ...)
+{
+    # Load required packages
+    if (!requireNamespace("ggplot2", quietly = TRUE)) {
+        stop("Package ggplot2 needed for this function to work. Please install it.",
+             call. = FALSE)
+    }
+
+    # Check if `fill` is NULL and default to `var_x` for coloring
+    if (is.null(fill)) fill <- var_x
+
+    # Get the number of levels in the fill variable
+    num_levels <- length(unique(df[[fill]]))
+
+    # If a custom palette is provided, recycle colors if needed
+    if (!is.null(custom_palette)) {
+        custom_palette <- rep(custom_palette, length.out = num_levels)
+    }
+
+    # Handle the plot creation
+    if (var_y == "") {
+        # Count-based bar plot
+        bar_plot_one <- ggplot2::ggplot(df, ggplot2::aes(x = !!rlang::sym(var_x),
+                                                         fill = !!rlang::sym(fill))) +
+            ggplot2::geom_bar(stat = "count", colour = bar_colour, ...) +
+            ggplot2::guides(fill = guides_fill) +
+            ggplot2::labs(y = y_lab, x = x_lab)
+
+        # Apply custom color palette if provided
+        if (!is.null(custom_palette)) {
+            bar_plot_one <- bar_plot_one +
+                ggplot2::scale_fill_manual(values = custom_palette)
+        }
+
+        return(bar_plot_one)
+    } else {
+        # Identity-based bar plot
+        bar_plot <- ggplot2::ggplot(df, ggplot2::aes(x = !!rlang::sym(var_x),
+                                                     y = !!rlang::sym(var_y),
+                                                     fill = !!rlang::sym(fill))) +
+            ggplot2::geom_bar(stat = "identity", position = "dodge", ...) +
+            ggplot2::labs(y = y_lab, x = x_lab)
+
+        # Apply custom color palette if provided
+        if (!is.null(custom_palette)) {
+            bar_plot <- bar_plot +
+                ggplot2::scale_fill_manual(values = custom_palette)
+        }
+
+        return(bar_plot)
+    }
 }
