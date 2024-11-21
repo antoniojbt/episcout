@@ -33,9 +33,7 @@ make_unique_name <- function(name, names_so_far) {
 
 ###
 # Set the directory containing TSV files
-path_to_files <- '../results/COVID19MEXICO2021_2022_COVID-only_COISS-only/1_general_desc/'
-# path_to_files <- '../results/COVID19MEXICO2021_2022_COVID-only_COISS-only/2_d_death/'
-# path_to_files <- '../results/COVID19MEXICO2021_2022_COVID-only_COISS-only/3_d_death_30/'
+path_to_files <- '../results/COVID19MEXICO_2021_2022_COVID-only_COISS-only/11_June_2024/uni_regressions_DiD/1_OR_and_chi/'
 
 # List and count files directly:
 file_names <- dir(path_to_files,
@@ -53,6 +51,7 @@ head(file_names)
 # Read files into a list of data frames:
 files_list <- lapply(file_names, epi_read)
 length(files_list)
+lapply(files_list, epi_head_and_tail, cols = 4)
 
 # Create a new Excel workbook:
 wb <- openxlsx::createWorkbook()
@@ -74,7 +73,7 @@ for (i in seq_along(file_names)) {
 
 # Save the workbook:
 # base_name <- 'COVID19MEXICO2021_2022_COVID-only_COISS-only/1_general_desc/'
-file_name <- '1_general_desc'
+file_name <- '1_OR_and_chi'
 file_name <- sprintf('%s/%s.xlsx', path_to_files, file_name)
 file_name
 saveWorkbook(wb, file = file_name,
