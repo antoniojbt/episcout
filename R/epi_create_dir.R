@@ -1,45 +1,53 @@
-#' Set up a Directory with a Date or Custom Name
+#' Create a Directory and Nested Subdirectories
 #'
-#' This function creates a `results` directory within a specified `project_root` folder, using either the current date (in `dd_mm_yyyy` format) or a custom string to create a unique subdirectory. If the directory already exists, it does not create a new one.
-#' The function also lists the contents of the directory and returns the full path to the results directory.
+#' This function creates a directory at the specified path, including nested subdirectories if needed.
+#' If the directory already exists, it does nothing. The directory name can include subdirectories (e.g., `results/today_xxx/`), and these will be created recursively.
+#' The subdirectory can either be a custom name or the current date (`dd_mm_yyyy` format).
 #'
-#' @param project_root A character string specifying the path to the project root directory where the directory will be created.
-#' @param name Optional. A character string to use as the name of the subdirectory within the `results` directory. If not provided, the current date will be used.
+#' @param base_path A character string specifying the base path where the directory will be created.
+#' @param subdir Optional. A character string specifying the name of the subdirectory. If not provided, the current date will be used. Can include nested paths (e.g., `results/today_xxx`).
 #'
-#' @return The full path to the created or existing results directory.
-#'         Prints a message indicating whether the directory was created or already exists
-#'         and lists the contents of the directory.
+#'
+#' @return The full path to the created or existing directory.
+#'         Prints a message indicating whether the directory was created or already existed. Also prints the contents.
 #'
 #' @examples
 #' \dontrun{
-#' # Set up a results directory in the project root using the current date
-#' project_root <- "path/to/project_root"
-#' results_dir <- setup_results_dir(project_root)
+#' # Create a directory named with the current date
+#' base_dir <- "path/to/base_directory"
+#' dated_dir <- epi_create_dir(base_dir)
 #'
-#' # Set up a results directory with a custom name
-#' results_dir_custom <- setup_results_dir(project_root, name = "custom_analysis")
+#' # Create a directory with a custom name
+#' custom_dir <- epi_create_dir(base_dir, subdir = "custom_name")
+#'
+#' # Create a nested directory with today's date
+#' nested_dir <- epi_create_dir(base_dir, subdir = "results/today_xxx")
 #' }
 #'
 #' @export
-epi_create_dir <- function(project_root, name = NULL) {
-  # Use the custom name if provided; otherwise, use the current date
-  subdirectory_name <- if (!is.null(name)) name else format(Sys.Date(), "%d_%m_%Y")
+#'
 
-  # Create the results folder path
-  results_dir <- file.path(project_root, paste0("results/", subdirectory_name))
+epi_create_dir <- function(base_path, subdir = NULL) {
+   # Use the custom name if provided; otherwise, use the current date
+  subdirectory_name <- if (!is.null(subdir)) subdir else format(Sys.Date(), "%d_%m_%Y")
 
-  # Create the directory if it doesn't exist
-  if (!dir.exists(results_dir)) {
-    dir.create(results_dir, recursive = TRUE)
-    message("Created directory: ", results_dir)
+  # Combine base path and subdirectory
+  target_dir <- file.path(base_path, subdirectory_name)
+
+  # Create the directory recursively if it doesn't exist
+  if (!dir.exists(target_dir)) {
+    dir.create(target_dir, recursive = TRUE)
+    message("Created directory: ", normalizePath(target_dir))
   } else {
-    message("Directory already exists: ", results_dir)
+    message("Directory already exists: ", normalizePath(target_dir))
   }
 
-  # Print contents of the directory
-  contents <- dir(path = normalizePath(results_dir), all.files = TRUE)
+  # Print the contents of the directory
+  contents <- dir(path = normalizePath(target_dir), all.files = TRUE)
   print(contents)
 
-  # Return the results directory path
-  return(results_dir)
+  # Return the full path of the target directory
+  return(normalizePath(target_dir))
 }
+
+
