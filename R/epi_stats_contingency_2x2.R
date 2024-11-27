@@ -1,0 +1,158 @@
+#' Contingency Table and Statistical Test Functions
+#'
+#' A comprehensive set of functions to:
+#' - Generate contingency tables and summary tables.
+#' - Perform 2x2 contingency table significance tests.
+#'
+#' These functions include:
+#' - `epi_stats_contingency_2x2_df()`: Creates a raw contingency table between two variables.
+#' - `epi_stats_contingency_2x2_tables()`: Generates a named list of contingency tables for a target variable and all other variables.
+#' - `epi_stats_rename_contingency_2x2_cols()`: Renames columns in a list of contingency tables for clarity.
+#' - `epi_stats_contingency_2x2_test()`: Performs a statistical test (Fisher's exact or Chi-squared) on a 2x2 table.
+#' - `epi_stats_contingency_2x2_cols()`: Selects suitable columns for contingency table tests.
+#' - `epi_stats_contingency_2x2_all()`: Iteratively applies the tests and aggregates results into a data frame.
+#'
+#' @param df A data frame containing the data to analyze.
+#' @param x_var A string or numeric index specifying the independent variable (column in `df`).
+#' @param y_var A string or numeric index specifying the dependent variable (column in `df`).
+#' @param target_var The name of the target variable (e.g., dependent variable) as a string.
+#' @param other_var The name of the other variable to test against the target variable.
+#' @param min_unique Minimum number of unique values required to include a column for testing (default: 2).
+#' @param test_type The type of test to perform. Either `"fisher.test"` (default) or `"chisq.test"`.
+#' @param output_file (Optional) File path to save the aggregated test results.
+#'
+#' @return
+#' - `epi_stats_contingency_2x2_df()`: A data frame representing the contingency table with raw frequencies.
+#' - `epi_stats_contingency_2x2_tables()`: A named list of data frames, each representing a contingency table.
+#' - `epi_stats_rename_contingency_2x2_cols()`: A list of data frames with renamed columns.
+#' - `epi_stats_contingency_2x2_test`: A tidy data frame with test results for a single 2x2 table.
+#' - `epi_stats_contingency_2x2_cols()`: A character vector of column names that meet the criteria for testing.
+#' - `epi_stats_contingency_2x2_all()`: A data frame containing test results for all selected columns.
+#'
+#' @examples
+#' # Example dataset
+#' set.seed(42)
+#' col_facts <- data.frame(
+#'   State = sample(c("Active", "Inactive"), 100, replace = TRUE),
+#'   Gender = sample(c("Male", "Female"), 100, replace = TRUE),
+#'   Something = sample(c("Yes", "No"), 100, replace = TRUE),
+#'   Another = sample(c("Yes", "No", "Unknown"), 100, replace = TRUE),
+#'   Type = sample(c("Type1", "Type2", "Type3"), 100, replace = TRUE),
+#'   SingleValue = rep("Same", 100)
+#' )
+#'
+#' # Generate a contingency table for two variables
+#' contingency_2x2_df <- epi_stats_contingency_2x2_df(col_facts, x_var = "State", y_var = "Gender")
+#' print(contingency_2x2_df)
+#'
+#' # Generate contingency tables for all variables
+#' contingency_2x2_list <- epi_stats_contingency_2x2_tables(col_facts, x_var = "State")
+#' print(contingency_2x2_list[[1]])
+#'
+#' # Rename columns in contingency tables
+#' renamed_list <- rename_contingency_2x2_cols(contingency_2x2_list, col_facts, x_var = "State")
+#' print(renamed_list[[1]])
+#'
+#' # Perform a single 2x2 test
+#' result <- epi_stats_contingency_2x2_test(col_facts, "State", "Gender")
+#' print(result)
+#'
+#' # Select columns for testing
+#' testable_columns <- epi_stats_contingency_2x2_cols(col_facts)
+#' print(testable_columns)
+#'
+#' # Run tests on all testable columns
+#' results_df <- epi_stats_contingency_2x2_all(col_facts, "State")
+#' print(results_df)
+#'
+#' # Save results
+#' write.table(results_df, "fishers_results.txt", sep = "\t", row.names = FALSE, quote = FALSE)
+#'
+#' @importFrom tidyr pivot_wider
+#' @importFrom stats xtabs
+#' @importFrom dplyr bind_rows
+#' @importFrom broom tidy
+#' @name combined_contingency_2x2_functions
+NULL
+
+#' @rdname combined_contingency_2x2_functions
+#' @export
+epi_stats_contingency_2x2_df <- function(df, x_var, y_var) {
+  if (is.character(x_var)) x_var <- which(colnames(df) == x_var)
+  if (is.character(y_var)) y_var <- which(colnames(df) == y_var)
+  table_df <- as.data.frame(table(df[[x_var]], df[[y_var]]))
+  colnames(table_df)[1] <- colnames(df)[x_var]
+  colnames(table_df)[2] <- colnames(df)[y_var]
+  return(table_df)
+}
+
+#' @rdname combined_contingency_2x2_functions
+#' @export
+epi_stats_contingency_2x2_tables <- function(df, x_var) {
+  other_vars <- setdiff(colnames(df), x_var)
+  results <- lapply(other_vars, function(y_var) {
+    epi_stats_contingency_2x2_df(df, x_var = x_var, y_var = y_var)
+  })
+  names(results) <- other_vars
+  return(results)
+}
+
+#' @rdname combined_contingency_2x2_functions
+#' @export
+rename_contingency_2x2_cols <- function(contingency_2x2_list, df, x_var) {
+  for (i in seq_along(contingency_2x2_list)) {
+    df_table <- contingency_2x2_list[[i]]
+    dep_var <- names(contingency_2x2_list)[i]
+    colnames(df_table)[2] <- dep_var
+    contingency_2x2_list[[i]] <- df_table
+  }
+  return(contingency_2x2_list)
+}
+
+#' @rdname combined_contingency_2x2_functions
+#' @export
+epi_stats_contingency_2x2_test <- function(df, target_var, other_var, test_type = "fisher.test") {
+  tab <- table(df[[target_var]], df[[other_var]])
+
+  # Fallback to Chi-squared test for large tables or Monte Carlo for sparse ones
+  if (min(dim(tab)) > 2 || any(tab > 100)) {
+    test_type <- "chisq.test"
+  }
+
+  test <- tryCatch(
+    {
+      switch(
+        test_type,
+        "fisher.test" = fisher.test(tab, workspace = 2e7, simulate.p.value = TRUE, B = 1e6),
+        "chisq.test" = chisq.test(tab),
+        stop("Unsupported test type. Use 'fisher.test' or 'chisq.test'.")
+      )
+    },
+    error = function(e) stop("Test failed: ", e$message)
+  )
+
+  result <- broom::tidy(test)
+  result$variable <- other_var
+  return(result)
+}
+
+
+#' @rdname combined_contingency_2x2_functions
+#' @export
+epi_stats_contingency_2x2_cols <- function(df, min_unique = 2) {
+  unique_counts <- sapply(df, function(x) length(unique(x)))
+  testable <- names(df)[unique_counts >= min_unique]
+  return(testable)
+}
+
+#' @rdname combined_contingency_2x2_functions
+#' @export
+epi_stats_contingency_2x2_all <- function(df, target_var, test_type = "fisher.test") {
+  testable_columns <- epi_stats_contingency_2x2_cols(df)
+  testable_columns <- setdiff(testable_columns, target_var)
+  results <- lapply(testable_columns, function(other_var) {
+    epi_stats_contingency_2x2_test(df, target_var, other_var, test_type)
+  })
+  results_df <- dplyr::bind_rows(results)
+  return(results_df)
+}
