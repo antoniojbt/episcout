@@ -39,76 +39,38 @@
 #'
 
 epi_utils_multicore <- function(num_cores = NULL,
-                                future_plan = 'multiprocess',
+                                future_plan = "multisession",  # Updated default plan
                                 gc = TRUE,
                                 verbose = TRUE,
-                                ...
-                                # loop_start = 1,
-                                # loop_end = NULL
-                                ) {
-  # Check packages needed:
-  if (!requireNamespace('doFuture', quietly = TRUE)) {
-    stop("Package doFuture needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  if (!requireNamespace('future', quietly = TRUE)) {
-    stop("Package future needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  if (!requireNamespace('foreach', quietly = TRUE)) {
-    stop("Package foreach needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  if (!requireNamespace('iterators', quietly = TRUE)) {
-    stop("Package iterators needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  if (!requireNamespace('parallel', quietly = TRUE)) {
-    stop("Package parallel needed for this function to work. Please install it.",
-         call. = FALSE)
+                                ...) {
+  # Check for required packages
+  required_pkgs <- c("doFuture", "future", "foreach", "iterators", "parallel")
+  missing_pkgs <- required_pkgs[!sapply(required_pkgs, requireNamespace, quietly = TRUE)]
+  if (length(missing_pkgs) > 0) {
+    stop(sprintf("The following packages are required but not installed: %s",
+                 paste(missing_pkgs, collapse = ", ")))
   }
 
-  # Define cores:
-  if (is.null(num_cores)) {
-    num_cores <- max(1, parallel::detectCores() - 1)
-  } else {
-    num_cores <- num_cores
-  }
+  # Set number of cores
+  num_cores <- if (is.null(num_cores)) max(1, parallel::detectCores() - 1) else num_cores
 
+  # Register doFuture and configure plan
   doFuture::registerDoFuture()
-  # Cores:
-  av_cores <- future::availableCores()
-  # Workers:
-  av_workers <- future::availableWorkers()
-  # Plan:
-  exec_plan <- future::plan(strategy = future_plan,
-                            workers = num_cores,
-                            gc = gc,
-                            ...
-                            )
-  exec_plan
+  future::plan(strategy = future_plan, workers = num_cores, gc = gc, ...)
 
-  if (verbose == TRUE) {
-    print('Registering the doFuture parallel adaptor for foreach.')
-    print(sprintf('Available cores: %s', av_cores))
-    print(sprintf('Requested cores: %s', num_cores))
-    print(sprintf('Available workers: %s', av_workers))
-    print(exec_plan)
-    }
+  # Log details if verbose is TRUE
+  if (verbose) {
+    message("Parallel backend registered with the following configuration:")
+    message(sprintf("- Available cores: %s", future::availableCores()))
+    message(sprintf("- Requested cores: %s", num_cores))
+    message(sprintf("- Execution plan: %s", future::plan()))
+  }
 
-  # # Create loop in parallel:
-  # # Create output holder:
-  # list_length <- length(unique(df[[some_col]]))
-  # # List of unique individuals to extract:
-  # list_unique_ids <- unique(df[[some_id]])
-  # # Output holder:
-  # unique_inds <- vector(mode = 'list', length = list_length)
-  #
-# my_out <- foreach(i = loop_start:length(list_unique_ids)) %dopar% {
-# # Do something here:
-#  #
-# }
-# # Cleaning memory:
-# print('Cleaning memory').
-# gc() # Clear memory, may not be necessary, especially if running with functions
+  # Optional garbage collection
+  if (gc) {
+    gc()
+  }
+
+  # Return the number of cores for reference
+  invisible(num_cores)
 }
