@@ -52,5 +52,5 @@ ls()
 \code{\link[episcout]{epi_utils_log}}.
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

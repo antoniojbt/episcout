@@ -16,11 +16,12 @@ Imports:
     stats,
     grDevices,
     magrittr,
-    rlang (>= 0.1.2)
-Suggests: 
+    rlang (>= 0.1.2),
+    broom,
     dplyr,
     tibble,
-    tidyr,
+    tidyr
+Suggests: 
     data.table,
     compare,
     stringi,
@@ -48,4 +49,4 @@ Suggests:
     roxygen2
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

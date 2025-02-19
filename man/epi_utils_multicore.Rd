@@ -6,7 +6,7 @@
 \usage{
 epi_utils_multicore(
   num_cores = NULL,
-  future_plan = "multiprocess",
+  future_plan = "multisession",
   gc = TRUE,
   verbose = TRUE,
   ...

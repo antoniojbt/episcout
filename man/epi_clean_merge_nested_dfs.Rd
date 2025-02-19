@@ -141,5 +141,5 @@ View(all_merged)
 \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

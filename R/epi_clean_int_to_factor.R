@@ -10,5 +10,5 @@ epi_clean_int_to_factor <- function(dt) { # dt as it's a data.table object
     dt
 }
 
-# Convert int cols to factors:
-data_f <- epi_clean_int_to_factor(data_f)
+# # Convert int cols to factors:
+# data_f <- epi_clean_int_to_factor(data_f)
