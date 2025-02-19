@@ -66,5 +66,5 @@ df_factor
 \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_numeric}}
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

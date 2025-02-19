@@ -36,32 +36,13 @@
 #' @importFrom tibble tibble
 #' @export
 
-
-# La primera letra del primer apellido y la primera vocal del primer apellido.
-# Primera letra del Segundo apellido.
-# Primera letra del primer nombre (Excepto los nombres compuestos cuando estos se  antepongan los nombre de José y María) Ejemplo: si tu nombre es María Isabel, se utilizara la I del segundo nombre.
-# Los siguientes 6 dígitos corresponden a tu fecha de nacimiento que aparece en tu acta de nacimiento, se comienza desde el año, mes y día.
-# Letra del Género de la persona, H hombres y M mujeres.
-# Los 2 dígitos de tu Entidad de Nacimiento, aparecen en tu acta de nacimiento. Recuerda no confundirla con la entidad de tu registro. Si naciste en otro país se debe de poner NE (nacido en el extranjero).
-#
-# Siguiente consonante del primer apellido.
-# Primera consonante interna del segundo apellido .
-# Primera consonante interna del primer nombre.
-# Homoclave 2 últimos dígitos para evitar duplicaciones.
-#
-
-
-# Librería para manipulación de datos
-library(tidyverse)
-
-
 # Función para extraer datos del CURP usando posiciones
 epi_clean_curp <- function(curp) {
   if (nchar(curp) != 18) stop("El CURP debe tener exactamente 18 caracteres.")
 
 # Aplicar extracción por posiciones para cada CURP
   resultados <- lapply(curp, function(c) {
-    tibble(
+    tidyverse::tibble(
       CURP = c,
       PrimeraLetraApellidoPaterno = substr(c, 1, 1),
       PrimeraVocalApellidoPaterno = substr(c, 2, 2),
@@ -84,3 +65,15 @@ epi_clean_curp <- function(curp) {
   do.call(rbind, resultados)
 }
 
+# La primera letra del primer apellido y la primera vocal del primer apellido.
+# Primera letra del Segundo apellido.
+# Primera letra del primer nombre (Excepto los nombres compuestos cuando estos se  antepongan los nombre de José y María) Ejemplo: si tu nombre es María Isabel, se utilizara la I del segundo nombre.
+# Los siguientes 6 dígitos corresponden a tu fecha de nacimiento que aparece en tu acta de nacimiento, se comienza desde el año, mes y día.
+# Letra del Género de la persona, H hombres y M mujeres.
+# Los 2 dígitos de tu Entidad de Nacimiento, aparecen en tu acta de nacimiento. Recuerda no confundirla con la entidad de tu registro. Si naciste en otro país se debe de poner NE (nacido en el extranjero).
+#
+# Siguiente consonante del primer apellido.
+# Primera consonante interna del segundo apellido .
+# Primera consonante interna del primer nombre.
+# Homoclave 2 últimos dígitos para evitar duplicaciones.
+#

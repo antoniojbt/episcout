@@ -30,5 +30,5 @@ dev.off()
 
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

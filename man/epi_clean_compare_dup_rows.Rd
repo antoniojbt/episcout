@@ -59,5 +59,5 @@ View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))}
 \code{\link[compare]{compare}}, \code{\link[base]{grepl}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

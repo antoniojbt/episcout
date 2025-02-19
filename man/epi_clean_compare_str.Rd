@@ -69,5 +69,5 @@ epi_clean_compare_str(df3, val_id, col_1, col_2)
 \code{\link[stringi]{stri_detect}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

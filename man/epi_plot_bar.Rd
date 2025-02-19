@@ -13,6 +13,7 @@ epi_plot_bar(
   guides_fill = "none",
   y_lab = "Count",
   x_lab = var_x,
+  custom_palette = NULL,
   ...
 )
 }
