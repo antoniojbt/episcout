@@ -31,26 +31,26 @@
 epi_plots_to_grid <- function(plot_list = NULL,
                               align = 'hv',
                               axis = 'lrtb',
-                              labels = 'AUTO',
                               label_size = 12,
-                              ncol = NULL, # ncol = plot_sizes$ncol_grid
-                              nrow = NULL, # nrow = plot_sizes$nrow_grid
-                              ...
-                              ) {
-  if (!requireNamespace('cowplot', quietly = TRUE)) {
-    stop("Package cowplot needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  # plot_sizes <- grid_size(plot_list)
-  # print(plot_sizes)
-  my_plot_grid <- cowplot::plot_grid(plotlist = plot_list,
-                                     align = align,
-                                     axis = axis,
-                                     labels = labels,
-                                     label_size = label_size,
-                                     ncol = ncol,
-                                     nrow = nrow,
-                                     ...
-  )
-  return(my_plot_grid)
+                              ncol = NULL,
+                              nrow = NULL,
+                              ...) {
+    if (!requireNamespace('cowplot', quietly = TRUE)) {
+        stop("Package cowplot needed for this function to work. Please install it.",
+             call. = FALSE)
+    }
+
+    # Disable labels if there's only one plot
+    labels <- if (length(plot_list) > 1) "AUTO" else NULL
+
+    my_plot_grid <- cowplot::plot_grid(plotlist = plot_list,
+                                       align = align,
+                                       axis = axis,
+                                       labels = labels,
+                                       label_size = label_size,
+                                       ncol = ncol,
+                                       nrow = nrow,
+                                       ...
+    )
+    return(my_plot_grid)
 }
