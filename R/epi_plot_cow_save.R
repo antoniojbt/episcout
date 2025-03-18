@@ -58,19 +58,28 @@ epi_plot_cow_save <- function(file_name = NULL,
                               plot_grid = NULL,
                               base_height = 11.69, # A4
                               base_width = 8.27, # A4
-                              ...
-                              ) {
-  if (!requireNamespace('cowplot', quietly = TRUE)) {
-    stop("Package cowplot needed for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  cowplot::save_plot(filename = file_name,
-                     plot = plot_grid,
-                     # the ratio can be very skewed with many plots
-                     # axis labels appear out of proportion and not scaled
-                     # base_aspect_ratio = 3,
-                     base_height = base_height,
-                     base_width = base_width,
-                     ...
-  )
+                              ...) {
+    if (!requireNamespace('cowplot', quietly = TRUE)) {
+        stop("Package cowplot needed for this function to work. Please install it.",
+             call. = FALSE)
+    }
+
+    print(class(plot_grid))  # Debugging line
+
+    # Check if plot_grid is a single ggplot plot
+    if (inherits(plot_grid, "ggplot")) {
+        message("Saving a single ggplot object.")
+        cowplot::save_plot(filename = file_name,
+                           plot = plot_grid,
+                           base_height = base_height,
+                           base_width = base_width,
+                           ...)
+    } else {
+        message("Saving a multi-plot grid.")
+        cowplot::save_plot(filename = file_name,
+                           plot = cowplot::plot_grid(plot_grid),  # Force grid rendering
+                           base_height = base_height,
+                           base_width = base_width,
+                           ...)
+    }
 }
