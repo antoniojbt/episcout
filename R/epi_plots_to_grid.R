@@ -31,7 +31,7 @@
 epi_plots_to_grid <- function(plot_list = NULL,
                               align = 'hv',
                               axis = 'lrtb',
-                              label_size = 12,
+                              label_size = 12, # for the panel "A", "B", etc. labels only, does not affect axis or other plot text
                               ncol = NULL,
                               nrow = NULL,
                               ...) {
