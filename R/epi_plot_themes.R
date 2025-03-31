@@ -72,7 +72,9 @@ epi_plot_theme_1 <- function(base_size = 11,
 #' @rdname epi_plot_theme_1
 
 epi_plot_theme_2 <- function(base_size = 13,
-                             base_family = 'Times'
+                             base_family = 'Times',
+                             font_size_x = NULL,
+                             font_size_y = NULL
                              ) {
 # Use this instead or library or require inside functions:
  if (!requireNamespace('scales', quietly = TRUE)) {
@@ -107,6 +109,8 @@ epi_plot_theme_2 <- function(base_size = 13,
             axis.text = ggplot2::element_text(),
             axis.line = ggplot2::element_line(colour = "black"),
             axis.ticks = ggplot2::element_line(),
+            axis.text.x = ggplot2::element_text(size = font_size_x),
+            axis.text.y = ggplot2::element_text(size = font_size_y),
             # panel.grid.major = element_line(colour = "#f0f0f0"),
                                               # this is like grey90 roughly
             panel.grid.major = ggplot2::element_blank(),

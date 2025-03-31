@@ -54,15 +54,26 @@ epi_stats_corr <- function(df = NULL,
     stop('Package Hmisc needed for this function to work. Please install it.',
          call. = FALSE)
     }
-  if (!requireNamespace('data.table', quietly = TRUE)) {
-    stop('Package data.table needed for this function to work. Please install it.',
+  if (!requireNamespace('dplyr', quietly = TRUE)) {
+    stop('Package dplyr needed for this function to work. Please install it.',
+         call. = FALSE)
+  }
+  if (!requireNamespace('tidyr', quietly = TRUE)) {
+    stop('Package tidyr needed for this function to work. Please install it.',
          call. = FALSE)
   }
   cormat <- Hmisc::rcorr(as.matrix(df), type = method)
+
   # Correlation values:
-  cormat_melted_r <- data.table::melt(cormat$r)
+  cormat_melted_r <- as.data.frame(cormat$r) %>%
+    tibble::rownames_to_column("Var1") %>%
+    pivot_longer(-Var1, names_to = "Var2", values_to = "correlation")
+
   # P-values separately:
-  cormat_melted_pval <- data.table::melt(cormat$P)
+  cormat_melted_pval <- as.data.frame(cormat$P) %>%
+    tibble::rownames_to_column("Var1") %>%
+    pivot_longer(-Var1, names_to = "Var2", values_to = "pvalue")
+
   # Sanity: identical(rownames(cormat_melted_r),
   # rownames(cormat_melted_pval))
   cormat_all <- list(cormat = cormat,
@@ -70,4 +81,5 @@ epi_stats_corr <- function(df = NULL,
                      cormat_melted_pval = cormat_melted_pval
   )
   return(cormat_all)
-  }
+}
+
