@@ -51,7 +51,7 @@ epi_stats_summary <- function(df = NULL,
   stop("Package tibble needed for this function to work. Please install it.",
        call. = FALSE)
   }
-  df <- tibble::as.tibble(df)
+  df <- tibble::as_tibble(df)
   # Determine which group of columns to use:
   if (class_type == 'chr_fct') {
     cond <- expression(epi_clean_cond_chr_fct(.))
@@ -74,16 +74,18 @@ epi_stats_summary <- function(df = NULL,
   # assumed to represent database codes for NA explanations
   # chr and factor columns would be counted regardless of codes only or codes excluded
   # so summary() should only be needed for num/int columns where codes are excluded
-  if (class_type == 'int_num' & action == 'exclude') {
-    sum_func <- expression(epi_stats_numeric(.))
-    } else {
+  if (class_type == "int_num" & action == "exclude") {
+    sum_func <- function(.x) epi_stats_numeric(.x)
+  } else {
     # count is designed for data frames, not vectors, so pass as:
-    sum_func <- expression(dplyr::count(data.frame(x = .x), x))
-    }
+    sum_func <- function(.x) dplyr::count(data.frame(x = .x), x)
+  }
+
   df <- df %>%
-    dplyr::select_if(~ eval(cond)) %>%
-    purrr::map(~ eval(map_func)) %>%
-    purrr::map(~ eval(sum_func)) # Returns a list
+    dplyr::select_if(~eval(cond)) %>%
+    purrr::map(~eval(map_func)) %>%
+    purrr::map(sum_func) # Returns a list
+
   # Convert to dataframe with the same names for the var of interest:
   df <- as.data.frame(purrr::map_df(df,
                                     tibble::rownames_to_column,
@@ -91,7 +93,7 @@ epi_stats_summary <- function(df = NULL,
                                     .id = 'id')
                       )
   # Returns a list if sum_func is summary()
-  df <- tibble::as.tibble(as.data.frame(df))
+  df <- tibble::as_tibble(as.data.frame(df))
   # Drop 'var' col as not needed:
   df$var <- NULL
   # Make the rownames a column and order columns:
