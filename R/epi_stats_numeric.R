@@ -39,36 +39,44 @@ epi_stats_numeric <- function(num_vec = NULL,
                               na.rm = TRUE,
                               coef = 1.5,
                               ...
-                              ) {
+) {
   if (!requireNamespace('e1071', quietly = TRUE)) {
     stop("Package e1071 needed for this function to work. Please install it.",
          call. = FALSE)
   }
+
+  # Compute Shapiro only if valid size AND try-catch for safety
   cond <- length(num_vec) > 3 & length(num_vec) < 5000
   if (cond) {
-    normality <- shapiro.test(num_vec)
-    normality <- normality$p.value
-    } else {
-    normality <- NA
-    }
-  desc_stats <- data.frame('min' = min(num_vec, na.rm = na.rm),
-                           'quantile_25' = quantile(num_vec, probs = 0.25, names = FALSE, na.rm = na.rm),
-                           'mean' = mean(num_vec, na.rm = na.rm),
-                           'median' = median(num_vec, na.rm = na.rm),
-                           'quantile_75' = quantile(num_vec, probs = 0.75, names = FALSE, na.rm = na.rm),
-                           'max' = max(num_vec, na.rm = na.rm),
-                           'SD' = sd(num_vec, na.rm = na.rm),
-                           'variance' = var(num_vec, na.rm = na.rm),
-                           'sem' = sd(num_vec, na.rm = na.rm) / sqrt(length(na.omit(num_vec))),
-                           'skewness' = e1071::skewness(num_vec, na.rm = na.rm, ...),
-                           'kurtosis' = e1071::kurtosis(num_vec, na.rm = na.rm, ...),
-                           'Shapiro_Wilk_p_value' = normality,
-                           'outlier_count' = epi_stats_count_outliers(num_vec, coef = coef),
-                           'NA_count' = length(which(is.na(num_vec))),
-                           'NA_percentage' = (length(which(is.na(num_vec))) / length(num_vec)) * 100
-                           )
-  return(desc_stats)
+    normality <- tryCatch({
+      shapiro.test(num_vec)$p.value
+    }, error = function(e) {
+      NA_real_  # Gracefully handle errors (e.g. all identical values)
+    })
+  } else {
+    normality <- NA_real_
   }
+
+  desc_stats <- data.frame(
+    'min' = min(num_vec, na.rm = na.rm),
+    'quantile_25' = quantile(num_vec, probs = 0.25, names = FALSE, na.rm = na.rm),
+    'mean' = mean(num_vec, na.rm = na.rm),
+    'median' = median(num_vec, na.rm = na.rm),
+    'quantile_75' = quantile(num_vec, probs = 0.75, names = FALSE, na.rm = na.rm),
+    'max' = max(num_vec, na.rm = na.rm),
+    'SD' = sd(num_vec, na.rm = na.rm),
+    'variance' = var(num_vec, na.rm = na.rm),
+    'sem' = sd(num_vec, na.rm = na.rm) / sqrt(length(na.omit(num_vec))),
+    'skewness' = e1071::skewness(num_vec, na.rm = na.rm, ...),
+    'kurtosis' = e1071::kurtosis(num_vec, na.rm = na.rm, ...),
+    'Shapiro_Wilk_p_value' = normality,
+    'outlier_count' = epi_stats_count_outliers(num_vec, coef = coef),
+    'NA_count' = sum(is.na(num_vec)),
+    'NA_percentage' = (sum(is.na(num_vec)) / length(num_vec)) * 100
+  )
+
+  return(desc_stats)
+}
 
 # TO DO:
 # add outlier_counts perc of total for column excluding NAs (?)
