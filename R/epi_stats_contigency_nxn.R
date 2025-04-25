@@ -30,8 +30,10 @@ epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
   }
 
   # Create the formula for xtabs dynamically
-  formula_str <- sprintf("~ %s + %s", dep_var, paste(ind_vars, collapse = " + "))
-  formula_obj <- as.formula(formula_str)
+  # formula_str <- sprintf("~ %s + %s", dep_var, paste(ind_vars, collapse = " + "))
+  # formula_obj <- as.formula(formula_str)
+
+  formula_obj <- reformulate(c(dep_var, ind_vars))
 
   # Create the contingency table
   f_tab <- ftable(xtabs(formula = formula_obj, data = df))
