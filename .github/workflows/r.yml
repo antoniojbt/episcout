@@ -44,20 +44,28 @@ jobs:
       # 3) Set up Pandoc (needed for vignettes, pkgdown, etc.):
       - uses: r-lib/actions/setup-pandoc@v2
 
+      # ─── Explicitly install rcmdcheck + covr ───────────────────────────────────────
+      - name: Install CRAN/Bioc dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          # This will install whatever is in DESCRIPTION, plus:
+          extra-packages: "rcmdcheck,covr"
+      # ───────────────────────────────────────────────────────────────────────────────
+
       # 4) Install bioconductor manager and Bioconductor dependencies:
       - name: Install Bioconductor packages
         run: |
-          Rscript -e 'if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")'
+          Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
           # Install any Bioconductor packages listed in DESCRIPTION (Imports/Suggests).
-          # If you need to install specific Bioc packages outside DESCRIPTION, list them here:
-          Rscript -e 'BiocManager::install()'
+          # Install specific Bioc packages outside DESCRIPTION:
+          #Rscript -e 'BiocManager::install()'
 
       # 5) Install CRAN (and remotes-based) dependencies:
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
+      #- uses: r-lib/actions/setup-r-dependencies@v2
+      #  with:
           # By default, this reads DESCRIPTION and installs Imports, Depends, Suggests.
           # On Windows/macOS/Ubuntu, remotes::install_deps() will fetch CRAN + Bioconductor remotes as needed.
-          extra-packages: covr  # needed later
+      #    extra-packages: covr  # needed later
           # Additional packages:
           # extra-packages: "covr,pkgdown,roxygen2"
       
