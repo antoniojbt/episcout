@@ -6,31 +6,102 @@ name: R-CMD-check
 on:
   push:
     branches: [ "master" ]
+    # Optional: build pkgdown on tag push
+    tags: [ "v*" ]
+
   pull_request:
     branches: [ "master" ]
-
+  
 jobs:
   R-CMD-check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        r-version: ['4.3']
+        # run on OSes, skip windows-latest:
+        os: [ ubuntu-latest, macos-latest]
+        # add R versions:
+        r-version: [ "4.3" ]
 
     steps:
+      # 1) Checkout the repo:
       - uses: actions/checkout@v4
+
+      # 2) Set up R:
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.r-version }}
 
+      # 2.1) Cache installs:
+      - name: Cache R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/R
+          key: ${{ runner.os }}-r-${{ matrix.r-version }}
+          restore-keys: |
+            ${{ runner.os }}-r-
+
+      # 3) Set up Pandoc (needed for vignettes, pkgdown, etc.):
       - uses: r-lib/actions/setup-pandoc@v2
+
+      # 4) Install bioconductor manager and Bioconductor dependencies:
+      - name: Install Bioconductor packages
+        run: |
+          Rscript -e 'if (!requireNamespace("BiocManager", quietly=TRUE)) install.packages("BiocManager")'
+          # Install any Bioconductor packages listed in DESCRIPTION (Imports/Suggests).
+          # If you need to install specific Bioc packages outside DESCRIPTION, list them here:
+          Rscript -e 'BiocManager::install()'
+
+      # 5) Install CRAN (and remotes-based) dependencies:
       - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          # By default, this reads DESCRIPTION and installs Imports, Depends, Suggests.
+          # On Windows/macOS/Ubuntu, remotes::install_deps() will fetch CRAN + Bioconductor remotes as needed.
+          extra-packages: covr  # needed later
+          # Additional packages:
+          # extra-packages: "covr,pkgdown,roxygen2"
       
-      - name: Install dependencies
-        run: install.packages('rcmdcheck')
-             install.packages('remotes')
-             remotes::install_deps(dependencies = TRUE)  # ← Installs your package dependencies
-             # other install commands here
-      
-      - name: Check
+      # 6) Run R CMD check (includes running tests):
+      - name: Check package
         uses: r-lib/actions/check-r-package@v2
+        #with:
+          # By default, runs on the current OS/R combo
+          # Add conditions here for specific checks
+          # e.g. disable on windows: if: matrix.os != 'windows-latest'
+      
+      # 7) Run coverage report on Linux/macOS (skip Windows as may fail):
+      - name: Upload coverage to Codecov
+        #if: runner.os != 'Windows'  # covr often fails or is slower on Windows
+        env:
+          # For public repo, CODECOV_TOKEN is not strictly required.
+          # For a private repo, add CODECOV_TOKEN to GitHub Secrets.
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          Rscript -e 'covr::codecov()'
+
+  # 8) Build and deploy pkgdown site (only on Linux, and only on push to master):
+ # pkgdown-deploy:
+ #   needs: R-CMD-check
+ #   runs-on: ubuntu-latest
+ #   if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+ #   steps:
+ #     - uses: actions/checkout@v4
+ #
+ #     - name: Set up R
+ #       uses: r-lib/actions/setup-r@v2
+ #       with:
+ #         r-version: "4.3"
+ #
+ #     - uses: r-lib/actions/setup-r-dependencies@v2
+ #       with:
+ #         # Ensure pkgdown itself (and its dependencies) are installed
+ #         extra-packages: pkgdown
+ #
+ #     - name: Build pkgdown site
+ #       run: |
+ #         Rscript -e 'pkgdown::build_site()'
+ #
+ #     - name: Deploy pkgdown to GitHub Pages
+ #       uses: r-lib/actions/pkgdown@v3
+ #       with:
+ #         github_token: ${{ secrets.GITHUB_TOKEN }}
