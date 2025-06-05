@@ -25,6 +25,15 @@ library(devtools)
 install_github("AntonioJBT/episcout")
 ```
 
+## Getting Started
+
+Functions are grouped by purpose, e.g.:
+epi_clean_* for data wrangling/cleanup.
+epi_stats_* for generating descriptive statistics and contingency tables.
+epi_plot_* for plotting (wrappers around ggplot2 and cowplot).
+epi_utils_* for utilities such as parallel processing, logging, etc.
+Miscellaneous helpers such as epi_read/epi_write.
+
 ## Example
 
 This is a basic example of things you can do with episcout:
