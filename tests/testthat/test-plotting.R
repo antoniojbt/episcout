@@ -59,7 +59,7 @@ df[, 'y'] <- as.factor(df[, 'y'])
 
 ######################
 context("episcout_plots")
-# ALl episcout reference plots will/should be saved in
+# All episcout reference plots will/should be saved in
 # XXXX/episcout/tests/figs/episcout_plots
 print("episcout plot function tests")
 print("Function being tested: epi_plot_list")
