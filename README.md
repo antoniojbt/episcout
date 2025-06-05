@@ -47,7 +47,7 @@ epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 
 
 # Get all duplicates:
-check_dups <- epi_clean_get_dups.R(df, 'var_id', 1)
+check_dups <- epi_clean_get_dups(df, 'var_id', 1)
 dim(check_dups)
 check_dups
 
