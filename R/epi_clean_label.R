@@ -27,16 +27,16 @@
 epi_clean_label <- function(data_df, lookup_df) {
     # Ensure the lookup dataframe is in the correct format
     lookup_df <- lookup_df %>%
-        mutate(level = as.character(level))  # Convert keys to character if not already
+        dplyr::mutate(level = as.character(level))
 
     # Iterate over each variable in the lookup table
     for (v in unique(lookup_df$variable)) {
         if (v %in% names(data_df)) {
             # Get levels and labels for this variable
             levels_and_labels <- lookup_df %>%
-                filter(variable == !!sym(v)) %>% # This errors, as does !!sym(v)
-                select(level, label) %>%
-                arrange(as.numeric(level))  # Ensure levels are in the correct order
+                dplyr::filter(variable == v) %>%
+                dplyr::select(level, label) %>%
+                dplyr::arrange(as.numeric(level))
 
             # Convert the relevant column in data_df to a factor
             data_df[[v]] <- factor(data_df[[v]],
