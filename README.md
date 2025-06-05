@@ -4,9 +4,14 @@
 
 # episcout
 
-Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations with tens to hundreds of variables).
+episcout provides helper functions for cleaning, exploring and visualising large datasets. It wraps common preprocessing and descriptive tasks so you can focus on analysis. The package builds on the **tidyverse** and **data.table** ecosystems for fast and flexible data manipulation.
 
-These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table.
+## Features
+
+* **Cleaning** – `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels.
+* **Statistics** – `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
+* **Plotting** – `epi_plot_*` wrappers make it straightforward to produce common graphs with *ggplot2* and *cowplot*.
+* **Utilities** – `epi_utils_*` helpers cover tasks like parallel processing and logging.
 
 ## Installation
 
