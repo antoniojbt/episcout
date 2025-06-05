@@ -84,8 +84,8 @@ If you have any issues, pull requests, etc. please report them in the issue trac
 
 ## News
 
+- Version 0.1.2
+  Minor bug fixes and internal improvements
+
 - Version 0.1.1
   First release
-
-In development: 
-- Version 0.1.2
