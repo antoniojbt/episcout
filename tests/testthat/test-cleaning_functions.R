@@ -111,8 +111,8 @@ test_that("Test expected output after epi_clean_cond_numeric", {
   expect_output(str(head(get_cols, 1)), 'x     : num 0.586')
   expect_output(str(tail(get_cols, 1)), 'z     : int 1')
   expect_output(str(tail(get_cols, 1)), 'var_id: int 10')
-  expect_output(str(epi_clean_cond_numeric(df[[2]])), 'FALSE')
-  expect_output(str(epi_clean_cond_numeric(df[, 'x'])), 'TRUE')
+  expect_false(epi_clean_cond_numeric(df[[2]]))
+  expect_true(epi_clean_cond_numeric(df[, 'x']))
   }
   )
 ######################
