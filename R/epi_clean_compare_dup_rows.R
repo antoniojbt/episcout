@@ -64,7 +64,7 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
   # check_dups[dup_indices, 1:2]
   comp <- compare::compare(df_dups[dup_indices[sub_index_1], , drop = FALSE],
                            df_dups[dup_indices[sub_index_2], , drop = FALSE],
-                           allowAll = TRUE,
+                           allowAll = allowAll,
                            ...
                            )
   comp_diff <- which(comp$detailedResult == FALSE)
