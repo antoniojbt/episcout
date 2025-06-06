@@ -2,7 +2,8 @@
 #'
 #' @description Keep only the lower triangle of the correlation matrix
 #' Useful to create a nicer heatmap. Requires the original, unmelted correlation
-#' matrix with both correlation (r) and p-values (P).
+#' matrix with both correlation (r) and p-values (P). The lower triangles are
+#' converted to \code{data.table} before melting.
 #'
 #' @param cormat a matrix object (usually the output of Hmisc::rcorr()
 #' or episcout::epi_stats_corr()). Default 'cormat_all$cormat'
@@ -61,14 +62,18 @@ epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
   cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
   # Melt and remove NAs:
   # TO DO: Fix warning message, "Consider providing at least one of 'id' or 'measure' vars"
-  cormat_melted_triangle_r <- data.table::melt(cormat_tri_r,
-                                               na.rm = TRUE)
+  cormat_melted_triangle_r <- data.table::melt(
+    data.table::as.data.table(cormat_tri_r),
+    na.rm = TRUE
+  )
   # Usually no NAs for correlation values though, indices will not match for cormat_tri_r and cormat_tri_P files
   # And the same for p-values:
   cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
   # Melt:
-  cormat_melted_triangle_pval <- data.table::melt(cormat_tri_P,
-                                                  na.rm = TRUE)
+  cormat_melted_triangle_pval <- data.table::melt(
+    data.table::as.data.table(cormat_tri_P),
+    na.rm = TRUE
+  )
   # Return melted triangles:
   melted_triangles <- list(cormat_melted_triangle_r = cormat_melted_triangle_r,
                            cormat_melted_triangle_pval = cormat_melted_triangle_pval

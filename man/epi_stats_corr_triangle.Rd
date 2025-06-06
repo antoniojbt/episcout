@@ -18,7 +18,8 @@ p-values (cormat_melted_triangle_pval).
 \description{
 Keep only the lower triangle of the correlation matrix
 Useful to create a nicer heatmap. Requires the original, unmelted correlation
-matrix with both correlation (r) and p-values (P).
+matrix with both correlation (r) and p-values (P). The lower triangles are
+converted to \code{data.table} before melting.
 }
 \examples{
 
