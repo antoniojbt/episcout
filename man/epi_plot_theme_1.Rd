@@ -9,7 +9,7 @@
 \usage{
 epi_plot_theme_1(base_size = 11, base_family = "Times")
 
-epi_plot_theme_2(base_size = 13, base_family = "Times")
+epi_plot_theme_2(base_size = 13, base_family = "Times", font_size_x = NULL, font_size_y = NULL)
 
 scale_fill_epi_plot_theme_2(...)
 
@@ -20,6 +20,10 @@ scale_colour_epi_plot_theme_2(...)
 epi_plot_theme_1 and 13 for epi_plot_theme_2}
 
 \item{base_family}{passed to theme() for font family. Default is Times.}
+
+\item{font_size_x}{Font size for x axis tick labels. Default NULL uses base\_size - 1.}
+
+\item{font_size_y}{Font size for y axis tick labels. Default NULL uses base\_size - 1.}
 
 \item{...}{additional arguments passed to ggplot2::discrete_scale() for
 scale_colour_epi_plot_theme_1 and scale_colour_epi_plot_theme_2}
