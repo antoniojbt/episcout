@@ -1,6 +1,10 @@
 # See https://github.com/r-lib/actions/tree/master/examples#readme for
 # additional example workflows available for the R community.
 
+# Add the CRAN mirror environment variable globally to the job
+env:
+  CRAN: https://cloud.r-project.org
+
 name: R-CMD-check
 
 on:
