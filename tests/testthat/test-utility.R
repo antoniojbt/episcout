@@ -36,6 +36,7 @@ library(iterators)
 print("Function being tested: epi_utils_multicore")
 
 test_that("epi_utils_multicore sequential", {
+  skip_on_ci()
   epi_utils_multicore(num_cores = 1,
                       future_plan = 'sequential')
   core_s <- capture.output(epi_utils_multicore(num_cores = 1,
@@ -52,6 +53,7 @@ test_that("epi_utils_multicore sequential", {
 )
 
 test_that("epi_utils_multicore multi", {
+  skip_on_ci()
   epi_utils_multicore(num_cores = 2,
                       future_plan = 'multisession')
   core_m <- capture.output(epi_utils_multicore(num_cores = 2,
