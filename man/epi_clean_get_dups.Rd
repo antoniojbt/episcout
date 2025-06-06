@@ -39,7 +39,7 @@ check_dups
 
 }
 \seealso{
-\code{\link{duplicated}}
+\code{\link[base]{duplicated}}
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
