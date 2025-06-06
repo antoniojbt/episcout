@@ -57,10 +57,7 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
          call. = FALSE)
   }
   val_id <- as.character(val_id)
-  dup_indices <- which(grepl(val_id,
-                             df_dups[[col_id]],
-                             fixed = TRUE) # match as string, not regex
-  )
+  dup_indices <- which(as.character(df_dups[[col_id]]) == val_id)
   # check_dups[dup_indices, 1:2]
   comp <- compare::compare(df_dups[dup_indices[sub_index_1], , drop = FALSE],
                            df_dups[dup_indices[sub_index_2], , drop = FALSE],
