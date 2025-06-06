@@ -60,6 +60,8 @@ jobs:
 
       # 4) Install bioconductor manager and Bioconductor dependencies:
       - name: Install Bioconductor packages
+        env:
+          CRAN: https://cloud.r-project.org
         run: |
           Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
           # Install any Bioconductor packages listed in DESCRIPTION (Imports/Suggests).
