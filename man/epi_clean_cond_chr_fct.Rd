@@ -23,6 +23,7 @@ extracting columns from a large data frame using dplyr
 
 \dontrun{
 library(dplyr)
+library(tibble)
 col_chr <- data.frame('chr1' = rep(c('A', 'B')),
                       'chr2' = rep(c('C', 'D'))
              )
