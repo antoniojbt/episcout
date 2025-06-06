@@ -47,8 +47,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-${{ matrix.r-version }}
+          key: ${{ runner.os }}-r-${{ matrix.r-version }}-${{ hashFiles('**/DESCRIPTION') }}
           restore-keys: |
+            ${{ runner.os }}-r-${{ matrix.r-version }}-
             ${{ runner.os }}-r-
 
       # 3) Set up Pandoc (needed for vignettes, pkgdown, etc.):
