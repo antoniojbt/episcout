@@ -59,6 +59,11 @@ Below are a number of examples of how to use episcout functions.
 
 All functions start with "epi\_".
 
+```{r library, message=FALSE}
+library(episcout)
+```
+
+
 Currently there are functions for:
 - pre-processing: epi\_clean\_\*
 - descriptive statistics: epi\_stats\_\*
@@ -93,7 +98,7 @@ epi_clean_get_dups(df, "id", 1)
 `epi_stats_numeric()` calculates descriptive statistics for a numeric vector.
 
 ```{r}
-summary_stats <- epi_stats_numeric(df$value)
+summary_stats <- epi_stats_numeric(df$x)
 summary_stats
 ```
 
@@ -102,7 +107,7 @@ summary_stats
 `epi_plot_hist()` quickly draws a histogram of a numeric column.
 
 ```{r, fig.width=4, fig.height=3}
-epi_plot_hist(df, "value")
+epi_plot_hist(df, "x")
 ```
 
 This vignette only scratches the surface of what `episcout` can do. For more details see the function documentation.
