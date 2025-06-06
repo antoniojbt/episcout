@@ -37,10 +37,10 @@ epi_clean_make_names(valid_names) # There shouldn't be anything to correct
 
 }
 \seealso{
-\code{\link{make.names}},
+\code{\link[base]{make.names}},
 \href{https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658}{stackoverflow test if valid},
 \href{https://www.r-bloggers.com/testing-for-valid-variable-names/}{r-bloggers test valid names}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }
