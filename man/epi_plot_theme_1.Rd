@@ -22,9 +22,9 @@ epi_plot_theme_1 and 13 for epi_plot_theme_2}
 
 \item{base_family}{passed to theme() for font family. Default is Times.}
 
-\item{font_size_x}{Font size for x axis tick labels. Default NULL uses base\\_size - 1.}
+\item{font_size_x}{Font size for x axis tick labels. Default NULL uses \code{base_size} - 1.}
 
-\item{font_size_y}{Font size for y axis tick labels. Default NULL uses base\\_size - 1.}
+\item{font_size_y}{Font size for y axis tick labels. Default NULL uses \code{base_size} - 1.}
 
 \item{...}{additional arguments passed to ggplot2::discrete_scale() for
 scale_colour_epi_plot_theme_1 and scale_colour_epi_plot_theme_2}
