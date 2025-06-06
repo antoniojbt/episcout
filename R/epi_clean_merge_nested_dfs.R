@@ -3,6 +3,7 @@
 #' @description Recursively merge data frames that are stored as lists within a list.
 #' Flattens with purrr::flatten() if there is more than one level. Assumes:
 #' - there are are 3 or more data frames to merge
+#'   (if only two are supplied the function performs a single merge and returns)
 #' - there are no duplicates in any of the data frames
 #' The function performs a full outer join with base R
 #' merge(df1, df2, by = id_col, all = TRUE)
@@ -136,6 +137,10 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
     stop("Package data.table needed for this function to work. Please install it.",
          call. = FALSE)
   }
+  # Check there are at least two data frames
+  if (length(nested_list_dfs) < 2) {
+    stop('nested_list_dfs must contain at least two data frames')
+  }
   # Initialise merge:
   df1 <- data.table::as.data.table(nested_list_dfs[[1]])
   df2 <- data.table::as.data.table(nested_list_dfs[[2]])
@@ -167,6 +172,10 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
                    suffixes = c(suffix_1, suffix_2),
                    ...
                    )
+  if (length(nested_list_dfs) == 2) {
+    print('Only two data frames provided, returning result of single merge.')
+    return(temp_df)
+  }
   # Loop through nested data frames and merge each to previous merged df:
   # TO DO: if there were truly many and large DFs could add a parallel option
   print('Merging further dataframes.')
