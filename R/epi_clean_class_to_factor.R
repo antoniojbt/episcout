@@ -66,7 +66,7 @@ epi_clean_class_to_factor <- function(df = NULL,
       # if num. of unique values is less than cut-off
       length(unique(df[[i]])) < cutoff_unique &
       # and the class is not already a date:
-      class(df[[i]]) != 'Date'
+      !inherits(df[[i]], "Date")
     ) {
       # Convert to factor:
       df[[i]] <- as.factor(df[[i]])

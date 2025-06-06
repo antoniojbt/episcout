@@ -45,7 +45,7 @@ epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
   dep_var_levels <- unique(df[[dep_var]])
   df_f_tab_wide <- tidyr::pivot_wider(
     df_f_tab,
-    names_from = all_of(dep_var),
+    names_from = dplyr::all_of(dep_var),
     values_from = "Freq"
   )
 
