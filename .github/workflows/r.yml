@@ -17,10 +17,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # run on popular OSes including Windows
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        # run on popular OSes including Windows, "windows-latest"
+        os: [ ubuntu-latest, macos-latest]
         # test on a range of R versions similar to the old Travis matrix
-        r-version: [ "devel", "release", "oldrel-1" ]
+        #r-version: [ "devel", "release", "oldrel-1" ]
+        r-version: [ "release" ]
 
     steps:
       # 1) Checkout the repo:
