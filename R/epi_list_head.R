@@ -25,6 +25,10 @@ epi_list_head <- function(list = NULL,
   cat(sprintf('List has %s elements in total.\n', length(list)))
   cat(sprintf('First %s rows of first %s elements in list: \n', rows, max))
   for (item in 1:max) {
-    print(head(list[[item]], rows))
+    x <- list[[item]]
+    if (is.character(x)) {
+      x <- factor(x)
+    }
+    print(head(x, rows))
   }
 }

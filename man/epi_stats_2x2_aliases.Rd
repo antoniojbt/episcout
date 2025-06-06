@@ -12,4 +12,5 @@ epi_stats_2x2_cols(...)
 
 epi_stats_2x2_all(...)
 }
+\arguments{\item{...}{Arguments passed to the underlying \code{epi_stats_contingency_2x2_*} functions.}}
 \description{These functions are wrappers around their \code{epi_stats_contingency_2x2_*} counterparts and are provided for backwards compatibility.}
