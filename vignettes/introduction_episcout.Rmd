@@ -80,12 +80,30 @@ df <- data.frame(
 df
 ```
 
+## Checking duplicates
 
-**Just starting this vignette...**
+`epi_clean_get_dups()` identifies duplicate rows based on a chosen column.
+```{r}
+epi_clean_get_dups(df, "id", 1)
+epi_clean_get_dups(df, "id", 1)
+```
 
-## Cleaning
+## Numeric summaries
 
-## Describing
+`epi_stats_numeric()` calculates descriptive statistics for a numeric vector.
 
-## Visualising
+```{r}
+summary_stats <- epi_stats_numeric(df$value)
+summary_stats
+```
+
+## Plotting
+
+`epi_plot_hist()` quickly draws a histogram of a numeric column.
+
+```{r, fig.width=4, fig.height=3}
+epi_plot_hist(df, "value")
+```
+
+This vignette only scratches the surface of what `episcout` can do. For more details see the function documentation.
 
