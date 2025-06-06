@@ -304,6 +304,17 @@ test_that("epi_clean_merge_nested_dfs", {
   expect_output(str(all_merged), '1 3 1 1 4 2 1 2 2 1') # z.Post_6
   }
   )
+
+test_that("epi_clean_merge_nested_dfs handles two dfs", {
+  df_spread <- epi_clean_spread_repeated(df, 'var_to_rep', 1)
+  nested_two <- list(df_spread[[1]], df_spread[[2]])
+  id_col <- 'var_id'
+  expect_output(
+    res <- epi_clean_merge_nested_dfs(nested_two, id_col),
+    'Only two data frames provided'
+  )
+  expect_true(is.data.frame(res))
+})
 ######################
 
 
