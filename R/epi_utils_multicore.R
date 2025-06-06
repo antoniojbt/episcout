@@ -56,7 +56,11 @@ epi_utils_multicore <- function(num_cores = NULL,
 
   # Register doFuture and configure plan
   doFuture::registerDoFuture()
-  future::plan(strategy = future_plan, workers = num_cores, gc = gc, ...)
+  if (identical(future_plan, "sequential")) {
+    future::plan(strategy = future_plan, gc = gc, ...)
+  } else {
+    future::plan(strategy = future_plan, workers = num_cores, gc = gc, ...)
+  }
 
   # Log details if verbose is TRUE
   if (verbose) {
