@@ -1,5 +1,4 @@
 [![R](https://github.com/antoniojbt/episcout/actions/workflows/r.yml/badge.svg)](https://github.com/antoniojbt/episcout/actions/workflows/r.yml)
-[![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
 [![codecov](https://codecov.io/gh/AntonioJBT/episcout/branch/master/graph/badge.svg)](https://codecov.io/gh/AntonioJBT/episcout)
 
 # episcout

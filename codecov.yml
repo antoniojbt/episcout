@@ -1,7 +1,7 @@
 #comment: false
 
 codecov:
-  token: ef11ac6f-e96c-4600-9f31-c1d6440674bd
+  # Codecov token should be provided via the CODECOV_TOKEN secret
 
 coverage:
   status:
