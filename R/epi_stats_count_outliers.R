@@ -70,7 +70,7 @@ epi_stats_count_outliers <- function(num_vec = NULL,
 # Using the Qn estimator to avoid assuming that the underlying distribution
 # is symmetric:
 # https://stats.stackexchange.com/questions/1519/on-univariate-outlier-tests-or-dixon-q-versus-grubbs?rq=1
-# median+/-𝛿× Qn
+# median+/-delta* Qn
 # get_qn <- robustbase::Qn(num_vec)
 # median <- median(num_vec, na.rm = na.rm)
 # ?
