@@ -8,7 +8,6 @@
 #' @param plot_list List of plots to be arranged into the grid.
 #' @param align cowplot vertical and/or horizontal alignment. Default is 'hv'.
 #' @param axis Align left, right, top or bottom and order. Default is 'lrtb'.
-#' @param labels Default is 'AUTO'.
 #' @param label_size Default is 12.
 #' @param ncol Number of columns in the plot grid.
 #' @param nrow Number of rows in the plot grid.
