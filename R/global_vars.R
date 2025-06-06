@@ -9,7 +9,12 @@
 # If above doesn't work, check usethis::use_pipe() which adds magrittr to Imports
   # in DESCRIPTION and a utils-pipe.R file that imports the pipe
 # For '.' import as global var with code in this file:
-  if(getRversion() >= "2.15.1") utils::globalVariables(c("."))
+  if(getRversion() >= "2.15.1") utils::globalVariables(
+    c(
+      ".", "level", "variable", "label", "Column", "Variable", "Value",
+      "Statistic", "Var1", "n_missing", "x"
+    )
+  )
 
 # For other NSE see also rlang::.data in package functions
 # Can also run usethis::use_tidy_eval() at package creation which adds

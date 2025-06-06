@@ -67,12 +67,12 @@ epi_stats_corr <- function(df = NULL,
   # Correlation values:
   cormat_melted_r <- as.data.frame(cormat$r) %>%
     tibble::rownames_to_column("Var1") %>%
-    pivot_longer(-Var1, names_to = "Var2", values_to = "correlation")
+    tidyr::pivot_longer(-Var1, names_to = "Var2", values_to = "correlation")
 
   # P-values separately:
   cormat_melted_pval <- as.data.frame(cormat$P) %>%
     tibble::rownames_to_column("Var1") %>%
-    pivot_longer(-Var1, names_to = "Var2", values_to = "pvalue")
+    tidyr::pivot_longer(-Var1, names_to = "Var2", values_to = "pvalue")
 
   # Sanity: identical(rownames(cormat_melted_r),
   # rownames(cormat_melted_pval))
