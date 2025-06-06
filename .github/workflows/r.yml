@@ -10,12 +10,12 @@ name: R-CMD-check
 # Trigger on push and PR to main (rename branch as needed)
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     # Optional: build pkgdown on tag push
     tags: [ "v*" ]
 
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 # Ensure only one run per branch/PR; cancel older in-progress if a new one starts
 concurrency:
