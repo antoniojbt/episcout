@@ -18,3 +18,5 @@
 ^Meta$
 ^CRAN-RELEASE$
 ^THANKS.rst$
+^\.github$
+^fishers_results\.txt$

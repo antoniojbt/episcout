@@ -20,13 +20,13 @@ state_levels <- c("Active", "Inactive")
 gender_levels <- c("Male", "Female")
 
 # ===================================================================
-# TESTS FOR epi_stats_contingency_df
+# TESTS FOR epi_stats_contingency_2x2_df
 # ===================================================================
 
 # Verifies the function returns a data frame with correct column names and levels.
 
-test_that("epi_stats_contingency_df produces correct structure and counts", {
-  result <- epi_stats_contingency_df(test_data, x_var = "State", y_var = "Gender")
+test_that("epi_stats_contingency_2x2_df produces correct structure and counts", {
+  result <- epi_stats_contingency_2x2_df(test_data, x_var = "State", y_var = "Gender")
 
   expect_true(is.data.frame(result))
   expect_equal(ncol(result), 3)  # Two variables + Frequency column
@@ -36,13 +36,13 @@ test_that("epi_stats_contingency_df produces correct structure and counts", {
 })
 
 # ===================================================================
-# TESTS FOR epi_stats_contingency_tables
+# TESTS FOR epi_stats_contingency_2x2_tables
 # ===================================================================
 
 # Checks that the function produces a list of data frames with expected structure.
 
-test_that("epi_stats_contingency_tables produces a list of data frames", {
-  result <- epi_stats_contingency_tables(test_data, x_var = "State")
+test_that("epi_stats_contingency_2x2_tables produces a list of data frames", {
+  result <- epi_stats_contingency_2x2_tables(test_data, x_var = "State")
 
   expect_true(is.list(result))
   expect_true(all(sapply(result, is.data.frame)))
@@ -51,14 +51,14 @@ test_that("epi_stats_contingency_tables produces a list of data frames", {
 })
 
 # ===================================================================
-# TESTS FOR epi_stats_rename_contingency_cols
+# TESTS FOR rename_contingency_2x2_cols
 # ===================================================================
 
 # Ensures that dependent variable columns are renamed correctly in the contingency list.
 
-test_that("epi_stats_rename_contingency_cols renames dependent variable columns", {
-  contingency_list <- epi_stats_contingency_tables(test_data, x_var = "State")
-  renamed_list <- epi_stats_rename_contingency_cols(contingency_list, test_data, x_var = "State")
+test_that("rename_contingency_2x2_cols renames dependent variable columns", {
+  contingency_list <- epi_stats_contingency_2x2_tables(test_data, x_var = "State")
+  renamed_list <- rename_contingency_2x2_cols(contingency_list, test_data, x_var = "State")
 
   expect_true(is.list(renamed_list))
   expect_true(all(sapply(renamed_list, is.data.frame)))
@@ -66,13 +66,13 @@ test_that("epi_stats_rename_contingency_cols renames dependent variable columns"
 })
 
 # ===================================================================
-# TESTS FOR epi_stats_table
+# TESTS FOR epi_stats_contingency_nxn
 # ===================================================================
 
 # Validates that the summary table has wide format, includes totals, and calculates percentages correctly.
 
-test_that("epi_stats_table generates a wide-format summary", {
-  result <- epi_stats_table(test_data, dep_var = "State", ind_vars = "Gender")
+test_that("epi_stats_contingency_nxn generates a wide-format summary", {
+  result <- epi_stats_contingency_nxn(test_data, dep_var = "State", ind_vars = "Gender")
 
   expect_true(is.data.frame(result))
   expect_true(all(c("Active", "Inactive") %in% colnames(result)))

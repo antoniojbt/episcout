@@ -7,6 +7,8 @@
 #' @param base_size passed to element_text() for the font size. Default is 11 for
 #' epi_plot_theme_1 and 13 for epi_plot_theme_2
 #' @param base_family passed to theme() for font family. Default is Times.
+#' @param font_size_x Font size for x axis tick labels. Default NULL uses base_size - 1.
+#' @param font_size_y Font size for y axis tick labels. Default NULL uses base_size - 1.
 #' @param ... additional arguments passed to ggplot2::discrete_scale() for
 #' scale_colour_epi_plot_theme_1 and scale_colour_epi_plot_theme_2
 #'

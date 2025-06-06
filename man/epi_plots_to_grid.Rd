@@ -8,7 +8,6 @@ epi_plots_to_grid(
   plot_list = NULL,
   align = "hv",
   axis = "lrtb",
-  labels = "AUTO",
   label_size = 12,
   ncol = NULL,
   nrow = NULL,
@@ -22,7 +21,6 @@ epi_plots_to_grid(
 
 \item{axis}{Align left, right, top or bottom and order. Default is 'lrtb'.}
 
-\item{labels}{Default is 'AUTO'.}
 
 \item{label_size}{Default is 12.}
 
