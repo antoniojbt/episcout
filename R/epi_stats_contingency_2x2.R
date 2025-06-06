@@ -70,6 +70,7 @@
 #' # Save results
 #' tmp <- tempfile("fishers_results", fileext = ".txt")
 #' write.table(results_df, tmp, sep = "\t", row.names = FALSE, quote = FALSE)
+#' unlink(tmp)
 #'
 #' @importFrom tidyr pivot_wider
 #' @importFrom stats xtabs
