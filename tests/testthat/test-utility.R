@@ -53,13 +53,13 @@ test_that("epi_utils_multicore sequential", {
 
 test_that("epi_utils_multicore multi", {
   epi_utils_multicore(num_cores = 2,
-                      future_plan = 'multiprocess')
+                      future_plan = 'multisession')
   core_m <- capture.output(epi_utils_multicore(num_cores = 2,
-                                               future_plan = 'multiprocess')
+                                               future_plan = 'multisession')
                            )
   core_m
   # TO DO: fix these, pass in test() but not in check()
-  # expect_output(str(core_m[12]), 'multiprocess')
+  # expect_output(str(core_m[12]), 'multisession')
   # expect_output(str(core_m[13], nchar.max = 300), 'workers = 2')
   future_v %<-% {1 + 2}
   future_v

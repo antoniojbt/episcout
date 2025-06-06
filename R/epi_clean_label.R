@@ -31,17 +31,16 @@ epi_clean_label <- function(data_df, lookup_df) {
 
     # Iterate over each variable in the lookup table
     for (v in unique(lookup_df$variable)) {
-        if (v %in% names(data_df)) {
-            # Get levels and labels for this variable
+        target_col <- if (v %in% names(data_df)) v else if ("variable" %in% names(data_df)) "variable" else NULL
+        if (!is.null(target_col)) {
             levels_and_labels <- lookup_df %>%
                 dplyr::filter(variable == v) %>%
                 dplyr::select(level, label) %>%
                 dplyr::arrange(as.numeric(level))
 
-            # Convert the relevant column in data_df to a factor
-            data_df[[v]] <- factor(data_df[[v]],
-                                   levels = levels_and_labels$level,
-                                   labels = levels_and_labels$label)
+            data_df[[target_col]] <- factor(data_df[[target_col]],
+                                            levels = levels_and_labels$level,
+                                            labels = levels_and_labels$label)
         }
     }
 
