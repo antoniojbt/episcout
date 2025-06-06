@@ -60,19 +60,23 @@ test_that("Test with regular Date inputs", {
     # test_dates <- as.Date(c("2020-01-01", "2020-06-01", "2020-12-31"))
     result <- calculate_date_stats(test_dates)
     expect_is(result, "data.frame")
-    expect_equal(nrow(result), 7)
-    expect_equal(result$Value[1], as.character(min(test_dates)))
-    expect_equal(result$Value[2], as.character(max(test_dates)))
+    expect_equal(nrow(result), 11)
+    expect_equal(result$Value[result$Statistic == "Min"],
+                 as.character(min(test_dates)))
+    expect_equal(result$Value[result$Statistic == "Max"],
+                 as.character(max(test_dates)))
 })
 
 # Test 2: Correct handling of IDate input
 test_that("Test with IDate inputs", {
-    test_dates <- IDate(as.Date(c("2021-01-01", "2021-06-01", "2021-12-31")))
+    test_dates <- data.table::IDate(as.Date(c("2021-01-01", "2021-06-01", "2021-12-31")))
     result <- calculate_date_stats(test_dates)
     expect_is(result, "data.frame")
-    expect_equal(nrow(result), 7)
-    expect_equal(result$Value[1], as.character(min(as.Date(test_dates))))
-    expect_equal(result$Value[2], as.character(max(as.Date(test_dates))))
+    expect_equal(nrow(result), 11)
+    expect_equal(result$Value[result$Statistic == "Min"],
+                 as.character(min(as.Date(test_dates))))
+    expect_equal(result$Value[result$Statistic == "Max"],
+                 as.character(max(as.Date(test_dates))))
 })
 
 # Test 3: Function stops if non-date input is provided
@@ -86,8 +90,9 @@ test_that("Test handling of NA values", {
     test_dates_with_na <- as.Date(c("2020-01-01", NA, "2020-12-31"))
     result <- calculate_date_stats(test_dates_with_na)
     expect_is(result, "data.frame")
-    expect_equal(nrow(result), 7)
+    expect_equal(nrow(result), 11)
     # Expect NA not to affect the calculation of min, max, etc.
-    expect_equal(result$Value[1], as.character(min(test_dates_with_na, na.rm = TRUE)))
+    expect_equal(result$Value[result$Statistic == "Min"],
+                 as.character(min(test_dates_with_na, na.rm = TRUE)))
 })
 ######################
