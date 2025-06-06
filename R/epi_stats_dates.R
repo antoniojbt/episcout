@@ -115,7 +115,7 @@ epi_stats_dates <- function(date_vector) {
                       "IQR", "Most Common", "Range (Days)"),
         Value = c(as.character(length(date_vector)),                     # Total observations
                   as.character(sum(is.na(date_vector))),                 # Missing values
-                  as.character(n_distinct(date_vector)),              # Unique dates
+                  as.character(dplyr::n_distinct(date_vector)),              # Unique dates
                   as.character(min_date),
                   as.character(quartiles_dates[2]),
                   as.character(quartiles_dates[3]),
@@ -137,16 +137,16 @@ epi_stats_dates <- function(date_vector) {
 #' @return A wide-format tibble summarizing date statistics
 epi_stats_dates_multi <- function(df) {
     # Select only date columns
-    date_cols <- df %>% select(where(lubridate::is.Date))
+    date_cols <- df %>% dplyr::select(dplyr::where(lubridate::is.Date))
 
     # Apply `epi_stats_dates()` to each column and store results in a wide format
     summary_table <- lapply(names(date_cols), function(col) {
         stats <- epi_stats_dates(date_cols[[col]]) %>%
-            pivot_wider(names_from = Statistic, values_from = Value) %>%
-            mutate(Column = col) %>%
-            relocate(Column)  # Move Column name to first position
+            tidyr::pivot_wider(names_from = Statistic, values_from = Value) %>%
+            dplyr::mutate(Column = col) %>%
+            dplyr::relocate(Column)  # Move Column name to first position
     }) %>%
-        bind_rows()
+        dplyr::bind_rows()
 
     return(summary_table)
 }
