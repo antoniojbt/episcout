@@ -63,14 +63,14 @@ print("Function being tested: epi_clean_compare_dup_rows")
 test_that("Test expected output after epi_clean_compare_dup_rows", {
   # Check a few duplicated individuals:
   check_dups <- epi_clean_get_dups(df, 'var_id', 1)
-  val_id <- '2' # TO DO: '1' matches '1' and '10' despite fixed = TRUE
+  val_id <- '1'
   comp <- epi_clean_compare_dup_rows(check_dups, val_id, 'var_id', 1, 2)
   # comp
   # View(t(check_dups[comp$duplicate_indices, ]))
   # View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))
   expect_output(str(comp$differing_cols), ' 3 5')
   expect_output(str(comp$col_names), ' "x" "z"')
-  expect_output(str(comp$duplicate_indices), ' 3 4')
+  expect_output(str(comp$duplicate_indices), ' 1 2')
   }
   )
 ######################
