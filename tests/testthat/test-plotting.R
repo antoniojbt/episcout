@@ -236,8 +236,8 @@ test_that("epi_plot_heatmap", {
   renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
                                              melted_triangles$cormat_melted_triangle_pval,
                                              vars_list = vars_list,
-                                             var_labels = var_labels
-                                             )
+                                             var_labels = var_labels)
+  expect_true(nrow(renamed_triangles$cormat_melted_triangle_r) > 0)
 
   # Test epi_plot_heatmap:
   # Correlation values:

@@ -54,7 +54,7 @@ col_chr <- data.frame('chr1' = rep(c('A', 'B'), length.out = 1000),
                       'chr2' = rep(c('C', 'D'), length.out = 1000)
                       )
 # dim(col_chr)
-df_cont_chr <- tibble::as.tibble(cbind(df, col_chr))
+df_cont_chr <- tibble::as_tibble(cbind(df, col_chr))
 # epi_head_and_tail(df_cont_chr)
 # epi_head_and_tail(df_cont_chr, last_cols = TRUE)
 

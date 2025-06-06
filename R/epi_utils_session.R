@@ -58,9 +58,11 @@ epi_utils_session <- function(output_prefix = NULL,
     } else {
       output_name <- sprintf('session_%s.RData', Sys.Date())
     }
-  save(list = objects_to_save,
-       file = output_name,
-       ...
-       )
+  save(
+    list = objects_to_save,
+    file = output_name,
+    envir = parent.frame(),
+    ...
+  )
   print(sprintf('Saved objects as: %s', output_name))
   }
