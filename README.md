@@ -5,8 +5,6 @@
 
 episcout provides helper functions for cleaning, exploring and visualising large datasets. It wraps common preprocessing and descriptive tasks so you can focus on analysis. The package builds on the **tidyverse** and **data.table** ecosystems for fast and flexible data manipulation.
 
-Continuous integration is handled with **GitHub Actions** which runs `R CMD check` across multiple operating systems and reports code coverage via Codecov.
-
 ## Features
 
 * **Cleaning** – `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels.
