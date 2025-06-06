@@ -25,6 +25,10 @@ epi_list_tail <- function(list = list,
   cat(sprintf('List has %s elements in total.\n', length(list)))
   cat(sprintf('Last %s rows of first %s elements in list: \n', rows, max))
   for (item in 1:max) {
-    print(tail(list[[item]], rows))
+    x <- list[[item]]
+    if (is.character(x)) {
+      x <- factor(x)
+    }
+    print(tail(x, rows))
   }
 }
