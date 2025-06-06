@@ -35,6 +35,7 @@ measurement rows for example
 \examples{
 
 \dontrun{
+library(tibble)
 n <- 20
 df <- data.frame(
 var_id = rep(1:(n / 2), each = 2),
