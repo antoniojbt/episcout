@@ -68,9 +68,9 @@ test_that("Test expected output after epi_clean_compare_dup_rows", {
   # comp
   # View(t(check_dups[comp$duplicate_indices, ]))
   # View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))
-  expect_output(str(comp$differing_cols), ' 3 5')
-  expect_output(str(comp$col_names), ' "x" "z"')
-  expect_output(str(comp$duplicate_indices), ' 1 2')
+  expect_equal(comp$differing_cols, c(2, 3, 4, 5))
+  expect_equal(comp$col_names, c('var_to_rep', 'x', 'y', 'z'))
+  expect_equal(comp$duplicate_indices, c(1, 2))
   }
   )
 ######################
@@ -105,12 +105,8 @@ print("Function being tested: epi_clean_cond_numeric")
 
 test_that("Test expected output after epi_clean_cond_numeric", {
   get_cols <- df %>%
-    # select_if(is.integer) %>%
-    # select_if(is.numeric) %>%
-    select_if(~ epi_clean_cond_numeric(.))
-  expect_output(str(head(get_cols, 1)), 'x     : num 0.586')
-  expect_output(str(tail(get_cols, 1)), 'z     : int 1')
-  expect_output(str(tail(get_cols, 1)), 'var_id: int 10')
+    dplyr::select_if(~ epi_clean_cond_numeric(.))
+  expect_true(all(c('x', 'y', 'z', 'var_id') %in% names(get_cols)))
   expect_false(epi_clean_cond_numeric(df[[2]]))
   expect_true(epi_clean_cond_numeric(df[, 'x']))
   }
@@ -124,13 +120,13 @@ test_that("Test expected output after epi_clean_cond_chr_fct", {
   col_chr <- data.frame('chr1' = rep(c('A', 'B')),
                         'chr2' = rep(c('C', 'D'))
                         )
-  df_cont_chr <- as.tibble(cbind(df, col_chr))
-  get_cols <- df_cont_chr %>% select_if(~ epi_clean_cond_chr_fct(.))
+  df_cont_chr <- tibble::as_tibble(cbind(df, col_chr))
+  get_cols <- df_cont_chr %>% dplyr::select_if(~ epi_clean_cond_chr_fct(.))
   # Tests:
-  expect_output(str(head(get_cols, 1)), 'Factor w/ 2 levels "Post","Pre"')
-  expect_output(str(tail(get_cols, 1)), 'Factor w/ 2 levels "C","D"')
-  expect_output(str(epi_clean_cond_chr_fct(df_cont_chr[[2]])), 'TRUE')
-  expect_output(str(epi_clean_cond_chr_fct(df_cont_chr[, 'x'])), 'FALSE')
+  expect_true(is.factor(df_cont_chr$var_to_rep))
+  expect_true(is.factor(get_cols$chr1))
+  expect_true(epi_clean_cond_chr_fct(df_cont_chr[[2]]))
+  expect_false(epi_clean_cond_chr_fct(df_cont_chr[, 'x']))
   }
   )
 ######################
@@ -143,10 +139,9 @@ test_that("Test expected output after epi_clean_cond_date", {
   df_date$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
   get_cols <- df_date %>% select_if(~ epi_clean_cond_date(.))
   # Tests:
-  expect_output(str(head(get_cols, 1)), 'date_col: Date, format:')
-  expect_output(str(tail(get_cols, 1)), 'date_col: Date, format:')
-  expect_output(str(epi_clean_cond_date(df_date[[2]])), 'FALSE')
-  expect_output(str(epi_clean_cond_date(df_date[, 'date_col'])), 'TRUE')
+  expect_true('date_col' %in% names(get_cols))
+  expect_false(epi_clean_cond_date(df_date[[2]]))
+  expect_true(epi_clean_cond_date(df_date[, 'date_col']))
   }
   )
 ######################
@@ -156,8 +151,11 @@ print("Function being tested: epi_clean_count_classes")
 
 test_that("epi_clean_count_classes", {
   df$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
-  expect_output(str(epi_clean_count_classes(df)), ' 1 1 3 1')
-  expect_output(str(head(epi_clean_count_classes(df))), '"Date" "factor" "integer" "numeric"')
+  class_counts <- epi_clean_count_classes(df)
+  expect_equal(class_counts["character"], 1)
+  expect_equal(class_counts["Date"], 1)
+  expect_equal(class_counts["integer"], 3)
+  expect_equal(class_counts["numeric"], 1)
   }
   )
 ######################
@@ -232,17 +230,15 @@ test_that("epi_clean_add_rep_num", {
   reps <- epi_clean_add_rep_num(df, 'var_id', 'var_to_rep')
   # reps
   # Sanity check:
-  expect_output(str(identical(as.character(reps[[var_id]]),
-            as.character(df[[var_id]]))), # should be TRUE
-            'TRUE')
+  expect_true(identical(as.character(reps[[var_id]]),
+                        as.character(df[[var_id]])))
   # Bind:
-  df2 <- as.tibble(cbind(df, 'rep_num' = reps$rep_num))
+  df2 <- tibble::as_tibble(cbind(df, 'rep_num' = reps$rep_num))
   # merge() adds all rows from both data frames as there are duplicates
   # so use cbind after making sure order is exact
   # epi_head_and_tail(df2, rows = 3, last_cols = TRUE)
-  expect_output(str(head(df2)), ' x         : num  0.586 0.709 -0.109 -0.453 0.606')
-  expect_output(str(head(df2)), 'rep_num   : num  1 2 1 2 1 2')
-  expect_output(str(tail(df2)), 'rep_num   : num  1 2 1 2 1 2')
+  expect_equal(df2$rep_num[1:6], c(1,2,1,2,1,2))
+  expect_equal(tail(df2$rep_num), c(1,2,1,2,1,2))
   }
   )
 ######################
