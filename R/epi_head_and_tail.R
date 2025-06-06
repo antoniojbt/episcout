@@ -51,17 +51,33 @@ epi_head_and_tail <- function(df = NULL,
                               cols = 5,
                               last_cols = FALSE) {
   df <- as.data.frame(df)
-  print(sprintf('Total number of rows: %s', nrow(df)))
-  print(sprintf('Total number of columns: %s', ncol(df)))
+
+  n_rows <- nrow(df)
+  n_cols <- ncol(df)
+
+  # Adjust defaults when the data has fewer rows/columns than requested
+  if (rows > n_rows) {
+    rows <- n_rows
+  }
+
+  if (cols > n_cols) {
+    cols <- n_cols
+  }
+
+  print(sprintf('Total number of rows: %s', n_rows))
+  print(sprintf('Total number of columns: %s', n_cols))
+
   if (last_cols == TRUE) {
-    # Get the last columns:
-    cols <- ((ncol(df) - cols):ncol(df))
+    # Get the last columns
+    cols <- ((n_cols - cols + 1):n_cols)
   } else {
-    # Otherwise get the first columns:
+    # Otherwise get the first columns
     cols <- 1:cols
   }
-  heads <- df[1:rows, cols]
-  last_rows <- ((nrow(df) - (rows - 1)):nrow(df))
-  tails <- df[last_rows, cols]
+
+  heads <- df[1:rows, cols, drop = FALSE]
+  last_rows <- ((n_rows - (rows - 1)):n_rows)
+  tails <- df[last_rows, cols, drop = FALSE]
+
   print(rbind(heads, tails))
 }
