@@ -42,10 +42,12 @@ jobs:
           r-version: ${{ matrix.r }}
           use-public-rspm: true
 
-      - name: Cache R library
+      - name: Cache R libraries and package cache
         uses: actions/cache@v3
         with:
-          path: ${{ env.R_LIBS_USER }}
+          path: |
+            ${{ env.R_LIBS_USER }}
+            ${{ env.R_LIBS_CACHE }}
           key: ${{ runner.os }}-r-${{ matrix.r }}-${{ hashFiles('**/DESCRIPTION') }}
           restore-keys: |
             ${{ runner.os }}-r-${{ matrix.r }}-
@@ -58,9 +60,19 @@ jobs:
           # Option A: ensure rcmdcheck is installed
           extra-packages: |
             rcmdcheck
-
+            covr
 
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
         with:
-          build_args: '--no-manual --as-cran'
+          build_args: '--no-manual'
+          check_args: '--as-cran'
+
+      - name: Generate coverage report
+        run: Rscript -e 'covr::package_coverage(type = "tests")'
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
