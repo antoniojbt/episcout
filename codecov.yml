@@ -1,6 +1,7 @@
 #comment: false
 
 codecov:
+  # Codecov token should be provided via the CODECOV_TOKEN secret
 
 coverage:
   status:

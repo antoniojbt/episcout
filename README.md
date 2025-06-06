@@ -1,10 +1,11 @@
 [![R](https://github.com/antoniojbt/episcout/actions/workflows/r.yml/badge.svg)](https://github.com/antoniojbt/episcout/actions/workflows/r.yml)
-[![Travis build status](https://travis-ci.org/AntonioJBT/episcout.svg?branch=master)](https://travis-ci.org/AntonioJBT/episcout)
 [![codecov](https://codecov.io/gh/AntonioJBT/episcout/branch/master/graph/badge.svg)](https://codecov.io/gh/AntonioJBT/episcout)
 
 # episcout
 
 episcout provides helper functions for cleaning, exploring and visualising large datasets. It wraps common preprocessing and descriptive tasks so you can focus on analysis. The package builds on the **tidyverse** and **data.table** ecosystems for fast and flexible data manipulation.
+
+Continuous integration is handled with **GitHub Actions** which runs `R CMD check` across multiple operating systems and reports code coverage via Codecov.
 
 ## Features
 
