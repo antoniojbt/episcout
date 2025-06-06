@@ -41,8 +41,7 @@ epi_stats_contingency_2x2_all(df, target_var, test_type = "fisher.test")
 \item{test_type}{The type of test to perform. Either \code{"fisher.test"} (default) or \code{"chisq.test"}.}
 
 \item{min_unique}{Minimum number of unique values required to include a column for testing (default: 2).}
-\item{contingency_2x2_list}{A list of contingency tables created by
-\code{epi_stats_contingency_2x2_tables()}.}
+\item{contingency_2x2_list}{A list of contingency tables created by \code{epi_stats_contingency_2x2_tables()}.}
 }
 \value{
 \itemize{
