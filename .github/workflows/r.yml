@@ -62,15 +62,15 @@ jobs:
           extra-packages: "rcmdcheck,covr"
       # ───────────────────────────────────────────────────────────────────────────────
 
-      # 4) Install bioconductor manager and Bioconductor dependencies:
-      - name: Install Bioconductor packages
-        env:
-          CRAN: https://cloud.r-project.org
-        run: |
-          Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
-          # Install any Bioconductor packages listed in DESCRIPTION (Imports/Suggests).
-          # Install specific Bioc packages outside DESCRIPTION:
-          #Rscript -e 'BiocManager::install()'
+      # 4) Install Bioconductor packages (not required for this project)
+      #- name: Install Bioconductor packages
+      #  env:
+      #    CRAN: https://cloud.r-project.org
+      #  run: |
+      #    Rscript -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")'
+      #    # Install any Bioconductor packages listed in DESCRIPTION (Imports/Suggests).
+      #    # Install specific Bioc packages outside DESCRIPTION:
+      #    #Rscript -e 'BiocManager::install()'
 
       # 5) Install CRAN (and remotes-based) dependencies:
       #- uses: r-lib/actions/setup-r-dependencies@v2
