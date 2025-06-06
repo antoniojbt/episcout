@@ -1,6 +1,5 @@
-############
-library(openxlsx)
 
+############
 ###
 # Functions
 
