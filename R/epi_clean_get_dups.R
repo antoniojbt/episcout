@@ -18,7 +18,7 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{duplicated}}
+#' @seealso \code{\link[base]{duplicated}}
 #'
 #' @examples
 #'
