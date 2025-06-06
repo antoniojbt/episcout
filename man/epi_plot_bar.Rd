@@ -35,6 +35,9 @@ If passing both var_y and var_x, it uses var_x.}
 
 \item{x_lab}{x-axis label. Default is x_var.}
 
+\item{custom_palette}{Optional vector of fill colours used to override the
+default palette. Recycled to match the number of groups.}
+
 \item{...}{pass further arguments to ggplot2::geom_bar()}
 }
 \value{

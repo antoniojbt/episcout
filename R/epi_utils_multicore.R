@@ -5,7 +5,7 @@
 #'
 #' @param num_cores Number of cores to use. Default cores - 1.
 #' @param future_plan The strategy to use for plan().
-#' Default is 'multiprocess'.
+#' Default is 'multisession'.
 #' @param gc Garbage collection. Default is TRUE. Not all strategies use it though
 #' and cause an overhead.
 #' @param verbose Prints out the settings for future::plan(). Default is TRUE.
@@ -30,7 +30,7 @@
 #' epi_utils_multicore(num_cores = 1, future_plan = 'sequential')
 #' future_v %<-% { sum(1 + 2)}
 #' future_v
-#' epi_utils_multicore(future_plan = 'multiprocess')
+#' epi_utils_multicore(future_plan = 'multisession')
 #' future_v %<-% {sum(2 + 2)}
 #' future_v
 #' }
@@ -63,7 +63,8 @@ epi_utils_multicore <- function(num_cores = NULL,
     message("Parallel backend registered with the following configuration:")
     message(sprintf("- Available cores: %s", future::availableCores()))
     message(sprintf("- Requested cores: %s", num_cores))
-    message(sprintf("- Execution plan: %s", future::plan()))
+    plan_class <- paste(class(future::plan()), collapse = ", ")
+    message(sprintf("- Execution plan: %s", plan_class))
   }
 
   # Optional garbage collection

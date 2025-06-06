@@ -41,7 +41,7 @@ curps <- c(
 )
 
 # Aplicar la funcion a un vector de CURPs
-resultados <- map_dfr(curps, epi_clean_curp)
+resultados <- purrr::map_dfr(curps, epi_clean_curp)
 
 # Mostrar resultados
 print(t(resultados))

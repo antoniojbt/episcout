@@ -12,6 +12,8 @@
 #' @param guides_fill Fill for ggplot2 guides. Default is 'none'.
 #' @param y_lab y-axis label. Default is 'Count'.
 #' @param x_lab x-axis label. Default is x_var.
+#' @param custom_palette Optional vector of fill colours to override the default
+#'   palette. If provided, colours are recycled to match the number of levels.
 #' @param ... pass further arguments to ggplot2::geom_bar()
 #'
 #' @return Prints a ggplot2 barplot
