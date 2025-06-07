@@ -29,6 +29,11 @@ epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
     stop("All specified variables must exist in the data frame.")
   }
 
+  # Return empty data frame early if input has no rows
+  if (nrow(df) == 0) {
+    return(df[0, c(ind_vars, dep_var)])
+  }
+
   # Create the formula for xtabs dynamically
   # formula_str <- sprintf("~ %s + %s", dep_var, paste(ind_vars, collapse = " + "))
   # formula_obj <- as.formula(formula_str)
@@ -40,6 +45,13 @@ epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
 
   # Convert the table to a data frame
   df_f_tab <- as.data.frame(f_tab)
+
+  # Ensure dependent variable column exists
+  if (!dep_var %in% names(df_f_tab)) {
+    df_f_tab[[dep_var]] <- dep_var_levels[1]
+  }
+
+  category_names <- character()
 
   # Reshape the data to wide format
   dep_var_levels <- unique(df[[dep_var]])
