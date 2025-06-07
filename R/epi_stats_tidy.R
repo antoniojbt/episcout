@@ -53,7 +53,7 @@ epi_stats_tidy <- function(sum_df  = NULL,
 			sample size (number of rows) from the original data frame.")
 	}
 
-  df <- tibble::as.tibble(sum_df)
+  df <- tibble::as_tibble(sum_df)
   # standard eval version with spread_ to avoid NSE and R CMD check NOTEs:
   df <- df %>% tidyr::spread(., key = 'x', value = 'n')
   # Reorder columns as:

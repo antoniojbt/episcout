@@ -46,19 +46,17 @@ epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
   # Convert the table to a data frame
   df_f_tab <- as.data.frame(f_tab)
 
-  # Ensure dependent variable column exists
-  if (!dep_var %in% names(df_f_tab)) {
-    df_f_tab[[dep_var]] <- dep_var_levels[1]
-  }
+  dep_var_levels <- unique(c(df[[dep_var]], "Yes", "No"))
+  df_f_tab[[dep_var]] <- factor(df_f_tab[[dep_var]], levels = dep_var_levels)
 
   category_names <- character()
 
-  # Reshape the data to wide format
-  dep_var_levels <- unique(df[[dep_var]])
   df_f_tab_wide <- tidyr::pivot_wider(
     df_f_tab,
     names_from = dplyr::all_of(dep_var),
-    values_from = "Freq"
+    values_from = "Freq",
+    names_expand = TRUE,
+    values_fill = 0
   )
 
   # Add totals and percentages dynamically

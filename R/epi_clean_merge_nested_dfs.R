@@ -147,7 +147,7 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   print('Merging first two data frames')
   # If there are names in list but they are duplicated:
   if (!is.null(names(nested_list_dfs)) & any(duplicated(names(nested_list_dfs)))) {
-   warning('Duplicated names in list passed. Using default suffixes.')
+   message('Duplicated names in list passed. Using default suffixes.')
   }
   # If there are names and no duplicates:
   if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
