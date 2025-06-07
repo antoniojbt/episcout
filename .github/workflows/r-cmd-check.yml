@@ -14,7 +14,7 @@ on:
   pull_request:
     branches: [main, master]
 
-name: r-cmd-check.yml
+name: R CMD CHECK
 
 permissions: read-all
 
@@ -29,12 +29,10 @@ jobs:
       matrix:
         config:
           - {os: macos-latest,   r: 'release'}
-
-#          - {os: windows-latest, r: 'release'}
-
-#          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
+#          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
 #          - {os: ubuntu-latest,  r: 'oldrel-1'}
+#          - {os: windows-latest, r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
