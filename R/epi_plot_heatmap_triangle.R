@@ -123,8 +123,9 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
                      panel.background = ggplot2::element_rect(),
                      axis.ticks = ggplot2::element_blank(),
                      legend.justification = c(1, 0),
-                     legend.position = c(0.5, 0.8),
-                     legend.direction = 'horizontal') +
+                     legend.direction = "horizontal") +
+      ggplot2::theme(legend.position = "inside",
+                     legend.position.inside = c(0.5, 0.8)) +
       ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 12,
                                                      barheight = 2,
                                                      title.position = 'top',
