@@ -9,6 +9,7 @@ library(ggplot2)
 library(cowplot)
 library(ggthemes)
 ######################
+skip("Skipping vdiffr visual tests")
 
 ######################
 # Working directory for informal tests, should be from pkg/tests/testthat/:

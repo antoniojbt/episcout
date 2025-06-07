@@ -5,9 +5,9 @@ library(episcout)
 library(testthat)
 library(future)
 library(parallel)
-library(doFuture)
-library(foreach)
-library(iterators)
+if (requireNamespace("doFuture", quietly = TRUE)) library(doFuture)
+if (requireNamespace("foreach", quietly = TRUE)) library(foreach)
+if (requireNamespace("iterators", quietly = TRUE)) library(iterators)
 ######################
 
 ######################
