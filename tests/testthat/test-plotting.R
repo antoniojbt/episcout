@@ -77,23 +77,23 @@ test_that("epi_plot_list", {
 ######################
 
 ######################
-print("Function being tested: epi_plot_grid_size")
+#print("Function being tested: epi_plot_grid_size")
 # Generate plots:
-for (i in names(my_plot_list)) {
+#for (i in names(my_plot_list)) {
   # print(i)
   # my_plot_list[[i]] <- ggplot2::qplot(data = df, y = , geom = 'boxplot')
-  my_plot_list[[i]] <- ggplot2::ggplot(df, aes(y = .data[[i]])) + geom_boxplot()
-}
+#  my_plot_list[[i]] <- ggplot2::ggplot(df, aes(y = .data[[i]])) + geom_boxplot()
+#}
 # Not in use but keep tests:
 # Calculate how many plots can be passed to one grid (one page):
 # grid_size <- epi_plot_grid_size(my_plot_list)
 # grid_size
 # Not exported so errors with 'could not find function', leave as reference though
-test_that("epi_plot_grid_size", {
+#test_that("epi_plot_grid_size", {
 #   expect_output(str(grid_size), 'ncol_grid: num 2')
 #   expect_output(str(grid_size), 'nrow_grid: num 1')
-  }
-  )
+#  }
+#  )
 ######################
 
 ######################
@@ -112,8 +112,14 @@ test_that("epi_plots_to_grid", {
 print("Function being tested: epi_plot_cow_save")
 
 test_that("epi_plot_cow_save", {
-  # TO DO: output is a plot saved to disk, see code above
-  # epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
+  skip_if_not_installed("cowplot")
+  tmp_file <- tempfile(fileext = ".pdf")
+  p <- ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
+    ggplot2::geom_point()
+  g <- cowplot::plot_grid(p)
+  epi_plot_cow_save(file_name = tmp_file, plot_grid = g)
+  expect_true(file.exists(tmp_file))
+  unlink(tmp_file)
   }
   )
 ######################
@@ -262,14 +268,7 @@ test_that("epi_plot_heatmap", {
 ######################
 
 ######################
-print("Function being tested: epi_plot_volcano")
 
-test_that("epi_plot_volcano", {
-  # TO DO: test plot output, needs example code
-  # Deprecated, just use limma::volcanoplot()
-}
-)
-######################
 
 # TO DO: missing tests for, moved this to blurbs, update properly and move back to R/
 # epi_plot_en_masse
