@@ -67,6 +67,14 @@ epi_stats_corr_rename <- function(r_vals = 'melted_triangles$cormat_melted_trian
                                   var_labels = var_labels,
                                   digits = 2
                                   ) {
+  r_vals <- as.data.frame(r_vals)
+  p_vals <- as.data.frame(p_vals)
+
+  if (nrow(r_vals) == 0 || nrow(p_vals) == 0) {
+    return(list(cormat_melted_triangle_r = r_vals,
+                cormat_melted_triangle_pval = p_vals))
+  }
+
   r_vals$Var1 <- factor(r_vals$Var1,
                         levels = vars_list,
                         labels = var_labels

@@ -64,7 +64,7 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
                            allowAll = allowAll,
                            ...
                            )
-  comp_diff <- which(comp$detailedResult == FALSE)
+  comp_diff <- unname(which(comp$detailedResult == FALSE))
   names_diff_cols <- names(which(comp$detailedResult == FALSE))
   comp_results <- list('differing_cols' = comp_diff,
                        'col_names' = names_diff_cols,
