@@ -123,8 +123,8 @@ test_that("Test expected output after epi_clean_cond_chr_fct", {
   df_cont_chr <- tibble::as_tibble(cbind(df, col_chr))
   get_cols <- df_cont_chr %>% dplyr::select_if(~ epi_clean_cond_chr_fct(.))
   # Tests:
-  expect_true(is.factor(df_cont_chr$var_to_rep))
-  expect_true(is.factor(get_cols$chr1))
+  expect_true(is.character(df_cont_chr$var_to_rep))
+  expect_true(is.character(get_cols$chr1))
   expect_true(epi_clean_cond_chr_fct(df_cont_chr[[2]]))
   expect_false(epi_clean_cond_chr_fct(df_cont_chr[, 'x']))
   }
@@ -152,10 +152,10 @@ print("Function being tested: epi_clean_count_classes")
 test_that("epi_clean_count_classes", {
   df$date_col <- seq(as.Date("2018/1/1"), by = "year", length.out = 5)
   class_counts <- epi_clean_count_classes(df)
-  expect_equal(class_counts["character"], 1)
-  expect_equal(class_counts["Date"], 1)
-  expect_equal(class_counts["integer"], 3)
-  expect_equal(class_counts["numeric"], 1)
+  expect_equal(unname(class_counts["character"]), 1)
+  expect_equal(unname(class_counts["Date"]), 1)
+  expect_equal(unname(class_counts["integer"]), 3)
+  expect_equal(unname(class_counts["numeric"]), 1)
   }
   )
 ######################
