@@ -77,7 +77,24 @@ test_that("epi_plot_list", {
 ######################
 
 ######################
-
+#print("Function being tested: epi_plot_grid_size")
+# Generate plots:
+#for (i in names(my_plot_list)) {
+  # print(i)
+  # my_plot_list[[i]] <- ggplot2::qplot(data = df, y = , geom = 'boxplot')
+#  my_plot_list[[i]] <- ggplot2::ggplot(df, aes(y = .data[[i]])) + geom_boxplot()
+#}
+# Not in use but keep tests:
+# Calculate how many plots can be passed to one grid (one page):
+# grid_size <- epi_plot_grid_size(my_plot_list)
+# grid_size
+# Not exported so errors with 'could not find function', leave as reference though
+#test_that("epi_plot_grid_size", {
+#   expect_output(str(grid_size), 'ncol_grid: num 2')
+#   expect_output(str(grid_size), 'nrow_grid: num 1')
+#  }
+#  )
+######################
 
 ######################
 print("Function being tested: epi_plots_to_grid")
@@ -136,7 +153,7 @@ test_that("epi_plot_hist", {
   # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
   my_hist_plot <- my_hist_plot +
   # Density instead of count on y-axis:
-    geom_histogram(aes( y = ..density..),
+    geom_histogram(aes(y = after_stat(density)),
                    binwidth = 0.5,
                    colour = "black",
                    fill = "white") +
