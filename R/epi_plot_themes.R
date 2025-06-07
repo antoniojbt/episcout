@@ -147,8 +147,7 @@ scale_fill_epi_plot_theme_2 <- function(...) {
     stop('Package scales needed for this function to work. Please install it.',
          call. = FALSE)
   }
-  ggplot2::discrete_scale("fill", "epi_plot_theme_2",
-                 scales::manual_pal(values = c("#386cb0",
+  ggplot2::scale_fill_manual(values = c("#386cb0",
                                        "#fdb462",
                                        "#7fc97f",
                                        "#ef3b2c",
@@ -156,8 +155,8 @@ scale_fill_epi_plot_theme_2 <- function(...) {
                                        "#a6cee3",
                                        "#fb9a99",
                                        "#984ea3",
-                                       "#ffff33")),
-                 ...)
+                                       "#ffff33"),
+                            ...)
 
 }
 
@@ -172,16 +171,15 @@ scale_colour_epi_plot_theme_2 <- function(...) {
     stop('Package scales needed for this function to work. Please install it.',
          call. = FALSE)
   }
-  ggplot2::discrete_scale("colour", "epi_plot_theme_2",
-                 scales::manual_pal(values = c("#386cb0",
-                                       "#fdb462",
-                                       "#7fc97f",
-                                       "#ef3b2c",
-                                       "#662506",
-                                       "#a6cee3",
-                                       "#fb9a99",
-                                       "#984ea3",
-                                       "#ffff33")),
-                 ...)
+  ggplot2::scale_colour_manual(values = c("#386cb0",
+                                         "#fdb462",
+                                         "#7fc97f",
+                                         "#ef3b2c",
+                                         "#662506",
+                                         "#a6cee3",
+                                         "#fb9a99",
+                                         "#984ea3",
+                                         "#ffff33"),
+                              ...)
 
 }

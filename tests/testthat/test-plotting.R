@@ -82,7 +82,7 @@ print("Function being tested: epi_plot_grid_size")
 for (i in names(my_plot_list)) {
   # print(i)
   # my_plot_list[[i]] <- ggplot2::qplot(data = df, y = , geom = 'boxplot')
-  my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
+  my_plot_list[[i]] <- ggplot2::ggplot(df, aes(y = .data[[i]])) + geom_boxplot()
 }
 # Not in use but keep tests:
 # Calculate how many plots can be passed to one grid (one page):
@@ -147,7 +147,7 @@ test_that("epi_plot_hist", {
   # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
   my_hist_plot <- my_hist_plot +
   # Density instead of count on y-axis:
-    geom_histogram(aes( y = ..density..),
+    geom_histogram(aes(y = after_stat(density)),
                    binwidth = 0.5,
                    colour = "black",
                    fill = "white") +

@@ -62,16 +62,24 @@ epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
   cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
   # Melt and remove NAs:
   # TO DO: Fix warning message, "Consider providing at least one of 'id' or 'measure' vars"
+  dt_r <- data.table::as.data.table(cormat_tri_r, keep.rownames = 'Var1')
   cormat_melted_triangle_r <- data.table::melt(
-    data.table::as.data.table(cormat_tri_r),
+    dt_r,
+    id.vars = 'Var1',
+    variable.name = 'Var2',
+    value.name = 'value',
     na.rm = TRUE
   )
   # Usually no NAs for correlation values though, indices will not match for cormat_tri_r and cormat_tri_P files
   # And the same for p-values:
   cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
   # Melt:
+  dt_p <- data.table::as.data.table(cormat_tri_P, keep.rownames = 'Var1')
   cormat_melted_triangle_pval <- data.table::melt(
-    data.table::as.data.table(cormat_tri_P),
+    dt_p,
+    id.vars = 'Var1',
+    variable.name = 'Var2',
+    value.name = 'value',
     na.rm = TRUE
   )
   # Return melted triangles:
