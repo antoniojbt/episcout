@@ -69,7 +69,7 @@ test_that("Test with regular Date inputs", {
 
 # Test 2: Correct handling of IDate input
 test_that("Test with IDate inputs", {
-    test_dates <- data.table::IDate(as.Date(c("2021-01-01", "2021-06-01", "2021-12-31")))
+    test_dates <- data.table::as.IDate(as.Date(c("2021-01-01", "2021-06-01", "2021-12-31")))
     result <- calculate_date_stats(test_dates)
     expect_is(result, "data.frame")
     expect_equal(nrow(result), 11)
