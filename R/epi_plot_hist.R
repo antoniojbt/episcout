@@ -9,7 +9,7 @@
 #' @return Prints a ggplot2 histogram
 #'
 #' @note For other options, save as object and build on the layers.
-#' var_x is passed to ggplot2::aes_string
+#' var_x is passed to ggplot2 aesthetics using tidy evaluation
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -83,8 +83,8 @@ epi_plot_hist <- function(df = NULL,
     }
   # var_x <- enquo(var_x) # enquosure required for non-standard R object evaluation
   hist_plot <- ggplot2::ggplot(data = df,
-                               ggplot2::aes_string(var_x)
-  ) + # aes_string() is soft-deprecated
+                               ggplot2::aes(x = .data[[var_x]])
+  ) +
     ggplot2::geom_histogram(...) +
     epi_plot_theme_2() + # Needs ggtheme.R functions in this package
     ggplot2::labs(y = 'Count')
