@@ -3,20 +3,26 @@
 #' @param df A dataframe containing factor variables
 #' @return A tibble summarizing factor variables in wide format
 epi_stats_factors <- function(df) {
-    df %>%
-        dplyr::select(dplyr::where(is.factor)) %>%
-        tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Variable", values_to = "Value") %>%
-        dplyr::group_by(Variable) %>%
-        dplyr::summarise(
-            n_missing = sum(is.na(Value)),  # Missing values count
-            complete_rate = mean(!is.na(Value)),  # Proportion of non-missing values
-            ordered = unique(is.ordered(Value)),  # Is the factor ordered?
-            n_unique = dplyr::n_distinct(Value, na.rm = TRUE),  # Unique levels count
-            top_counts = paste(names(sort(table(Value), decreasing = TRUE)[1:3]),
-                                      sort(table(Value), decreasing = TRUE)[1:3],
-                                      sep = " (", collapse = "), ") # Most common factor levels
-        ) %>%
-        dplyr::ungroup()
+    if (!requireNamespace('purrr', quietly = TRUE)) {
+        stop('Package purrr needed for this function to work. Please install it.',
+             call. = FALSE)
+    }
+    factor_df <- df %>%
+        dplyr::select(dplyr::where(is.factor))
+
+    purrr::imap_dfr(factor_df, function(col, nm) {
+        counts <- sort(table(col), decreasing = TRUE)
+        tibble::tibble(
+            Variable = nm,
+            n_missing = sum(is.na(col)),
+            complete_rate = mean(!is.na(col)),
+            ordered = is.ordered(col),
+            n_unique = dplyr::n_distinct(col, na.rm = TRUE),
+            top_counts = paste(names(counts)[seq_len(min(3, length(counts)))],
+                                counts[seq_len(min(3, length(counts)))],
+                                sep = " (", collapse = ", ")
+        )
+    })
 }
 
 #' Summarize Character Variables
