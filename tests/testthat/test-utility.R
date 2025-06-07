@@ -52,7 +52,11 @@ test_that("epi_utils_multicore sequential", {
   future_v %<-% {1 + 2}
   future_v
   expect_identical(future_v, 3)
-  future:::ClusterRegistry("stop")
+  if ("ClusterRegistry" %in% ls(getNamespace("future"), all.names = TRUE)) {
+    future:::ClusterRegistry("stop")
+  } else {
+    future::plan("sequential")
+  }
 }
 )
 
@@ -75,7 +79,11 @@ test_that("epi_utils_multicore multi", {
   future_v %<-% {1 + 2}
   future_v
   expect_identical(future_v, 3)
-  future:::ClusterRegistry("stop")
+  if ("ClusterRegistry" %in% ls(getNamespace("future"), all.names = TRUE)) {
+    future:::ClusterRegistry("stop")
+  } else {
+    future::plan("sequential")
+  }
   }
   )
 ######################
