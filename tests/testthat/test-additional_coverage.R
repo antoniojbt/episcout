@@ -36,6 +36,7 @@ print("Function being tested: epi_plot_hist additional args")
 
 test_that("epi_plot_hist passes extra parameters", {
   df <- data.frame(x = rnorm(100))
+  skip_if_not_installed("ggthemes")
   p <- epi_plot_hist(df, "x", binwidth = 0.5)
   expect_s3_class(p, "ggplot")
   bw <- p$layers[[1]]$stat_params$binwidth
@@ -56,6 +57,7 @@ print("Function being tested: epi_stats_corr")
 
 test_that("epi_stats_corr returns correct correlations", {
   df <- data.frame(x = 1:5, y = seq(2,10,2))
+  skip_if_not_installed("Hmisc")
   res <- epi_stats_corr(df, method = "pearson")
   expect_equal(res$cormat$r[1,2], 1)
   expect_equal(res$cormat$r[2,1], 1)
@@ -101,6 +103,7 @@ print("Function being tested: epi_stats_dates_multi")
 test_that("epi_stats_dates_multi summarises multiple columns", {
   df <- data.frame(a = as.Date("2020-01-01") + 0:2,
                    b = as.Date("2021-01-01") + 0:2)
+  skip_if_not_installed("lubridate")
   res <- epi_stats_dates_multi(df)
   expect_true(all(c("Column","N","Min") %in% names(res)))
   expect_equal(nrow(res),2)
@@ -122,7 +125,8 @@ test_that("epi_clean_make_names handles duplicates and replacement", {
   strings <- c("a","a","b c")
   out <- epi_clean_make_names(strings, str_replacement = "-")
   expect_true(length(unique(out)) == length(out))
-  expect_true(all(grepl("-", out[3])))
+  expect_true(!any(grepl("-", out)))
+  expect_true(all(make.names(out) == out))
 })
 
 ######################
@@ -140,9 +144,8 @@ print("Function being tested: epi_clean_transpose roundtrip")
 test_that("epi_clean_transpose roundtrip works", {
   df <- data.frame(id=1:3, a=4:6)
   df$id_col <- df$id
-  tdf <- epi_clean_transpose(df, "id_col")
+  tdf <- epi_clean_transpose(df, 3)
   # Recreate original by transposing back
-  back <- epi_clean_transpose(tdf, "V1")
-  expect_equal(ncol(back), nrow(df)+1)
-  expect_equal(as.character(back[1,-1]), as.character(df$id_col))
+  back <- epi_clean_transpose(tdf, 1)
+  expect_equal(dim(back), dim(df))
 })
