@@ -39,9 +39,9 @@ test_that("epi_plot_cow_save handles ggplot and grid inputs", {
   )
   expect_true(file.exists(tmp_single))
 
-  g <- cowplot::plot_grid(p, p)
+  plot_list <- list(p, p)
   expect_message(
-    epi_plot_cow_save(file_name = tmp_multi, plot_grid = g),
+    epi_plot_cow_save(file_name = tmp_multi, plot_grid = plot_list),
     "Saving a multi-plot grid"
   )
   expect_true(file.exists(tmp_multi))
