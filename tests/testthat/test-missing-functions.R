@@ -10,7 +10,8 @@ test_that("epi_create_dir creates directories", {
   expect_message(path <- epi_create_dir(tmp_base, subdir = "sub"),
                  "Created directory")
   expect_true(dir.exists(path))
-  expect_equal(path, normalizePath(file.path(tmp_base, "sub")))
+  expect_equal(dirname(path), normalizePath(tmp_base))
+  expect_equal(basename(path), "sub")
   expect_message(epi_create_dir(tmp_base, subdir = "sub"),
                  "Directory already exists")
   unlink(tmp_base, recursive = TRUE)
@@ -20,11 +21,11 @@ print("Function being tested: epi_create_dir with date")
 
 test_that("epi_create_dir uses today's date when subdir is NULL", {
   tmp_base <- file.path(tempdir(), "epi_create_dir_test_date")
-  expected <- normalizePath(file.path(tmp_base, format(Sys.Date(), "%d_%m_%Y")),
-                            mustWork = FALSE)
+  date_dir <- format(Sys.Date(), "%d_%m_%Y")
   path <- epi_create_dir(tmp_base)
   expect_true(dir.exists(path))
-  expect_equal(path, expected)
+  expect_equal(dirname(path), normalizePath(tmp_base))
+  expect_equal(basename(path), date_dir)
   unlink(tmp_base, recursive = TRUE)
 })
 
