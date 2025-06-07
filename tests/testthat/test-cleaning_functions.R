@@ -61,6 +61,7 @@ test_that("Test expected output after epi_clean_get_dups", {
 print("Function being tested: epi_clean_compare_dup_rows")
 
 test_that("Test expected output after epi_clean_compare_dup_rows", {
+  skip_if_not_installed("compare")
   # Check a few duplicated individuals:
   check_dups <- epi_clean_get_dups(df, 'var_id', 1)
   val_id <- '1'

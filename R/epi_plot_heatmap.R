@@ -55,7 +55,15 @@ epi_plot_heatmap <- function(cormat_melted = 'cormat_all$cormat_melted_r',
     stop('Package ggplot2 needed for this function to work. Please install it.',
          call. = FALSE)
   }
-  heat_map <- ggplot2::ggplot(data = as.data.frame(cormat_melted),
+  cormat_df <- as.data.frame(cormat_melted)
+  if ('correlation' %in% names(cormat_df)) {
+    names(cormat_df)[names(cormat_df) == 'correlation'] <- 'value'
+  }
+  if ('pvalue' %in% names(cormat_df)) {
+    names(cormat_df)[names(cormat_df) == 'pvalue'] <- 'value'
+  }
+
+  heat_map <- ggplot2::ggplot(data = cormat_df,
                               ggplot2::aes_string(x = 'Var1',
                                                   y = 'Var2',
                                                   fill = 'value')
