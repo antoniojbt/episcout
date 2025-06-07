@@ -46,7 +46,8 @@ Suggests:
     vdiffr,
     reshape2,
     covr,
-    roxygen2
+    roxygen2,
+    mice
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
