@@ -18,8 +18,8 @@ epi_stats_factors <- function(df) {
             complete_rate = mean(!is.na(col)),
             ordered = is.ordered(col),
             n_unique = dplyr::n_distinct(col, na.rm = TRUE),
-            top_counts = paste(names(counts)[1:min(3, length(counts))],
-                                counts[1:min(3, length(counts))],
+            top_counts = paste(names(counts)[seq_len(min(3, length(counts)))],
+                                counts[seq_len(min(3, length(counts)))],
                                 sep = " (", collapse = ", ")
         )
     })
