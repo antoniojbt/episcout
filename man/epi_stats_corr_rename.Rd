@@ -45,27 +45,27 @@ The output can be used for prettier plotting.
 vars_list and var_labels must match by position.
 }
 \examples{
-
 \dontrun{
-df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c("Pre", "Post"), n / 2),
-x = rnorm(n),
-y = rbinom(n, 1, 0.50),
-z = rpois(n, 2)
+df <- data.frame(
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 epi_clean_count_classes(df)
-df_corr <- df \%>\%select_if(~ epi_clean_cond_numeric(.))
+df_corr <- df \%>\% select_if(~ epi_clean_cond_numeric(.))
 df_corr <- df_corr[, -1] # exclude var_id
-cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
+cormat_all <- epi_stats_corr(df_corr, method = "pearson")
 melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
 melted_triangles
-vars_list <- c('x', 'y', 'z')
-var_labels <- c('numeric', 'binomial', 'poisson')
+vars_list <- c("x", "y", "z")
+var_labels <- c("numeric", "binomial", "poisson")
 renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
-                                           melted_triangles$cormat_melted_triangle_pval,
-                                           vars_list = vars_list,
-                                           var_labels = var_labels
-                                           )
+  melted_triangles$cormat_melted_triangle_pval,
+  vars_list = vars_list,
+  var_labels = var_labels
+)
 renamed_triangles
 }
 }

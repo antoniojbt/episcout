@@ -19,4 +19,5 @@
 ^CRAN-RELEASE$
 ^THANKS.rst$
 ^\.github$
+^AGENTS\.MD$
 ^fishers_results\.txt$

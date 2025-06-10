@@ -23,13 +23,12 @@ Note that columns with more than one class will be counted each time
 (such as POSIX dates), hence ncol() and epi_clean_count_classes() may not match
 }
 \examples{
-
 \dontrun{
 set.seed(12345)
 n <- 20
 df <- data.frame(
   var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c('Pre', 'Post'), n / 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
   x = rnorm(n),
   y = rbinom(n, 1, 0.50),
   z = rpois(n, 2)

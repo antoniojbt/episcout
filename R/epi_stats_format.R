@@ -33,18 +33,17 @@
 epi_stats_format <- function(df = NULL,
                              skip = NULL,
                              digits = 2,
-                             ...
-                             ) {
+                             ...) {
   df <- as.data.frame(df)
   if (!is.null(skip)) {
     col_names <- names(df)[-skip]
-    } else {
+  } else {
     col_names <- names(df)
-    }
+  }
   for (i in col_names) {
     if (epi_clean_cond_numeric(df[[i]])) {
       df[[i]] <- format(round(df[[i]], digits), nsmall = digits, ...)
-      }
     }
-  return(df)
   }
+  return(df)
+}

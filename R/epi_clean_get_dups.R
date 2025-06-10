@@ -21,12 +21,11 @@
 #' @seealso \code{\link[base]{duplicated}}
 #'
 #' @examples
-#'
 #' \dontrun{
 #' dim(df)
 #' epi_head_and_tail(df, rows = 2, cols = 2)
 #' # Get all duplicates:
-#' check_dups <- epi_clean_get_dups(df, 'var_id', 1)
+#' check_dups <- epi_clean_get_dups(df, "var_id", 1)
 #' dim(check_dups)
 #' check_dups
 #' }
@@ -35,9 +34,8 @@
 #'
 
 epi_clean_get_dups <- function(df = NULL,
-                             var = '',
-                             freq = 1
-                             ) {
+                               var = "",
+                               freq = 1) {
   # Create a table with frequencies:
   n_occur <- data.frame(table(df[[var]]))
   # Check those which have mor than 1, these are duplicated:

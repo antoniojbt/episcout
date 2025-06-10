@@ -36,39 +36,42 @@
 
 epi_stats_summary <- function(df = NULL,
                               codes = NULL,
-                              class_type = 'chr_fct', # 'int_num'
-                              action = 'exclude' # 'codes_only'
-                              ) {
-  if (!requireNamespace('dplyr', quietly = TRUE)) {
+                              class_type = "chr_fct", # 'int_num'
+                              action = "exclude" # 'codes_only'
+) {
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("Package dplyr needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
-  if (!requireNamespace('purrr', quietly = TRUE)) {
+  if (!requireNamespace("purrr", quietly = TRUE)) {
     stop("Package purrr needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
- if (!requireNamespace('tibble', quietly = TRUE)) {
-  stop("Package tibble needed for this function to work. Please install it.",
-       call. = FALSE)
+  if (!requireNamespace("tibble", quietly = TRUE)) {
+    stop("Package tibble needed for this function to work. Please install it.",
+      call. = FALSE
+    )
   }
   df <- tibble::as_tibble(df)
   # Determine which group of columns to use:
-  if (class_type == 'chr_fct') {
+  if (class_type == "chr_fct") {
     cond <- expression(epi_clean_cond_chr_fct(.))
-    } else if (class_type == 'int_num') {
+  } else if (class_type == "int_num") {
     cond <- expression(epi_clean_cond_numeric(.))
-    } else {
-      stop('class_type parameter not specified correctly?')
-    }
+  } else {
+    stop("class_type parameter not specified correctly?")
+  }
   # Determine what to do with the codes provided (count only codes or
   # exclude codes from counting):
-  if (action == 'codes_only') {
+  if (action == "codes_only") {
     map_func <- expression(purrr::keep(., .p = (. %in% codes)))
-    } else if (action == 'exclude') {
+  } else if (action == "exclude") {
     map_func <- expression(purrr::discard(., .p = (. %in% codes)))
-    } else {
-      stop('action parameter not specified correctly?')
-      }
+  } else {
+    stop("action parameter not specified correctly?")
+  }
   # Determine if to count or sum depending on class cond and action asked for
   # codes are expected to be summarised as factors (so count()) as they are
   # assumed to represent database codes for NA explanations
@@ -82,16 +85,16 @@ epi_stats_summary <- function(df = NULL,
   }
 
   df <- df %>%
-    dplyr::select_if(~eval(cond)) %>%
-    purrr::map(~eval(map_func)) %>%
+    dplyr::select_if(~ eval(cond)) %>%
+    purrr::map(~ eval(map_func)) %>%
     purrr::map(sum_func) # Returns a list
 
   # Convert to dataframe with the same names for the var of interest:
   df <- as.data.frame(purrr::map_df(df,
-                                    tibble::rownames_to_column,
-                                    'var',
-                                    .id = 'id')
-                      )
+    tibble::rownames_to_column,
+    "var",
+    .id = "id"
+  ))
   # Returns a list if sum_func is summary()
   df <- tibble::as_tibble(as.data.frame(df))
   # Drop 'var' col as not needed:
@@ -103,4 +106,4 @@ epi_stats_summary <- function(df = NULL,
   #          everything()
   #   )
   return(df)
-  }
+}

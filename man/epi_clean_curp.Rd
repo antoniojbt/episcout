@@ -36,8 +36,8 @@ epi_clean_curp("GOMC900514HDFRLA07")
 
 # Ejemplo con varios CURPs
 curps <- c(
-"GOMC900514HDFRLA07",  # Antes del 2000
-"LOAM020715MMCRSR09"   # Despues del 2000
+  "GOMC900514HDFRLA07", # Antes del 2000
+  "LOAM020715MMCRSR09" # Despues del 2000
 )
 
 # Aplicar la funcion a un vector de CURPs

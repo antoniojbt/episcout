@@ -30,44 +30,47 @@
 #' @export
 #'
 
-epi_stats_tidy <- function(sum_df  = NULL,
-                           order_by = 'percent',
+epi_stats_tidy <- function(sum_df = NULL,
+                           order_by = "percent",
                            perc_n = NULL,
                            digits = 2,
-                           decreasing = TRUE
-                           ) {
-  if (!requireNamespace('dplyr', quietly = TRUE)) {
+                           decreasing = TRUE) {
+  if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("Package dplyr needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
-  if (!requireNamespace('tidyr', quietly = TRUE)) {
+  if (!requireNamespace("tidyr", quietly = TRUE)) {
     stop("Package tidyr needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
-  if (!requireNamespace('tibble', quietly = TRUE)) {
+  if (!requireNamespace("tibble", quietly = TRUE)) {
     stop("Package tibble needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
-	if (is.null(perc_n)) {
-		stop("perc_n must be passed in order to calculate percentage. It will be the
+  if (is.null(perc_n)) {
+    stop("perc_n must be passed in order to calculate percentage. It will be the
 			sample size (number of rows) from the original data frame.")
-	}
+  }
 
   df <- tibble::as_tibble(sum_df)
   # standard eval version with spread_ to avoid NSE and R CMD check NOTEs:
-  df <- df %>% tidyr::spread(., key = 'x', value = 'n')
+  df <- df %>% tidyr::spread(., key = "x", value = "n")
   # Reorder columns as:
   df <- df %>%
-    dplyr::select(#rlang::.data[['id']], # assumes there is a column called 'id'
-                  dplyr::everything()
-           )
+    dplyr::select( # rlang::.data[['id']], # assumes there is a column called 'id'
+      dplyr::everything()
+    )
   # Add row sum:
   df$row_sums <- rowSums(df[, -1], na.rm = TRUE) # assumes the first column is 'id'
   # Add percentage from total provided:
   df$percent <- (df$row_sums / perc_n) * 100
   # Re-order rows by column decreasing number:
   set_order <- order(as.numeric(as.character(df[[order_by]])),
-                     decreasing = decreasing)
+    decreasing = decreasing
+  )
   df <- df[set_order, ]
   return(df)
-  }
+}

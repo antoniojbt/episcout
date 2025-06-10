@@ -14,11 +14,11 @@
 #' \dontrun{
 #' df <- data.frame(
 #'   d_T0_outcome = c(1, 0, 1, 0, 1),
-#'   d_time_cuts_prev = c('T0', 'T1', 'T0', 'T1', 'T0')
+#'   d_time_cuts_prev = c("T0", "T1", "T0", "T1", "T0")
 #' )
-#' outcome_var_window <- 'd_T0_outcome'
-#' pop_at_risk_var <- 'd_time_cuts_prev'
-#' analysis_window <- 'T0'
+#' outcome_var_window <- "d_T0_outcome"
+#' pop_at_risk_var <- "d_time_cuts_prev"
+#' analysis_window <- "T0"
 #' epi_stats_prop_outcome(df, outcome_var_window, pop_at_risk_var, analysis_window)
 #' }
 #' @export
@@ -38,7 +38,7 @@ epi_stats_prop_outcome <- function(df,
   prop_death <- round((pop_w_outcome / pop_at_risk), round_dig)
 
   # Print result
-  result <- sprintf('Proportion of deaths at %s: %s', analysis_window, prop_death)
+  result <- sprintf("Proportion of deaths at %s: %s", analysis_window, prop_death)
   print(result)
 
   # Return the proportion for further use

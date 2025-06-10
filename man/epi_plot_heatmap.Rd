@@ -21,31 +21,31 @@ ggplot2. Pass the correlation values from a melted (long) correlation matrix as
 input.
 }
 \examples{
-
 \dontrun{
-df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c("Pre", "Post"), n / 2),
-x = rnorm(n),
-y = rbinom(n, 1, 0.50),
-z = rpois(n, 2)
+df <- data.frame(
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 df_corr <- df \%>\% select_if(~ epi_clean_cond_numeric(.))
 df_corr <- df_corr[, -1] # exclude var_id
-cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
+cormat_all <- epi_stats_corr(df_corr, method = "pearson")
 melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
-vars_list <- c('x', 'y', 'z')
-var_labels <- c('numeric', 'binomial', 'poisson')
+vars_list <- c("x", "y", "z")
+var_labels <- c("numeric", "binomial", "poisson")
 renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
-                                           melted_triangles$cormat_melted_triangle_pval,
-                                           vars_list = vars_list,
-                                           var_labels = var_labels
-                                           )
+  melted_triangles$cormat_melted_triangle_pval,
+  vars_list = vars_list,
+  var_labels = var_labels
+)
 library(ggplot2)
 library(ggthemes)
 epi_plot_heatmap(cormat_all$cormat_melted_r)
 epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_r)
 epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_pval)
-ggsave('my_heatmap.svg')
+ggsave("my_heatmap.svg")
 }
 }
 \seealso{

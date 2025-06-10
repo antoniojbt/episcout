@@ -82,52 +82,55 @@
 
 
 epi_stats_dates <- function(date_vector) {
-    # Ensure the input is a Date or IDate class:
-    # date_vector <- data_f$FECHA_INGRESO
-    if (!inherits(date_vector, "Date") && !inherits(date_vector, "IDate")) {
-        stop("Input must be a vector of type Date or IDate.")
-    }
+  # Ensure the input is a Date or IDate class:
+  # date_vector <- data_f$FECHA_INGRESO
+  if (!inherits(date_vector, "Date") && !inherits(date_vector, "IDate")) {
+    stop("Input must be a vector of type Date or IDate.")
+  }
 
-    # Convert IDate to Date if necessary
-    if (inherits(date_vector, "IDate")) {
-        date_vector <- as.Date(date_vector)
-    }
+  # Convert IDate to Date if necessary
+  if (inherits(date_vector, "IDate")) {
+    date_vector <- as.Date(date_vector)
+  }
 
-    # Calculate various statistics
-    min_date <- min(date_vector, na.rm = TRUE)
-    max_date <- max(date_vector, na.rm = TRUE)
-    # median_date <- median(date_vector, na.rm = TRUE)
-    iqr_value <- IQR(date_vector, na.rm = TRUE)
-    # Get quantiles from dates:
-    # Convert dates to numeric, origin date by default in R is "1970-01-01":
-    quantiles_numeric <- quantile(as.numeric(date_vector), na.rm = TRUE)
-    # Convert numeric quantiles back to dates
-    quartiles_dates <- as.Date(quantiles_numeric,
-                               origin = "1970-01-01",
-                               probs = c(0, 0.25, 0.5, 0.75, 100),
-                               na.rm = TRUE
-                               )
-    # quartiles_dates[3]
+  # Calculate various statistics
+  min_date <- min(date_vector, na.rm = TRUE)
+  max_date <- max(date_vector, na.rm = TRUE)
+  # median_date <- median(date_vector, na.rm = TRUE)
+  iqr_value <- IQR(date_vector, na.rm = TRUE)
+  # Get quantiles from dates:
+  # Convert dates to numeric, origin date by default in R is "1970-01-01":
+  quantiles_numeric <- quantile(as.numeric(date_vector), na.rm = TRUE)
+  # Convert numeric quantiles back to dates
+  quartiles_dates <- as.Date(quantiles_numeric,
+    origin = "1970-01-01",
+    probs = c(0, 0.25, 0.5, 0.75, 100),
+    na.rm = TRUE
+  )
+  # quartiles_dates[3]
 
-    # Create a dataframe to return results
-    sum_stats <- data.frame(
-        Statistic = c("N", "N Missing", "N Unique", "Min", "25%", "Median", "75%", "Max",
-                      "IQR", "Most Common", "Range (Days)"),
-        Value = c(as.character(length(date_vector)),                     # Total observations
-                  as.character(sum(is.na(date_vector))),                 # Missing values
-                  as.character(dplyr::n_distinct(date_vector)),              # Unique dates
-                  as.character(min_date),
-                  as.character(quartiles_dates[2]),
-                  as.character(quartiles_dates[3]),
-                  as.character(quartiles_dates[4]),
-                  as.character(max_date),
-                  as.character(iqr_value),
-                  names(which.max(table(date_vector))), # Most Common Date (Mode)
-                  max_date - min_date # Date Range in Days
-        )
+  # Create a dataframe to return results
+  sum_stats <- data.frame(
+    Statistic = c(
+      "N", "N Missing", "N Unique", "Min", "25%", "Median", "75%", "Max",
+      "IQR", "Most Common", "Range (Days)"
+    ),
+    Value = c(
+      as.character(length(date_vector)), # Total observations
+      as.character(sum(is.na(date_vector))), # Missing values
+      as.character(dplyr::n_distinct(date_vector)), # Unique dates
+      as.character(min_date),
+      as.character(quartiles_dates[2]),
+      as.character(quartiles_dates[3]),
+      as.character(quartiles_dates[4]),
+      as.character(max_date),
+      as.character(iqr_value),
+      names(which.max(table(date_vector))), # Most Common Date (Mode)
+      max_date - min_date # Date Range in Days
     )
+  )
 
-    return(sum_stats)
+  return(sum_stats)
 }
 
 
@@ -136,19 +139,19 @@ epi_stats_dates <- function(date_vector) {
 #' @param df A dataframe containing multiple date columns
 #' @return A wide-format tibble summarizing date statistics
 epi_stats_dates_multi <- function(df) {
-    # Select only date columns
-    date_cols <- df %>% dplyr::select(dplyr::where(lubridate::is.Date))
+  # Select only date columns
+  date_cols <- df %>% dplyr::select(dplyr::where(lubridate::is.Date))
 
-    # Apply `epi_stats_dates()` to each column and store results in a wide format
-    summary_table <- lapply(names(date_cols), function(col) {
-        stats <- epi_stats_dates(date_cols[[col]]) %>%
-            tidyr::pivot_wider(names_from = Statistic, values_from = Value) %>%
-            dplyr::mutate(Column = col) %>%
-            dplyr::relocate(Column)  # Move Column name to first position
-    }) %>%
-        dplyr::bind_rows()
+  # Apply `epi_stats_dates()` to each column and store results in a wide format
+  summary_table <- lapply(names(date_cols), function(col) {
+    stats <- epi_stats_dates(date_cols[[col]]) %>%
+      tidyr::pivot_wider(names_from = Statistic, values_from = Value) %>%
+      dplyr::mutate(Column = col) %>%
+      dplyr::relocate(Column) # Move Column name to first position
+  }) %>%
+    dplyr::bind_rows()
 
-    return(summary_table)
+  return(summary_table)
 }
 #############
 

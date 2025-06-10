@@ -20,17 +20,17 @@
 #' \code{\link[base]{is.factor}}.
 #'
 #' @examples
-#'
 #' \dontrun{
 #' library(dplyr)
 #' library(tibble)
-#' col_chr <- data.frame('chr1' = rep(c('A', 'B')),
-#'                       'chr2' = rep(c('C', 'D'))
-#'              )
+#' col_chr <- data.frame(
+#'   "chr1" = rep(c("A", "B")),
+#'   "chr2" = rep(c("C", "D"))
+#' )
 #' df_cont_chr <- as.tibble(cbind(df, col_chr))
 #' df_cont_chr %>% select_if(~ epi_clean_cond_chr_fct(.))
 #' epi_clean_cond_chr_fct(df_cont_chr[[2]]) # should be 'TRUE'
-#' epi_clean_cond_chr_fct(df_cont_chr[, 'x']) # should be 'FALSE'
+#' epi_clean_cond_chr_fct(df_cont_chr[, "x"]) # should be 'FALSE'
 #' }
 #'
 #' @export
@@ -38,4 +38,4 @@
 
 epi_clean_cond_chr_fct <- function(col = NULL) {
   is.character(col) == TRUE | is.factor(col) == TRUE
-   }
+}
