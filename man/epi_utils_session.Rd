@@ -25,21 +25,21 @@ epi_utils_session() is a convenience function to save an R
 session.
 }
 \examples{
-
 \dontrun{
 
 x <- stats::runif(20)
 y <- list(a = 1, b = TRUE, c = "oops")
 # See objects to save:
 ls()
-objects_to_save <- c('x', 'y')
-epi_utils_session(output_prefix = 'xy',
-                  objects_to_save = objects_to_save
-                 )
+objects_to_save <- c("x", "y")
+epi_utils_session(
+  output_prefix = "xy",
+  objects_to_save = objects_to_save
+)
 dir()
 rm(list = objects_to_save)
 ls()
-load('xy.RData')
+load("xy.RData")
 ls()
 }
 

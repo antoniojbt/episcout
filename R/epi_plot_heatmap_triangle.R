@@ -29,26 +29,26 @@
 #' \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}
 #'
 #' @examples
-#'
 #' \dontrun{
 #' n <- 100
-#' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-#' var_to_rep = rep(c("Pre", "Post"), n / 2),
-#' x = rnorm(n),
-#' y = rbinom(n, 1, 0.50),
-#' z = rpois(n, 2)
+#' df <- data.frame(
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))
 #' df_corr <- df_corr[, -1] # exclude var_id
-#' cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
+#' cormat_all <- epi_stats_corr(df_corr, method = "pearson")
 #' melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
-#' vars_list <- c('x', 'y', 'z')
-#' var_labels <- c('numeric', 'binomial', 'poisson')
+#' vars_list <- c("x", "y", "z")
+#' var_labels <- c("numeric", "binomial", "poisson")
 #' renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
-#'                                            melted_triangles$cormat_melted_triangle_pval,
-#'                                            vars_list = vars_list,
-#'                                            var_labels = var_labels
-#'                                            )
+#'   melted_triangles$cormat_melted_triangle_pval,
+#'   vars_list = vars_list,
+#'   var_labels = var_labels
+#' )
 #' library(ggplot2)
 #' library(ggthemes)
 #' epi_plot_heatmap(cormat_all$cormat_melted_r)
@@ -56,16 +56,15 @@
 #' epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_pval)
 #'
 #' epi_plot_heatmap_triangle(renamed_triangles$cormat_melted_triangle_r,
-#'                           renamed_triangles$cormat_melted_triangle_pval,
-#'                           show_values = 'pval'#'corr'
-#'                           )
-#' ggsave('epi_heatmap_triangle.svg',
-#'        height = 12,
-#'        width = 12,
-#'        units = 'in'
-#'        )
-#'
-#'}
+#'   renamed_triangles$cormat_melted_triangle_pval,
+#'   show_values = "pval" #' corr'
+#' )
+#' ggsave("epi_heatmap_triangle.svg",
+#'   height = 12,
+#'   width = 12,
+#'   units = "in"
+#' )
+#' }
 #' @export
 #'
 
@@ -73,63 +72,84 @@
 
 epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
                                       cormat_melted_triangle_pval = NULL,
-                                      cor_method = 'Spearman',
-                                      show_values = 'pval' # or 'corr'
-                                      ) {
-    if (!requireNamespace('ggplot2', quietly = TRUE)) {
-        stop('Package ggplot2 needed for this function to work. Please install it.',
-            call. = FALSE)
-    }
-    if (show_values == 'pval') {
-        show_data <- cormat_melted_triangle_pval
-        legend_title <- sprintf('%s correlation (colour scale)\nand unadjusted P-values',
-            cor_method)
-    } else {
-        show_data <- cormat_melted_triangle_r
-        legend_title <- sprintf('%s correlation (colour scale \nand numbers)',
-            cor_method)
-    }
-    heatmap_triangle <- ggplot2::ggplot(data = cormat_melted_triangle_r,
-                                        ggplot2::aes(x = .data$Var1,
-                                                     y = .data$Var2,
-                                                     fill = .data$value)
-                                        ) +
-      ggplot2::geom_tile(color = 'light grey') +
-      ggplot2::scale_fill_gradient2(low = 'blue',
-                                    high = 'red',
-                                    mid = 'white',
-                                    midpoint = 0,
-                                    limit = c(-1, 1),
-                                    space = 'Lab',
-                                    name = legend_title
-                                    ) +
-      epi_plot_theme_2() +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90,
-                                                         vjust = 0.5),
-                     plot.title = ggplot2::element_text(hjust = 0.5)
-                     ) +
-      ggplot2::coord_fixed() + # Write values can be 'pval' or 'corr':
-      ggplot2::geom_text(data = show_data,
-                         ggplot2::aes(x = .data$Var1,
-                                      y = .data$Var2,
-                                      label = .data$value),
-                         color = 'black',
-                         size = 3) +
-      ggplot2::theme(axis.title.x = ggplot2::element_blank(),
-                     axis.text.x = ggplot2::element_text(angle = 90),
-                     axis.title.y = ggplot2::element_blank(),
-                     panel.grid.major = ggplot2::element_blank(),
-                     panel.border = ggplot2::element_blank(),
-                     panel.background = ggplot2::element_rect(),
-                     axis.ticks = ggplot2::element_blank(),
-                     legend.justification = c(1, 0),
-                     legend.direction = "horizontal") +
-      ggplot2::theme(legend.position = "inside",
-                     legend.position.inside = c(0.5, 0.8)) +
-      ggplot2::guides(fill = ggplot2::guide_colorbar(barwidth = 12,
-                                                     barheight = 2,
-                                                     title.position = 'top',
-                                                     title.hjust = 0.5)
-                      )
-    return(heatmap_triangle)
-    }
+                                      cor_method = "Spearman",
+                                      show_values = "pval" # or 'corr'
+) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("Package ggplot2 needed for this function to work. Please install it.",
+      call. = FALSE
+    )
+  }
+  if (show_values == "pval") {
+    show_data <- cormat_melted_triangle_pval
+    legend_title <- sprintf(
+      "%s correlation (colour scale)\nand unadjusted P-values",
+      cor_method
+    )
+  } else {
+    show_data <- cormat_melted_triangle_r
+    legend_title <- sprintf(
+      "%s correlation (colour scale \nand numbers)",
+      cor_method
+    )
+  }
+  heatmap_triangle <- ggplot2::ggplot(
+    data = cormat_melted_triangle_r,
+    ggplot2::aes(
+      x = .data$Var1,
+      y = .data$Var2,
+      fill = .data$value
+    )
+  ) +
+    ggplot2::geom_tile(color = "light grey") +
+    ggplot2::scale_fill_gradient2(
+      low = "blue",
+      high = "red",
+      mid = "white",
+      midpoint = 0,
+      limit = c(-1, 1),
+      space = "Lab",
+      name = legend_title
+    ) +
+    epi_plot_theme_2() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(
+        angle = 90,
+        vjust = 0.5
+      ),
+      plot.title = ggplot2::element_text(hjust = 0.5)
+    ) +
+    ggplot2::coord_fixed() + # Write values can be 'pval' or 'corr':
+    ggplot2::geom_text(
+      data = show_data,
+      ggplot2::aes(
+        x = .data$Var1,
+        y = .data$Var2,
+        label = .data$value
+      ),
+      color = "black",
+      size = 3
+    ) +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 90),
+      axis.title.y = ggplot2::element_blank(),
+      panel.grid.major = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      panel.background = ggplot2::element_rect(),
+      axis.ticks = ggplot2::element_blank(),
+      legend.justification = c(1, 0),
+      legend.direction = "horizontal"
+    ) +
+    ggplot2::theme(
+      legend.position = "inside",
+      legend.position.inside = c(0.5, 0.8)
+    ) +
+    ggplot2::guides(fill = ggplot2::guide_colorbar(
+      barwidth = 12,
+      barheight = 2,
+      title.position = "top",
+      title.hjust = 0.5
+    ))
+  return(heatmap_triangle)
+}

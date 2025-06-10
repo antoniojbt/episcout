@@ -24,12 +24,11 @@ Similar to data.table printing of a data.table object but works for
 a tibble or data.frame, or any object that can be coerced to a data.frame
 }
 \examples{
-
 \dontrun{
 n <- 20
 df <- data.frame(
   var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c('Pre', 'Post'), n / 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
   x = rnorm(n),
   y = rbinom(n, 1, 0.50),
   z = rpois(n, 2)

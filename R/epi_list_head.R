@@ -10,7 +10,6 @@
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
 #' @examples
-#'
 #' \dontrun{
 #' epi_list_head(as.list(df), 5, 4)
 #' }
@@ -20,10 +19,9 @@
 
 epi_list_head <- function(list = NULL,
                           rows = 3,
-                          max = length(list)
-                          ) {
-  cat(sprintf('List has %s elements in total.\n', length(list)))
-  cat(sprintf('First %s rows of first %s elements in list: \n', rows, max))
+                          max = length(list)) {
+  cat(sprintf("List has %s elements in total.\n", length(list)))
+  cat(sprintf("First %s rows of first %s elements in list: \n", rows, max))
   for (item in 1:max) {
     x <- list[[item]]
     if (is.character(x)) {

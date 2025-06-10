@@ -22,6 +22,7 @@
 #'
 #' @importFrom tidyr pivot_wider
 #' @importFrom stats xtabs
+#' @importFrom stats reformulate ftable
 #' @export
 epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
   # Validate input

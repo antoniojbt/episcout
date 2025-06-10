@@ -54,6 +54,9 @@ epi_stats_2x2_all(...)
 \item{test_type}{The type of test to perform. Either \code{"fisher.test"} (default) or \code{"chisq.test"}.}
 
 \item{min_unique}{Minimum number of unique values required to include a column for testing (default: 2).}
+
+\item{...}{Arguments passed to the underlying function.}
+
 }
 \value{
 \itemize{

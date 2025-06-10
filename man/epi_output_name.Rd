@@ -20,10 +20,9 @@ Generate a simple output name, given a string (filename)
 splits at the last '.', drops the current suffix and adds the one provided.
 }
 \examples{
-
 \dontrun{
-input_name <- 'baseline_clean.RData'
-svg(epi_output_name(input_name, '_histogram_obesity_1.svg'))
+input_name <- "baseline_clean.RData"
+svg(epi_output_name(input_name, "_histogram_obesity_1.svg"))
 plot(x, y)
 dev.off()
 }

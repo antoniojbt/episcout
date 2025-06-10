@@ -24,23 +24,23 @@ For other options, save as object and build on the layers.
 var_x is passed to ggplot2 aesthetics using tidy evaluation
 }
 \examples{
-
 \dontrun{
 library(ggplot2)
 set.seed(12345)
 n <- 20
-df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-                 var_to_rep = rep(c("Pre", "Post"), n / 2),
-                 x = rnorm(n),
-                 y = rbinom(n, 1, 0.50),
-                 z = rpois(n, 2)
-                 )
+df <- data.frame(
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
+)
 df
 df$x # continuous variable
-my_hist_plot <- epi_plot_hist(df, 'x') # pass with quotes as using ggplot2::aes_string()
+my_hist_plot <- epi_plot_hist(df, "x") # pass with quotes as using ggplot2::aes_string()
 my_hist_plot
 # Change the bins:
-my_hist_plot <- epi_plot_hist(df, 'x', breaks = seq(-3, 3, by = 1))
+my_hist_plot <- epi_plot_hist(df, "x", breaks = seq(-3, 3, by = 1))
 my_hist_plot
 # Add titles and axis names:
 my_hist_plot <- my_hist_plot +
@@ -58,13 +58,14 @@ my_hist_plot
 # Histogram overlaid with kernel density curve:
 # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
 my_hist_plot <- my_hist_plot +
-# Density instead of count on y-axis:
-  geom_histogram(aes( y = ..density..),
-                 binwidth = 0.5,
-                 colour = "black",
-                 fill = "white") +
+  # Density instead of count on y-axis:
+  geom_histogram(aes(y = ..density..),
+    binwidth = 0.5,
+    colour = "black",
+    fill = "white"
+  ) +
   geom_density(alpha = 0.2, fill = "#FF6666") + # Overlay with transparent density plot
-  ylab('Density')
+  ylab("Density")
 my_hist_plot
 }
 

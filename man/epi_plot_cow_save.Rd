@@ -35,18 +35,18 @@ height and width are for A4 size.
 See also ggplot2 wrappers epi_plot_*().
 }
 \examples{
-
 \dontrun{
 set.seed(12345)
 n <- 20
-df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-                 var_to_rep = rep(c("Pre", "Post"), n / 2),
-                 x = rnorm(n),
-                 y = rbinom(n, 1, 0.50),
-                 z = rpois(n, 2)
+df <- data.frame(
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 df
-df[, 'var_id'] <- as.character(df[, 'var_id'])
+df[, "var_id"] <- as.character(df[, "var_id"])
 vars_to_plot <- df \%>\%
   select_if(epi_clean_cond_numeric) \%>\%
   names()
@@ -55,13 +55,13 @@ my_plot_list
 # Generate plots:
 for (i in names(my_plot_list)) {
   print(i)
-  my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
+  my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) +
+    geom_boxplot()
 }
 # Pass to a grid and save to file:
 # length(my_plot_list)
 my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
-epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
-
+epi_plot_cow_save(file_name = "plots_1.pdf", plot_grid = my_plot_grid)
 }
 
 }

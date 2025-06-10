@@ -19,18 +19,18 @@
 #' \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
 #'
 #' @examples
-#'
 #' \dontrun{
-#' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-#' var_to_rep = rep(c("Pre", "Post"), n / 2),
-#' x = rnorm(n),
-#' y = rbinom(n, 1, 0.50),
-#' z = rpois(n, 2)
+#' df <- data.frame(
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' epi_clean_count_classes(df)
-#' df_corr <- df %>%select_if(~ epi_clean_cond_numeric(.))
+#' df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))
 #' df_corr <- df_corr[, -1] # exclude var_id
-#' cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
+#' cormat_all <- epi_stats_corr(df_corr, method = "pearson")
 #' melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
 #' melted_triangles$cormat_melted_triangle_r
 #' melted_triangles$cormat_melted_triangle_pval
@@ -39,11 +39,11 @@
 #' @export
 #'
 
-epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
-
-  if (!requireNamespace('data.table', quietly = TRUE)) {
-    stop('Package data.table needed for this function to work. Please install it.',
-         call. = FALSE)
+epi_stats_corr_triangle <- function(cormat = "cormat_all$cormat") {
+  if (!requireNamespace("data.table", quietly = TRUE)) {
+    stop("Package data.table needed for this function to work. Please install it.",
+      call. = FALSE
+    )
   }
   cormat_tri_r <- as.matrix(cormat$r)
   cormat_tri_P <- as.matrix(cormat$P)
@@ -62,29 +62,30 @@ epi_stats_corr_triangle <- function(cormat = 'cormat_all$cormat') {
   cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
   # Melt and remove NAs:
   # TO DO: Fix warning message, "Consider providing at least one of 'id' or 'measure' vars"
-  dt_r <- data.table::as.data.table(cormat_tri_r, keep.rownames = 'Var1')
+  dt_r <- data.table::as.data.table(cormat_tri_r, keep.rownames = "Var1")
   cormat_melted_triangle_r <- data.table::melt(
     dt_r,
-    id.vars = 'Var1',
-    variable.name = 'Var2',
-    value.name = 'value',
+    id.vars = "Var1",
+    variable.name = "Var2",
+    value.name = "value",
     na.rm = TRUE
   )
   # Usually no NAs for correlation values though, indices will not match for cormat_tri_r and cormat_tri_P files
   # And the same for p-values:
   cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
   # Melt:
-  dt_p <- data.table::as.data.table(cormat_tri_P, keep.rownames = 'Var1')
+  dt_p <- data.table::as.data.table(cormat_tri_P, keep.rownames = "Var1")
   cormat_melted_triangle_pval <- data.table::melt(
     dt_p,
-    id.vars = 'Var1',
-    variable.name = 'Var2',
-    value.name = 'value',
+    id.vars = "Var1",
+    variable.name = "Var2",
+    value.name = "value",
     na.rm = TRUE
   )
   # Return melted triangles:
-  melted_triangles <- list(cormat_melted_triangle_r = cormat_melted_triangle_r,
-                           cormat_melted_triangle_pval = cormat_melted_triangle_pval
-                           )
+  melted_triangles <- list(
+    cormat_melted_triangle_r = cormat_melted_triangle_r,
+    cormat_melted_triangle_pval = cormat_melted_triangle_pval
+  )
   return(melted_triangles)
 }

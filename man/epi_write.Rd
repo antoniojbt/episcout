@@ -49,9 +49,8 @@ row names are not, quotes are not used. Columns are tab separated.
 NAs are written as 'NA'. Assumes the first row in the object is a header.
 }
 \examples{
-
 \dontrun{
-epi_write(some_dataframe, 'some_dataframe.tsv')
+epi_write(some_dataframe, "some_dataframe.tsv")
 }
 
 }
