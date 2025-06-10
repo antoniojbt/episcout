@@ -73,7 +73,13 @@ jobs:
           #  any::pkgdown
           needs: check
 
+      - name: Install package dependencies
+        run: |
+          install.packages("remotes")
+          remotes::install_deps(dependencies = TRUE)
+        shell: Rscript {0}
 
+      - name: Run R CMD check
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
