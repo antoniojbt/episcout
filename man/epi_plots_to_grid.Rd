@@ -21,7 +21,6 @@ epi_plots_to_grid(
 
 \item{axis}{Align left, right, top or bottom and order. Default is 'lrtb'.}
 
-
 \item{label_size}{Default is 12.}
 
 \item{ncol}{Number of columns in the plot grid.}

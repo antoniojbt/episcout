@@ -28,29 +28,29 @@ If you want to install all of them however, do:
 
 ```{r eval = FALSE}
 # Remove 'eval = FALSE' to run
-install.packages(c('dplyr',
-                   'tibble',
-                   'tidyr',
-                   'data.table',
-                   'compare',
-                   'stringi',
-                   'stringr',
-                   'lubridate',
-                   'purrr',
-                   'e1071',
-                   'Hmisc',
-                   'ggplot2',
-                   'cowplot',
-                   'scales',
-                   'ggthemes',
-                   'future',
-                   'doFuture',
-                   'foreach',
-                   'iterators',
-                   'magrittr',
-                   'reshape2'
-		   )
-		 )
+install.packages(c(
+  "dplyr",
+  "tibble",
+  "tidyr",
+  "data.table",
+  "compare",
+  "stringi",
+  "stringr",
+  "lubridate",
+  "purrr",
+  "e1071",
+  "Hmisc",
+  "ggplot2",
+  "cowplot",
+  "scales",
+  "ggthemes",
+  "future",
+  "doFuture",
+  "foreach",
+  "iterators",
+  "magrittr",
+  "reshape2"
+))
 ```
 
 Many parameters are given as defaults, admittedly with quite a bit of personal preference, but with the aim of processing hundreds of thousands of observations from hundreds of variables from multiple data sets a bit faster. Hence, convenience and standardisation are often preferred. This may not be your case however but it is simple enough to defer to your preferred R packages.
@@ -76,12 +76,12 @@ Currently there are functions for:
 # Test set df:
 n <- 20
 df <- data.frame(
-	var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c('Pre', 'Post'), n / 2),
-	x = rnorm(n),
-	y = rbinom(n, 1, 0.50),
-	z = rpois(n, 2)
-	)
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
+)
 df
 ```
 

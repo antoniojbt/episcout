@@ -22,12 +22,11 @@ Add a suffix to column names except for an ID header.
 Useful if changing labels to include eg baseline, time_1, time_2, etc.
 }
 \examples{
-
 \dontrun{
 n <- 20
 df2 <- data.frame(
-var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c('Pre', 'Post'), n / 2),
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
   x = rnorm(n),
   y = rbinom(n, 1, 0.50),
   z = rpois(n, 2)
@@ -36,7 +35,7 @@ var_to_rep = rep(c('Pre', 'Post'), n / 2),
 names(df2)
 # Add .0 as suffix to all column names starting from column 2 (skip id col):
 id_col <- 1
-new_colnames <- epi_clean_add_colname_suffix(df2, id_col, '.0')
+new_colnames <- epi_clean_add_colname_suffix(df2, id_col, ".0")
 new_colnames
 # Rename them in my data frame:
 names(df2)[-id_col] <- new_colnames

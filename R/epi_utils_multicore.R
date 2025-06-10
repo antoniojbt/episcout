@@ -27,19 +27,22 @@
 #'
 #' @examples
 #' \dontrun{
-#' epi_utils_multicore(num_cores = 1, future_plan = 'sequential')
-#' future_v %<-% { sum(1 + 2)}
+#' epi_utils_multicore(num_cores = 1, future_plan = "sequential")
+#' future_v %<-% {
+#'   sum(1 + 2)
+#' }
 #' future_v
-#' epi_utils_multicore(future_plan = 'multisession')
-#' future_v %<-% {sum(2 + 2)}
+#' epi_utils_multicore(future_plan = "multisession")
+#' future_v %<-% {
+#'   sum(2 + 2)
+#' }
 #' future_v
 #' }
-#
 #' @export
 #'
 
 epi_utils_multicore <- function(num_cores = NULL,
-                                future_plan = "multisession",  # Updated default plan
+                                future_plan = "multisession", # Updated default plan
                                 gc = TRUE,
                                 verbose = TRUE,
                                 ...) {
@@ -47,8 +50,10 @@ epi_utils_multicore <- function(num_cores = NULL,
   required_pkgs <- c("doFuture", "future", "foreach", "iterators", "parallel")
   missing_pkgs <- required_pkgs[!sapply(required_pkgs, requireNamespace, quietly = TRUE)]
   if (length(missing_pkgs) > 0) {
-    stop(sprintf("The following packages are required but not installed: %s",
-                 paste(missing_pkgs, collapse = ", ")))
+    stop(sprintf(
+      "The following packages are required but not installed: %s",
+      paste(missing_pkgs, collapse = ", ")
+    ))
   }
 
   # Set number of cores

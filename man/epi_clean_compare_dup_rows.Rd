@@ -43,21 +43,21 @@ This function is intended to make manual inspection easier,
 compare::compare can miss differences though so care is needed.
 }
 \examples{
-
 \dontrun{
 # Data frame object with rows thought to have duplicated entries:
 check_dups
 # Specify the row ID to grep where duplicate values are expected:
-val_id <- '2'
-comp <- epi_clean_compare_dup_rows(check_dups, val_id, 'var_id', 1, 2)
+val_id <- "2"
+comp <- epi_clean_compare_dup_rows(check_dups, val_id, "var_id", 1, 2)
 comp
 View(t(check_dups[comp$duplicate_indices, ]))
-View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))}
+View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))
+}
 
 }
 \seealso{
 \code{\link[compare]{compare}}, \code{\link[base]{grepl}}
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }
