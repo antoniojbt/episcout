@@ -65,8 +65,6 @@ epi_plot_cow_save <- function(file_name = NULL,
     )
   }
 
-  print(class(plot_grid)) # Debugging line
-
   # Check if plot_grid is a single ggplot plot, avoids adding "A" to figure:
   if (inherits(plot_grid, "ggplot")) {
     message("Saving a single ggplot object.")
@@ -81,7 +79,7 @@ epi_plot_cow_save <- function(file_name = NULL,
     message("Saving a multi-plot grid.")
     cowplot::save_plot(
       filename = file_name,
-      plot = cowplot::plot_grid(plot_grid), # Force grid rendering
+      plot = cowplot::plot_grid(plotlist = plot_grid),
       base_height = base_height,
       base_width = base_width,
       ...
