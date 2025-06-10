@@ -174,6 +174,7 @@ stat_sum_zero
 \code{\link{epi_stats_format}},
 \code{\link{epi_stats_numeric}}.
 
+TO DO:
 }
 \author{
 Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

@@ -59,3 +59,5 @@ docs/_static
 docs/_templates
 doc
 Meta
+/doc/
+/Meta/

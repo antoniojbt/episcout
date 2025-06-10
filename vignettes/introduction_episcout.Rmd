@@ -4,7 +4,7 @@ author: "Antonio Berlanga-Taylor"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Examples of how to use episcout}
+  %\VignetteIndexEntry{Examples of how to episcout}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
