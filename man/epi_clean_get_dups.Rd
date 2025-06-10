@@ -27,12 +27,11 @@ Creates a table with frequencies, checks those which have more than 1
 and extracts them.
 }
 \examples{
-
 \dontrun{
 dim(df)
 epi_head_and_tail(df, rows = 2, cols = 2)
 # Get all duplicates:
-check_dups <- epi_clean_get_dups(df, 'var_id', 1)
+check_dups <- epi_clean_get_dups(df, "var_id", 1)
 dim(check_dups)
 check_dups
 }

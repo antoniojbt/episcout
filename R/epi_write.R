@@ -34,33 +34,34 @@
 #' @seealso \code{\link[data.table]{fwrite}}
 #'
 #' @examples
-#'
 #' \dontrun{
-#' epi_write(some_dataframe, 'some_dataframe.tsv')
+#' epi_write(some_dataframe, "some_dataframe.tsv")
 #' }
 #'
 #' @export
 #'
 
 epi_write <- function(file_object = NULL,
-                      file_name = 'my_file.tsv',
+                      file_name = "my_file.tsv",
                       row.names = FALSE,
                       quote = FALSE,
-                      sep = '\t',
-                      na = 'NA',
+                      sep = "\t",
+                      na = "NA",
                       col.names = TRUE,
                       ...) {
-  if (!requireNamespace('data.table', quietly = TRUE)) {
+  if (!requireNamespace("data.table", quietly = TRUE)) {
     stop("Package data.table needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
-  data.table::fwrite(x = file_object,
-                     file = file_name,
-                     row.names = row.names,
-                     quote = quote,
-                     sep = sep,
-                     na = na,
-                     col.names = col.names,
-                     ...
-                     )
-  }
+  data.table::fwrite(
+    x = file_object,
+    file = file_name,
+    row.names = row.names,
+    quote = quote,
+    sep = sep,
+    na = na,
+    col.names = col.names,
+    ...
+  )
+}

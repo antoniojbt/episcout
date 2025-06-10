@@ -34,11 +34,11 @@ It can be used to estimate the case fatality rate.
 \dontrun{
 df <- data.frame(
   d_T0_outcome = c(1, 0, 1, 0, 1),
-  d_time_cuts_prev = c('T0', 'T1', 'T0', 'T1', 'T0')
+  d_time_cuts_prev = c("T0", "T1", "T0", "T1", "T0")
 )
-outcome_var_window <- 'd_T0_outcome'
-pop_at_risk_var <- 'd_time_cuts_prev'
-analysis_window <- 'T0'
+outcome_var_window <- "d_T0_outcome"
+pop_at_risk_var <- "d_time_cuts_prev"
+analysis_window <- "T0"
 epi_stats_prop_outcome(df, outcome_var_window, pop_at_risk_var, analysis_window)
 }
 }

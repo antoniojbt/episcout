@@ -23,8 +23,8 @@
 #'
 #' # Ejemplo con varios CURPs
 #' curps <- c(
-#' "GOMC900514HDFRLA07",  # Antes del 2000
-#' "LOAM020715MMCRSR09"   # Despues del 2000
+#'   "GOMC900514HDFRLA07", # Antes del 2000
+#'   "LOAM020715MMCRSR09" # Despues del 2000
 #' )
 #'
 #' # Aplicar la funcion a un vector de CURPs
@@ -40,7 +40,7 @@
 epi_clean_curp <- function(curp) {
   if (nchar(curp) != 18) stop("El CURP debe tener exactamente 18 caracteres.")
 
-# Aplicar extraccion por posiciones para cada CURP
+  # Aplicar extraccion por posiciones para cada CURP
   resultados <- lapply(curp, function(c) {
     tibble::tibble(
       CURP = c,
@@ -49,8 +49,9 @@ epi_clean_curp <- function(curp) {
       PrimeraLetraApellidoMaterno = substr(c, 3, 3),
       PrimeraLetraNombre = substr(c, 4, 4),
       AnoNacimiento = ifelse(as.numeric(substr(c, 5, 6)) <= 22,
-                             paste0("20", substr(c, 5, 6)),
-                             paste0("19", substr(c, 5, 6))),
+        paste0("20", substr(c, 5, 6)),
+        paste0("19", substr(c, 5, 6))
+      ),
       MesNacimiento = substr(c, 7, 8),
       DiaNacimiento = substr(c, 9, 10),
       Sexo = substr(c, 11, 11),

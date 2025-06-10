@@ -18,20 +18,19 @@
 #' @seealso \code{\link[grDevices]{boxplot.stats}}
 #'
 #' @examples
-#'
 #' \dontrun{
-#'n <- 1000
-#'df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-#'                 var_to_rep = rep(c("Pre", "Post"), n / 2),
-#'                 x = rnorm(n),
-#'                 y = rbinom(n, 1, 0.50),
-#'                 z = rpois(n, 2)
-#'                )
-#'epi_head_and_tail(df)
-#'epi_stat_count_outliers(num_vec = df$x, coef = 0)
-#'epi_stat_count_outliers(num_vec = df$x)
-#'summary(df$x)
-#'
+#' n <- 1000
+#' df <- data.frame(
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
+#' )
+#' epi_head_and_tail(df)
+#' epi_stat_count_outliers(num_vec = df$x, coef = 0)
+#' epi_stat_count_outliers(num_vec = df$x)
+#' summary(df$x)
 #' }
 #'
 #' @export
@@ -43,18 +42,18 @@
 # Clean-up, stop exporting as little value in having it as individual wrapper
 
 epi_stats_count_outliers <- function(num_vec = NULL,
-                                    coef = 1.5,
-                                    ...) {
+                                     coef = 1.5,
+                                     ...) {
   # if(method == 'SD') {
-    # get_SD <- sd(num_vec, na.rm = na.rm)
-    # count_above <- length(get_SD * )
-    # }
+  # get_SD <- sd(num_vec, na.rm = na.rm)
+  # count_above <- length(get_SD * )
+  # }
   # if(method == 'IQR') {}
   outliers <- boxplot.stats(num_vec, coef = coef, ...)
   outliers <- length(outliers$out)
   # else {print('NO method chosen')}
   return(outliers)
-  }
+}
 
 # TO DO: add:
 # SD * eg 5

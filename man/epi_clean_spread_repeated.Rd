@@ -26,18 +26,17 @@ repeated observations across columns. A column with the replicate/repeated
 observation/time-point number for each row must be provided.
 }
 \examples{
-
 \dontrun{
 n <- 20
 df <- data.frame(
-var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c('Pre', 'Post'), n / 2),
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
   x = rnorm(n),
   y = rbinom(n, 1, 0.50),
   z = rpois(n, 2)
 )
 df
-df_spread <- epi_clean_spread_repeated(df, 'var_to_rep', 1)
+df_spread <- epi_clean_spread_repeated(df, "var_to_rep", 1)
 # Returns a nested list:
 df_spread
 }

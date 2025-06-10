@@ -28,7 +28,7 @@
 #'
 
 epi_create_dir <- function(base_path, subdir = NULL) {
-   # Use the custom name if provided; otherwise, use the current date
+  # Use the custom name if provided; otherwise, use the current date
   subdirectory_name <- if (!is.null(subdir)) subdir else format(Sys.Date(), "%d_%m_%Y")
 
   # Combine base path and subdirectory
@@ -49,5 +49,3 @@ epi_create_dir <- function(base_path, subdir = NULL) {
   # Return the full path of the target directory
   return(normalizePath(target_dir))
 }
-
-

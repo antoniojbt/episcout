@@ -76,6 +76,7 @@
 #' @importFrom stats xtabs
 #' @importFrom dplyr bind_rows
 #' @importFrom broom tidy
+#' @importFrom stats fisher.test chisq.test ftable reformulate
 #' @name combined_contingency_2x2_functions
 NULL
 
@@ -125,8 +126,7 @@ epi_stats_contingency_2x2_test <- function(df, target_var, other_var, test_type 
 
   test <- tryCatch(
     {
-      switch(
-        test_type,
+      switch(test_type,
         "fisher.test" = fisher.test(tab, workspace = 2e7, simulate.p.value = TRUE, B = 1e6),
         "chisq.test" = chisq.test(tab),
         stop("Unsupported test type. Use 'fisher.test' or 'chisq.test'.")
@@ -165,19 +165,23 @@ epi_stats_contingency_2x2_all <- function(df, target_var, test_type = "fisher.te
 #'
 #' These functions simply forward their arguments to the newer
 #' `epi_stats_contingency_2x2_*` implementations.
+#' @param ... Arguments passed to the underlying function.
 #' @rdname combined_contingency_2x2_functions
+#' @param ... Arguments passed to the underlying function.
 #' @export
 epi_stats_2x2_test <- function(...) {
   epi_stats_contingency_2x2_test(...)
 }
 
 #' @rdname combined_contingency_2x2_functions
+#' @param ... Arguments passed to the underlying function.
 #' @export
 epi_stats_2x2_cols <- function(...) {
   epi_stats_contingency_2x2_cols(...)
 }
 
 #' @rdname combined_contingency_2x2_functions
+#' @param ... Arguments passed to the underlying function.
 #' @export
 epi_stats_2x2_all <- function(...) {
   epi_stats_contingency_2x2_all(...)

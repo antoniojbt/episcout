@@ -19,7 +19,6 @@ epi_stats_na_perc() gets the total counts and percentage for missing values
 across rows or columns
 }
 \examples{
-
 \dontrun{
 library(mice)
 dim(nhanes)

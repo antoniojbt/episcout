@@ -33,26 +33,27 @@ Facilitates spreading a dataframe and extracting baseline vs repeated
 measurement rows for example
 }
 \examples{
-
 \dontrun{
 library(tibble)
 n <- 20
 df <- data.frame(
-var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c('Pre', 'Post'), n / 2),
-x = rnorm(n),
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
   y = rbinom(n, 1, 0.50),
   z = rpois(n, 2)
 )
-var_id <- 'var_id'
-var_to_rep <- 'var_to_rep'
-reps <- epi_clean_add_rep_num(df, 'var_id', 'var_to_rep')
+var_id <- "var_id"
+var_to_rep <- "var_to_rep"
+reps <- epi_clean_add_rep_num(df, "var_id", "var_to_rep")
 reps
 # Sanity check:
-identical(as.character(reps[[var_id]]),
-          as.character(df[[var_id]])) # should be TRUE
+identical(
+  as.character(reps[[var_id]]),
+  as.character(df[[var_id]])
+) # should be TRUE
 # Bind:
-df2 <- as.tibble(cbind(df, 'rep_num' = reps$rep_num))
+df2 <- as.tibble(cbind(df, "rep_num" = reps$rep_num))
 # merge() adds all rows from both data frames as there are duplicates
 # so use cbind after making sure order is exact
 epi_head_and_tail(df2, rows = 3)

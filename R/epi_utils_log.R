@@ -15,18 +15,18 @@
 #' \code{\link[episcout]{epi_utils_session}}.
 #'
 #' @examples
-#'
 #' \dontrun{
 #'
 #' x <- stats::runif(20)
 #' y <- list(a = 1, b = TRUE, c = "oops")
 #' # See objects to save:
 #' ls()
-#' objects_to_save <- c('x', 'y')
-#' epi_utils_session(output_prefix = 'xy',
-#'                   objects_to_save = objects_to_save
-#'                  )
-#' epi_utils_log('xy')
+#' objects_to_save <- c("x", "y")
+#' epi_utils_session(
+#'   output_prefix = "xy",
+#'   objects_to_save = objects_to_save
+#' )
+#' epi_utils_log("xy")
 #' }
 #'
 #' @export
@@ -36,10 +36,10 @@
 epi_utils_log <- function(output_prefix = NULL) {
   # Filename to save current R session, data and objects at the end:
   if (is.character(output_prefix)) {
-    output_name <- sprintf('%s_log.txt', output_prefix)
-    } else {
-      output_name <- sprintf('session_%s_log.txt', Sys.Date())
-    }
-  print(sprintf('Session information saved in: %s', output_name))
-  writeLines(capture.output(sessionInfo()), output_name)
+    output_name <- sprintf("%s_log.txt", output_prefix)
+  } else {
+    output_name <- sprintf("session_%s_log.txt", Sys.Date())
   }
+  print(sprintf("Session information saved in: %s", output_name))
+  writeLines(capture.output(sessionInfo()), output_name)
+}
