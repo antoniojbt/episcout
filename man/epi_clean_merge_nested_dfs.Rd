@@ -33,7 +33,7 @@ Recursively merge data frames that are stored as lists within a list.
 Flattens with purrr::flatten() if there is more than one level. Assumes:
 \itemize{
 \item there are are 3 or more data frames to merge
-\item if only two data frames are supplied the function performs a single merge and returns
+(if only two are supplied the function performs a single merge and returns)
 \item there are no duplicates in any of the data frames
 The function performs a full outer join with base R
 merge(df1, df2, by = id_col, all = TRUE)
@@ -142,5 +142,5 @@ View(all_merged)
 \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

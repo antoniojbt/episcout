@@ -16,7 +16,7 @@ epi_utils_multicore(
 \item{num_cores}{Number of cores to use. Default cores - 1.}
 
 \item{future_plan}{The strategy to use for plan().
-Default is 'multiprocess'.}
+Default is 'multisession'.}
 
 \item{gc}{Garbage collection. Default is TRUE. Not all strategies use it though
 and cause an overhead.}
@@ -42,7 +42,7 @@ See \code{\link[future]{plan}}.
 epi_utils_multicore(num_cores = 1, future_plan = 'sequential')
 future_v \%<-\% { sum(1 + 2)}
 future_v
-epi_utils_multicore(future_plan = 'multiprocess')
+epi_utils_multicore(future_plan = 'multisession')
 future_v \%<-\% {sum(2 + 2)}
 future_v
 }

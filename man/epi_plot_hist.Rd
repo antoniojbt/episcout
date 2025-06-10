@@ -21,7 +21,7 @@ epi_plot_hist()
 }
 \note{
 For other options, save as object and build on the layers.
-var_x is passed to ggplot2::aes_string
+var_x is passed to ggplot2 aesthetics using tidy evaluation
 }
 \examples{
 

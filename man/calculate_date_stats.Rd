@@ -2,7 +2,7 @@
 % Please edit documentation in R/calculate_date_stats.R
 \name{calculate_date_stats}
 \alias{calculate_date_stats}
-\title{Wrapper for epi_stats_dates}
+\title{Wrapper for \code{epi_stats_dates}}
 \usage{
 calculate_date_stats(date_vector)
 }
@@ -10,9 +10,12 @@ calculate_date_stats(date_vector)
 \item{date_vector}{A vector of dates of class \code{Date} or \code{IDate}.}
 }
 \value{
-See \code{\link{epi_stats_dates}}.
+See \code{epi_stats_dates}.
 }
-\description{Simple wrapper around \code{epi_stats_dates()} for backwards compatibility.}
+\description{
+Provided for backwards compatibility with older code that used
+\code{calculate_date_stats()}.
+}
 \examples{
 calculate_date_stats(as.Date(c("2020-01-01", "2020-05-15")))
 }

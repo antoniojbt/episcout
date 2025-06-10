@@ -24,5 +24,5 @@ See example in \code{\link{epi_plot_cow_save}} and ggplot2 wrappers epi_plot_*()
 \code{\link{epi_plot_cow_save}}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }
