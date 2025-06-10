@@ -3,11 +3,6 @@ context("episcout utility function tests")
 ######################
 library(episcout)
 library(testthat)
-library(future)
-library(parallel)
-library(doFuture)
-library(foreach)
-library(iterators)
 ######################
 
 ######################
@@ -41,15 +36,25 @@ test_that("epi_utils_multicore sequential", {
   skip_if_not_installed("foreach")
   skip_if_not_installed("iterators")
   skip_if_not_installed("parallel")
-  epi_utils_multicore(num_cores = 1,
-                      future_plan = 'sequential')
-  core_s <- capture.output(epi_utils_multicore(num_cores = 1,
-                                               future_plan = 'sequential')
-                           )
+  library(future)
+  library(parallel)
+  library(doFuture)
+  library(foreach)
+  library(iterators)
+  epi_utils_multicore(
+    num_cores = 1,
+    future_plan = "sequential"
+  )
+  core_s <- capture.output(epi_utils_multicore(
+    num_cores = 1,
+    future_plan = "sequential"
+  ))
   core_s
   # TO DO: fix these, pass in test() but not in check()
   # expect_output(str(core_s[12]), 'sequential')
-  future_v %<-% {1 + 2}
+  future_v %<-% {
+    1 + 2
+  }
   future_v
   expect_identical(future_v, 3)
   if ("ClusterRegistry" %in% ls(getNamespace("future"), all.names = TRUE)) {
@@ -57,8 +62,7 @@ test_that("epi_utils_multicore sequential", {
   } else {
     future::plan("sequential")
   }
-}
-)
+})
 
 test_that("epi_utils_multicore multi", {
   skip_if_not_installed("future")
@@ -67,16 +71,26 @@ test_that("epi_utils_multicore multi", {
   skip_if_not_installed("iterators")
   skip_if_not_installed("parallel")
   skip_if(parallel::detectCores() < 2, "Not enough cores")
-  epi_utils_multicore(num_cores = 2,
-                      future_plan = 'multisession')
-  core_m <- capture.output(epi_utils_multicore(num_cores = 2,
-                                               future_plan = 'multisession')
-                           )
+  library(future)
+  library(parallel)
+  library(doFuture)
+  library(foreach)
+  library(iterators)
+  epi_utils_multicore(
+    num_cores = 2,
+    future_plan = "multisession"
+  )
+  core_m <- capture.output(epi_utils_multicore(
+    num_cores = 2,
+    future_plan = "multisession"
+  ))
   core_m
   # TO DO: fix these, pass in test() but not in check()
   # expect_output(str(core_m[12]), 'multisession')
   # expect_output(str(core_m[13], nchar.max = 300), 'workers = 2')
-  future_v %<-% {1 + 2}
+  future_v %<-% {
+    1 + 2
+  }
   future_v
   expect_identical(future_v, 3)
   if ("ClusterRegistry" %in% ls(getNamespace("future"), all.names = TRUE)) {
@@ -84,8 +98,7 @@ test_that("epi_utils_multicore multi", {
   } else {
     future::plan("sequential")
   }
-  }
-  )
+})
 ######################
 
 print("Function being tested: epi_utils_log")

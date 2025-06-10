@@ -24,12 +24,13 @@ Saves some headaches downstream when trying to plot non-syntactically
 valid column headers for example.
 }
 \examples{
-
 \dontrun{
 library(stringr)
-string <- c('mean', '.j_j', '...', 'if',
-'while', 'TRUE', 'NULL', '_jj',
-'  j', '.2way')
+string <- c(
+  "mean", ".j_j", "...", "if",
+  "while", "TRUE", "NULL", "_jj",
+  "  j", ".2way"
+)
 valid_names <- epi_clean_make_names(string)
 valid_names
 epi_clean_make_names(valid_names) # There shouldn't be anything to correct

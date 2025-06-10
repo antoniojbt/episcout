@@ -20,17 +20,16 @@
 #' \code{\link[data.table]{as.data.table}}.
 #'
 #' @examples
-#'
 #' \dontrun{
 #' library(data.table)
 #' # Generate some data:
 #' n <- 20
 #' df <- data.frame(
-#' var_id = rep(1:(n / 2), each = 2),
-#' var_to_rep = rep(c('Pre', 'Post'), n / 2),
-#' x = rnorm(n),
-#' y = rbinom(n, 1, 0.50),
-#' z = rpois(n, 2)
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df$id_col <- rownames(df)
 #' df
@@ -47,11 +46,11 @@
 #'
 
 epi_clean_transpose <- function(df = NULL,
-                                id_col_num = ''
-                                ) {
-  if (!requireNamespace('data.table', quietly = TRUE)) {
+                                id_col_num = "") {
+  if (!requireNamespace("data.table", quietly = TRUE)) {
     stop("Package data.table needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   # Save original IDs from first column:
   rows <- as.character(unlist(df[[id_col_num]]))
@@ -64,4 +63,4 @@ epi_clean_transpose <- function(df = NULL,
   # Insert original IDs as first column into transposed:
   df_t <- cbind(as.character(cols[-1]), df_t) # Exclude first label
   return(as.data.frame(df_t))
-  }
+}

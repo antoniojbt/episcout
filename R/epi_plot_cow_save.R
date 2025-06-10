@@ -22,18 +22,18 @@
 #' See also ggplot2 wrappers epi_plot_*().
 #'
 #' @examples
-#'
 #' \dontrun{
 #' set.seed(12345)
 #' n <- 20
-#' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-#'                  var_to_rep = rep(c("Pre", "Post"), n / 2),
-#'                  x = rnorm(n),
-#'                  y = rbinom(n, 1, 0.50),
-#'                  z = rpois(n, 2)
+#' df <- data.frame(
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' df
-#' df[, 'var_id'] <- as.character(df[, 'var_id'])
+#' df[, "var_id"] <- as.character(df[, "var_id"])
 #' vars_to_plot <- df %>%
 #'   select_if(epi_clean_cond_numeric) %>%
 #'   names()
@@ -42,13 +42,13 @@
 #' # Generate plots:
 #' for (i in names(my_plot_list)) {
 #'   print(i)
-#'   my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) + geom_boxplot()
+#'   my_plot_list[[i]] <- ggplot2::ggplot(df, aes_string(y = i)) +
+#'     geom_boxplot()
 #' }
 #' # Pass to a grid and save to file:
 #' # length(my_plot_list)
 #' my_plot_grid <- epi_plots_to_grid(my_plot_list[1:length(my_plot_list)])
-#' epi_plot_cow_save(file_name = 'plots_1.pdf', plot_grid = my_plot_grid)
-#'
+#' epi_plot_cow_save(file_name = "plots_1.pdf", plot_grid = my_plot_grid)
 #' }
 #'
 #' @export
@@ -59,27 +59,32 @@ epi_plot_cow_save <- function(file_name = NULL,
                               base_height = 11.69, # A4
                               base_width = 8.27, # A4
                               ...) {
-    if (!requireNamespace('cowplot', quietly = TRUE)) {
-        stop("Package cowplot needed for this function to work. Please install it.",
-             call. = FALSE)
-    }
+  if (!requireNamespace("cowplot", quietly = TRUE)) {
+    stop("Package cowplot needed for this function to work. Please install it.",
+      call. = FALSE
+    )
+  }
 
-    print(class(plot_grid))  # Debugging line
+  print(class(plot_grid)) # Debugging line
 
-    # Check if plot_grid is a single ggplot plot, avoids adding "A" to figure:
-    if (inherits(plot_grid, "ggplot")) {
-        message("Saving a single ggplot object.")
-        cowplot::save_plot(filename = file_name,
-                           plot = plot_grid,
-                           base_height = base_height,
-                           base_width = base_width,
-                           ...)
-    } else {
-        message("Saving a multi-plot grid.")
-        cowplot::save_plot(filename = file_name,
-                           plot = cowplot::plot_grid(plot_grid),  # Force grid rendering
-                           base_height = base_height,
-                           base_width = base_width,
-                           ...)
-    }
+  # Check if plot_grid is a single ggplot plot, avoids adding "A" to figure:
+  if (inherits(plot_grid, "ggplot")) {
+    message("Saving a single ggplot object.")
+    cowplot::save_plot(
+      filename = file_name,
+      plot = plot_grid,
+      base_height = base_height,
+      base_width = base_width,
+      ...
+    )
+  } else {
+    message("Saving a multi-plot grid.")
+    cowplot::save_plot(
+      filename = file_name,
+      plot = cowplot::plot_grid(plot_grid), # Force grid rendering
+      base_height = base_height,
+      base_width = base_width,
+      ...
+    )
+  }
 }

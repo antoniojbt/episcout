@@ -17,12 +17,11 @@
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
 #' @examples
-#'
 #' \dontrun{
 #' n <- 20
 #' df <- data.frame(
 #'   var_id = rep(1:(n / 2), each = 2),
-#'   var_to_rep = rep(c('Pre', 'Post'), n / 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
 #'   x = rnorm(n),
 #'   y = rbinom(n, 1, 0.50),
 #'   z = rpois(n, 2)
@@ -64,8 +63,8 @@ epi_head_and_tail <- function(df = NULL,
     cols <- n_cols
   }
 
-  print(sprintf('Total number of rows: %s', n_rows))
-  print(sprintf('Total number of columns: %s', n_cols))
+  print(sprintf("Total number of rows: %s", n_rows))
+  print(sprintf("Total number of columns: %s", n_cols))
 
   if (last_cols == TRUE) {
     # Get the last columns

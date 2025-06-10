@@ -35,64 +35,65 @@
 #' \code{\link[Hmisc]{rcorr}}.
 #'
 #' @examples
-#'
 #' \dontrun{
-#' df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-#' var_to_rep = rep(c("Pre", "Post"), n / 2),
-#' x = rnorm(n),
-#' y = rbinom(n, 1, 0.50),
-#' z = rpois(n, 2)
+#' df <- data.frame(
+#'   var_id = rep(1:(n / 2), each = 2),
+#'   var_to_rep = rep(c("Pre", "Post"), n / 2),
+#'   x = rnorm(n),
+#'   y = rbinom(n, 1, 0.50),
+#'   z = rpois(n, 2)
 #' )
 #' epi_clean_count_classes(df)
-#' df_corr <- df %>%select_if(~ epi_clean_cond_numeric(.))
+#' df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))
 #' df_corr <- df_corr[, -1] # exclude var_id
-#' cormat_all <- epi_stats_corr(df_corr, method = 'pearson')
+#' cormat_all <- epi_stats_corr(df_corr, method = "pearson")
 #' melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
 #' melted_triangles
-#' vars_list <- c('x', 'y', 'z')
-#' var_labels <- c('numeric', 'binomial', 'poisson')
+#' vars_list <- c("x", "y", "z")
+#' var_labels <- c("numeric", "binomial", "poisson")
 #' renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
-#'                                            melted_triangles$cormat_melted_triangle_pval,
-#'                                            vars_list = vars_list,
-#'                                            var_labels = var_labels
-#'                                            )
+#'   melted_triangles$cormat_melted_triangle_pval,
+#'   vars_list = vars_list,
+#'   var_labels = var_labels
+#' )
 #' renamed_triangles
 #' }
 #' @export
 #'
 
-epi_stats_corr_rename <- function(r_vals = 'melted_triangles$cormat_melted_triangle_r',
-                                  p_vals = 'melted_triangles$cormat_melted_triangle_pval',
+epi_stats_corr_rename <- function(r_vals = "melted_triangles$cormat_melted_triangle_r",
+                                  p_vals = "melted_triangles$cormat_melted_triangle_pval",
                                   vars_list = vars_list,
                                   var_labels = var_labels,
-                                  digits = 2
-                                  ) {
+                                  digits = 2) {
   r_vals <- as.data.frame(r_vals)
   p_vals <- as.data.frame(p_vals)
 
   if (nrow(r_vals) == 0 || nrow(p_vals) == 0) {
-    return(list(cormat_melted_triangle_r = r_vals,
-                cormat_melted_triangle_pval = p_vals))
+    return(list(
+      cormat_melted_triangle_r = r_vals,
+      cormat_melted_triangle_pval = p_vals
+    ))
   }
 
   r_vals$Var1 <- factor(r_vals$Var1,
-                        levels = vars_list,
-                        labels = var_labels
-                        )
+    levels = vars_list,
+    labels = var_labels
+  )
   r_vals$Var2 <- factor(r_vals$Var2,
-                        levels = vars_list,
-                        labels = var_labels
-                        )
+    levels = vars_list,
+    labels = var_labels
+  )
   # head_and_tail(cormat_melted_triangle_r, cols = 3)
   # summary(cormat_melted_triangle_r) Rename p-values:
   p_vals$Var1 <- factor(p_vals$Var1,
-                        levels = vars_list,
-                        labels = var_labels
-                        )
+    levels = vars_list,
+    labels = var_labels
+  )
   p_vals$Var2 <- factor(p_vals$Var2,
-                        levels = vars_list,
-                        labels = var_labels
-                        )
+    levels = vars_list,
+    labels = var_labels
+  )
   # head_and_tail(cormat_melted_triangle_pval,
   #               cols = 3)
   # summary(cormat_melted_triangle_pval)
@@ -100,7 +101,9 @@ epi_stats_corr_rename <- function(r_vals = 'melted_triangles$cormat_melted_trian
   r_vals$value <- round(r_vals$value, digits)
   p_vals$value <- round(p_vals$value, digits)
   # Return the renamed and as factor melted triangles:
-  melted_triangles <- list(cormat_melted_triangle_r = r_vals,
-                           cormat_melted_triangle_pval = p_vals)
+  melted_triangles <- list(
+    cormat_melted_triangle_r = r_vals,
+    cormat_melted_triangle_pval = p_vals
+  )
   return(melted_triangles)
-  }
+}

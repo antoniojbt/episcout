@@ -21,17 +21,16 @@ Transposes a dataframe preserving row and column names. Based on
 data.table transpose. Assumes there is an id column with unique IDs
 }
 \examples{
-
 \dontrun{
 library(data.table)
 # Generate some data:
 n <- 20
 df <- data.frame(
-var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c('Pre', 'Post'), n / 2),
-x = rnorm(n),
-y = rbinom(n, 1, 0.50),
-z = rpois(n, 2)
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 df$id_col <- rownames(df)
 df
@@ -53,5 +52,5 @@ names(df_t)
 \code{\link[data.table]{as.data.table}}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

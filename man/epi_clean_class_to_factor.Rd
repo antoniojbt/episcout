@@ -32,24 +32,24 @@ and give a warning message (that can be ignored):
 "... the condition has length > 1 and only the first element will be used"
 }
 \examples{
-
 \dontrun{
 n <- 20
 df_factor <- data.frame(
-var_id = rep(1:(n / 2), each = 2),
-var_to_rep = rep(c('Pre', 'Post'), n / 2),
-x = rnorm(n),
-y = rbinom(n, 1, 0.50),
-z = rpois(n, 2)
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
 )
 df_factor$date_col <- seq(as.Date("2018/1/1"),
-by = "year", length.out = 5)#nrow(df_factor))
+  by = "year", length.out = 5
+) # nrow(df_factor))
 # Check the current classes:
 lapply(df_factor, class)
 # Check how many unique values within each column:
 lapply(df_factor, function(x) length(unique(x)))
 # Check conditions:
-i <- 'date_col'
+i <- "date_col"
 cutoff_unique <- 10
 # if num. of unique values is less than cut-off:
 length(unique(df_factor[[i]])) < cutoff_unique # should be TRUE
@@ -66,5 +66,5 @@ df_factor
 \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_numeric}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

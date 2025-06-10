@@ -18,7 +18,7 @@
 #'
 
 epi_plot_list <- function(vars_to_plot = NULL) {
-  plot_list <- vector(mode = 'list', length = length(vars_to_plot))
+  plot_list <- vector(mode = "list", length = length(vars_to_plot))
   names(plot_list) <- vars_to_plot
   return(plot_list)
-  }
+}

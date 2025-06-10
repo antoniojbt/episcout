@@ -18,7 +18,6 @@ length of the list passed}
 epi_list_tail() Prettier print of lists for head and tail
 }
 \examples{
-
 \dontrun{
 epi_list_tail(as.list(df), 5, 4)
 }

@@ -22,10 +22,12 @@
 #' @export
 epi_write_df <- function(df, results_subdir, file_n, suffix) {
   # Construct the file path
-  outfile <- sprintf(fmt = "%s/%s.%s",
-                     results_subdir,
-                     file_n,
-                     suffix)
+  outfile <- sprintf(
+    fmt = "%s/%s.%s",
+    results_subdir,
+    file_n,
+    suffix
+  )
 
   # Write the data frame to the file
   epi_write(df, outfile)

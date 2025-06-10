@@ -28,28 +28,30 @@
 #'
 
 epi_plots_to_grid <- function(plot_list = NULL,
-                              align = 'hv',
-                              axis = 'lrtb',
+                              align = "hv",
+                              axis = "lrtb",
                               label_size = 12, # for the panel "A", "B", etc. labels only, does not affect axis or other plot text
                               ncol = NULL,
                               nrow = NULL,
                               ...) {
-    if (!requireNamespace('cowplot', quietly = TRUE)) {
-        stop("Package cowplot needed for this function to work. Please install it.",
-             call. = FALSE)
-    }
-
-    # Disable labels if there's only one plot
-    labels <- if (length(plot_list) > 1) "AUTO" else NULL
-
-    my_plot_grid <- cowplot::plot_grid(plotlist = plot_list,
-                                       align = align,
-                                       axis = axis,
-                                       labels = labels,
-                                       label_size = label_size,
-                                       ncol = ncol,
-                                       nrow = nrow,
-                                       ...
+  if (!requireNamespace("cowplot", quietly = TRUE)) {
+    stop("Package cowplot needed for this function to work. Please install it.",
+      call. = FALSE
     )
-    return(my_plot_grid)
+  }
+
+  # Disable labels if there's only one plot
+  labels <- if (length(plot_list) > 1) "AUTO" else NULL
+
+  my_plot_grid <- cowplot::plot_grid(
+    plotlist = plot_list,
+    align = align,
+    axis = axis,
+    labels = labels,
+    label_size = label_size,
+    ncol = ncol,
+    nrow = nrow,
+    ...
+  )
+  return(my_plot_grid)
 }
