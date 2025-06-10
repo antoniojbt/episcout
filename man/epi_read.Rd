@@ -44,9 +44,8 @@ White space is stripped. Strings are read as character only.
 Assumes the first row is a header.
 }
 \examples{
-
 \dontrun{
-super_data <- epi_read('super_data.tsv')
+super_data <- epi_read("super_data.tsv")
 }
 
 }

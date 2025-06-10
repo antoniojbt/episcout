@@ -26,20 +26,19 @@ coef = 0 returns no outliers, see ?boxplot.stats
 An alternative, not implemented, is to consider those eg > 5 * SD
 }
 \examples{
-
 \dontrun{
 n <- 1000
-df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-                var_to_rep = rep(c("Pre", "Post"), n / 2),
-                x = rnorm(n),
-                y = rbinom(n, 1, 0.50),
-                z = rpois(n, 2)
-               )
+df <- data.frame(
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
+)
 epi_head_and_tail(df)
 epi_stat_count_outliers(num_vec = df$x, coef = 0)
 epi_stat_count_outliers(num_vec = df$x)
 summary(df$x)
-
 }
 
 }

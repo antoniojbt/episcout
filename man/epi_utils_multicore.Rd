@@ -39,8 +39,10 @@ See \code{\link[future]{plan}}.
 }
 \examples{
 \dontrun{
-epi_utils_multicore(num_cores = 1, future_plan = 'sequential')
-future_v \%<-\% { sum(1 + 2)}
+epi_utils_multicore(num_cores = 1, future_plan = "sequential")
+future_v \%<-\% {
+  sum(1 + 2)
+}
 future_v
 epi_utils_multicore(future_plan = 'multisession')
 future_v \%<-\% {sum(2 + 2)}

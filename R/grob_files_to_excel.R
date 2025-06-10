@@ -1,4 +1,3 @@
-
 ############
 ###
 # Functions
@@ -14,7 +13,7 @@ truncate_name <- function(name) {
 
 # Create unique sheet names:
 make_unique_name <- function(name, names_so_far) {
-  base_name <- truncate_name(name)  # Ensure base name is truncated
+  base_name <- truncate_name(name) # Ensure base name is truncated
   if (!(tolower(base_name) %in% tolower(names_so_far))) {
     return(base_name)
   } else {
