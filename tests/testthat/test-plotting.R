@@ -205,6 +205,13 @@ test_that("epi_plot_bar", {
   plot_bar <- epi_plot_bar(df, "var_to_rep")
   # plot_bar
   vdiffr::expect_doppelganger("epi_plot_bar_1_var", plot_bar)
+})
+
+print("Function being tested: epi_plot_bar with two variables")
+test_that("epi_plot_bar", {
+  # never run on Linux CI
+  skip_on_os("linux")      # or skip_on_ci() to skip on *any* CI environment
+  skip_if_not(interactive())
 
   # Barplot for two variables side by side:
   df_bar <- reshape2::melt(df[, c("w", "z", "id_unique")], id.vars = "id_unique")

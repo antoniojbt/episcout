@@ -81,10 +81,10 @@ jobs:
 
       # Try to ensure Linux CI has the same fonts as macOS for svg plot tests
       # with vdiffr so that R CMD check on ubuntu match the macOS generated images
-      - name: Install system fonts
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fonts-dejavu-core libfreetype6-dev
+      #- name: Install system fonts
+      #  run: |
+      #    sudo apt-get update sudo: apt-get: command not found
+      #    sudo apt-get install -y fonts-dejavu-core libfreetype6-dev
 
       - name: Run R CMD check
         uses: r-lib/actions/check-r-package@v2
