@@ -42,12 +42,12 @@
 epi_clean_count_classes <- function(df = NULL) {
   if (!requireNamespace("dplyr", quietly = TRUE)) {
     stop("Package dplyr needed for this function to work. Please install it.",
-      call. = FALSE
+         call. = FALSE
     )
   }
   if (!requireNamespace("purrr", quietly = TRUE)) {
     stop("Package purrr needed for this function to work. Please install it.",
-      call. = FALSE
+         call. = FALSE
     )
     # if (!requireNamespace('magrittr', quietly = TRUE)) {
     #   stop("Package magrittr needed for this function to work. Please install it.",

@@ -28,7 +28,7 @@ skip_if_not_installed("ggplot2")
 
 test_that("epi_plot_cow_save handles ggplot and grid inputs", {
   tmp_single <- tempfile(fileext = ".pdf")
-  tmp_multi  <- tempfile(fileext = ".pdf")
+  tmp_multi <- tempfile(fileext = ".pdf")
 
   p <- ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
     ggplot2::geom_point()

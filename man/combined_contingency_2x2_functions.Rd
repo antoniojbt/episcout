@@ -56,7 +56,6 @@ epi_stats_2x2_all(...)
 \item{min_unique}{Minimum number of unique values required to include a column for testing (default: 2).}
 
 \item{...}{Arguments passed to the underlying function.}
-
 }
 \value{
 \itemize{

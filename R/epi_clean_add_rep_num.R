@@ -67,8 +67,10 @@ epi_clean_add_rep_num <- function(df = NULL,
   for (i in 2:c(nrow(df))) {
     # Starts at i = 2:
     cond1 <- as.character(df[c(i), var_id]) == as.character(df[i - 1, var_id])
-    cond2 <- as.character(df[c(i), var_to_rep]) != as.character(df[i - 1,
-                                                                   var_to_rep])
+    cond2 <- as.character(df[c(i), var_to_rep]) != as.character(df[
+      i - 1,
+      var_to_rep
+    ])
     result <- if (cond1 && cond2) {
       # If IDs are the same but the var_to_rep is different,
       # add 1:

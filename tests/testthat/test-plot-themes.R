@@ -42,4 +42,3 @@ test_that("scale_colour_epi_plot_theme_2 returns manual scale", {
   expect_equal(cols[2], "#fdb462")
   expect_equal(length(cols), 9)
 })
-

@@ -138,8 +138,7 @@ test_that("epi_plot_hist", {
     labs(x = "X", y = "Count")
   # Add axis limits:
   my_hist_plot <- my_hist_plot +
-    xlim(c(-4, 4)) +
-    ylim(c(0, 10))
+    coord_cartesian(xlim = c(-4, 4), ylim = c(0, 10))
   # my_hist_plot
   vdiffr::expect_doppelganger("epi_plot_hist_1", my_hist_plot)
 
@@ -259,9 +258,9 @@ test_that("epi_plot_heatmap", {
   # Nicer triangle:
   nicer_triangle <- epi_plot_heatmap_triangle(renamed_triangles$cormat_melted_triangle_r,
     renamed_triangles$cormat_melted_triangle_pval,
-    show_values = "pval" #' corr'
+    show_values = "pval" # "corr"
   )
-  skip("legend.position.inside not supported")
+  # skip("legend.position.inside not supported")
   vdiffr::expect_doppelganger("epi_plot_heat_nicer_triangle", nicer_triangle)
 })
 ######################

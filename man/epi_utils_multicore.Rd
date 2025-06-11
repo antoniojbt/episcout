@@ -44,8 +44,10 @@ future_v \%<-\% {
   sum(1 + 2)
 }
 future_v
-epi_utils_multicore(future_plan = 'multisession')
-future_v \%<-\% {sum(2 + 2)}
+epi_utils_multicore(future_plan = "multisession")
+future_v \%<-\% {
+  sum(2 + 2)
+}
 future_v
 }
 }
@@ -57,5 +59,5 @@ future_v
 \code{\link[future]{availableWorkers}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }
