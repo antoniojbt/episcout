@@ -33,7 +33,6 @@
 #' @examples
 #'
 #' \dontrun{
-#' test data:
 #' letts <- paste(letters, collapse = ' ')
 #' other_letts <- toupper(paste(letters, collapse = ' '))
 #' df_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
@@ -57,11 +56,10 @@
 
 epi_clean_compare_str <- function(df = NULL,
                                   row_n = 1,
-                                  string_col = '',
-                                  fixed_chr_col = '',
-                                  ...
-                                    ) {
-  if (!requireNamespace('stringi', quietly = TRUE)) {
+                                  string_col = "",
+                                  fixed_chr_col = "",
+                                  ...) {
+  if (!requireNamespace("stringi", quietly = TRUE)) {
     stop("Package stringi needed for this function to work. Please install it.",
          call. = FALSE)
   }

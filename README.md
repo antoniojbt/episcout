@@ -89,6 +89,9 @@ If you have any issues, pull requests, etc. please report them in the issue trac
 
 ## News
 
+- Version 0.1.3
+  Improved coverage tests (~90%), added a few wrappers, slightly improved documentation
+  
 - Version 0.1.2
   Minor bug fixes and internal improvements
 

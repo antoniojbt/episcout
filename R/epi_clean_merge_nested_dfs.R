@@ -147,11 +147,11 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   df2 <- data.table::as.data.table(nested_list_dfs[[2]])
   print("Merging first two data frames")
   # If there are names in list but they are duplicated:
-  if (!is.null(names(nested_list_dfs)) & any(duplicated(names(nested_list_dfs)))) {
+  if (!is.null(names(nested_list_dfs)) && any(duplicated(names(nested_list_dfs)))) {
     message("Duplicated names in list passed. Using default suffixes.")
   }
   # If there are names and no duplicates:
-  if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
+  if (!is.null(names(nested_list_dfs)) && !any(duplicated(names(nested_list_dfs)))) {
     suffix_1 <- paste0("_", names(nested_list_dfs)[1])
     suffix_2 <- paste0("_", names(nested_list_dfs)[2])
     print(sprintf(
@@ -185,7 +185,7 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   print("Suffixes are only used if there are clashes.")
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
     # the initial merge
-    if (!is.null(names(nested_list_dfs)) & !any(duplicated(names(nested_list_dfs)))) {
+    if (!is.null(names(nested_list_dfs)) && !any(duplicated(names(nested_list_dfs)))) {
       # suffix_1 should just be blank as will be a merged df already
       suffix_2 <- paste0("_", names(nested_list_dfs)[i])
     } else {

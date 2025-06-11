@@ -67,7 +67,7 @@ epi_clean_make_names <- function(string = "",
 
   # Replace dots from make.names():
   str_replacement <- str_replacement
-  for (i in 1:length(make_valid)) {
+  for (i in seq_along(make_valid)) {
     make_valid[i] <- stringr::str_replace_all(
       string = make_valid[i],
       pattern = "[.]",

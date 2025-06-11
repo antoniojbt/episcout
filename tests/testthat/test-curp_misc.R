@@ -60,11 +60,13 @@ test_that("epi_clean_fct_to_na errors for non-factor", {
 # epi_clean_int_to_factor
 
 test_that("epi_clean_int_to_factor converts integer columns", {
-  dt <- data.table(a = 1:3,
-                   b = as.integer(c(4, 5, 6)),
-                   c = as.IDate('2020-01-01') + 0:2)
+  dt <- data.table(
+    a = 1:3,
+    b = as.integer(c(4, 5, 6)),
+    c = as.IDate("2020-01-01") + 0:2
+  )
   res <- episcout:::epi_clean_int_to_factor(dt)
   expect_true(is.factor(res$a))
   expect_true(is.factor(res$b))
-  expect_true(inherits(res$c, 'IDate'))
+  expect_true(inherits(res$c, "IDate"))
 })

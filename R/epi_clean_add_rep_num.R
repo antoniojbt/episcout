@@ -71,7 +71,7 @@ epi_clean_add_rep_num <- function(df = NULL,
       i - 1,
       var_to_rep
     ])
-    result <- if (cond1 & cond2) {
+    result <- if (cond1 && cond2) {
       # If IDs are the same but the var_to_rep is different,
       # add 1:
       # df[i, rep_num_col] <- df[i - 1, rep_num_col] + 1

@@ -41,7 +41,7 @@
 epi_clean_cond_date <- function(col = NULL) {
   if (!requireNamespace("lubridate", quietly = TRUE)) {
     stop("Package lubridate needed for this function to work. Please install it.",
-      call. = FALSE
+         call. = FALSE
     )
   }
   lubridate::is.Date(col) == TRUE | lubridate::is.POSIXt(col) == TRUE

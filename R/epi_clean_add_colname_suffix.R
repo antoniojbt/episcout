@@ -46,6 +46,5 @@ epi_clean_add_colname_suffix <- function(df = NULL,
                                          suffix = "") {
   col_names <- names(df)[-id_col_num]
   col_names <- paste(col_names, suffix, sep = "")
-  # names(df)[start_at:ncol(df)] <- col_names
   return(col_names)
 }
