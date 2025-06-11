@@ -45,7 +45,6 @@ character vector with strings to search in.
 \examples{
 
 \dontrun{
-test data:
 letts <- paste(letters, collapse = ' ')
 other_letts <- toupper(paste(letters, collapse = ' '))
 df_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),

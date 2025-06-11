@@ -80,5 +80,5 @@ ggsave("epi_heatmap_triangle.svg",
 \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

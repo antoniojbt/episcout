@@ -29,6 +29,10 @@ inst/doc
 *.gz
 .dir_bash_history
 *.dir_bash_history
+*/*.dir_bash_history
+*/*/*.dir_bash_history
+*/*/*/*.dir_bash_history
+
 .DS_Store
 .ipynb_checkpoints
 # Vim:

@@ -80,19 +80,19 @@
 
 epi_plot_volcano <- function(logFC = NULL,
                              p_val = NULL,
-                             main = '',
+                             main = "",
                              pch = 20,
                              h_abline = 2,
                              v_abline = c(0.8, 1.2),
-                             ...
-                             ) {
+                             ...) {
   volcano <- plot(2^(logFC),
-                  -log10(p_val),
-                  pch = pch,
-                  main = main,
-                  abline(h = h_abline,
-                         v = v_abline),
-                  ...
-                  )
+    -log10(p_val),
+    pch = pch,
+    main = main,
+    abline(
+      h = h_abline,
+      v = v_abline
+    ),
+    ...
+  )
 }
-

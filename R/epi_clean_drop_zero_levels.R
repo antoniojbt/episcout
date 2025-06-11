@@ -9,10 +9,10 @@
 #' @return A factor vector with all levels that have zero observations removed.
 #'
 #' @examples
-#' \dontrun{}
+#' \dontrun{
 #' # Single vector example
 #' factor_var <- factor(c("a", "b", "a", "c", "b", "a", "b", "c"))
-#' factor_var[c(2, 5)] <- NA  # simulate missing values that remove counts
+#' factor_var[c(2, 5)] <- NA # simulate missing values that remove counts
 #' cleaned_factor_var <- epi_clean_drop_zero_levels_vector(factor_var)
 #' print(cleaned_factor_var)
 #'
@@ -23,8 +23,8 @@
 #'   col3 = factor(c("g", "h", "g", "g", "h"))
 #' )
 #' df$col1[c(2, 5)] <- NA
-#' df$col2[4]      <- NA
-#' df$col3[5]      <- NA
+#' df$col2[4] <- NA
+#' df$col3[5] <- NA
 #' df[] <- lapply(df, function(column) {
 #'   if (is.factor(column)) {
 #'     epi_clean_drop_zero_levels_vector(column)
@@ -33,6 +33,7 @@
 #'   }
 #' })
 #' print(df)
+#' }
 
 #' @export
 epi_clean_drop_zero_levels_vector <- function(factor_var) {

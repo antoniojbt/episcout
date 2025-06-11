@@ -28,8 +28,10 @@ test_that("epi_stats_contingency_nxn handles a single independent variable", {
 
   # Row totals should match the total frequencies in the data
   total_counts <- table(test_data$Group)
-  expect_equal(result$total,
-               as.numeric(total_counts[as.character(result$Group)]))
+  expect_equal(
+    result$total,
+    as.numeric(total_counts[as.character(result$Group)])
+  )
 
   # Percentages should sum to 100 for each row
   expect_equal(rowSums(result[, c("perc_Yes", "perc_No")]), rep(100, nrow(result)))

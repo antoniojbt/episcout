@@ -148,16 +148,17 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   print("Merging first two data frames")
   # If there are names in list but they are duplicated:
   if (!is.null(names(nested_list_dfs)) && any(duplicated(names(nested_list_dfs)))) {
-   message('Duplicated names in list passed. Using default suffixes.')
+    message("Duplicated names in list passed. Using default suffixes.")
   }
   # If there are names and no duplicates:
   if (!is.null(names(nested_list_dfs)) && !any(duplicated(names(nested_list_dfs)))) {
-    suffix_1 <- paste0('_', names(nested_list_dfs)[1])
-    suffix_2 <- paste0('_', names(nested_list_dfs)[2])
-    print(sprintf('Using suffixes: %s and %s',
-                  suffix_1,
-                  suffix_2)
-          )
+    suffix_1 <- paste0("_", names(nested_list_dfs)[1])
+    suffix_2 <- paste0("_", names(nested_list_dfs)[2])
+    print(sprintf(
+      "Using suffixes: %s and %s",
+      suffix_1,
+      suffix_2
+    ))
   } else {
     suffix_1 <- "_1"
     suffix_2 <- "_2"
@@ -183,24 +184,24 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
   print("Merging further dataframes.")
   print("Suffixes are only used if there are clashes.")
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
-                                         # the initial merge
+    # the initial merge
     if (!is.null(names(nested_list_dfs)) && !any(duplicated(names(nested_list_dfs)))) {
-        # suffix_1 should just be blank as will be a merged df already
-        suffix_2 <- paste0('_', names(nested_list_dfs)[i])
-        } else {
-          suffix_2 <- sprintf('_%s', i)
-        }
-      print(sprintf('Suffix to use: %s', suffix_2))
-      df2 <- data.table::as.data.table(nested_list_dfs[[i]]) # new df to merge, starting at 3
-      temp_df <- merge(temp_df,
-                       df2,
-                       by = id_col,
-                       all.x = all.x,
-                       suffixes = c('', suffix_2),
-                       ...
-                       )
-    # option suffix is only used if there is a clash
+      # suffix_1 should just be blank as will be a merged df already
+      suffix_2 <- paste0("_", names(nested_list_dfs)[i])
+    } else {
+      suffix_2 <- sprintf("_%s", i)
     }
+    print(sprintf("Suffix to use: %s", suffix_2))
+    df2 <- data.table::as.data.table(nested_list_dfs[[i]]) # new df to merge, starting at 3
+    temp_df <- merge(temp_df,
+      df2,
+      by = id_col,
+      all.x = all.x,
+      suffixes = c("", suffix_2),
+      ...
+    )
+    # option suffix is only used if there is a clash
+  }
   print("Done merging")
   return(temp_df)
 }
