@@ -29,7 +29,7 @@ test_that("epi_stats_contingency_2x2_df produces correct structure and counts", 
   result <- epi_stats_contingency_2x2_df(test_data, x_var = "State", y_var = "Gender")
 
   expect_true(is.data.frame(result))
-  expect_equal(ncol(result), 3)  # Two variables + Frequency column
+  expect_equal(ncol(result), 3) # Two variables + Frequency column
   expect_equal(colnames(result), c("State", "Gender", "Freq"))
   expect_true(all(result$State %in% state_levels))
   expect_true(all(result$Gender %in% gender_levels))
@@ -77,7 +77,7 @@ test_that("epi_stats_contingency_nxn generates a wide-format summary", {
   expect_true(is.data.frame(result))
   expect_true(all(c("Active", "Inactive") %in% colnames(result)))
   expect_true(all(c("total", "perc_Active", "perc_Inactive") %in% colnames(result)))
-  expect_equal(sum(result$total), 100)  # Total counts should match dataset
+  expect_equal(sum(result$total), 100) # Total counts should match dataset
 })
 
 # ===================================================================
@@ -90,7 +90,7 @@ test_that("epi_stats_2x2_test performs a statistical test", {
   result <- epi_stats_2x2_test(test_data, target_var = "State", other_var = "Gender")
 
   expect_true(is.data.frame(result))
-  expect_equal(ncol(result), 7)  # Typical broom::tidy output columns
+  expect_equal(ncol(result), 7) # Typical broom::tidy output columns
   expect_true("p.value" %in% colnames(result))
 })
 
@@ -104,8 +104,8 @@ test_that("epi_stats_2x2_cols selects valid testable columns", {
   result <- epi_stats_2x2_cols(test_data)
 
   expect_true(is.character(result))
-  expect_true("Gender" %in% result)  # Gender is categorical with >=2 unique values
-  expect_false("SingleValue" %in% result)  # SingleValue has only 1 unique value
+  expect_true("Gender" %in% result) # Gender is categorical with >=2 unique values
+  expect_false("SingleValue" %in% result) # SingleValue has only 1 unique value
 })
 
 # ===================================================================
@@ -120,5 +120,5 @@ test_that("epi_stats_2x2_all performs tests on all valid columns", {
   expect_true(is.data.frame(result))
   expect_true(all(c("estimate", "p.value", "variable") %in% colnames(result)))
   expect_true("Gender" %in% result$variable)
-  expect_false("SingleValue" %in% result$variable)  # SingleValue should not be included
+  expect_false("SingleValue" %in% result$variable) # SingleValue should not be included
 })

@@ -138,8 +138,7 @@ test_that("epi_plot_hist", {
     labs(x = "X", y = "Count")
   # Add axis limits:
   my_hist_plot <- my_hist_plot +
-    xlim(c(-4, 4)) +
-    ylim(c(0, 10))
+    coord_cartesian(xlim = c(-4, 4), ylim = c(0, 10))
   # my_hist_plot
   vdiffr::expect_doppelganger("epi_plot_hist_1", my_hist_plot)
 
@@ -206,6 +205,13 @@ test_that("epi_plot_bar", {
   plot_bar <- epi_plot_bar(df, "var_to_rep")
   # plot_bar
   vdiffr::expect_doppelganger("epi_plot_bar_1_var", plot_bar)
+})
+
+print("Function being tested: epi_plot_bar with two variables")
+test_that("epi_plot_bar", {
+  # never run on Linux CI
+  skip_on_os("linux")      # or skip_on_ci() to skip on *any* CI environment
+  skip_if_not(interactive())
 
   # Barplot for two variables side by side:
   df_bar <- reshape2::melt(df[, c("w", "z", "id_unique")], id.vars = "id_unique")
@@ -259,9 +265,9 @@ test_that("epi_plot_heatmap", {
   # Nicer triangle:
   nicer_triangle <- epi_plot_heatmap_triangle(renamed_triangles$cormat_melted_triangle_r,
     renamed_triangles$cormat_melted_triangle_pval,
-    show_values = "pval" #' corr'
+    show_values = "pval" # "corr"
   )
-  skip("legend.position.inside not supported")
+  # skip("legend.position.inside not supported")
   vdiffr::expect_doppelganger("epi_plot_heat_nicer_triangle", nicer_triangle)
 })
 ######################

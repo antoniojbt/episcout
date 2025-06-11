@@ -1,0 +1,2 @@
+linters: linters_with_defaults(line_length_linter = line_length_linter(150), object_name_linter = object_name_linter(styles = "snake_case"), assignment_linter = assignment_linter(), spaces_left_parentheses_linter = spaces_left_parentheses_linter(), object_usage_linter = object_usage_linter(), commented_code_linter = NULL, indentation_linter(indent = 2L, hanging_indent_style = "always"))
+exclusions: list("blurbs_and_old_code/*")

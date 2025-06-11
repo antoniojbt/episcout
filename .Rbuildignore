@@ -12,6 +12,7 @@
 ^tests/figs/\.dir_bash_history$
 ^vignettes/\.dir_bash_history$
 ^tests/testthat/\.dir_bash_history$
+^tests/testthat/_snaps/.*\.dir_bash_history$
 ^blurbs_and_old_code
 ^\.lintr$
 ^doc$
@@ -21,3 +22,5 @@
 ^\.github$
 ^AGENTS\.MD$
 ^fishers_results\.txt$
+# .Rbuildignore
+

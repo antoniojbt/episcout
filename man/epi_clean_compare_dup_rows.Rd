@@ -10,7 +10,7 @@ epi_clean_compare_dup_rows(
   col_id = "",
   sub_index_1 = 1,
   sub_index_2 = 2,
-  allowAll = TRUE,
+  allow_all = TRUE,
   ...
 )
 }
@@ -27,7 +27,7 @@ fixed = TRUE}
 
 \item{sub_index_2}{default = 2}
 
-\item{allowAll}{compare::compare option}
+\item{allow_all}{compare::compare option}
 
 \item{...}{pass any other options from compare::compare()}
 }
@@ -59,5 +59,5 @@ View(t(check_dups[comp$duplicate_indices, comp$differing_cols]))
 \code{\link[compare]{compare}}, \code{\link[base]{grepl}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

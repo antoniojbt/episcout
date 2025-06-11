@@ -20,7 +20,7 @@
 #'
 #' @param ... pass any other options from compare::compare()
 #'
-#' @param allowAll compare::compare option
+#' @param allow_all compare::compare option
 #'
 #' @return returns a list object with the differing columns ('differing_cols'),
 #' their names ('col_names') and the duplicated indices
@@ -49,21 +49,20 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
                                        col_id = "",
                                        sub_index_1 = 1,
                                        sub_index_2 = 2,
-                                       allowAll = TRUE,
+                                       allow_all = TRUE,
                                        ...) {
   if (!requireNamespace("compare", quietly = TRUE)) {
     stop("Package compare needed for this function to work. Please install it.",
-      call. = FALSE
+         call. = FALSE
     )
   }
   val_id <- as.character(val_id)
   dup_indices <- which(as.character(df_dups[[col_id]]) == val_id)
   # check_dups[dup_indices, 1:2]
   comp <- compare::compare(df_dups[dup_indices[sub_index_1], , drop = FALSE],
-    df_dups[dup_indices[sub_index_2], , drop = FALSE],
-    allowAll = allowAll,
-    ...
-  )
+                           df_dups[dup_indices[sub_index_2], , drop = FALSE],
+                           allowAll = allow_all,
+                           ...)
   comp_diff <- unname(which(comp$detailedResult == FALSE))
   names_diff_cols <- names(which(comp$detailedResult == FALSE))
   comp_results <- list(

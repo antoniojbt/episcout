@@ -63,7 +63,7 @@ epi_clean_class_to_factor <- function(df = NULL,
   for (i in seq_along(df)) {
     if (
       # if num. of unique values is less than cut-off
-      length(unique(df[[i]])) < cutoff_unique &
+      length(unique(df[[i]])) < cutoff_unique &&
         # and the class is not already a date:
         !inherits(df[[i]], "Date")
     ) {
