@@ -42,3 +42,17 @@ test_that("scale_colour_epi_plot_theme_2 returns manual scale", {
   expect_equal(cols[2], "#fdb462")
   expect_equal(length(cols), 9)
 })
+
+test_that("epi_plot_theme_imss returns a ggplot object", {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    skip("ggplot2 not available")
+  }
+    if (!requireNamespace("ggthemes", quietly = TRUE)) {
+    skip("ggthemes not available")
+  }
+  
+  p <- ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
+    ggplot2::geom_point() +
+    epi_plot_theme_imss()
+  expect_s3_class(p, "ggplot")
+})
