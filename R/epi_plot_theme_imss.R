@@ -1,8 +1,3 @@
-oeltools/R/theme_imss.R
-New
-+47
--0
-
 #' IMSS ggplot theme
 #'
 #' Provides a ggplot2 theme with IMSS corporate colours. Package dependencies are
