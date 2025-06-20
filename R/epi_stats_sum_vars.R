@@ -33,7 +33,7 @@ epi_stats_factors <- function(df) {
 #' @param df A dataframe containing character variables
 #' @return A tibble summarizing character variable statistics
 #' @export
-epis_stats_chars <- function(df) {
+epi_stats_chars <- function(df) {
   if (!requireNamespace("stringr", quietly = TRUE)) {
     stop("Package stringr needed for this function to work. Please install it.",
       call. = FALSE
