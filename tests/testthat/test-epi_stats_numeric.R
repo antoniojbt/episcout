@@ -79,3 +79,6 @@ test_that("Shapiro–Wilk skipped for too few or too many observations", {
 
     # Too many (n_nonNA > 4999)
     large <- rep(1, 5000)
+    res_large <- epi_stats_numeric(large)
+    expect_true(is.na(res_large$Shapiro_Wilk_p_value))
+})
