@@ -3,7 +3,6 @@
 export("%>%")
 export(":=")
 export(.data)
-export(calculate_date_stats)
 export(enexpr)
 export(enexprs)
 export(enquo)
