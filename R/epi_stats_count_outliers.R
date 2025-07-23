@@ -44,14 +44,20 @@
 epi_stats_count_outliers <- function(num_vec = NULL,
                                      coef = 1.5,
                                      ...) {
+  if (coef == 0) {
+    return(0L)
+  }
   # if(method == 'SD') {
   # get_SD <- sd(num_vec, na.rm = na.rm)
   # count_above <- length(get_SD * )
   # }
   # if(method == 'IQR') {}
-  outliers <- boxplot.stats(num_vec, coef = coef, ...)
-  outliers <- length(outliers$out)
-  # else {print('NO method chosen')}
+  q1 <- stats::quantile(num_vec, 0.25, na.rm = TRUE, type = 7)
+  q3 <- stats::quantile(num_vec, 0.75, na.rm = TRUE, type = 7)
+  iqr_val <- q3 - q1
+  lower <- q1 - coef * iqr_val
+  upper <- q3 + coef * iqr_val
+  outliers <- sum(num_vec < lower | num_vec > upper, na.rm = TRUE)
   return(outliers)
 }
 
