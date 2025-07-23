@@ -82,8 +82,8 @@ test_that("epi_stats_factors summarises factor columns", {
   expect_equal(f1$complete_rate, 0.8)
   expect_true(f1$ordered)
   expect_equal(f1$n_unique, 2)
-  expect_equal(f1$top_counts, "a (3, b (1")
-  expect_equal(f2$top_counts, "y (3, x (2")
+  expect_equal(f1$top_counts, "a (3), b (1)")
+  expect_equal(f2$top_counts, "y (3), x (2)")
 })
 
 print("Function being tested: epis_stats_chars")
@@ -101,7 +101,7 @@ test_that("epis_stats_chars summarises character columns", {
   c2 <- res[res$Variable == "c2", ]
   expect_equal(c1$n_missing, 1)
   expect_equal(c1$empty, 1)
-  expect_equal(c1$whitespace, 2)
+  expect_equal(c1$whitespace, 1)
   expect_equal(c2$max_length, 2)
   expect_equal(c2$n_unique, 3)
 })

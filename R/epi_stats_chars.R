@@ -39,23 +39,26 @@
 #' @importFrom stringr str_trim
 #' @export
 epi_stats_chars <- function(df) {
-    if (!requireNamespace("stringr", quietly = TRUE)) {
-        stop("Package stringr needed for this function to work. Please install it.",
-             call. = FALSE
-        )
-    }
-    df %>%
-        dplyr::select(dplyr::where(is.character)) %>%
-        tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Variable", values_to = "Value") %>%
-        dplyr::group_by(Variable) %>%
-        dplyr::summarise(
-            n_missing    = sum(is.na(Value)),
-            complete_rate = mean(!is.na(Value)),
-            min_length   = dplyr::if_else(n_missing < dplyr::n(), min(nchar(Value), na.rm = TRUE), NA_integer_),
-            max_length   = dplyr::if_else(n_missing < dplyr::n(), max(nchar(Value), na.rm = TRUE), NA_integer_),
-            empty        = sum(Value == "", na.rm = TRUE),
-            n_unique     = dplyr::n_distinct(Value, na.rm = TRUE),
-            whitespace   = sum(stringr::str_trim(Value) == "", na.rm = TRUE)
-        ) %>%
-        dplyr::ungroup()
+  if (!requireNamespace("stringr", quietly = TRUE)) {
+    stop("Package stringr needed for this function to work. Please install it.",
+      call. = FALSE
+    )
+  }
+  char_cols <- dplyr::select(df, dplyr::where(~ is.character(.x) || all(is.na(.x))))
+  if (ncol(char_cols) == 0) {
+    return(dplyr::tibble())
+  }
+  char_cols %>%
+    tidyr::pivot_longer(cols = dplyr::everything(), names_to = "Variable", values_to = "Value") %>%
+    dplyr::group_by(Variable) %>%
+    dplyr::summarise(
+      n_missing = sum(is.na(Value)),
+      complete_rate = mean(!is.na(Value)),
+      min_length = dplyr::if_else(n_missing < dplyr::n(), min(nchar(Value), na.rm = TRUE), NA_integer_),
+      max_length = dplyr::if_else(n_missing < dplyr::n(), max(nchar(Value), na.rm = TRUE), NA_integer_),
+      empty = sum(Value == "", na.rm = TRUE),
+      n_unique = dplyr::n_distinct(Value, na.rm = TRUE),
+      whitespace = sum(stringr::str_trim(Value) == "" & Value != "", na.rm = TRUE)
+    ) %>%
+    dplyr::ungroup()
 }
