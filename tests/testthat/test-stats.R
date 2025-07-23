@@ -104,8 +104,11 @@ test_that("epi_stats_count_outliers", {
   # output is silent if successful
   # matches values, attributes, and type:
   expect_equal(epi_stats_count_outliers(num_vec = df$x, coef = 0), 0)
-  outliers <- length(boxplot.stats(df$x)$out)
-  expect_identical(epi_stats_count_outliers(num_vec = df$x), outliers)
+  q1 <- quantile(df$x, 0.25, type = 7)
+  q3 <- quantile(df$x, 0.75, type = 7)
+  iqr_val <- q3 - q1
+  expected <- sum(df$x < q1 - 1.5 * iqr_val | df$x > q3 + 1.5 * iqr_val)
+  expect_identical(epi_stats_count_outliers(num_vec = df$x), expected)
 })
 ######################
 
