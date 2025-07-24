@@ -74,7 +74,7 @@ test_that("epi_stats_factors summarises factor columns", {
     f1 = factor(c("a", "b", "a", NA, "a"), ordered = TRUE),
     f2 = factor(c("x", "x", "y", "y", "y"))
   )
-  res <- episcout:::epi_stats_factors(df)
+  res <- epi_stats_factors(df)
   expect_equal(nrow(res), 2)
   f1 <- res[res$Variable == "f1", ]
   f2 <- res[res$Variable == "f2", ]
@@ -86,16 +86,16 @@ test_that("epi_stats_factors summarises factor columns", {
   expect_equal(f2$top_counts, "y (3, x (2")
 })
 
-print("Function being tested: epis_stats_chars")
+print("Function being tested: epi_stats_chars")
 
-test_that("epis_stats_chars summarises character columns", {
+test_that("epi_stats_chars summarises character columns", {
   skip_if_not_installed("stringr")
   df <- data.frame(
     c1 = c("a", "", "c", "  ", NA),
     c2 = c("aa", "bb", "bb", "bb", ""),
     stringsAsFactors = FALSE
   )
-  res <- episcout:::epis_stats_chars(df)
+  res <- epi_stats_chars(df)
   expect_equal(nrow(res), 2)
   c1 <- res[res$Variable == "c1", ]
   c2 <- res[res$Variable == "c2", ]
