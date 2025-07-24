@@ -78,6 +78,21 @@ test_that("epi_plot_bar applies custom palette", {
   expect_equal(cols, c("red", "blue"))
 })
 
+test_that("epi_plot_bar with var_y uses custom palette across levels", {
+  df <- data.frame(group = factor(c("A", "B")), value = c(1, 2))
+  p <- epi_plot_bar(df,
+    var_x = "group",
+    var_y = "value",
+    custom_palette = "green"
+  )
+  scale_obj <- p$scales$scales[[1]]
+  expect_equal(scale_obj$scale_name, "manual")
+  cols <- scale_obj$palette(2)
+  expect_equal(cols, c("green", "green"))
+  first_stat <- class(p$layers[[1]]$stat)[1]
+  expect_equal(first_stat, "StatIdentity")
+})
+
 ######################
 print("Function being tested: epi_read with custom NA strings")
 
