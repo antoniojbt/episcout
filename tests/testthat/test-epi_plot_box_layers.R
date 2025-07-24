@@ -1,5 +1,3 @@
-context("epi_plot_box layers")
-
 library(ggplot2)
 
 df_box <- data.frame(
