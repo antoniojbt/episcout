@@ -122,8 +122,8 @@ test_that("epi_stats_numeric", {
   # desc_stats
   # dim(desc_stats)
   expect_equal(class(desc_stats), "data.frame")
-  expect_equal(as.character(desc_stats[1, "min"]), "-2.77832551031467")
-  expect_equal(as.character(desc_stats[1, "mean"]), "0.0461981587217921")
+  expect_equal(desc_stats$min, min(df$x), tolerance = 1e-8)
+  expect_equal(desc_stats$mean, mean(df$x), tolerance = 1e-8)
   expect_equal(desc_stats[1, "NA_percentage"], 0)
 })
 ######################
