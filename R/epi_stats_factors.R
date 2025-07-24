@@ -35,27 +35,29 @@
 #' @importFrom tibble tibble
 #' @export
 epi_stats_factors <- function(df) {
-    if (!requireNamespace("purrr", quietly = TRUE)) {
-        stop("Package purrr needed for this function to work. Please install it.",
-             call. = FALSE
-        )
-    }
-    factor_df <- df %>%
-        dplyr::select(dplyr::where(is.factor))
+  if (!requireNamespace("purrr", quietly = TRUE)) {
+    stop("Package purrr needed for this function to work. Please install it.",
+      call. = FALSE
+    )
+  }
+  factor_df <- df %>%
+    dplyr::select(dplyr::where(is.factor))
 
-    purrr::imap_dfr(factor_df, function(col, nm) {
-        counts <- sort(table(col), decreasing = TRUE)
-        tibble::tibble(
-            Variable      = nm,
-            n_missing     = sum(is.na(col)),
-            complete_rate = mean(!is.na(col)),
-            ordered       = is.ordered(col),
-            n_unique      = dplyr::n_distinct(col, na.rm = TRUE),
-            top_counts    = paste0(
-                names(counts)[seq_len(min(3, length(counts)))],
-                " (", counts[seq_len(min(3, length(counts)))], ")",
-                collapse = ", "
-            )
-        )
-    })
+  purrr::imap_dfr(factor_df, function(col, nm) {
+    counts <- sort(table(col), decreasing = TRUE)
+    tibble::tibble(
+      Variable = nm,
+      n_missing = sum(is.na(col)),
+      complete_rate = mean(!is.na(col)),
+      ordered = is.ordered(col),
+      n_unique = dplyr::n_distinct(col, na.rm = TRUE),
+      top_counts = paste(
+        paste0(
+          names(counts)[seq_len(min(3, length(counts)))],
+          " (", counts[seq_len(min(3, length(counts)))], ")"
+        ),
+        collapse = ", "
+      )
+    )
+  })
 }

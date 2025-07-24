@@ -19,9 +19,12 @@ epi_stats_factors <- function(df) {
       complete_rate = mean(!is.na(col)),
       ordered = is.ordered(col),
       n_unique = dplyr::n_distinct(col, na.rm = TRUE),
-      top_counts = paste(names(counts)[seq_len(min(3, length(counts)))],
+      top_counts = paste0(
+        names(counts)[seq_len(min(3, length(counts)))],
+        " (",
         counts[seq_len(min(3, length(counts)))],
-        sep = " (", collapse = ", "
+        ")",
+        collapse = ", "
       )
     )
   })
@@ -48,7 +51,7 @@ epis_stats_chars <- function(df) {
       max_length = dplyr::if_else(n_missing < dplyr::n(), max(nchar(Value), na.rm = TRUE), NA_integer_), # Longest character length
       empty = sum(Value == "", na.rm = TRUE), # Count of empty strings
       n_unique = dplyr::n_distinct(Value, na.rm = TRUE), # Count of unique values
-      whitespace = sum(stringr::str_trim(Value) == "", na.rm = TRUE) # Count of whitespace-only strings
+      whitespace = sum(stringr::str_trim(Value) == "" & Value != "", na.rm = TRUE) # Count of whitespace-only strings
     ) %>%
     dplyr::ungroup()
 }
