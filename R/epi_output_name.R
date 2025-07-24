@@ -2,6 +2,7 @@
 #'
 #' @description Generate a simple output name, given a string (filename)
 #' splits at the last '.', drops the current suffix and adds the one provided.
+#' If `input_name` lacks a dot, the whole string is used as is.
 #'
 #' @param input_name string to split, usually an input file name
 #' previously saved as an object
@@ -25,8 +26,14 @@
 
 epi_output_name <- function(input_name = "",
                             suffix = ".tsv") {
-  # Split infile name at the last '.':
-  output_name <- strsplit(input_name, "[.]\\s*(?=[^.]+$)", perl = TRUE)[[1]][1]
-  output_name <- sprintf("%s%s", output_name, suffix)
+  if (is.na(input_name)) {
+    base <- "NA"
+  } else if (!grepl("\\.", input_name)) {
+    base <- input_name
+  } else {
+    base <- strsplit(input_name, "[.]\\s*(?=[^.]+$)", perl = TRUE)[[1]][1]
+  }
+  if (!nzchar(base)) base <- "NA"
+  output_name <- sprintf("%s%s", base, suffix)
   return(output_name)
 }
