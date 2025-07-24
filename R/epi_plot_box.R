@@ -48,7 +48,7 @@
 #' @examples
 #'
 #' \dontrun{
-#' Boxplot of one variable:
+#' # Boxplot of one variable:
 #' library(ggplot2)
 #' library(ggthemes)
 #' set.seed(12345)
