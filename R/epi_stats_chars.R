@@ -54,8 +54,22 @@ epi_stats_chars <- function(df) {
     dplyr::summarise(
       n_missing = sum(is.na(Value)),
       complete_rate = mean(!is.na(Value)),
-      min_length = dplyr::if_else(n_missing < dplyr::n(), min(nchar(Value), na.rm = TRUE), NA_integer_),
-      max_length = dplyr::if_else(n_missing < dplyr::n(), max(nchar(Value), na.rm = TRUE), NA_integer_),
+      min_length = {
+        len <- nchar(Value)
+        if (all(is.na(len))) {
+          NA_integer_
+        } else {
+          min(len, na.rm = TRUE)
+        }
+      },
+      max_length = {
+        len <- nchar(Value)
+        if (all(is.na(len))) {
+          NA_integer_
+        } else {
+          max(len, na.rm = TRUE)
+        }
+      },
       empty = sum(Value == "", na.rm = TRUE),
       n_unique = dplyr::n_distinct(Value, na.rm = TRUE),
       whitespace = sum(stringr::str_trim(Value) == "" & Value != "", na.rm = TRUE)
