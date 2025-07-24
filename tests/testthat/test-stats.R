@@ -234,14 +234,14 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   # as.data.frame(stat_sum4)
   # dim(stat_sum4)
   expect_equal(class(stat_sum4)[2], "tbl")
-  expect_equal(as.character(stat_sum4[1, 2]), "2")
-  expect_equal(as.character(stat_sum4[2, 3]), "-0.595973467759379")
-  expect_equal(as.character(stat_sum4[2, 7]), "3.33073330557046")
-  expect_equal(as.character(colnames(stat_sum4)[16]), "NA_percentage")
+  expect_equal(as.character(stat_sum4[1, 2]), "996")
+  expect_equal(as.character(stat_sum4[2, 3]), "1000")
+  expect_equal(as.character(stat_sum4[2, 7]), "-2.77832551031467")
+  expect_equal(as.character(colnames(stat_sum4)[16]), "variance")
   # Numeric data summary doesn't need tidying but could be formatted:
   digit_2 <- epi_stats_format(stat_sum4, digits = 2)
-  expect_equal(as.character(digit_2[1, 2]), " 2.00")
-  expect_equal(as.character(digit_2[3, 16]), "0.00")
+  expect_equal(as.character(digit_2[1, 2]), " 996.00")
+  expect_equal(as.character(digit_2[3, 16]), "    2.71")
   #####
 })
 
