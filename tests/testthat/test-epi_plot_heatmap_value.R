@@ -1,4 +1,3 @@
-context("epi_plot_heatmap value handling")
 
 library(episcout)
 library(testthat)
