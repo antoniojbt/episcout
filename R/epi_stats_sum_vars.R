@@ -2,6 +2,7 @@
 #'
 #' @param df A dataframe containing factor variables
 #' @return A tibble summarizing factor variables in wide format
+#' @export
 epi_stats_factors <- function(df) {
   if (!requireNamespace("purrr", quietly = TRUE)) {
     stop("Package purrr needed for this function to work. Please install it.",
@@ -34,7 +35,8 @@ epi_stats_factors <- function(df) {
 #'
 #' @param df A dataframe containing character variables
 #' @return A tibble summarizing character variable statistics
-epis_stats_chars <- function(df) {
+#' @export
+epi_stats_chars <- function(df) {
   if (!requireNamespace("stringr", quietly = TRUE)) {
     stop("Package stringr needed for this function to work. Please install it.",
       call. = FALSE
