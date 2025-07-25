@@ -131,7 +131,7 @@ test_that("epi_utils_log ignores numeric input", {
     file <- paste0("session_", Sys.Date(), "_log.txt")
     expect_invisible(epi_utils_log(123))
     expect_true(file.exists(file))
-    expect_true(file.exists(file) && length(readLines(file)) > 0 && any(grepl("R version", readLines(file))))
+    expect_true(any(grepl("R version", readLines(file))))
     unlink(file)
   })
 })
