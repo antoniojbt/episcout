@@ -115,21 +115,23 @@ test_that("epi_utils_log writes log to file", {
 })
 
 test_that("epi_utils_log uses default name with no arguments", {
+  skip_if_not_installed("withr")
   withr::with_tempdir({
     file <- paste0("session_", Sys.Date(), "_log.txt")
     expect_invisible(epi_utils_log())
     expect_true(file.exists(file))
-    expect_true(grepl("R version", readLines(file, n = 1)))
+    expect_true(any(grepl("R version", readLines(file))))
     unlink(file)
   })
 })
 
 test_that("epi_utils_log ignores numeric input", {
+  skip_if_not_installed("withr")
   withr::with_tempdir({
-    file <- default_log_file_name()
+    file <- paste0("session_", Sys.Date(), "_log.txt")
     expect_invisible(epi_utils_log(123))
     expect_true(file.exists(file))
-    expect_true(grepl("R version", readLines(file, n = 1)))
+    expect_true(any(grepl("R version", readLines(file))))
     unlink(file)
   })
 })

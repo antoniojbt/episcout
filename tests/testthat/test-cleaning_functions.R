@@ -315,6 +315,42 @@ test_that("epi_clean_merge_nested_dfs handles two dfs", {
   )
   expect_true(is.data.frame(res))
 })
+
+test_that("epi_clean_merge_nested_dfs error for single df", {
+  df1 <- data.frame(id = 1:2, val = 1:2)
+  expect_error(epi_clean_merge_nested_dfs(list(df1), "id"))
+})
+
+test_that("epi_clean_merge_nested_dfs duplicated list names", {
+  df1 <- data.frame(id = 1:2, val = 1:2)
+  df2 <- data.frame(id = 1:2, val = 3:4)
+  nested_dup <- setNames(list(df1, df2), c("dup", "dup"))
+  expect_message(
+    res <- epi_clean_merge_nested_dfs(nested_dup, "id"),
+    "Duplicated names in list passed"
+  )
+  expect_true(inherits(res, "data.table"))
+  expect_true(all(c("val_1", "val_2") %in% names(res)))
+})
+
+test_that("epi_clean_merge_nested_dfs unique list names", {
+  df1 <- data.frame(id = 1:2, val = 1:2)
+  df2 <- data.frame(id = 1:2, val = 3:4)
+  nested_named <- setNames(list(df1, df2), c("first", "second"))
+  expect_output(
+    res <- epi_clean_merge_nested_dfs(nested_named, "id"),
+    "Using suffixes: _first and _second"
+  )
+  expect_true(inherits(res, "data.table"))
+  expect_true(all(c("val_first", "val_second") %in% names(res)))
+})
+
+test_that("epi_clean_merge_nested_dfs passes ... arguments", {
+  df1 <- data.frame(id = c(2, 1), val = 1:2)
+  df2 <- data.frame(id = 1:2, val = 3:4)
+  res <- epi_clean_merge_nested_dfs(list(df1, df2), "id", sort = FALSE)
+  expect_equal(res$id, c(2, 1))
+})
 ######################
 
 
