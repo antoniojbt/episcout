@@ -46,6 +46,7 @@ Suggests:
     vdiffr,
     reshape2,
     covr,
+    withr,
     roxygen2,
     mice
 Roxygen: list(markdown = TRUE)
