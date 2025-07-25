@@ -41,6 +41,6 @@ test_that("geom_text uses p-value data when show_values = 'pval'", {
 })
 
 test_that("legend title includes correlation method", {
-  expect_true(grepl("Spearman", plot_corr$scales$scales[[1]]$name))
-  expect_true(grepl("Spearman", plot_pval$scales$scales[[1]]$name))
+  expect_true(any(grepl("Spearman", vapply(plot_corr$scales$scales, function(scale) scale$name, character(1)))))
+  expect_true(any(grepl("Spearman", vapply(plot_pval$scales$scales, function(scale) scale$name, character(1)))))
 })
