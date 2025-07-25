@@ -1,4 +1,3 @@
-context("epi_output_name")
 
 test_that("NA and empty inputs produce 'NA.tsv'", {
   expect_equal(epi_output_name(NA_character_), "NA.tsv")
