@@ -114,6 +114,26 @@ test_that("epi_utils_log writes log to file", {
   unlink(log_file)
 })
 
+test_that("epi_utils_log uses default name with no arguments", {
+  withr::with_tempdir({
+    file <- paste0("session_", Sys.Date(), "_log.txt")
+    expect_invisible(epi_utils_log())
+    expect_true(file.exists(file))
+    expect_true(grepl("R version", readLines(file, n = 1)))
+    unlink(file)
+  })
+})
+
+test_that("epi_utils_log ignores numeric input", {
+  withr::with_tempdir({
+    file <- paste0("session_", Sys.Date(), "_log.txt")
+    expect_invisible(epi_utils_log(123))
+    expect_true(file.exists(file))
+    expect_true(grepl("R version", readLines(file, n = 1)))
+    unlink(file)
+  })
+})
+
 print("Function being tested: epi_utils_session")
 
 test_that("epi_utils_session saves selected objects", {
