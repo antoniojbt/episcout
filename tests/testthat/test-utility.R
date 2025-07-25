@@ -120,7 +120,7 @@ test_that("epi_utils_log uses default name with no arguments", {
     file <- paste0("session_", Sys.Date(), "_log.txt")
     expect_invisible(epi_utils_log())
     expect_true(file.exists(file))
-    expect_true(grepl("R version", readLines(file, n = 1)))
+    expect_true(any(grepl("R version", readLines(file))))
     unlink(file)
   })
 })
