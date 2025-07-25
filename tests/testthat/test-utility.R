@@ -126,7 +126,7 @@ test_that("epi_utils_log uses default name with no arguments", {
 
 test_that("epi_utils_log ignores numeric input", {
   withr::with_tempdir({
-    file <- paste0("session_", Sys.Date(), "_log.txt")
+    file <- default_log_file_name()
     expect_invisible(epi_utils_log(123))
     expect_true(file.exists(file))
     expect_true(grepl("R version", readLines(file, n = 1)))
