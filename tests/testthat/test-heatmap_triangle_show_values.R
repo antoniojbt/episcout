@@ -31,11 +31,13 @@ plot_pval <- epi_plot_heatmap_triangle(
 )
 
 test_that("geom_text uses correlation data when show_values = 'corr'", {
-  expect_equal(plot_corr$layers[[2]]$data, tri$cormat_melted_triangle_r)
+  geom_text_layer_index <- which(vapply(plot_corr$layers, function(layer) "GeomText" %in% class(layer$geom), logical(1)))
+  expect_equal(plot_corr$layers[[geom_text_layer_index]]$data, tri$cormat_melted_triangle_r)
 })
 
 test_that("geom_text uses p-value data when show_values = 'pval'", {
-  expect_equal(plot_pval$layers[[2]]$data, tri$cormat_melted_triangle_pval)
+  geom_text_layer_index <- which(vapply(plot_pval$layers, function(layer) "GeomText" %in% class(layer$geom), logical(1)))
+  expect_equal(plot_pval$layers[[geom_text_layer_index]]$data, tri$cormat_melted_triangle_pval)
 })
 
 test_that("legend title includes correlation method", {
