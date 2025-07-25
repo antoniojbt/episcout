@@ -80,8 +80,7 @@ test_that("epi_plot_bar applies custom palette", {
 
 test_that("epi_plot_bar with var_y uses custom palette across levels", {
   df <- data.frame(group = factor(c("A", "B")), value = c(1, 2))
-  p <- epi_plot_bar(
-    df,
+  p <- epi_plot_bar(df,
     var_x = "group",
     var_y = "value",
     custom_palette = "green"
