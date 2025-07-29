@@ -50,26 +50,26 @@ epi_stats_chars <- function(df) {
     return(dplyr::tibble())
   }
   char_cols %>%
-    tidyr::pivot_longer(cols = dplyr::everything(),
-                        names_to = "Variable",
-                        values_to = "Value") %>%
+    tidyr::pivot_longer(
+      cols = dplyr::everything(),
+      names_to = "Variable",
+      values_to = "Value"
+    ) %>%
     dplyr::group_by(Variable) %>%
     dplyr::summarise(
-      n_missing    = sum(is.na(Value)),
+      n_missing = sum(is.na(Value)),
       complete_rate = mean(!is.na(Value)),
-      min_length   = {
+      min_length = {
         len <- nchar(Value)
         if (all(is.na(len))) NA_integer_ else min(len, na.rm = TRUE)
       },
-      max_length   = {
+      max_length = {
         len <- nchar(Value)
         if (all(is.na(len))) NA_integer_ else max(len, na.rm = TRUE)
       },
-      empty        = sum(Value == "", na.rm = TRUE),
-      n_unique     = dplyr::n_distinct(Value, na.rm = TRUE),
-      # Identify strings consisting only of whitespace but not empty strings
-      is_whitespace = stringr::str_trim(Value) == "" & Value != "",
-      whitespace   = sum(is_whitespace, na.rm = TRUE)
+      empty = sum(Value == "", na.rm = TRUE),
+      n_unique = dplyr::n_distinct(Value, na.rm = TRUE),
+      whitespace = sum(stringr::str_trim(Value) == "", na.rm = TRUE)
     ) %>%
     dplyr::ungroup()
 }
