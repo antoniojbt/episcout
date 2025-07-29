@@ -67,7 +67,9 @@ epi_stats_chars <- function(df) {
       },
       empty        = sum(Value == "", na.rm = TRUE),
       n_unique     = dplyr::n_distinct(Value, na.rm = TRUE),
-      whitespace   = sum(stringr::str_trim(Value) == "" & Value != "", na.rm = TRUE)
+      # Identify strings consisting only of whitespace but not empty strings
+      is_whitespace = stringr::str_trim(Value) == "" & Value != "",
+      whitespace   = sum(is_whitespace, na.rm = TRUE)
     ) %>%
     dplyr::ungroup()
 }
