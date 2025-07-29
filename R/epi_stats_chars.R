@@ -69,7 +69,7 @@ epi_stats_chars <- function(df) {
       },
       empty = sum(Value == "", na.rm = TRUE),
       n_unique = dplyr::n_distinct(Value, na.rm = TRUE),
-      whitespace = sum(stringr::str_trim(Value) == "", na.rm = TRUE)
+      whitespace = sum(stringr::str_trim(Value) == "" & Value != "", na.rm = TRUE)
     ) %>%
     dplyr::ungroup()
 }
