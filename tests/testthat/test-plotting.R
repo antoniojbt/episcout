@@ -25,6 +25,7 @@ context("dummy_tests_vdiffr") # this will be the name that the folder wil get as
 # XXXX/episcout/tests/figs/distributions
 test_that("histograms draw correctly - vdiffr dummy run", {
   skip_on_ci()
+#  skip("vdiffr snapshot skipped")
   hist_ggplot <- ggplot(mtcars, aes(disp)) +
     geom_histogram()
   vdiffr::expect_doppelganger("ggplot2 histogram", hist_ggplot)
@@ -135,6 +136,7 @@ print("Function being tested: epi_plot_hist")
 
 test_that("epi_plot_hist", {
   skip_on_ci()
+#  skip("vdiffr snapshot skipped")
   # my_hist_plot <- epi_plot_hist(df, 'x') # pass with quotes as using ggplot2::aes_string()
   # Change the bins:
   my_hist_plot <- epi_plot_hist(df, "x", breaks = seq(-3, 3, by = 1))
@@ -174,6 +176,7 @@ print("Function being tested: epi_plot_box")
 
 test_that("epi_plot_box", {
   skip_on_ci()
+#  skip("vdiffr snapshot skipped")
   # Boxplot of one variable:
   my_boxplot <- epi_plot_box(df, var_y = "x")
   vdiffr::expect_doppelganger("epi_plot_box_1_var", my_boxplot)
@@ -206,6 +209,7 @@ test_that("epi_plot_box", {
 print("Function being tested: epi_plot_bar")
 test_that("epi_plot_bar", {
   skip_on_ci()
+#  skip("vdiffr snapshot skipped")
   # df
   # lapply(df, class)
   # Barplot for single variable:
@@ -244,6 +248,7 @@ print("Functions being tested: epi_plot_heatmap and epi_plot_heatmap_triangle")
 
 test_that("epi_plot_heatmap", {
   skip_on_ci()
+#  skip("vdiffr snapshot skipped")
   # Set-up data:
   df[, "y"] <- as.integer(df[, "y"])
   df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))

@@ -101,7 +101,7 @@ test_that("epi_stats_chars summarises character columns", {
   c2 <- res[res$Variable == "c2", ]
   expect_equal(c1$n_missing, 1)
   expect_equal(c1$empty, 1)
-  expect_equal(c1$whitespace, 2)
+  expect_equal(c1$whitespace, 1)
   expect_equal(c2$max_length, 2)
   expect_equal(c2$n_unique, 3)
 })

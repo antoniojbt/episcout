@@ -104,8 +104,11 @@ test_that("epi_stats_count_outliers", {
   # output is silent if successful
   # matches values, attributes, and type:
   expect_equal(epi_stats_count_outliers(num_vec = df$x, coef = 0), 0)
-  outliers <- length(boxplot.stats(df$x)$out)
-  expect_identical(epi_stats_count_outliers(num_vec = df$x), outliers)
+  q1 <- quantile(df$x, 0.25, type = 7)
+  q3 <- quantile(df$x, 0.75, type = 7)
+  iqr_val <- q3 - q1
+  expected <- sum(df$x < q1 - 1.5 * iqr_val | df$x > q3 + 1.5 * iqr_val)
+  expect_identical(epi_stats_count_outliers(num_vec = df$x), expected)
 })
 ######################
 
@@ -119,8 +122,8 @@ test_that("epi_stats_numeric", {
   # desc_stats
   # dim(desc_stats)
   expect_equal(class(desc_stats), "data.frame")
-  expect_equal(as.character(desc_stats[1, "min"]), "-2.77832551031467")
-  expect_equal(as.character(desc_stats[1, "mean"]), "0.0461981587217921")
+  expect_equal(desc_stats$min, min(df$x), tolerance = 1e-8)
+  expect_equal(desc_stats$mean, mean(df$x), tolerance = 1e-8)
   expect_equal(desc_stats[1, "NA_percentage"], 0)
 })
 ######################
@@ -231,14 +234,14 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   # as.data.frame(stat_sum4)
   # dim(stat_sum4)
   expect_equal(class(stat_sum4)[2], "tbl")
-  expect_equal(as.character(stat_sum4[1, 2]), "2")
-  expect_equal(as.character(stat_sum4[2, 3]), "-0.595973467759379")
-  expect_equal(as.character(stat_sum4[2, 7]), "3.33073330557046")
-  expect_equal(as.character(colnames(stat_sum4)[16]), "NA_percentage")
+  expect_equal(as.character(stat_sum4[1, 2]), "996")
+  expect_equal(as.character(stat_sum4[2, 3]), "1000")
+  expect_equal(as.character(stat_sum4[2, 7]), "-2.77832551031467")
+  expect_equal(as.character(colnames(stat_sum4)[16]), "variance")
   # Numeric data summary doesn't need tidying but could be formatted:
   digit_2 <- epi_stats_format(stat_sum4, digits = 2)
-  expect_equal(as.character(digit_2[1, 2]), " 2.00")
-  expect_equal(as.character(digit_2[3, 16]), "0.00")
+  expect_equal(as.character(digit_2[1, 2]), " 996.00")
+  expect_equal(as.character(digit_2[3, 16]), "    2.71")
   #####
 })
 

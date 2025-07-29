@@ -11,7 +11,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Language: en-GB
-Imports: 
+Imports:
     utils,
     stats,
     grDevices,
@@ -20,15 +20,15 @@ Imports:
     broom,
     dplyr,
     tibble,
-    tidyr
-Suggests: 
+    tidyr,
+    e1071,
+    purrr,
+    stringr
+Suggests:
     data.table,
     compare,
     stringi,
-    stringr,
     lubridate,
-    purrr,
-    e1071,
     Hmisc,
     ggplot2,
     cowplot,
@@ -46,6 +46,7 @@ Suggests:
     vdiffr,
     reshape2,
     covr,
+    withr,
     roxygen2,
     mice
 Roxygen: list(markdown = TRUE)

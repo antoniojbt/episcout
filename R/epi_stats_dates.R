@@ -132,8 +132,10 @@ epi_stats_dates <- function(date_vector) {
 
   return(sum_stats)
 }
+#############
 
 
+#############
 #' Summarize multiple date columns (Wide Format)
 #'
 #' @param df A dataframe containing multiple date columns
