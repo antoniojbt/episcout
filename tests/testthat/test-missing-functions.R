@@ -82,8 +82,8 @@ test_that("epi_stats_factors summarises factor columns", {
   expect_equal(f1$complete_rate, 0.8)
   expect_true(f1$ordered)
   expect_equal(f1$n_unique, 2)
-  expect_equal(f1$top_counts, "a (3, b (1")
-  expect_equal(f2$top_counts, "y (3, x (2")
+  expect_equal(f1$top_counts, "a (3), b (1)")
+  expect_equal(f2$top_counts, "y (3), x (2)")
 })
 
 print("Function being tested: epi_stats_chars")
