@@ -110,15 +110,15 @@ print("Function being tested: truncate_name and make_unique_name")
 
 test_that("truncate_name limits length", {
   long <- paste(rep("a", 35), collapse = "")
-  expect_equal(episcout:::truncate_name(long), substr(long, 1, 29))
-  expect_equal(episcout:::truncate_name("short"), "short")
+  expect_equal(getFromNamespace("truncate_name", "episcout")(long), substr(long, 1, 29))
+  expect_equal(getFromNamespace("truncate_name", "episcout")("short"), "short")
 })
 
 test_that("make_unique_name generates unique names", {
   names1 <- c("Sheet1", "Sheet2")
-  expect_equal(episcout:::make_unique_name("Sheet3", names1), "Sheet3")
+  expect_equal(getFromNamespace("make_unique_name", "episcout")("Sheet3", names1), "Sheet3")
   names2 <- c("Sheet", "Sheet_2", "Sheet_3")
-  expect_equal(episcout:::make_unique_name("Sheet", names2), "Sheet_4")
+  expect_equal(getFromNamespace("make_unique_name", "episcout")("Sheet", names2), "Sheet_4")
   names3 <- c("name")
-  expect_equal(episcout:::make_unique_name("NAME", names3), "NAME_2")
+  expect_equal(getFromNamespace("make_unique_name", "episcout")("NAME", names3), "NAME_2")
 })
