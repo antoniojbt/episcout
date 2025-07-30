@@ -89,6 +89,11 @@ If you have any issues, pull requests, etc. please report them in the issue trac
 
 ## News
 
+- Version 0.1.4
+  Added `epi_plot_theme_imss` and colour palette helpers.
+  New `epi_plot_add_var_labels` layer.
+  Rewritten `epi_stats_*` summary functions.
+
 - Version 0.1.3
   Improved coverage tests, added a few wrappers, slightly improved documentation
   
