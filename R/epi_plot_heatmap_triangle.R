@@ -151,5 +151,5 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
       title.position = "top",
       title.hjust = 0.5
     ))
-  return(heatmap_triangle)
+  heatmap_triangle
 }
