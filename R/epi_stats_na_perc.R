@@ -51,5 +51,5 @@ epi_stats_na_perc <- function(df = NULL,
     names(na_perc_all)[1] <- "na_counts"
     na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[2]) * 100
   }
-  return(na_perc_all)
+  na_perc_all
 }

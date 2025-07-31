@@ -36,5 +36,5 @@ epi_write_df <- function(df, results_subdir, file_n, suffix) {
   message("File saved to: ", outfile)
 
   # Return the full file path
-  return(outfile)
+  outfile
 }

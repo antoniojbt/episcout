@@ -105,5 +105,5 @@ epi_stats_summary <- function(df = NULL,
   #   select(id,
   #          everything()
   #   )
-  return(df)
+  df
 }

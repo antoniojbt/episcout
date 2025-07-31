@@ -105,5 +105,5 @@ epi_stats_corr_rename <- function(r_vals = "melted_triangles$cormat_melted_trian
     cormat_melted_triangle_r = r_vals,
     cormat_melted_triangle_pval = p_vals
   )
-  return(melted_triangles)
+  melted_triangles
 }

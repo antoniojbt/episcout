@@ -35,5 +35,5 @@ epi_output_name <- function(input_name = "",
   }
   if (!nzchar(base)) base <- "NA"
   output_name <- sprintf("%s%s", base, suffix)
-  return(output_name)
+  output_name
 }

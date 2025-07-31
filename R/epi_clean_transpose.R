@@ -62,5 +62,5 @@ epi_clean_transpose <- function(df = NULL,
   colnames(df_t) <- rows
   # Insert original IDs as first column into transposed:
   df_t <- cbind(as.character(cols[-1]), df_t) # Exclude first label
-  return(as.data.frame(df_t))
+  as.data.frame(df_t)
 }

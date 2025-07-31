@@ -56,5 +56,5 @@ epi_clean_spread_repeated <- function(df = NULL,
     names(rep_df)[-id_col_num] <- new_colnames
     output[[i]] <- rep_df
   }
-  return(output)
+  output
 }

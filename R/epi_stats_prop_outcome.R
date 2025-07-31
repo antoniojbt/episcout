@@ -42,5 +42,5 @@ epi_stats_prop_outcome <- function(df,
   print(result)
 
   # Return the proportion for further use
-  return(prop_death)
+  prop_death
 }
