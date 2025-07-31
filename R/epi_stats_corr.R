@@ -83,5 +83,5 @@ epi_stats_corr <- function(df = NULL,
     cormat_melted_r = cormat_melted_r,
     cormat_melted_pval = cormat_melted_pval
   )
-  return(cormat_all)
+  cormat_all
 }

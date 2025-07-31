@@ -130,7 +130,7 @@ epi_stats_dates <- function(date_vector) {
     )
   )
 
-  return(sum_stats)
+  sum_stats
 }
 #############
 
@@ -153,7 +153,7 @@ epi_stats_dates_multi <- function(df) {
   }) %>%
     dplyr::bind_rows()
 
-  return(summary_table)
+  summary_table
 }
 #############
 

@@ -88,5 +88,5 @@ epi_plot_heatmap <- function(cormat_melted = "cormat_all$cormat_melted_r",
       ),
       plot.title = ggplot2::element_text(hjust = 0.5)
     )
-  return(heat_map)
+  heat_map
 }

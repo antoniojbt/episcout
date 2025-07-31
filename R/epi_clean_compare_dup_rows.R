@@ -53,16 +53,17 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
                                        ...) {
   if (!requireNamespace("compare", quietly = TRUE)) {
     stop("Package compare needed for this function to work. Please install it.",
-         call. = FALSE
+      call. = FALSE
     )
   }
   val_id <- as.character(val_id)
   dup_indices <- which(as.character(df_dups[[col_id]]) == val_id)
   # check_dups[dup_indices, 1:2]
   comp <- compare::compare(df_dups[dup_indices[sub_index_1], , drop = FALSE],
-                           df_dups[dup_indices[sub_index_2], , drop = FALSE],
-                           allowAll = allow_all,
-                           ...)
+    df_dups[dup_indices[sub_index_2], , drop = FALSE],
+    allowAll = allow_all,
+    ...
+  )
   comp_diff <- unname(which(comp$detailedResult == FALSE))
   names_diff_cols <- names(which(comp$detailedResult == FALSE))
   comp_results <- list(
@@ -70,5 +71,5 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
     "col_names" = names_diff_cols,
     "duplicate_indices" = dup_indices
   )
-  return(comp_results)
+  comp_results
 }

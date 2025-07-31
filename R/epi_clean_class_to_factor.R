@@ -71,5 +71,5 @@ epi_clean_class_to_factor <- function(df = NULL,
       df[[i]] <- as.factor(df[[i]])
     }
   }
-  return(df)
+  df
 }
