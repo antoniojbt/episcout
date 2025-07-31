@@ -88,7 +88,7 @@ epi_stats_contingency_2x2_df <- function(df, x_var, y_var) {
   table_df <- as.data.frame(table(df[[x_var]], df[[y_var]]))
   colnames(table_df)[1] <- colnames(df)[x_var]
   colnames(table_df)[2] <- colnames(df)[y_var]
-  return(table_df)
+  table_df
 }
 
 #' @rdname combined_contingency_2x2_functions
@@ -99,7 +99,7 @@ epi_stats_contingency_2x2_tables <- function(df, x_var) {
     epi_stats_contingency_2x2_df(df, x_var = x_var, y_var = y_var)
   })
   names(results) <- other_vars
-  return(results)
+  results
 }
 
 #' @rdname combined_contingency_2x2_functions
@@ -111,7 +111,7 @@ rename_contingency_2x2_cols <- function(contingency_2x2_list, df, x_var) {
     colnames(df_table)[2] <- dep_var
     contingency_2x2_list[[i]] <- df_table
   }
-  return(contingency_2x2_list)
+  contingency_2x2_list
 }
 
 #' @rdname combined_contingency_2x2_functions
@@ -137,7 +137,7 @@ epi_stats_contingency_2x2_test <- function(df, target_var, other_var, test_type 
 
   result <- broom::tidy(test)
   result$variable <- other_var
-  return(result)
+  result
 }
 
 
@@ -146,7 +146,7 @@ epi_stats_contingency_2x2_test <- function(df, target_var, other_var, test_type 
 epi_stats_contingency_2x2_cols <- function(df, min_unique = 2) {
   unique_counts <- sapply(df, function(x) length(unique(x)))
   testable <- names(df)[unique_counts >= min_unique]
-  return(testable)
+  testable
 }
 
 #' @rdname combined_contingency_2x2_functions
@@ -158,7 +158,7 @@ epi_stats_contingency_2x2_all <- function(df, target_var, test_type = "fisher.te
     epi_stats_contingency_2x2_test(df, target_var, other_var, test_type)
   })
   results_df <- dplyr::bind_rows(results)
-  return(results_df)
+  results_df
 }
 
 #' Wrapper aliases for backwards compatibility

@@ -46,7 +46,7 @@ epi_clean_label <- function(data_df, lookup_df) {
     }
   }
 
-  return(data_df)
+  data_df
 }
 
 # TO DO:

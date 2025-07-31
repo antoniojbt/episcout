@@ -47,5 +47,5 @@ epi_create_dir <- function(base_path, subdir = NULL) {
   print(contents)
 
   # Return the full path of the target directory
-  return(normalizePath(target_dir))
+  normalizePath(target_dir)
 }

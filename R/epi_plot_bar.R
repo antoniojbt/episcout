@@ -164,7 +164,7 @@ epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
         ggplot2::scale_fill_manual(values = custom_palette)
     }
 
-    return(bar_plot_one)
+    bar_plot_one
   } else {
     # Identity-based bar plot
     bar_plot <- ggplot2::ggplot(df, ggplot2::aes(
@@ -181,6 +181,6 @@ epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
         ggplot2::scale_fill_manual(values = custom_palette)
     }
 
-    return(bar_plot)
+    bar_plot
   }
 }

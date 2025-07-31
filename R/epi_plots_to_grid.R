@@ -53,5 +53,5 @@ epi_plots_to_grid <- function(plot_list = NULL,
     nrow = nrow,
     ...
   )
-  return(my_plot_grid)
+  my_plot_grid
 }

@@ -42,5 +42,5 @@ epi_clean_get_dups <- function(df = NULL,
   dups <- n_occur$Freq > freq
   # Extract them:
   df_dups <- df[df[[var]] %in% n_occur$Var1[dups], ]
-  return(df_dups)
+  df_dups
 }

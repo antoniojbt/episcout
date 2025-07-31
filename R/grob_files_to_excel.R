@@ -15,7 +15,7 @@ truncate_name <- function(name) {
 make_unique_name <- function(name, names_so_far) {
   base_name <- truncate_name(name) # Ensure base name is truncated
   if (!(tolower(base_name) %in% tolower(names_so_far))) {
-    return(base_name)
+    base_name
   } else {
     suffix <- 2
     unique_name <- paste0(base_name, "_", suffix)
@@ -23,7 +23,7 @@ make_unique_name <- function(name, names_so_far) {
       suffix <- suffix + 1
       unique_name <- paste0(base_name, "_", suffix)
     }
-    return(unique_name)
+    unique_name
   }
 }
 ###

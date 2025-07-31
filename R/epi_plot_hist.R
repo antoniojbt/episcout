@@ -92,5 +92,5 @@ epi_plot_hist <- function(df = NULL,
     epi_plot_theme_2() + # Needs ggtheme.R functions in this package
     ggplot2::labs(y = "Count")
 
-  return(hist_plot)
+  hist_plot
 }

@@ -13,7 +13,7 @@ epi_clean_fct_to_na <- function(factor_var, values_to_na) {
   # Preserve the factor structure
   levels(factor_var)[levels_to_na] <- NA
 
-  return(factor_var)
+  factor_var
 }
 
 # # Apply the function to the factor variable in the data frame
