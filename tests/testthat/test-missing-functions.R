@@ -119,6 +119,6 @@ test_that("make_unique_name generates unique names", {
   expect_equal(getFromNamespace("make_unique_name", "episcout")("Sheet3", names1), "Sheet3")
   names2 <- c("Sheet", "Sheet_2", "Sheet_3")
   expect_equal(getFromNamespace("make_unique_name", "episcout")("Sheet", names2), "Sheet_4")
-  names3 <- c("name")
+  names3 <- "name"
   expect_equal(getFromNamespace("make_unique_name", "episcout")("NAME", names3), "NAME_2")
 })
