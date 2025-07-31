@@ -88,7 +88,7 @@ epi_clean_make_names <- function(string = "",
          or generate them manually with make.names() for example.")
   }
 
-  return(make_valid)
+  make_valid
 }
 
 

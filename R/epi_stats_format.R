@@ -45,5 +45,5 @@ epi_stats_format <- function(df = NULL,
       df[[i]] <- format(round(df[[i]], digits), nsmall = digits, ...)
     }
   }
-  return(df)
+  df
 }

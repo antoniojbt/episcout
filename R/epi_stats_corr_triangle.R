@@ -87,5 +87,5 @@ epi_stats_corr_triangle <- function(cormat = "cormat_all$cormat") {
     cormat_melted_triangle_r = cormat_melted_triangle_r,
     cormat_melted_triangle_pval = cormat_melted_triangle_pval
   )
-  return(melted_triangles)
+  melted_triangles
 }

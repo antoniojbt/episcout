@@ -75,5 +75,5 @@ epi_stats_contingency_nxn <- function(df, dep_var, ind_vars) {
   }
 
   # Return the final data frame
-  return(df_f_tab_wide)
+  df_f_tab_wide
 }

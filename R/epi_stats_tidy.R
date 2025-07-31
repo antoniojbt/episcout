@@ -72,5 +72,5 @@ epi_stats_tidy <- function(sum_df = NULL,
     decreasing = decreasing
   )
   df <- df[set_order, ]
-  return(df)
+  df
 }

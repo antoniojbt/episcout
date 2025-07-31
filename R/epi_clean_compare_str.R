@@ -31,20 +31,23 @@
 #' @seealso \code{\link[stringi]{stri_detect}}.
 #'
 #' @examples
-#'
 #' \dontrun{
-#' letts <- paste(letters, collapse = ' ')
-#' other_letts <- toupper(paste(letters, collapse = ' '))
-#' df_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
-#'                        'str' = rep(x = substr(letts, 1, 5), 10),
-#'                       stringsAsFactors = FALSE)
-#' df2_comp <- data.frame ('sub' = rep(x = substr(letts, 1, 5), 10),
-#'                         'str' = rep(x = substr(other_letts, 6, 10), 10),
-#'                        stringsAsFactors = FALSE)
+#' letts <- paste(letters, collapse = " ")
+#' other_letts <- toupper(paste(letters, collapse = " "))
+#' df_comp <- data.frame(
+#'   "sub" = rep(x = substr(letts, 1, 5), 10),
+#'   "str" = rep(x = substr(letts, 1, 5), 10),
+#'   stringsAsFactors = FALSE
+#' )
+#' df2_comp <- data.frame(
+#'   "sub" = rep(x = substr(letts, 1, 5), 10),
+#'   "str" = rep(x = substr(other_letts, 6, 10), 10),
+#'   stringsAsFactors = FALSE
+#' )
 #' # Create a new data frame and rename columns:
 #' df3 <- rbind(df_comp, df2_comp)
-#' col_1 <- 'sub'
-#' col_2 <- 'str'
+#' col_1 <- "sub"
+#' col_2 <- "str"
 #' val_id <- 1
 #' # df3[val_id, c(col_1, col_2)]
 #' # Should evaluate to TRUE:
@@ -61,11 +64,12 @@ epi_clean_compare_str <- function(df = NULL,
                                   ...) {
   if (!requireNamespace("stringi", quietly = TRUE)) {
     stop("Package stringi needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
   string <- as.character(df[row_n, string_col])
   fixed_chr <- as.character(df[row_n, fixed_chr_col])
   # Match using fixed characters not regex:
   match_observed <- stringi::stri_detect(str = string, fixed = fixed_chr, ...)
-  return(match_observed)
+  match_observed
 }

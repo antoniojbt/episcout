@@ -69,5 +69,5 @@ epi_clean_replace_value <- function(df = NULL,
   df[[col_id]]
   )
   # df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
-  return(df[[col_id]])
+  df[[col_id]]
 }

@@ -58,7 +58,7 @@ epi_stats_count_outliers <- function(num_vec = NULL,
   lower <- q1 - coef * iqr_val
   upper <- q3 + coef * iqr_val
   outliers <- sum(num_vec < lower | num_vec > upper, na.rm = TRUE)
-  return(outliers)
+  outliers
 }
 
 # TO DO: add:

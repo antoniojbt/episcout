@@ -83,5 +83,5 @@ epi_clean_add_rep_num <- function(df = NULL,
     }
     output[i, "rep_num"] <- result
   }
-  return(output)
+  output
 }

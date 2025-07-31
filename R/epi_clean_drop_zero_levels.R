@@ -48,5 +48,5 @@ epi_clean_drop_zero_levels_vector <- function(factor_var) {
   # Drop levels that are zero
   cleaned_factor <- factor(factor_var, levels = present_levels)
 
-  return(cleaned_factor)
+  cleaned_factor
 }

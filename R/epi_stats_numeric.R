@@ -69,11 +69,12 @@ epi_stats_numeric <- function(num_vec = NULL,
                               ...) {
   if (!requireNamespace("e1071", quietly = TRUE)) {
     stop("Package e1071 needed for this function to work. Please install it.",
-         call. = FALSE)
+      call. = FALSE
+    )
   }
 
   # Basic counts
-  n      <- length(num_vec)
+  n <- length(num_vec)
   n_nonNA <- sum(!is.na(num_vec))
   NA_count <- n - n_nonNA
   NA_percentage <- (NA_count / n) * 100
@@ -102,34 +103,34 @@ epi_stats_numeric <- function(num_vec = NULL,
 
   # Assemble
   desc_stats <-
-  data.frame(
-    n                    = n,
-    n_nonNA              = n_nonNA,
-    NA_count             = NA_count,
-    NA_percentage        = NA_percentage,
-    sum                  = sum(num_vec, na.rm = na.rm),
-    min                  = min(num_vec, na.rm = na.rm),
-    quantile_25          = q1,
-    mean                 = mean(num_vec, na.rm = na.rm),
-    median               = median(num_vec, na.rm = na.rm),
-    quantile_75          = q3,
-    max                  = max(num_vec, na.rm = na.rm),
-    IQR                  = iqr_val,
-    SD                   = sd(num_vec, na.rm = na.rm),
-    CV                   = sd(num_vec, na.rm = na.rm) / mean(num_vec, na.rm = na.rm),
-    variance             = var(num_vec, na.rm = na.rm),
-    sem                  = sd(num_vec, na.rm = na.rm) / sqrt(n_nonNA),
-    skewness             = e1071::skewness(num_vec, na.rm = na.rm, ...),
-    kurtosis             = e1071::kurtosis(num_vec, na.rm = na.rm, ...),
-    Shapiro_Wilk_p_value = normality,
-    lower_fence          = lower_fence,
-    upper_fence          = upper_fence,
-    n_below_lower        = n_below_lower,
-    n_above_upper        = n_above_upper,
-    outlier_count        = outlier_count,
-    outlier_percentage   = outlier_percentage,
-    row.names            = NULL,
-    check.names          = FALSE
-  )
-  return(desc_stats)
+    data.frame(
+      n                    = n,
+      n_nonNA              = n_nonNA,
+      NA_count             = NA_count,
+      NA_percentage        = NA_percentage,
+      sum                  = sum(num_vec, na.rm = na.rm),
+      min                  = min(num_vec, na.rm = na.rm),
+      quantile_25          = q1,
+      mean                 = mean(num_vec, na.rm = na.rm),
+      median               = median(num_vec, na.rm = na.rm),
+      quantile_75          = q3,
+      max                  = max(num_vec, na.rm = na.rm),
+      IQR                  = iqr_val,
+      SD                   = sd(num_vec, na.rm = na.rm),
+      CV                   = sd(num_vec, na.rm = na.rm) / mean(num_vec, na.rm = na.rm),
+      variance             = var(num_vec, na.rm = na.rm),
+      sem                  = sd(num_vec, na.rm = na.rm) / sqrt(n_nonNA),
+      skewness             = e1071::skewness(num_vec, na.rm = na.rm, ...),
+      kurtosis             = e1071::kurtosis(num_vec, na.rm = na.rm, ...),
+      Shapiro_Wilk_p_value = normality,
+      lower_fence          = lower_fence,
+      upper_fence          = upper_fence,
+      n_below_lower        = n_below_lower,
+      n_above_upper        = n_above_upper,
+      outlier_count        = outlier_count,
+      outlier_percentage   = outlier_percentage,
+      row.names            = NULL,
+      check.names          = FALSE
+    )
+  desc_stats
 }
