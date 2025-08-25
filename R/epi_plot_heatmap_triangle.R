@@ -68,13 +68,14 @@
 #' @export
 #'
 
-# TO DO: add option of not showing labels as looks cluttered with too many
+#' @param show_labels Logical indicating whether numeric labels should be
+#'   displayed inside the tiles. Default is `TRUE`.
 
 epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
                                       cormat_melted_triangle_pval = NULL,
                                       cor_method = "Spearman",
-                                      show_values = "pval" # or 'corr'
-) {
+                                      show_values = "pval", # or 'corr'
+                                      show_labels = TRUE) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
@@ -119,17 +120,23 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
       ),
       plot.title = ggplot2::element_text(hjust = 0.5)
     ) +
-    ggplot2::coord_fixed() + # Write values can be 'pval' or 'corr':
-    ggplot2::geom_text(
-      data = show_data,
-      ggplot2::aes(
-        x = .data$Var1,
-        y = .data$Var2,
-        label = .data$value
-      ),
-      color = "black",
-      size = 3
-    ) +
+    ggplot2::coord_fixed()
+
+  if (show_labels) {
+    heatmap_triangle <- heatmap_triangle +
+      ggplot2::geom_text(
+        data = show_data,
+        ggplot2::aes(
+          x = .data$Var1,
+          y = .data$Var2,
+          label = .data$value
+        ),
+        color = "black",
+        size = 3
+      )
+  }
+
+  heatmap_triangle <- heatmap_triangle +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
       axis.text.x = ggplot2::element_text(angle = 90),
