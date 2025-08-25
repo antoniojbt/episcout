@@ -34,16 +34,6 @@
 #'
 #' @export
 #'
-
-# TO DO: switch so that these functions return the df with numeric columns?
-# ie
-# epi_clean_cond_numeric <- function(df= NULL,
-#                                    col = NULL
-#                                    ) {
-#   df %<>% select_if(is.integer(col) == TRUE | is.numeric(col) == TRUE)
-#   return(df_numeric)
-#   }
-
 epi_clean_cond_numeric <- function(col = NULL) {
   is.integer(col) == TRUE | is.numeric(col) == TRUE
 }

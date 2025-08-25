@@ -8,7 +8,8 @@ epi_plot_heatmap_triangle(
   cormat_melted_triangle_r = NULL,
   cormat_melted_triangle_pval = NULL,
   cor_method = "Spearman",
-  show_values = "pval"
+  show_values = "pval",
+  show_labels = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ Usually the output of episcout::epi_stats_corr_triangle().}
 Default is 'Spearman'}
 
 \item{show_values}{Values to show in plot, 'pval' or 'corr'. Default is 'pval'.}
+
+\item{show_labels}{Logical indicating whether numeric labels are displayed. Default is TRUE.}
 }
 \value{
 Returns a heatmap as a ggplot2 object

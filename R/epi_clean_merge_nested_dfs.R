@@ -180,7 +180,8 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
     return(temp_df)
   }
   # Loop through nested data frames and merge each to previous merged df:
-  # TO DO: if there were truly many and large DFs could add a parallel option
+  # For large numbers of very big data frames a parallel approach could be
+  # considered, but the current implementation uses a sequential merge.
   print("Merging further dataframes.")
   print("Suffixes are only used if there are clashes.")
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are
