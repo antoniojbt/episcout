@@ -52,15 +52,38 @@ test_that("epi_clean_label correctly applies factor levels and labels", {
   expect_equal(as.character(result_df$SECTOR), c("CRUZ ROJA", "DIF", "IMSS", NA))
 })
 
-# Additional test to check handling of missing levels
-test_that("epi_clean_label handles missing levels correctly", {
-  # Introduce a SECTOR level that isn't in the lookup (e.g., level 5)
+# Additional tests for error and warning handling
+test_that("epi_clean_label handles level discrepancies with warnings", {
   altered_data_df <- sample_data_df
-  altered_data_df$SECTOR[4] <- 5 # Level not in lookup
-
-  # Expected to handle this by introducing NA for missing level
-  result_df <- epi_clean_label(altered_data_df, sample_lookup_df)
+  altered_data_df$SECTOR[4] <- 5
+  expect_warning(result_df <- epi_clean_label(altered_data_df, sample_lookup_df))
   expect_true(is.na(result_df$SECTOR[4]))
+})
+
+test_that("epi_clean_label warns when lookup has unused levels", {
+  lookup_extra <- rbind(
+    sample_lookup_df,
+    data.frame(
+      variable = "ORIGEN",
+      level = "3",
+      label = "OTHER",
+      stringsAsFactors = FALSE
+    )
+  )
+  expect_warning(epi_clean_label(sample_data_df, lookup_extra))
+})
+
+test_that("epi_clean_label errors when lookup variable missing in data_df", {
+  bad_lookup <- rbind(
+    sample_lookup_df,
+    data.frame(
+      variable = "UNKNOWN",
+      level = "1",
+      label = "X",
+      stringsAsFactors = FALSE
+    )
+  )
+  expect_error(epi_clean_label(sample_data_df, bad_lookup))
 })
 ######################
 
