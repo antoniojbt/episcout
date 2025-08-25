@@ -255,7 +255,7 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
     action = "codes_only"
   )
   # tibble with no rows when codes are absent
-  expect_equal(class(stat_sum_zero)[2], "tbl")
+  expect_true(tibble::is_tibble(stat_sum_zero))
   expect_equal(nrow(stat_sum_zero), 0)
   #####
 })
