@@ -289,10 +289,10 @@ test_that("epi_plot_heatmap", {
 ######################
 
 
-# TO DO: missing tests for, moved this to blurbs, update properly and move back to R/
+# Note: Missing tests for functions moved to blurbs - update and move back to R/ as needed:
 # epi_plot_en_masse
 
-# TO DO: Within epi_plot_themes.R, which should be tested with the plots:
+# Note: Missing tests for plot theme functions in epi_plot_themes.R:
 # epi_plot_theme_1()
 # epi_plot_theme_2()
 # scale_colour_epi_plot_theme_2()

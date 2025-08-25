@@ -53,8 +53,7 @@
 # # ////////////
 # # ===
 # # Boxplots for all in parallel ----
-# # TO DO:
-# # test functions, add code tests, test examples
+# # Note: This code needs testing and validation before use
 # # generate_bar_plot_list <- function(vars_to_plot,
 # #                                    data,
 # #                                    custom_palette,

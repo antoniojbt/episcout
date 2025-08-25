@@ -50,7 +50,7 @@ test_that("epi_utils_multicore sequential", {
     future_plan = "sequential"
   ))
   core_s
-  # TO DO: fix these, pass in test() but not in check()
+  # Note: This test passes in test() but fails in check() - likely environment dependent
   # expect_output(str(core_s[12]), 'sequential')
   future_v %<-% {
     1 + 2
@@ -85,7 +85,7 @@ test_that("epi_utils_multicore multi", {
     future_plan = "multisession"
   ))
   core_m
-  # TO DO: fix these, pass in test() but not in check()
+  # Note: These tests pass in test() but fail in check() - likely environment dependent
   # expect_output(str(core_m[12]), 'multisession')
   # expect_output(str(core_m[13], nchar.max = 300), 'workers = 2')
   future_v %<-% {

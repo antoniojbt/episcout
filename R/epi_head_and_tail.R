@@ -37,14 +37,6 @@
 #'
 #' @export
 
-# TO DO: add error catch if number of rows is less than default, if so
-# set default to nrow(df)
-# TO DO: add error catch if number of cols is less than default, if so
-# set default to ncol(df), eg
-# if:
-#  Error in `[.data.frame`(df, 1:rows, cols) : undefined columns selected
-#  use cols = length(df), # or ncol(df)
-
 epi_head_and_tail <- function(df = NULL,
                               rows = 5,
                               cols = 5,

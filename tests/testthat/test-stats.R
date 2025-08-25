@@ -257,7 +257,7 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   # as.data.frame(stat_sum_zero)
   # class(stat_sum_zero)
   expect_equal(class(stat_sum_zero)[2], "tbl")
-  # TO DO: add back but failing at the moment on travis, passes locally (04/June/2019)
+  # Note: This test was disabled due to CI failures (June 2019) - may need revisiting
   # expect_equal(as.character(as.data.frame(stat_sum_zero))[1], "character(0)")
   #####
 })

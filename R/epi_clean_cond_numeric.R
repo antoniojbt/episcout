@@ -35,8 +35,8 @@
 #' @export
 #'
 
-# TO DO: switch so that these functions return the df with numeric columns?
-# ie
+# Note: Consider whether this function should return the dataframe with only numeric columns
+# Example implementation:
 # epi_clean_cond_numeric <- function(df= NULL,
 #                                    col = NULL
 #                                    ) {

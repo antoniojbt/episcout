@@ -49,5 +49,4 @@ epi_clean_label <- function(data_df, lookup_df) {
   data_df
 }
 
-# TO DO:
-# Needs error handling for missing variables or discrepancies in level assignments
+# Note: Consider adding error handling for missing variables or discrepancies in level assignments

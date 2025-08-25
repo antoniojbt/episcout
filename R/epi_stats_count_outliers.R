@@ -38,8 +38,7 @@
 #' @importFrom grDevices boxplot.stats
 #'
 
-# TO DO:
-# Clean-up, stop exporting as little value in having it as individual wrapper
+# Note: Consider whether this function adds sufficient value to warrant individual export
 
 epi_stats_count_outliers <- function(num_vec = NULL,
                                      coef = 1.5,
@@ -61,13 +60,11 @@ epi_stats_count_outliers <- function(num_vec = NULL,
   outliers
 }
 
-# TO DO: add:
-# SD * eg 5
-# (IQR * 1.5) * 1.5 inner (or 3 for outer)
-# See:
-# https://stats.stackexchange.com/questions/350256/iterative-outlier-diagnostic?rq=1
-# regression - Iterative outlier diagnostic - Cross Validated
-# https://stats.stackexchange.com/questions/38001/detecting-outliers-using-standard-deviations?rq=1
+# Note: Consider adding additional outlier detection methods:
+# - Standard deviation based (SD * e.g., 5)  
+# - Nested IQR methods ((IQR * 1.5) * 1.5 for inner, * 3 for outer)
+# See: https://stats.stackexchange.com/questions/350256/iterative-outlier-diagnostic
+# and: https://stats.stackexchange.com/questions/38001/detecting-outliers-using-standard-deviations
 # Detecting outliers using standard deviations - Cross Validated
 # https://stats.stackexchange.com/questions/175999/determine-outliers-using-iqr-or-standard-deviation?rq=1
 # Determine outliers using IQR or standard deviation? - Cross Validated

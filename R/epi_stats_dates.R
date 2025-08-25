@@ -68,13 +68,9 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-# TO DO:
 #' @seealso \code{\link{epi_stats_summary}},
 #' \code{\link{epi_stats_format}},
 #' \code{\link{epi_stats_numeric}}.
-#'
-#' TO DO:
-##' @example vignettes/summary_funcs_examples.R
 #'
 #' @export
 #'
@@ -158,7 +154,7 @@ epi_stats_dates_multi <- function(df) {
 #############
 
 #############
-# # TO DO: Move to a function
+# Note: The following is example code for looping over multiple date columns
 # # Loop:
 # sum_dates_df <- data.frame('variable' = character(0),
 #                            'Min' = numeric(0),
