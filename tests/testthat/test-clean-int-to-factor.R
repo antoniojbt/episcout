@@ -1,4 +1,3 @@
-context("epi_clean_int_to_factor")
 
 test_that("integer columns are converted to factors", {
   dt <- data.table::data.table(
