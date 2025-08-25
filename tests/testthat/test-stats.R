@@ -254,11 +254,9 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
     class_type = "chr_fct",
     action = "codes_only"
   )
-  # as.data.frame(stat_sum_zero)
-  # class(stat_sum_zero)
+  # tibble with no rows when codes are absent
   expect_equal(class(stat_sum_zero)[2], "tbl")
-  # TO DO: add back but failing at the moment on travis, passes locally (04/June/2019)
-  # expect_equal(as.character(as.data.frame(stat_sum_zero))[1], "character(0)")
+  expect_equal(nrow(stat_sum_zero), 0)
   #####
 })
 ######################
