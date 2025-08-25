@@ -68,7 +68,7 @@
 #' @export
 #'
 
-# TO DO: add option of not showing labels as looks cluttered with too many
+# Note: Consider adding option to hide labels when there are too many variables
 
 epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
                                       cormat_melted_triangle_pval = NULL,

@@ -1,8 +1,8 @@
 # ###
-# # Try with ggplot2:
-# # Function to convert survfit object to data frame:
-# # TO DO: move to episcout
-# # TO DO: double check this function and summary(surv_fit_point) give the same output
+# Example code for Kaplan-Meier survival plots with ggplot2
+# This is template/example code - modify as needed for your specific use case
+#
+# Function to convert survfit object to data frame:
 # surv_summary <- function(survfit_obj, time_var) {
 #     data.frame(
 #         time = survfit_obj$time,
@@ -16,7 +16,6 @@
 #
 #
 # # Convert survfit object to data frame:
-# # TO DO: move to episcout
 # # Re-run the surv object and fit:
 # surv_fit_point <- survival::survfit(Surv(days_to_death, death) ~ intervention + time_cuts,
 #                                     data = data_f
@@ -48,8 +47,7 @@
 #                               ordered = TRUE)
 # summary(surv_data$time_cuts)
 #
-# # Plot with ggplot2 and faceting:
-# # TO DO: save plot
+# # Plot with ggplot2 and faceting (save as needed):
 # ggplot(surv_data, aes(x = time, y = surv, color = intervention)) +
 #     geom_step() +
 #     facet_wrap(~time_cuts, scales = "free_y") +
