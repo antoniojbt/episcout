@@ -41,27 +41,19 @@ test_that("epi_utils_multicore sequential", {
   library(doFuture)
   library(foreach)
   library(iterators)
+  plan0 <- future::plan()
+  on.exit(future::plan(plan0), add = TRUE)
   epi_utils_multicore(
     num_cores = 1,
-    future_plan = "sequential"
+    future_plan = "sequential",
+    verbose = FALSE
   )
-  core_s <- capture.output(epi_utils_multicore(
-    num_cores = 1,
-    future_plan = "sequential"
-  ))
-  core_s
-  # TO DO: fix these, pass in test() but not in check()
-  # expect_output(str(core_s[12]), 'sequential')
+  expect_true(inherits(future::plan(), "sequential"))
+  expect_identical(future::nbrOfWorkers(), 1L)
   future_v %<-% {
     1 + 2
   }
-  future_v
   expect_identical(future_v, 3)
-  if ("ClusterRegistry" %in% ls(getNamespace("future"), all.names = TRUE)) {
-    getFromNamespace("ClusterRegistry", "future")("stop")
-  } else {
-    future::plan("sequential")
-  }
 })
 
 test_that("epi_utils_multicore multi", {
@@ -76,28 +68,23 @@ test_that("epi_utils_multicore multi", {
   library(doFuture)
   library(foreach)
   library(iterators)
+  plan0 <- future::plan()
+  on.exit(future::plan(plan0), add = TRUE)
   epi_utils_multicore(
     num_cores = 2,
-    future_plan = "multisession"
+    future_plan = "multisession",
+    verbose = FALSE
   )
-  core_m <- capture.output(epi_utils_multicore(
-    num_cores = 2,
-    future_plan = "multisession"
-  ))
-  core_m
-  # TO DO: fix these, pass in test() but not in check()
-  # expect_output(str(core_m[12]), 'multisession')
-  # expect_output(str(core_m[13], nchar.max = 300), 'workers = 2')
+  plan_now <- future::plan()
+  if (inherits(plan_now, "multisession")) {
+    expect_identical(future::nbrOfWorkers(), 2L)
+  } else {
+    expect_true(inherits(plan_now, "sequential"))
+  }
   future_v %<-% {
     1 + 2
   }
-  future_v
   expect_identical(future_v, 3)
-  if ("ClusterRegistry" %in% ls(getNamespace("future"), all.names = TRUE)) {
-    getFromNamespace("ClusterRegistry", "future")("stop")
-  } else {
-    future::plan("sequential")
-  }
 })
 ######################
 
