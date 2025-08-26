@@ -1,0 +1,22 @@
+skip_if_not_installed("openxlsx")
+
+library(testthat)
+
+# create test
+
+test_that("sheet names are truncated and unique and workbook is created", {
+  tmp <- tempdir()
+  file1 <- file.path(tmp, "this_is_a_very_long_filename_that_should_be_truncated_first.txt")
+  file2 <- file.path(tmp, "this_is_a_very_long_filename_that_should_be_truncated_second.txt")
+  write.table(data.frame(a = 1), file1, sep = "\t", row.names = FALSE)
+  write.table(data.frame(a = 2), file2, sep = "\t", row.names = FALSE)
+  out_file <- file.path(tmp, "out.xlsx")
+  grob_files_to_excel(tmp, output_file = out_file)
+  expect_true(file.exists(out_file))
+  sheets <- openxlsx::getSheetNames(out_file)
+  expect_equal(length(sheets), 2)
+  expect_true(all(nchar(sheets) <= 31))
+  expect_true(nchar(sheets[1]) <= 29)
+  expect_length(unique(sheets), 2)
+  expect_equal(sheets[2], paste0(sheets[1], "_2"))
+})
