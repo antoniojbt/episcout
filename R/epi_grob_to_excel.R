@@ -15,10 +15,10 @@
 #'   clashes.
 #' @examples
 #' \dontrun{
-#' grob_files_to_excel("path/to/files")
+#' epi_grob_to_excel("path/to/files")
 #' }
 #' @export
-grob_files_to_excel <- function(path_to_files,
+epi_grob_to_excel <- function(path_to_files,
                                 pattern = "\\.txt$",
                                 output_file = file.path(path_to_files, "grob_files.xlsx")) {
   file_names <- dir(
