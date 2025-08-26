@@ -2,16 +2,26 @@
 % Please edit documentation in R/epi_stats_dates.R
 \name{epi_stats_dates_multi}
 \alias{epi_stats_dates_multi}
-\title{Summarize multiple date columns (Wide Format)}
+\title{Summarise Multiple Date Columns}
 \usage{
 epi_stats_dates_multi(df)
 }
 \arguments{
-\item{df}{A dataframe containing multiple date columns}
+\item{df}{A data frame containing one or more date columns.}
 }
 \value{
-A wide-format tibble summarizing date statistics
+A tibble where each row corresponds to a date column and columns contain
+the statistics produced by \code{\link[=epi_stats_dates]{epi_stats_dates()}}.
 }
 \description{
-Summarize multiple date columns (Wide Format)
+Applies \code{\link[=epi_stats_dates]{epi_stats_dates()}} to each date column in a data frame and
+returns a wide-format tibble with the results.
+}
+\examples{
+df <- data.frame(
+  start_date = as.Date("2020-01-01") + 0:2,
+  end_date = as.Date("2021-01-01") + 0:2
+)
+epi_stats_dates_multi(df)
+
 }
