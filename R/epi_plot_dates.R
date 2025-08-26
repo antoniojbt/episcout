@@ -36,9 +36,12 @@ epi_plot_dates <- function(x, type = c("hist", "box", "line"), ...) {
     )
   }
   type <- match.arg(type)
+  if (any(is.na(x))) {
+    stop("Input contains missing (NA) values. Please remove or impute them before plotting.")
+  }
   date_vec <- as.Date(x)
   if (any(is.na(date_vec))) {
-    stop("x must be coercible to Date without NA values")
+    stop("Input contains values that cannot be converted to valid dates.")
   }
   df <- data.frame(date = date_vec)
   if (type == "hist") {
