@@ -1,6 +1,5 @@
 ---
 title: "Descriptive statistics for dates"
-author: "OpenAI"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
