@@ -58,8 +58,7 @@ epi_plot_dates <- function(x, type = c("hist", "box", "line"), ...) {
     df <- df[order(df$date), , drop = FALSE]
     df$value <- seq_along(df$date)
     p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$date, y = .data$value)) +
-      ggplot2::geom_line(...) +
-      ggplot2::geom_point() +
+      ggplot2::geom_point(...) +
       epi_plot_theme_2() +
       ggplot2::labs(x = NULL, y = "Index")
   }
