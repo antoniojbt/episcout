@@ -2,8 +2,6 @@ skip_if_not_installed("openxlsx")
 
 library(testthat)
 
-# create test
-
 test_that("sheet names are truncated and unique and workbook is created", {
   tmp <- tempdir()
   file1 <- file.path(tmp, "this_is_a_very_long_filename_that_should_be_truncated_first.txt")
