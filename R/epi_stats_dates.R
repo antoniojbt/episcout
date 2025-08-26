@@ -71,6 +71,7 @@
 #' @seealso \code{\link{epi_stats_summary}},
 #' \code{\link{epi_stats_format}},
 #' \code{\link{epi_stats_numeric}}.
+#'
 ##' @example vignettes/summary_funcs_examples.R
 #'
 #' @export
@@ -152,10 +153,10 @@ epi_stats_dates_multi <- function(df) {
 
   summary_table
 }
-#############
+# ############
 
-#############
-# # TO DO: Move to a function
+# ############
+# Loop:
 # # Loop:
 # sum_dates_df <- data.frame('variable' = character(0),
 #                            'Min' = numeric(0),
