@@ -1,65 +1,125 @@
-# ###
-# # Try with ggplot2:
-# # Function to convert survfit object to data frame:
-# # TO DO: move to episcout
-# # TO DO: double check this function and summary(surv_fit_point) give the same output
-# surv_summary <- function(survfit_obj, time_var) {
-#     data.frame(
-#         time = survfit_obj$time,
-#         n.risk = survfit_obj$n.risk,
-#         n.event = survfit_obj$n.event,
-#         n.censor = survfit_obj$n.censor,
-#         surv = survfit_obj$surv,
-#         strata = rep(names(survfit_obj$strata), times = survfit_obj$strata)
-#     )
-# }
-#
-#
-# # Convert survfit object to data frame:
-# # TO DO: move to episcout
-# # Re-run the surv object and fit:
-# surv_fit_point <- survival::survfit(Surv(days_to_death, death) ~ intervention + time_cuts,
-#                                     data = data_f
-# )
-# str(surv_fit_point)
-# surv_fit_point$n
-# surv_fit_point$time
-#
-#
-# surv_data <- surv_summary(surv_fit_point, "time")
-# epi_head_and_tail(surv_data, cols = 6)
-# summary(surv_data)
-#
-# # Extract hospital and time_cuts from strata:
-# surv_data <- surv_data %>%
-#     mutate(
-#         intervention = sapply(strsplit(as.character(strata), ","), function(x) trimws(sub("intervention=", "", x[1]))),
-#         time_cuts = sapply(strsplit(as.character(strata), ","), function(x) trimws(sub("time_cuts=", "", x[2])))
-#     )
-# epi_head_and_tail(surv_data, cols = 8)
-# surv_data$time_cuts
-# surv_data$intervention
-# # Trimmed of whitespaces now
-#
-# # Set order for time-cuts:
-# surv_data$time_cuts <- factor(surv_data$time_cuts,
-#                               levels = c('pre-T0', 'T0', 'gap_T0_T1', 'T1',
-#                                          'gap_T1_T2', 'T2', 'post-T2'),
-#                               ordered = TRUE)
-# summary(surv_data$time_cuts)
-#
-# # Plot with ggplot2 and faceting:
-# # TO DO: save plot
-# ggplot(surv_data, aes(x = time, y = surv, color = intervention)) +
-#     geom_step() +
-#     facet_wrap(~time_cuts, scales = "free_y") +
-#     labs(
-#         title = "Kaplan-Meier Survival Curves by Intervention and Study Point",
-#         x = "Time (days)",
-#         y = "Survival Probability"
-#     ) +
-#     theme_minimal() +
-#     theme(legend.title = element_blank())
-#
-# surv_data
-# ###
+#' @title Convert survfit object to data frame
+#'
+#' @description
+#' `epi_survfit_to_df()` converts a `survival::survfit` object into a data frame
+#' suitable for plotting. Strata information is expanded into individual
+#' columns when present.
+#'
+#' @param survfit_obj A `survival::survfit` object.
+#'
+#' @return A data frame containing survival estimates and any strata variables.
+#'
+#' @examples
+#' \dontrun{
+#' library(survival)
+#' fit <- survfit(Surv(time, status) ~ sex, data = lung)
+#' epi_survfit_to_df(fit)
+#' }
+#'
+#' @export
+epi_survfit_to_df <- function(survfit_obj) {
+  if (!requireNamespace("survival", quietly = TRUE)) {
+    stop(
+      "Package survival needed for this function to work. Please install it.",
+      call. = FALSE
+    )
+  }
+  res <- data.frame(
+    time = survfit_obj$time,
+    n_risk = survfit_obj$n.risk,
+    n_event = survfit_obj$n.event,
+    n_censor = survfit_obj$n.censor,
+    surv = survfit_obj$surv,
+    upper = survfit_obj$upper,
+    lower = survfit_obj$lower
+  )
+  if (!is.null(survfit_obj$strata)) {
+    strata_vec <- rep(names(survfit_obj$strata), times = survfit_obj$strata)
+    res$strata <- strata_vec
+    strata_mat <- do.call(rbind, lapply(strata_vec, function(s) {
+      parts <- strsplit(s, ",")[[1]]
+      vals <- sapply(parts, function(p) sub(".*=", "", p))
+      names(vals) <- sapply(parts, function(p) sub("=.*", "", p))
+      vals
+    }))
+    res <- cbind(res, strata_mat, stringsAsFactors = FALSE)
+  }
+  res
+}
+
+#' @title Plot Kaplan-Meier survival curves
+#'
+#' @description
+#' `epi_plot_km()` creates Kaplan-Meier plots using ggplot2 from a
+#' `survival::survfit` object.
+#'
+#' @param survfit_obj A `survival::survfit` object.
+#' @param group_var Optional name of the column to use for colour.
+#' Defaults to the first strata variable if present.
+#' @param facet_var Optional name of the column to facet by.
+#' Defaults to the second strata variable if present.
+#' @param save_path Optional file path to save the plot via `ggplot2::ggsave`.
+#' If `NULL`, the plot is not saved.
+#' @param ... Further arguments passed to `ggplot2::ggsave` when saving.
+#'
+#' @return A ggplot object of the Kaplan-Meier curves.
+#'
+#' @examples
+#' \dontrun{
+#' library(survival)
+#' fit <- survfit(Surv(time, status) ~ sex, data = lung)
+#' epi_plot_km(fit, save_path = "km.png")
+#' }
+#'
+#' @export
+epi_plot_km <- function(survfit_obj,
+                        group_var = NULL,
+                        facet_var = NULL,
+                        save_path = NULL,
+                        ...) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
+      call. = FALSE
+    )
+  }
+  df <- epi_survfit_to_df(survfit_obj)
+  default_cols <- c(
+    "time",
+    "n_risk",
+    "n_event",
+    "n_censor",
+    "surv",
+    "upper",
+    "lower",
+    "strata"
+  )
+  other_cols <- setdiff(names(df), default_cols)
+  if (is.null(group_var) && length(other_cols) >= 1) {
+    group_var <- other_cols[1]
+  }
+  if (is.null(facet_var) && length(other_cols) >= 2) {
+    facet_var <- other_cols[2]
+  }
+  if (is.null(group_var)) {
+    p <- ggplot2::ggplot(df, ggplot2::aes_string(x = "time", y = "surv"))
+  } else {
+    p <- ggplot2::ggplot(df, ggplot2::aes_string(
+      x = "time",
+      y = "surv",
+      colour = group_var
+    ))
+  }
+  p <- p +
+    ggplot2::geom_step() +
+    ggplot2::labs(x = "Time", y = "Survival Probability") +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.title = ggplot2::element_blank())
+  if (!is.null(facet_var)) {
+    p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", facet_var)), scales = "free_y")
+  }
+  if (!is.null(save_path)) {
+    ggplot2::ggsave(filename = save_path, plot = p, ...)
+  }
+  p
+}
