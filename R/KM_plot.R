@@ -102,12 +102,12 @@ epi_plot_km <- function(survfit_obj,
     facet_var <- other_cols[2]
   }
   if (is.null(group_var)) {
-    p <- ggplot2::ggplot(df, ggplot2::aes_string(x = "time", y = "surv"))
+    p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$time, y = .data$surv))
   } else {
-    p <- ggplot2::ggplot(df, ggplot2::aes_string(
-      x = "time",
-      y = "surv",
-      colour = group_var
+    p <- ggplot2::ggplot(df, ggplot2::aes(
+      x = .data$time,
+      y = .data$surv,
+      colour = .data[[group_var]]
     ))
   }
   p <- p +
