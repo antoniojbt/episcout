@@ -58,9 +58,10 @@ test_that("epi_stats_corr", {
 ######################
 print("Function being tested: epi_stats_corr_triangle")
 test_that("epi_stats_corr_triangle", {
-  expect_true(nrow(melted_triangles$cormat_melted_triangle_r) > 0)
-  expect_true(nrow(melted_triangles$cormat_melted_triangle_pval) > 0)
-  expect_identical(class(melted_triangles), "list")
+  expect_silent(res <- epi_stats_corr_triangle(cormat = cormat_all$cormat))
+  expect_true(nrow(res$cormat_melted_triangle_r) > 0)
+  expect_true(nrow(res$cormat_melted_triangle_pval) > 0)
+  expect_identical(class(res), "list")
 })
 ######################
 

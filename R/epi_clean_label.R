@@ -24,30 +24,40 @@
 #'
 
 epi_clean_label <- function(data_df, lookup_df) {
-  # Ensure the lookup dataframe is in the correct format
-  lookup_df <- lookup_df %>%
-    dplyr::mutate(level = as.character(level))
+  required_cols <- c("variable", "level", "label")
+  if (!all(required_cols %in% names(lookup_df))) {
+    stop(sprintf("lookup_df must contain columns: %s", paste(required_cols, collapse = ", ")))
+  }
+  lookup_df <- lookup_df %>% dplyr::mutate(level = as.character(level))
 
-  # Iterate over each variable in the lookup table
+  missing_vars <- setdiff(unique(lookup_df$variable), names(data_df))
+  if (length(missing_vars) > 0) {
+    stop(sprintf("Variables not found in data_df: %s", paste(missing_vars, collapse = ", ")))
+  }
+
   for (target_col in unique(lookup_df$variable)) {
-    if (target_col %in% names(data_df)) {
-      # Get levels and labels for this variable
-      levels_and_labels <- lookup_df %>%
-        dplyr::filter(variable == target_col) %>%
-        dplyr::select(level, label) %>%
-        dplyr::arrange(as.numeric(level))
+    levels_and_labels <- lookup_df %>%
+      dplyr::filter(variable == target_col) %>%
+      dplyr::select(level, label) %>%
+      dplyr::arrange(as.numeric(level))
 
-      # Convert the relevant column in data_df to a factor
-      data_df[[target_col]] <- factor(
-        as.character(data_df[[target_col]]),
-        levels  = levels_and_labels$level,
-        labels  = levels_and_labels$label
-      )
+    data_levels <- unique(as.character(data_df[[target_col]][!is.na(data_df[[target_col]])]))
+    lookup_levels <- levels_and_labels$level
+    extra_lookup <- setdiff(lookup_levels, data_levels)
+    if (length(extra_lookup) > 0) {
+      warning(sprintf("Lookup for %s contains levels not in data_df: %s", target_col, paste(extra_lookup, collapse = ", ")))
     }
+    extra_data <- setdiff(data_levels, lookup_levels)
+    if (length(extra_data) > 0) {
+      warning(sprintf("data_df for %s contains levels not in lookup_df: %s", target_col, paste(extra_data, collapse = ", ")))
+    }
+
+    data_df[[target_col]] <- factor(
+      as.character(data_df[[target_col]]),
+      levels = levels_and_labels$level,
+      labels = levels_and_labels$label
+    )
   }
 
   data_df
 }
-
-# TO DO:
-# Needs error handling for missing variables or discrepancies in level assignments
