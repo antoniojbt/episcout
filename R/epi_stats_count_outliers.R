@@ -38,20 +38,24 @@
 #' @importFrom grDevices boxplot.stats
 #'
 
-# TO DO:
-# Clean-up, stop exporting as little value in having it as individual wrapper
-
+#' @details
+#' Returns 0 for empty or all-`NA` vectors and raises an error when `coef`
+#' is negative. Setting `coef` to `0` disables outlier detection.
 epi_stats_count_outliers <- function(num_vec = NULL,
                                      coef = 1.5,
                                      ...) {
-  if (coef == 0) {
+  if (is.null(num_vec) || !is.numeric(num_vec)) {
+    stop("num_vec must be a numeric vector")
+  }
+  if (!is.numeric(coef) || length(coef) != 1) {
+    stop("coef must be a single numeric value")
+  }
+  if (coef < 0) {
+    stop("coef must be non-negative")
+  }
+  if (coef == 0 || length(num_vec) == 0 || all(is.na(num_vec))) {
     return(0L)
   }
-  # if(method == 'SD') {
-  # get_SD <- sd(num_vec, na.rm = na.rm)
-  # count_above <- length(get_SD * )
-  # }
-  # if(method == 'IQR') {}
   q1 <- stats::quantile(num_vec, 0.25, na.rm = TRUE, type = 7)
   q3 <- stats::quantile(num_vec, 0.75, na.rm = TRUE, type = 7)
   iqr_val <- q3 - q1
@@ -61,16 +65,9 @@ epi_stats_count_outliers <- function(num_vec = NULL,
   outliers
 }
 
-# TO DO: add:
-# SD * eg 5
-# (IQR * 1.5) * 1.5 inner (or 3 for outer)
-# See:
-# https://stats.stackexchange.com/questions/350256/iterative-outlier-diagnostic?rq=1
-# regression - Iterative outlier diagnostic - Cross Validated
-# https://stats.stackexchange.com/questions/38001/detecting-outliers-using-standard-deviations?rq=1
-# Detecting outliers using standard deviations - Cross Validated
-# https://stats.stackexchange.com/questions/175999/determine-outliers-using-iqr-or-standard-deviation?rq=1
-# Determine outliers using IQR or standard deviation? - Cross Validated
+# Alternative thresholds such as multiples of the standard deviation or
+# inner/outer fences (e.g. 3 * IQR) are not currently implemented but may
+# be explored in future iterations.
 
 # Using the Qn estimator to avoid assuming that the underlying distribution
 # is symmetric:
