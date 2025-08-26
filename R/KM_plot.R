@@ -42,7 +42,7 @@ epi_survfit_to_df <- function(survfit_obj) {
       names(vals) <- sapply(parts, function(p) sub("=.*", "", p))
       vals
     }))
-    res <- cbind(res, strata_mat, stringsAsFactors = FALSE)
+    res <- data.frame(res, strata_mat, stringsAsFactors = FALSE)
   }
   res
 }
