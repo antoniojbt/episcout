@@ -1,5 +1,4 @@
 # tests for epi_head_and_tail
-library(testthat)
 library(episcout)
 
 test_that("rows and cols are clamped to data dimensions", {
