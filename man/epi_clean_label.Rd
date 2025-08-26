@@ -24,6 +24,9 @@ with levels and labels as defined in \code{lookup_df}.
 This function takes a dataframe and a lookup dataframe that contains the
 mapping of factors' levels and labels for specific variables. It applies
 these levels and labels to the corresponding variables in the target dataframe.
+An error is thrown if variables referenced in \code{lookup_df} are missing from
+\code{data_df}. Warnings are issued when levels present in one but not the
+other are encountered.
 }
 \examples{
 # Assume data_df is already loaded and contains 'ORIGEN' and 'SECTOR' columns
