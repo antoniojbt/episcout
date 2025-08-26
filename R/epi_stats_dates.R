@@ -138,6 +138,7 @@ epi_stats_dates <- function(date_vector) {
 #'
 #' @param df A dataframe containing multiple date columns
 #' @return A wide-format tibble summarizing date statistics
+#' @export
 epi_stats_dates_multi <- function(df) {
   # Select only date columns
   date_cols <- df %>% dplyr::select(dplyr::where(lubridate::is.Date))
