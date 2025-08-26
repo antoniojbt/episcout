@@ -21,6 +21,10 @@ epi_stat_count_outliers() counts how many outliers a vector has
 using a univariate approach. Returns the number of observations that are greater than
 the cutoff. Outliers are detected with the Tukey method (above and below coef * IQR).
 }
+\details{
+Returns 0 for empty or all-\code{NA} vectors and raises an error when \code{coef}
+is negative. Setting \code{coef} to \code{0} disables outlier detection.
+}
 \note{
 coef = 0 returns no outliers, see ?boxplot.stats
 An alternative, not implemented, is to consider those eg > 5 * SD
