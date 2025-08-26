@@ -41,7 +41,7 @@ epi_clean_label <- function(data_df, lookup_df) {
       dplyr::select(level, label) %>%
       dplyr::arrange(as.numeric(level))
 
-    data_levels <- unique(as.character(data_df[[target_col]]))
+    data_levels <- unique(as.character(data_df[[target_col]][!is.na(data_df[[target_col]])]))
     lookup_levels <- levels_and_labels$level
     extra_lookup <- setdiff(lookup_levels, data_levels)
     if (length(extra_lookup) > 0) {
