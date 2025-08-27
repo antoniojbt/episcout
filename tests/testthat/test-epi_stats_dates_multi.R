@@ -1,4 +1,3 @@
-context("epi_stats_dates_multi tests")
 
 library(testthat)
 
