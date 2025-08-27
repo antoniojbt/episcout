@@ -82,25 +82,6 @@ test_that("epi_plot_list", {
 ######################
 
 ######################
-# print("Function being tested: epi_plot_grid_size")
-# Generate plots:
-# for (i in names(my_plot_list)) {
-# print(i)
-# my_plot_list[[i]] <- ggplot2::qplot(data = df, y = , geom = 'boxplot')
-#  my_plot_list[[i]] <- ggplot2::ggplot(df, aes(y = .data[[i]])) + geom_boxplot()
-# }
-# Not in use but keep tests:
-# Calculate how many plots can be passed to one grid (one page):
-# grid_size <- epi_plot_grid_size(my_plot_list)
-# grid_size
-# Not exported so errors with 'could not find function', leave as reference though
-# test_that("epi_plot_grid_size", {
-#   expect_output(str(grid_size), 'ncol_grid: num 2')
-#   expect_output(str(grid_size), 'nrow_grid: num 1')
-#  }
-#  )
-######################
-
 ######################
 print("Function being tested: epi_plots_to_grid")
 # Pass to a grid and save to file:
@@ -287,13 +268,3 @@ test_that("epi_plot_heatmap", {
 ######################
 
 ######################
-
-
-# TO DO: missing tests for, moved this to blurbs, update properly and move back to R/
-# epi_plot_en_masse
-
-# TO DO: Within epi_plot_themes.R, which should be tested with the plots:
-# epi_plot_theme_1()
-# epi_plot_theme_2()
-# scale_colour_epi_plot_theme_2()
-# scale_fill_epi_plot_theme_2()
