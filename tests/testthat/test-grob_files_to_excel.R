@@ -9,7 +9,7 @@ test_that("sheet names are truncated and unique and workbook is created", {
   write.table(data.frame(a = 1), file1, sep = "\t", row.names = FALSE)
   write.table(data.frame(a = 2), file2, sep = "\t", row.names = FALSE)
   out_file <- file.path(tmp, "out.xlsx")
-  grob_files_to_excel(tmp, output_file = out_file)
+  epi_grob_to_excel(tmp, output_file = out_file)
   expect_true(file.exists(out_file))
   sheets <- openxlsx::getSheetNames(out_file)
   expect_equal(length(sheets), 2)
