@@ -37,7 +37,7 @@ epi_plot_volcano <- function(logFC = NULL,
                              h_abline = 2,
                              v_abline = c(0.8, 1.2),
                              ...) {
-  plot(2^logFC,
+  plot(logFC,
     -log10(p_val),
     pch = pch,
     main = main,
