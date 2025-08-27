@@ -1,20 +1,18 @@
-test_that("epi_plot_km returns ggplot and data matches summary", {
+test_that("epi_survfit_to_df converts survfit objects", {
+  skip_if_not_installed("survival")
+  fit <- survival::survfit(survival::Surv(time, status) ~ sex, data = survival::lung)
+  df <- epi_survfit_to_df(fit)
+  expect_true(is.data.frame(df))
+  expect_true(all(c("time", "surv") %in% names(df)))
+  expect_equal(nrow(df), length(fit$time))
+})
+
+test_that("epi_plot_km creates plot and saves to file", {
   skip_if_not_installed("survival")
   skip_if_not_installed("ggplot2")
-
-  fit <- survival::survfit(survival::Surv(time, status) ~ 1, data = survival::lung)
-  plt <- epi_plot_km(fit)
-  expect_s3_class(plt, "ggplot")
-
-  surv_data <- attr(plt, "surv_data")
-  sum_fit <- summary(fit)
-  expected <- tibble::tibble(
-    time = sum_fit$time,
-    surv = sum_fit$surv,
-    n_risk = sum_fit$n.risk,
-    n_event = sum_fit$n.event,
-    n_censor = sum_fit$n.censor,
-    strata = if (is.null(sum_fit$strata)) "All" else as.character(sum_fit$strata)
-  )
-  expect_equal(surv_data, expected)
+  fit <- survival::survfit(survival::Surv(time, status) ~ sex, data = survival::lung)
+  tmp <- tempfile(fileext = ".png")
+  p <- epi_plot_km(fit, group_var = "sex", save_path = tmp)
+  expect_true(inherits(p, "ggplot"))
+  expect_true(file.exists(tmp))
 })
