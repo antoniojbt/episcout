@@ -80,49 +80,6 @@
 #' @export
 #'
 
-# epi_plot_bar <- function(df = NULL,
-#                          var_x = NULL,
-#                          var_y = '',
-#                          fill = NULL,
-#                          bar_colour = 'black',
-#                          guides_fill = 'none',
-#                          y_lab = 'Count',
-#                          x_lab = var_x,
-#                          ...
-# ) {
-#   if (!requireNamespace('ggplot2', quietly = TRUE)) {
-#     stop("Package ggplot2 needed for this function to work. Please install it.",
-#          call. = FALSE)
-#   }
-#   # If only y is passed, plot of one variable:
-#   if (var_y == '') {
-#     bar_plot_one <- ggplot2::ggplot(df,
-#                                     ggplot2::aes(x = !!sym(var_x), #.data[[var_y]]),
-#                                                  fill = var_x)
-#     ) +
-#       ggplot2::geom_bar(stat = 'count',
-#                         colour = bar_colour,
-#                         ...
-#       ) +
-#       ggplot2::guides(fill = guides_fill) +
-#       ggplot2::labs(y = y_lab, x = x_lab)
-#     return(bar_plot_one)
-#   }
-#   # If both x and y are passed, plot of two variables:
-#   else if (!is.null(var_y)) {
-#     bar_plot <- ggplot2::ggplot(df,
-#                                 ggplot2::aes(x = !!sym(var_x),
-#                                              y = !!sym(var_y),
-#                                              fill = fill)
-#     ) +
-#       ggplot2::geom_bar(stat = 'identity',
-#                         position = 'dodge',
-#                         ...
-#       ) +
-#       ggplot2::labs(y = y_lab, x = x_lab)
-#     return(bar_plot)
-#   }
-# }
 
 epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
                          bar_colour = "black", guides_fill = "none",
