@@ -23,7 +23,8 @@ Imports:
     tidyr,
     e1071,
     purrr,
-    stringr
+    stringr,
+    foreach
 Suggests:
     data.table,
     compare,
@@ -40,7 +41,6 @@ Suggests:
     ggthemes,
     future,
     doFuture,
-    foreach,
     iterators,
     parallel,
     vdiffr,
