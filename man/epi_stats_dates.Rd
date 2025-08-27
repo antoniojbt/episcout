@@ -10,30 +10,21 @@ epi_stats_dates(date_vector)
 \item{date_vector}{A vector of dates of class \code{Date} or \code{IDate}.}
 }
 \value{
-A \code{data.frame} containing the following statistics:
-\itemize{
-\item Min: The earliest date in the vector.
-\item Max: The latest date in the vector.
-\item Median: The median date.
-\item IQR: The interquartile range of the dates.
-\item 1st Quartile: The first quartile (25th percentile).
-\item Median (again): The median (50th percentile), duplicated for clarity.
-\item 3rd Quartile: The third quartile (75th percentile).
-}
+A \code{data.frame} containing statistics such as N, N Missing, N Unique, Min,
+25\%, Median, 75\%, Max, IQR, Most Common, and Range (Days).
 }
 \description{
-epi_stats_dates() calculates and returns key descriptive statistics for a vector of dates, including minimum, maximum, median, interquartile range (IQR), and the quartiles. It is compatible with both \code{Date} and \code{IDate} objects.
+Calculates and returns key descriptive statistics for a vector of
+dates, including minimum, maximum, interquartile range (IQR), and quartiles. It
+is compatible with both \code{Date} and \code{IDate} objects.
 }
 \note{
-Note that origin date by default in R is "1970-01-01".
+The default origin for numeric date conversion in R is "1970-01-01".
 }
 \examples{
 sample_dates <- as.Date(c("2020-01-01", "2020-05-15", "2020-12-31", "2021-01-01", "2021-07-15"))
 date_stats <- epi_stats_dates(sample_dates)
 print(date_stats)
-
-
-
 }
 \seealso{
 \code{\link{epi_stats_summary}},
@@ -41,5 +32,5 @@ print(date_stats)
 \code{\link{epi_stats_numeric}}.
 }
 \author{
-Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }
