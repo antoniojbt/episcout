@@ -89,7 +89,7 @@ epi_stats_dates <- function(date_vector) {
 #'
 #' @export
 epi_stats_dates_multi <- function(df) {
-  date_cols <- df %>% dplyr::select(dplyr::where(function(x) inherits(x, "Date")))
+  date_cols <- df %>% dplyr::select(dplyr::where(lubridate::is.Date))
 
   summary_table <- lapply(names(date_cols), function(col) {
     epi_stats_dates(date_cols[[col]]) %>%
