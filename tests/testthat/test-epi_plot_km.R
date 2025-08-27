@@ -1,6 +1,3 @@
-library(testthat)
-library(episcout)
-
 test_that("epi_survfit_to_df converts survfit objects", {
   skip_if_not_installed("survival")
   fit <- survival::survfit(survival::Surv(time, status) ~ sex, data = survival::lung)
