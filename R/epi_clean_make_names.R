@@ -40,7 +40,8 @@ epi_clean_make_names <- function(string = "",
                                  str_replacement = "_",
                                  unique = TRUE) {
   if (!requireNamespace("stringr", quietly = TRUE)) {
-    stop("Package stringr needed for this function to work. Please install it.",
+    stop(
+      "Package stringr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
@@ -90,45 +91,3 @@ epi_clean_make_names <- function(string = "",
 
   make_valid
 }
-
-
-# @param regex_valid Regex to use to test whether names are valid or not.
-# Default is '^([[:alpha:]]|[.][._[:alpha:]])[._[:alnum:]]*$'
-# epi_clean_syntax_str <- function(string = '',
-#                                  regex_valid = '^([[:alpha:]]|[.][._[:alpha:]])[._[:alnum:]]*$'
-#                                  ) {
-# Modified from:
-# https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658
-# https://www.r-bloggers.com/testing-for-valid-variable-names/
-# Check names:
-# is_valid <- function(string) {
-#   # Any non-valid characters:
-#   valid <- grepl(regex_valid, string)
-#   # is name too long?
-#   max_length <- if(getRversion() < '2.13.0') 256L else 10000L
-#   max_length <- sapply(string,
-#                       function(x) {length(x) < max_length}
-#                       )
-#   # valid
-#   # max_length
-#   # Check both are TRUE for each element otherwise return FALSE
-#   cond <- (valid == TRUE & max_length == TRUE)
-#   return(cond)
-# }
-
-# is_valid_and_unreserved <- function(string) {
-#   make.names(string) == string
-# }
-
-# test_validity <- function(string) {
-#   valid <- is_valid(string)
-#   unreserved <- is_valid_and_unreserved(string)
-#   reserved <- (valid & !unreserved)
-#   results <- list('valid' = valid,
-#                   'unreserved' = unreserved,
-#                   'reserved' = reserved)
-#   return(results)
-# }
-# results <- test_validity(string)
-# return(results)
-# }
