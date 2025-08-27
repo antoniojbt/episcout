@@ -106,3 +106,29 @@ test_that("Test handling of NA values", {
   )
 })
 ######################
+
+# Test 5: epi_stats_dates_multi summarises multiple date columns
+test_that("epi_stats_dates_multi summarises multiple date columns", {
+  df <- data.frame(
+    date1 = as.Date(c("2020-01-01", "2020-01-02", NA)),
+    date2 = as.Date(c("2021-01-01", "2021-01-02", "2021-01-03"))
+  )
+  result <- epi_stats_dates_multi(df)
+  expect_s3_class(result, "data.frame")
+  expect_equal(nrow(result), 2)
+  expect_equal(
+    result$Min[result$Column == "date1"],
+    as.character(min(df$date1, na.rm = TRUE))
+  )
+})
+
+# Test 6: epi_stats_dates_freq computes differences and frequencies
+test_that("epi_stats_dates_freq returns date differences and frequencies", {
+  dates <- as.Date(c("2020-01-01", "2020-01-03", "2020-02-01"))
+  result <- epi_stats_dates_freq(dates)
+  expect_type(result, "list")
+  expect_equal(result$date_differences, diff(sort(as.numeric(dates))))
+  expect_equal(as.integer(result$frequencies["2020-01"]), 2)
+  expect_equal(as.integer(result$frequencies["2020-02"]), 1)
+})
+######################
