@@ -39,6 +39,7 @@ Suggests:
     survival,
     grid,
     ggthemes,
+    survival,
     future,
     doFuture,
     foreach,

@@ -16,6 +16,9 @@ epi_head_and_tail(df = NULL, rows = 5, cols = 5, last_cols = FALSE)
 \item{last_cols}{Print the last columns instead of the first few,
 default is FALSE}
 }
+\value{
+A data.frame containing the selected head and tail rows and columns.
+}
 \description{
 epi_head_and_tail() prints the first and last few rows of a data.frame
 }
