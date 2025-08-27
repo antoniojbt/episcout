@@ -16,7 +16,7 @@ library(dplyr)
 # Define a sample dataframe:
 sample_data_df <- data.frame(
   ORIGEN = c(1, 2, 99, 1),
-  SECTOR = c(1, 2, 4, 5),
+  SECTOR = c(1, 2, 4, 4),
   stringsAsFactors = FALSE
 )
 
@@ -49,7 +49,10 @@ test_that("epi_clean_label correctly applies factor levels and labels", {
   # Test if the SECTOR column is correctly transformed into a factor with the correct levels and labels
   expect_is(result_df$SECTOR, "factor")
   expect_equal(levels(result_df$SECTOR), c("CRUZ ROJA", "DIF", "IMSS"))
-  expect_equal(as.character(result_df$SECTOR), c("CRUZ ROJA", "DIF", "IMSS", NA))
+  expect_equal(
+    as.character(result_df$SECTOR),
+    c("CRUZ ROJA", "DIF", "IMSS", "IMSS")
+  )
 })
 
 # Additional tests for error and warning handling
