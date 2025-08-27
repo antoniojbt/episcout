@@ -18,6 +18,7 @@
 #'   epi_plot_km(fit)
 #' }
 epi_plot_km <- function(survfit_obj) {
+  if (!inherits(survfit_obj, "survfit")) stop("Input must be a survfit object")
   summary_surv <- summary(survfit_obj)
   surv_df <- tibble::tibble(
     time = summary_surv$time,
