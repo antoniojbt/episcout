@@ -13,8 +13,6 @@ library(ggplot2)
 # Data for tests
 mt <- mtcars
 
-print("Testing epi_plot_parallel")
-
 test_that("epi_plot_parallel generates plots using multiple workers", {
   plots <- epi_plot_parallel(mt,
     vars_to_plot = c("mpg", "disp"),
