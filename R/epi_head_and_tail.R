@@ -11,6 +11,12 @@
 #' @param last_cols Print the last columns instead of the first few,
 #' default is FALSE
 #'
+#' Row and column counts outside the available range are clamped to the
+#' data dimensions.
+#'
+#' @return A data.frame containing the selected head and tail rows and
+#'   columns. The value is returned invisibly after printing.
+#'
 #' @note Similar to data.table printing of a data.table object but works for
 #' a tibble or data.frame, or any object that can be coerced to a data.frame
 #'
@@ -37,14 +43,6 @@
 #'
 #' @export
 
-# TO DO: add error catch if number of rows is less than default, if so
-# set default to nrow(df)
-# TO DO: add error catch if number of cols is less than default, if so
-# set default to ncol(df), eg
-# if:
-#  Error in `[.data.frame`(df, 1:rows, cols) : undefined columns selected
-#  use cols = length(df), # or ncol(df)
-
 epi_head_and_tail <- function(df = NULL,
                               rows = 5,
                               cols = 5,
@@ -54,14 +52,9 @@ epi_head_and_tail <- function(df = NULL,
   n_rows <- nrow(df)
   n_cols <- ncol(df)
 
-  # Adjust defaults when the data has fewer rows/columns than requested
-  if (rows > n_rows) {
-    rows <- n_rows
-  }
-
-  if (cols > n_cols) {
-    cols <- n_cols
-  }
+  # Clamp the requested rows/cols to the available range
+  rows <- min(max(1, rows), n_rows)
+  cols <- min(max(1, cols), n_cols)
 
   print(sprintf("Total number of rows: %s", n_rows))
   print(sprintf("Total number of columns: %s", n_cols))
@@ -78,5 +71,7 @@ epi_head_and_tail <- function(df = NULL,
   last_rows <- ((n_rows - (rows - 1)):n_rows)
   tails <- df[last_rows, cols, drop = FALSE]
 
-  print(rbind(heads, tails))
+  out <- rbind(heads, tails)
+  print(out)
+  invisible(out)
 }
