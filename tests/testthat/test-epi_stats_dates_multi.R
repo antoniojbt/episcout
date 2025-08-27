@@ -1,6 +1,4 @@
 
-library(testthat)
-
 # Test for wide-format output with multiple date columns
 
 test_that("epi_stats_dates_multi returns wide-format summary for multiple date columns", {
