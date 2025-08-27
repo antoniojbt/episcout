@@ -33,7 +33,7 @@ epi_grob_to_excel <- function(path_to_files,
   if (length(file_names) == 0) {
     stop("No files found matching pattern.")
   }
-  files_list <- lapply(file_names, epi_read) # nolint: object_usage_linter
+  files_list <- lapply(file_names, epi_read)
   wb <- openxlsx::createWorkbook()
   used_sheet_names <- character()
   for (i in seq_along(file_names)) {
