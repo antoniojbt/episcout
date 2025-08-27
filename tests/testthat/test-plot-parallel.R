@@ -24,8 +24,6 @@ test_that("epi_plot_parallel generates plots using multiple workers", {
   expect_gt(attr(plots, "workers"), 1)
 })
 
-print("Testing epi_plot_save_parallel")
-
 test_that("epi_plot_save_parallel saves plots in parallel", {
   plots <- list(mpg = epi_plot_hist(mt, "mpg"), disp = epi_plot_hist(mt, "disp"))
   tmp_prefix <- file.path(tempdir(), "plots_parallel")
