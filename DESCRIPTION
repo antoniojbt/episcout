@@ -38,6 +38,7 @@ Suggests:
     scales,
     grid,
     ggthemes,
+    survival,
     future,
     doFuture,
     foreach,

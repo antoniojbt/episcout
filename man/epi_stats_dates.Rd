@@ -22,14 +22,14 @@ is compatible with both \code{Date} and \code{IDate} objects.
 The default origin for numeric date conversion in R is "1970-01-01".
 }
 \examples{
-sample_dates <- as.Date(c("2020-01-01", "2020-05-15", "2020-12-31", "2021-01-01"))
-epi_stats_dates(sample_dates)
-
+sample_dates <- as.Date(c("2020-01-01", "2020-05-15", "2020-12-31", "2021-01-01", "2021-07-15"))
+date_stats <- epi_stats_dates(sample_dates)
+print(date_stats)
 }
 \seealso{
 \code{\link{epi_stats_summary}},
 \code{\link{epi_stats_format}},
-\code{\link{epi_stats_numeric}}
+\code{\link{epi_stats_numeric}}.
 }
 \author{
 Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
