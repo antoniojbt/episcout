@@ -43,6 +43,7 @@ Suggests:
     doFuture,
     foreach,
     iterators,
+    openxlsx,
     parallel,
     vdiffr,
     reshape2,
