@@ -79,7 +79,6 @@ epi_stats_dates <- function(date_vector) {
 #' @return A tibble where each row corresponds to a date column and columns contain
 #'   the statistics produced by [epi_stats_dates()].
 #'
-#' @param df A dataframe containing multiple date columns
 #' @return A wide-format tibble summarizing date statistics
 #' 
 #' @examples
