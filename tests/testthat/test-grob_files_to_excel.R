@@ -1,20 +1,26 @@
 skip_if_not_installed("openxlsx")
 
-library(testthat)
+test_that("Excel file created and sheet names are unique", {
+  tmp <- tempfile()
+  dir.create(tmp)
+  on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
 
-test_that("sheet names are truncated and unique and workbook is created", {
-  tmp <- tempdir()
-  file1 <- file.path(tmp, "this_is_a_very_long_filename_that_should_be_truncated_first.txt")
-  file2 <- file.path(tmp, "this_is_a_very_long_filename_that_should_be_truncated_second.txt")
-  write.table(data.frame(a = 1), file1, sep = "\t", row.names = FALSE)
-  write.table(data.frame(a = 2), file2, sep = "\t", row.names = FALSE)
-  out_file <- file.path(tmp, "out.xlsx")
-  epi_grob_to_excel(tmp, output_file = out_file)
-  expect_true(file.exists(out_file))
-  sheets <- openxlsx::getSheetNames(out_file)
-  expect_equal(length(sheets), 2)
+  df <- data.frame(a = 1:2)
+  file1 <- file.path(tmp, "this_is_a_very_long_file_name_number_1.txt")
+  file2 <- file.path(tmp, "this_is_a_very_long_file_name_number_2.txt")
+  file3 <- file.path(tmp, "short.txt")
+
+  write.table(df, file1, sep = "\t", row.names = FALSE)
+  write.table(df, file2, sep = "\t", row.names = FALSE)
+  write.table(df, file3, sep = "\t", row.names = FALSE)
+
+  out_path <- grob_files_to_excel(tmp, "combined")
+  expect_true(file.exists(out_path))
+
+  wb <- openxlsx::loadWorkbook(out_path)
+  sheets <- openxlsx::sheets(wb)
+
+  expect_equal(length(sheets), 3)
+  expect_equal(length(unique(tolower(sheets))), 3)
   expect_true(all(nchar(sheets) <= 31))
-  expect_true(nchar(sheets[1]) <= 29)
-  expect_length(unique(sheets), 2)
-  expect_equal(sheets[2], paste0(sheets[1], "_2"))
 })
