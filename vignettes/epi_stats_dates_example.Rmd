@@ -1,0 +1,32 @@
+---
+title: "Descriptive statistics for dates"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Descriptive statistics for dates}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette shows how to compute basic descriptive statistics for dates using `epi_stats_dates()`.
+
+```{r}
+library(episcout)
+
+sample_dates <- as.Date(c(
+  "2020-01-01",
+  "2020-05-15",
+  "2020-12-31",
+  "2021-01-01",
+  "2021-07-15"
+))
+
+epi_stats_dates(sample_dates)
+```
