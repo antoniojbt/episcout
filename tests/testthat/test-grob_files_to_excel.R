@@ -14,7 +14,7 @@ test_that("Excel file created and sheet names are unique", {
   write.table(df, file2, sep = "\t", row.names = FALSE)
   write.table(df, file3, sep = "\t", row.names = FALSE)
 
-  out_path <- grob_files_to_excel(tmp, "combined")
+  out_path <- epi_grob_to_excel(tmp, "combined")
   expect_true(file.exists(out_path))
 
   wb <- openxlsx::loadWorkbook(out_path)
