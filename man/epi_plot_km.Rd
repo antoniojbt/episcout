@@ -39,5 +39,4 @@ library(survival)
 fit <- survfit(Surv(time, status) ~ sex, data = lung)
 epi_plot_km(fit, save_path = "km.png")
 }
-
 }
