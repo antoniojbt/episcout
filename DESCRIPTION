@@ -23,7 +23,8 @@ Imports:
     tidyr,
     e1071,
     purrr,
-    stringr
+    stringr,
+    foreach
 Suggests:
     data.table,
     compare,
@@ -43,7 +44,6 @@ Suggests:
     survival,
     future,
     doFuture,
-    foreach,
     iterators,
     parallel,
     vdiffr,
