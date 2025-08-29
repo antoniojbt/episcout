@@ -1,4 +1,3 @@
-context("parallel plotting tests")
 
 library(episcout)
 
