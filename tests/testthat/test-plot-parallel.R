@@ -18,8 +18,8 @@ test_that("epi_utils_multicore uses multisession plan", {
   library(foreach)
   library(iterators)
   skip_if(parallel::detectCores() < 2, "Not enough cores")
-  plan0 <- future::plan()
-  withr::defer(future::plan(plan0), teardown_env())
+  original_plan <- future::plan()
+  withr::defer(future::plan(original_plan), teardown_env())
   epi_utils_multicore(
     num_cores = 2,
     future_plan = "multisession",
