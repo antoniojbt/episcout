@@ -24,6 +24,9 @@ inst/doc
 *.knit.md
 .Rproj.user
 
+# R plotting output files
+Rplots.pdf
+
 # Mac OS X and others:
 *.tar
 *.gz
