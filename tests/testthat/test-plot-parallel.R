@@ -4,36 +4,33 @@ print("Function being tested: epi_utils_multicore in plotting context")
 # when CRAN limits cores via _R_CHECK_LIMIT_CORES_. This prevents
 # false failures on systems unable to run multicore futures.
 skip_if(!future::supportsMulticore() || nzchar(Sys.getenv("_R_CHECK_LIMIT_CORES_")))
-skip_if(parallel::detectCores() < 2, "Not enough cores")
 
-  skip_if_not_installed("future")
-  skip_if_not_installed("doFuture")
-  skip_if_not_installed("foreach")
-  skip_if_not_installed("iterators")
-  skip_if_not_installed("parallel")
-  skip_if_not_installed("withr")
-  skip_if_not_installed("ggplot2")
-  skip_if_not_installed("cowplot")
+skip_if_not_installed("future")
+skip_if_not_installed("doFuture")
+skip_if_not_installed("foreach")
+skip_if_not_installed("iterators")
+skip_if_not_installed("parallel")
+skip_if_not_installed("withr")
+skip_if_not_installed("ggplot2")
+skip_if_not_installed("cowplot")
 
-  library(episcout)
-  library(ggplot2)
-  library(future)
-  library(parallel)
-  library(doFuture)
-  library(foreach)
-  library(iterators)
+library(episcout)
+library(ggplot2)
+library(future)
+library(parallel)
+library(doFuture)
+library(foreach)
+library(iterators)
 
 # Ensure that workers are cleaned up immediately after each test
-
-test_that("epi_utils_multicore uses multisession plan", {  
-  original_plan <- future::plan()
-  withr::defer(future::plan(original_plan), teardown_env())
+test_that("epi_utils_multicore uses multisession plan", {
+  skip_if(parallel::detectCores() < 2, "Not enough cores")
+  withr::defer(future::plan("sequential"), teardown_env())
   epi_utils_multicore(
     num_cores = 2,
     future_plan = "multisession",
     verbose = FALSE
   )
-  withr::defer(future::plan("sequential"), teardown_env())
   plan_now <- future::plan()
   if (inherits(plan_now, "multisession")) {
     expect_identical(future::nbrOfWorkers(), 2L)
