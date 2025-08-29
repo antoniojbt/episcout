@@ -62,6 +62,14 @@ epi_plot_parallel <- function(df,
       call. = FALSE
     )
   }
+  
+  # Capture existing plan for cleanup
+  prev_plan <- future::plan()
+  on.exit({
+    future::plan("sequential")
+    future::plan(prev_plan)
+  }, add = TRUE)
+  
   epi_utils_multicore(num_cores = num_cores, future_plan = future_plan, ...)
   workers <- foreach::getDoParWorkers()
   plot_list <- foreach::foreach(
@@ -112,6 +120,14 @@ epi_plot_save_parallel <- function(plot_list,
   if (!length(plot_list)) {
     stop("plot_list must contain at least one plot")
   }
+  
+  # Capture existing plan for cleanup
+  prev_plan <- future::plan()
+  on.exit({
+    future::plan("sequential")
+    future::plan(prev_plan)
+  }, add = TRUE)
+  
   epi_utils_multicore(num_cores = num_cores, future_plan = future_plan, ...)
   workers <- foreach::getDoParWorkers()
   idx <- seq(1, length(plot_list), by = plot_step)
