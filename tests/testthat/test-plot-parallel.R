@@ -50,7 +50,7 @@ test_that("epi_plot_parallel generates plots using multiple workers", {
   plots <- epi_plot_parallel(mt,
     vars_to_plot = c("mpg", "disp"),
     num_cores = 2,
-    future_plan = "multicore"
+    future_plan = "multisession"  # Changed from "multicore" for better compatibility
   )
   expect_equal(length(plots), 2)
   expect_equal(sort(names(plots)), sort(c("mpg", "disp")))
@@ -66,7 +66,7 @@ test_that("epi_plot_save_parallel saves plots in parallel", {
     plot_type = "png",
     plot_step = 1,
     num_cores = 2,
-    future_plan = "multicore"
+    future_plan = "multisession"  # Changed from "multicore" for better compatibility
   )
   expect_equal(length(files), 2)
   expect_true(all(file.exists(files)))
