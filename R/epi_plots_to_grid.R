@@ -34,11 +34,7 @@ epi_plots_to_grid <- function(plot_list = NULL,
                               ncol = NULL,
                               nrow = NULL,
                               ...) {
-  if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package cowplot needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
+  check_suggests("cowplot")
 
   # Disable labels if there's only one plot
   labels <- if (length(plot_list) > 1) "AUTO" else NULL

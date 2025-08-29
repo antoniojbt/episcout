@@ -98,21 +98,7 @@ epi_plot_box <- function(df = NULL,
                          sum_shape = 23,
                          sum_size = 4,
                          ...) {
-  if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
-  if (!requireNamespace("ggthemes", quietly = TRUE)) {
-    stop("Package ggthemes needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
-  if (!requireNamespace("rlang", quietly = TRUE)) {
-    stop("Package rlang needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
+  check_suggests(c("ggplot2", "ggthemes"))
   # If only y is passed, boxplot of one variable:
   if (var_x == "") {
     box_plot_one <- ggplot2::ggplot(
