@@ -48,16 +48,7 @@ epi_read <- function(input_name = "",
                      stringsAsFactors = FALSE,
                      strip.white = TRUE,
                      ...) {
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("Package tibble needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
-  if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
+  check_suggests("data.table")
   tibble::as_tibble(as.data.frame(data.table::fread(
     input = input_name,
     na.strings = na.strings,

@@ -76,11 +76,7 @@ epi_plot_heatmap_triangle <- function(cormat_melted_triangle_r = NULL,
                                       cor_method = "Spearman",
                                       show_values = "pval", # or 'corr'
                                       show_labels = TRUE) {
-  if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
+  check_suggests("ggplot2")
   if (show_values == "pval") {
     show_data <- cormat_melted_triangle_pval
     legend_title <- sprintf(
