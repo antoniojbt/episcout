@@ -59,12 +59,6 @@ epi_utils_multicore <- function(num_cores = NULL,
   # Set number of cores
   num_cores <- if (is.null(num_cores)) max(1, parallel::detectCores() - 1) else num_cores
 
-  # Capture existing plan and ensure it is restored on exit.
-  # Switching to 'sequential' ensures spawned workers are terminated.
-  prev_plan <- future::plan()
-  on.exit(future::plan("sequential"), add = TRUE)
-  on.exit(future::plan(prev_plan), add = TRUE)
-
   # Register doFuture and configure plan
   doFuture::registerDoFuture()
   if (identical(future_plan, "sequential")) {
