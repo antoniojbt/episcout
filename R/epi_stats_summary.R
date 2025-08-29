@@ -39,21 +39,6 @@ epi_stats_summary <- function(df = NULL,
                               class_type = "chr_fct", # 'int_num'
                               action = "exclude" # 'codes_only'
 ) {
-  if (!requireNamespace("dplyr", quietly = TRUE)) {
-    stop("Package dplyr needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
-  if (!requireNamespace("purrr", quietly = TRUE)) {
-    stop("Package purrr needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
-  if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("Package tibble needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
   df <- tibble::as_tibble(df)
   # Determine which group of columns to use:
   if (class_type == "chr_fct") {
