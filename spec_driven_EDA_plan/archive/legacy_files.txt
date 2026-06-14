@@ -1,5 +1,0 @@
-codex_instructions_for_episcout.md
-episcout_tdd_external_fixtures.md
-epi_ds_sdd_tdd_agent_workflow_summary.md
-sdd_tdd_guideline_for_epi_ds_agent_workflows.md
-docs/codex/pr-plan.md, unless marked superseded

@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This replaces the earlier implementation-first order for the new specification-first EDA layer.
+This is the active PR sequence for the specification-first EDA layer.
 
-The new rule is:
+The rule is:
 
 ```text
 External fixture and expected output first.
@@ -14,68 +14,15 @@ Implementation third.
 
 This prevents Codex from writing code first and then writing tests that only confirm its own implementation.
 
-## Revised PR sequence
+## PR sequence
 
-### PR 1: Documentation baseline
-
-Scope:
-
-- add or review SDD, ADRs, roadmap and Codex instructions;
-- no R code changes.
-
-Files:
-
-```text
-spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
-spec_driven_EDA_plan/docs/sdd/mvp-scope.md
-spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md
-spec_driven_EDA_plan/docs/roadmap.md
-spec_driven_EDA_plan/docs/repository-audit.md
-spec_driven_EDA_plan/docs/adr/*
-spec_driven_EDA_plan/docs/codex/*
-```
-
-### PR 2: Add TDD external-fixture plan
+### PR 1: Add external fixture files
 
 Scope:
 
-- add this TDD fixture plan;
-- document revised order.
-
-Files:
-
-```text
-spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md
-spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
-spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
-spec_driven_EDA_plan/docs/codex/update-existing-docs.md
-spec_driven_EDA_plan/docs/adr/0005-external-fixture-tdd.md
-```
-
-No R code changes.
-
-### PR 3: Baseline checks
-
-Scope:
-
-- run existing checks;
-- record current package state.
-
-Possible file:
-
-```text
-docs/baseline-checks.md
-```
-
-Do not add new EDA API yet.
-
-### PR 4: Add external fixture files
-
-Scope:
-
-- add real-data fixture;
-- add manually reviewed specification;
-- add independently computed expected outputs.
+- add real-data fixture files;
+- add a manually reviewed fixture specification;
+- add independently computed expected schema and missingness outputs.
 
 Files:
 
@@ -91,11 +38,12 @@ tests/testthat/fixtures/blood_storage/expected_missing.csv
 
 No new package behaviour.
 
-### PR 5: Add failing tests for specification, schema and missingness
+### PR 2: Add failing tests for specification, schema and missingness
 
 Scope:
 
-- add tests that use the blood_storage fixture.
+- add tests that use the blood_storage fixture;
+- do not implement the new functions yet.
 
 Files:
 
@@ -109,11 +57,11 @@ Expected state:
 
 - tests may fail because functions are not implemented yet.
 
-### PR 6: Implement specification, schema and missingness functions
+### PR 3: Implement specification, schema and missingness functions
 
 Scope:
 
-- implement only the functions needed to pass PR 5 tests.
+- implement only the functions needed to pass PR 2 tests.
 
 Files:
 
@@ -132,11 +80,12 @@ check_schema()
 profile_missing()
 ```
 
-### PR 7: Add failing synthetic-data tests
+### PR 4: Add failing synthetic-data tests
 
 Scope:
 
-- add fixture-backed tests for synthetic data generation.
+- add fixture-backed tests for synthetic data generation;
+- do not implement `generate_synthetic_data()` yet.
 
 File:
 
@@ -150,11 +99,7 @@ Tests should use:
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
 ```
 
-Expected state:
-
-- tests may fail because `generate_synthetic_data()` is not implemented yet.
-
-### PR 8: Implement synthetic-data generation
+### PR 5: Implement synthetic-data generation
 
 Scope:
 
@@ -172,11 +117,12 @@ Function:
 generate_synthetic_data()
 ```
 
-### PR 9: Add failing summary and plot tests
+### PR 6: Add failing summary and plot tests
 
 Scope:
 
-- add fixture-backed tests for summaries and plots.
+- add fixture-backed tests for summaries and plots;
+- do not implement `profile_summaries()` or `profile_plots()` yet.
 
 Files:
 
@@ -192,7 +138,7 @@ tests/testthat/fixtures/blood_storage/expected_summary_numeric.csv
 tests/testthat/fixtures/blood_storage/expected_summary_categorical.csv
 ```
 
-### PR 10: Implement summaries and plot dispatch
+### PR 7: Implement summaries and plot dispatch
 
 Scope:
 
@@ -212,11 +158,12 @@ profile_summaries()
 profile_plots()
 ```
 
-### PR 11: Add failing run_eda end-to-end tests
+### PR 8: Add failing run_eda end-to-end tests
 
 Scope:
 
-- add fixture-backed end-to-end workflow tests.
+- add fixture-backed end-to-end workflow tests;
+- do not implement `run_eda()` yet.
 
 File:
 
@@ -231,7 +178,7 @@ Tests:
 - temporary output directory;
 - expected named components.
 
-### PR 12: Implement run_eda()
+### PR 9: Implement run_eda()
 
 Scope:
 
@@ -249,11 +196,12 @@ Function:
 run_eda()
 ```
 
-### PR 13: Add report-template tests
+### PR 10: Add report-template tests
 
 Scope:
 
-- add tests for report rendering.
+- add tests for report rendering;
+- do not implement `render_eda_report()` yet.
 
 File:
 
@@ -261,11 +209,7 @@ File:
 tests/testthat/test-eda_report.R
 ```
 
-Expected state:
-
-- tests may fail before implementation.
-
-### PR 14: Implement report rendering
+### PR 11: Implement report rendering
 
 Scope:
 
@@ -284,7 +228,7 @@ Function:
 render_eda_report()
 ```
 
-### PR 15: Add project template
+### PR 12: Add project template
 
 Scope:
 
@@ -302,7 +246,7 @@ Optional function:
 use_episcout_project()
 ```
 
-### PR 16: Add large-data design note
+### PR 13: Add large-data design note
 
 Scope:
 
@@ -310,34 +254,8 @@ Scope:
 
 Do not fully implement Arrow, DuckDB or data.table backends yet unless explicitly requested.
 
-## Revised principle for all implementation PRs
+## Principle for all implementation PRs
 
 Every new function should have a fixture-backed test when practical.
 
 Expected outputs must be independently computed from fixture data and the data dictionary, not generated by the function under test.
-
-## What changed from the earlier order
-
-Earlier order:
-
-```text
-eda_spec()
-synthetic data
-schema/missingness
-summaries/plots
-run_eda()
-report
-project template
-```
-
-Revised order:
-
-```text
-fixture plan
-fixture files
-failing tests
-implementation
-repeat function by function
-```
-
-The main change is that `eda_spec()` is no longer the first code PR. Fixture and expected-output machinery come first.

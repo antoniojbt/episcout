@@ -26,9 +26,9 @@ Then follow Instruction 1 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 
 Scope:
-- documentation only
-- no R code changes
-- no DESCRIPTION changes
+- add external fixture files only
+- no new package behaviour
+- no DESCRIPTION changes unless a Suggests entry is needed for fixture regeneration
 - no NAMESPACE changes
 - no generated man/ files
 
@@ -91,8 +91,7 @@ These belong in later phases.
 1. Follow Instruction 1 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
 2. Follow Instruction 2 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
 3. Follow Instruction 3 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
-4. Add failing fixture-backed tests.
-5. Implement only enough code to pass those tests.
+4. Continue test-first through synthetic data, summaries, plots and run_eda().
 ```
 
 ## Review rule
