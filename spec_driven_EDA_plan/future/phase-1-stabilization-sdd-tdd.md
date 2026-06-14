@@ -12,6 +12,33 @@ hardening PR.
 This work is intentionally deferred. It must not block the active PR-sized task
 in `spec_driven_EDA_plan/docs/START_HERE.md`.
 
+Fragile was identified as edge cases which can produce warnings, unclear errors, or unstable numeric results. The functions are likely fine for common data, but their contracts are under-specified at the boundaries. TDD hardening would make those boundaries explicit.
+
+For instance:
+
+For `epi_stats_numeric()`:
+
+- **All-missing vectors:** calls like `min(x, na.rm = TRUE)`, `max()`, `quantile()`, `IQR()`, `sd()`, `var()`, `skewness()`, and `kurtosis()` do not all have clean, consistent behavior when there are no usable values.
+- **Zero-length vectors:** `n = 0` makes `NA_percentage <- (NA_count / n) * 100` become division by zero/`NaN`.
+- **Mean is zero:** `CV = sd / mean` can become `Inf`, `-Inf`, or `NaN`. That needs an explicit contract.
+- **Shapiro-Wilk handling:** the code checks `n_nonNA`, but passes the original vector to `shapiro.test()`. If there are `NA`s, it relies on `tryCatch()` rather than intentionally passing cleaned values.
+- **Repeated calculations:** `sd()` and `mean()` are recalculated multiple times, increasing room for inconsistent handling when edge cases are added.
+- **Dependency behavior:** it hard-stops if `e1071` is unavailable, even though some simpler stats could still be computed. Since `e1071` is in `Imports`, that is acceptable in installed-package use, but it makes local/source testing brittle if dependencies are not installed.
+
+For `epi_stats_na_perc()`:
+
+- **Uses `apply()` on data frames:** `apply()` coerces data frames to a matrix first. With mixed types, that can silently coerce numbers, characters, dates, factors, etc. before counting.
+- **Invalid `margin`:** if `margin` is not `1` or `2`, the function falls through and returns an undefined object error: `object 'na_perc_all' not found`.
+- **Return shape differs by mode:** column mode returns transposed row names as variable labels; row mode returns a plain data frame from an unnamed vector. That can be okay, but it needs a stable tested contract.
+- **No input validation:** `df = NULL`, non-data-frame input, zero-row/zero-column inputs, and invalid margins are not handled deliberately.
+
+For `epi_stats_summary()`:
+
+- **Older tidyverse idioms:** `select_if()` still works in many setups, but it is superseded and more likely to become noisy or awkward in future dplyr versions.
+- **`expression()` + `eval()` dispatch:** harder to reason about, harder to test, and easier to break when refactoring.
+- **Depends on lower helpers:** if `epi_stats_numeric()` is fragile, then numeric summary mode inherits that fragility.
+
+
 ## Decision
 
 Do not interrupt the current specification-first TDD sequence to complete Phase
