@@ -4,6 +4,9 @@
 
 This is the active PR sequence for the specification-first EDA layer.
 
+`START_HERE.md` is the operational entry point. This file defines the full PR
+sequence after the current next step.
+
 The rule is:
 
 ```text
@@ -44,6 +47,8 @@ Scope:
 
 - add tests that use the blood_storage fixture;
 - do not implement the new functions yet.
+- this PR may intentionally leave CI red because the functions under test do
+  not exist yet.
 
 Files:
 
@@ -55,7 +60,9 @@ tests/testthat/test-eda_missing-fixtures.R
 
 Expected state:
 
-- tests may fail because functions are not implemented yet.
+- tests may fail because functions are not implemented yet;
+- PR 3 is expected to restore passing tests by implementing the missing
+  functions.
 
 ### PR 3: Implement specification, schema and missingness functions
 
