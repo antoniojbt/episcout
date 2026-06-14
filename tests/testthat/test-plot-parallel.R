@@ -14,6 +14,13 @@ skip_if_not_installed("withr")
 skip_if_not_installed("ggplot2")
 skip_if_not_installed("cowplot")
 
+# Multisession futures start fresh R workers that must be able to attach
+# the installed package. devtools::test()/pkgload exposes the source tree to
+# the main process, but not as an installed package to worker processes.
+skip_if_not(dir.exists(file.path(system.file(package = "episcout"), "Meta")),
+  "parallel plot tests require episcout to be installed"
+)
+
 library(episcout)
 library(ggplot2)
 library(future)
