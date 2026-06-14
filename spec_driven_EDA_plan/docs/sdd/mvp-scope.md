@@ -117,7 +117,7 @@ outputs/
 
 ## Development order
 
-Use the TDD-first order in `docs/codex/revised-pr-plan-tdd-first.md`.
+Use the TDD-first order in `spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md`.
 
 In short:
 

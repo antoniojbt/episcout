@@ -22,5 +22,5 @@
 ^\.github$
 ^AGENTS\.MD$
 ^fishers_results\.txt$
+^spec_driven_EDA_plan$
 # .Rbuildignore
-

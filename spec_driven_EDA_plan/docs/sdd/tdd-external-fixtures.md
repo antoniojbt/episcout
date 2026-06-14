@@ -372,7 +372,7 @@ All new code should test against the external fixture where practical.
 Recommended order:
 
 ```text
-1. Add docs/sdd/tdd-external-fixtures.md.
+1. Add spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md.
 2. Add fixture generation script.
 3. Commit blood_storage CSV fixture and spec.
 4. Commit independently computed expected schema and missingness outputs.

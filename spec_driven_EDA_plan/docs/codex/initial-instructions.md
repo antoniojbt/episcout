@@ -10,15 +10,15 @@ The development objective is to add a specification-first exploratory data analy
 
 Before making changes, read:
 
-1. `AGENTS.md`
-2. `docs/sdd/0001-spec-first-eda.md`
-3. `docs/sdd/mvp-scope.md`
-4. `docs/sdd/data-dictionary-spec.md`
-5. `docs/sdd/tdd-external-fixtures.md`
-6. `docs/roadmap.md`
-7. `docs/codex/revised-pr-plan-tdd-first.md`
-8. `docs/codex/tdd-first-codex-instructions.md`
-9. `docs/codex/review-checklist.md`
+1. `AGENTS.MD`
+2. `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
+3. `spec_driven_EDA_plan/docs/sdd/mvp-scope.md`
+4. `spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md`
+5. `spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md`
+6. `spec_driven_EDA_plan/docs/roadmap.md`
+7. `spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md`
+8. `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`
+9. `spec_driven_EDA_plan/docs/codex/review-checklist.md`
 
 ## Development rules
 
@@ -39,13 +39,13 @@ Before making changes, read:
 
 Add only documentation:
 
-- `docs/sdd/0001-spec-first-eda.md`
-- `docs/sdd/mvp-scope.md`
-- `docs/sdd/data-dictionary-spec.md`
-- `docs/roadmap.md`
-- `docs/repository-audit.md`
-- `docs/adr/*`
-- `docs/codex/*`
+- `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
+- `spec_driven_EDA_plan/docs/sdd/mvp-scope.md`
+- `spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md`
+- `spec_driven_EDA_plan/docs/roadmap.md`
+- `spec_driven_EDA_plan/docs/repository-audit.md`
+- `spec_driven_EDA_plan/docs/adr/*`
+- `spec_driven_EDA_plan/docs/codex/*`
 
 Do not change R code in the first PR.
 

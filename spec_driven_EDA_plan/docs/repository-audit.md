@@ -12,7 +12,7 @@ The package should not be rewritten from scratch. The preferred approach is to k
 - Existing cleaning, plotting, statistics and utility functions.
 - Existing tests across several function families.
 - Existing package structure with roxygen2 documentation.
-- Existing `AGENTS.md` conventions for Codex-style development.
+- Existing `AGENTS.MD` conventions for Codex-style development.
 - Useful descriptive-statistics functions already present.
 
 ## Current limitations
