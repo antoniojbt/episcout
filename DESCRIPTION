@@ -6,6 +6,8 @@ Authors@R:
            family = "Berlanga-Taylor",
            role = c("aut", "cre"),
            email = "antoniojberlanga@gmail.com")
+Author: Antonio Berlanga-Taylor [aut, cre]
+Maintainer: Antonio Berlanga-Taylor <antoniojberlanga@gmail.com>
 Description: Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table. 
 License: GPL-3
 Encoding: UTF-8
