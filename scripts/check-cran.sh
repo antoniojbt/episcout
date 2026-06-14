@@ -10,6 +10,8 @@ cd "$repo_root"
 
 mkdir -p "$check_dir"
 
+export PATH="$("$rscript" -e 'cat(Sys.getenv("PATH"))')"
+
 r_home="$("$rscript" -e 'cat(R.home())')"
 r_bin="${r_home}/bin/R"
 
