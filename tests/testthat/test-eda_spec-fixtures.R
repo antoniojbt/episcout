@@ -25,7 +25,7 @@ test_that("blood_storage_spec.csv has required specification columns", {
 test_that("blood_storage specification variable names are unique", {
   spec <- eda_spec(spec_path)
 
-  expect_false(anyDuplicated(spec$name))
+  expect_equal(anyDuplicated(spec$name), 0L)
 })
 
 test_that("invalid specification type fails clearly", {
