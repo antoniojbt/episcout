@@ -10,55 +10,18 @@ Repeat this often:
 Keep the change small and reviewable. Do not perform broad refactoring. If you find additional issues, document them rather than fixing them in this PR.
 ```
 
-## Instruction 1: Documentation update for TDD-first order
+## Instruction 1: Add external fixture files
 
 ```text
 Read:
 - AGENTS.MD
+- spec_driven_EDA_plan/docs/START_HERE.md
 - spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
-- spec_driven_EDA_plan/docs/sdd/mvp-scope.md
 - spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md
-- spec_driven_EDA_plan/docs/codex/pr-plan.md
-- spec_driven_EDA_plan/docs/codex/review-checklist.md
-
-Task:
-Add the TDD-first documentation update.
-
-Add:
 - spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md
 - spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
-- spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
-- spec_driven_EDA_plan/docs/codex/update-existing-docs.md
-- spec_driven_EDA_plan/docs/adr/0005-external-fixture-tdd.md
+- spec_driven_EDA_plan/docs/codex/review-checklist.md
 
-Do not change R code.
-Do not change DESCRIPTION.
-Do not change NAMESPACE.
-Do not change generated man/ files.
-```
-
-## Instruction 2: Update older docs to reference the revised order
-
-```text
-Read spec_driven_EDA_plan/docs/codex/update-existing-docs.md.
-
-Task:
-Update the older documentation files so they point to the TDD-first plan.
-
-Files to update:
-- spec_driven_EDA_plan/docs/codex/pr-plan.md
-- spec_driven_EDA_plan/docs/roadmap.md
-- spec_driven_EDA_plan/docs/codex/initial-instructions.md
-- spec_driven_EDA_plan/docs/sdd/mvp-scope.md
-- README.md if it lists the old order
-
-Do not change R code.
-Do not alter the substance of the SDD except to reference the TDD-first order.
-```
-
-## Instruction 3: Add external fixture files
-
-```text
 Task:
 Add external real-data test fixtures for specification-first EDA.
 
@@ -83,7 +46,7 @@ Requirements:
 7. Add no new package behaviour in this PR.
 ```
 
-## Instruction 4: Add failing tests for spec, schema and missingness
+## Instruction 2: Add failing tests for spec, schema and missingness
 
 ```text
 Task:
@@ -108,7 +71,7 @@ Requirements:
 5. Do not implement eda_spec(), check_schema() or profile_missing() in this PR.
 ```
 
-## Instruction 5: Implement spec, schema and missingness
+## Instruction 3: Implement spec, schema and missingness
 
 ```text
 Task:
@@ -133,7 +96,7 @@ Requirements:
 5. Do not implement synthetic data, summaries, plots, reports or run_eda() in this PR.
 ```
 
-## Instruction 6: Add failing synthetic-data tests
+## Instruction 4: Add failing synthetic-data tests
 
 ```text
 Task:
@@ -154,7 +117,7 @@ Requirements:
 6. Do not implement generate_synthetic_data() in this PR.
 ```
 
-## Instruction 7: Implement synthetic-data generation
+## Instruction 5: Implement synthetic-data generation
 
 ```text
 Task:
@@ -171,7 +134,7 @@ Requirements:
 5. Do not implement summaries, plots, reports or run_eda() in this PR.
 ```
 
-## Instruction 8: Add failing summary and plot tests
+## Instruction 6: Add failing summary and plot tests
 
 ```text
 Task:
@@ -191,7 +154,7 @@ Requirements:
 3. Do not implement profile_summaries() or profile_plots() in this PR.
 ```
 
-## Instruction 9: Implement summaries and plots
+## Instruction 7: Implement summaries and plots
 
 ```text
 Task:
@@ -213,7 +176,7 @@ Requirements:
 5. Do not implement run_eda() or reporting in this PR.
 ```
 
-## Instruction 10: Add failing run_eda tests
+## Instruction 8: Add failing run_eda tests
 
 ```text
 Task:
@@ -230,7 +193,7 @@ Requirements:
 5. Do not implement run_eda() in this PR.
 ```
 
-## Instruction 11: Implement run_eda()
+## Instruction 9: Implement run_eda()
 
 ```text
 Task:
@@ -253,7 +216,7 @@ Requirements:
 11. Do not render reports in this PR.
 ```
 
-## Instruction 12: Report template and project template
+## Instruction 10: Report template and project template
 
 ```text
 Task:

@@ -1,1 +1,0 @@
-Follow Instruction 2 in docs/codex/tdd-first-codex-instructions.md.

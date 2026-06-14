@@ -37,17 +37,18 @@ Before making changes, read:
 
 ## First PR instruction
 
-Add only documentation:
+Add external real-data fixtures for the TDD workflow:
 
-- `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
-- `spec_driven_EDA_plan/docs/sdd/mvp-scope.md`
-- `spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md`
-- `spec_driven_EDA_plan/docs/roadmap.md`
-- `spec_driven_EDA_plan/docs/repository-audit.md`
-- `spec_driven_EDA_plan/docs/adr/*`
-- `spec_driven_EDA_plan/docs/codex/*`
+- `data-raw/test-fixtures/make_external_fixtures.R`
+- `tests/testthat/fixtures/README.md`
+- `tests/testthat/fixtures/blood_storage/SOURCE.md`
+- `tests/testthat/fixtures/blood_storage/blood_storage.csv`
+- `tests/testthat/fixtures/blood_storage/blood_storage_spec.csv`
+- `tests/testthat/fixtures/blood_storage/expected_schema.csv`
+- `tests/testthat/fixtures/blood_storage/expected_missing.csv`
 
-Do not change R code in the first PR.
+Do not add new package behaviour in the first PR.
+Do not implement `eda_spec()`, `check_schema()` or `profile_missing()` until fixture-backed tests are in place.
 
 ## Later PR behaviour
 
