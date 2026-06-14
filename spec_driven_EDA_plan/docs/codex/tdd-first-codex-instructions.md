@@ -14,22 +14,22 @@ Keep the change small and reviewable. Do not perform broad refactoring. If you f
 
 ```text
 Read:
-- AGENTS.md
-- docs/sdd/0001-spec-first-eda.md
-- docs/sdd/mvp-scope.md
-- docs/sdd/data-dictionary-spec.md
-- docs/codex/pr-plan.md
-- docs/codex/review-checklist.md
+- AGENTS.MD
+- spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
+- spec_driven_EDA_plan/docs/sdd/mvp-scope.md
+- spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md
+- spec_driven_EDA_plan/docs/codex/pr-plan.md
+- spec_driven_EDA_plan/docs/codex/review-checklist.md
 
 Task:
 Add the TDD-first documentation update.
 
 Add:
-- docs/sdd/tdd-external-fixtures.md
-- docs/codex/revised-pr-plan-tdd-first.md
-- docs/codex/tdd-first-codex-instructions.md
-- docs/codex/update-existing-docs.md
-- docs/adr/0005-external-fixture-tdd.md
+- spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md
+- spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
+- spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
+- spec_driven_EDA_plan/docs/codex/update-existing-docs.md
+- spec_driven_EDA_plan/docs/adr/0005-external-fixture-tdd.md
 
 Do not change R code.
 Do not change DESCRIPTION.
@@ -40,16 +40,16 @@ Do not change generated man/ files.
 ## Instruction 2: Update older docs to reference the revised order
 
 ```text
-Read docs/codex/update-existing-docs.md.
+Read spec_driven_EDA_plan/docs/codex/update-existing-docs.md.
 
 Task:
 Update the older documentation files so they point to the TDD-first plan.
 
 Files to update:
-- docs/codex/pr-plan.md
-- docs/roadmap.md
-- docs/codex/initial-instructions.md
-- docs/sdd/mvp-scope.md
+- spec_driven_EDA_plan/docs/codex/pr-plan.md
+- spec_driven_EDA_plan/docs/roadmap.md
+- spec_driven_EDA_plan/docs/codex/initial-instructions.md
+- spec_driven_EDA_plan/docs/sdd/mvp-scope.md
 - README.md if it lists the old order
 
 Do not change R code.
@@ -265,5 +265,5 @@ Next steps:
 3. Add project template.
 4. Add large-data design note.
 
-Follow docs/codex/revised-pr-plan-tdd-first.md.
+Follow spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md.
 ```

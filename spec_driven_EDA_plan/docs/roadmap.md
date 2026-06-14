@@ -4,7 +4,7 @@
 
 Deliverables:
 
-- `docs/sdd/0001-spec-first-eda.md`
+- `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
 - ADR index
 - roadmap
 - Codex instructions
