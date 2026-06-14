@@ -18,6 +18,8 @@ Complete only the active PR-sized task in spec_driven_EDA_plan/docs/START_HERE.m
 For the current active task, PR 2, expected failures from intentionally missing
 EDA functions are allowed and must not be fixed in this PR.
 
+Use `~/apps/miniforge3/envs/dsci/bin/Rscript` for all R commands.
+
 Required sequence:
 1. Confirm the git worktree is clean.
 2. Confirm GitHub CLI availability:
