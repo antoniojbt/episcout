@@ -1,15 +1,33 @@
 # START HERE: episcout SDD/TDD development guide
 
-This `START_HERE.md` file is the entry point.
+This is the operational entry point for the specification-first EDA work in
+`episcout`.
 
 ## Purpose
 
-This file identifies the active documentation path for developing the new specification-first EDA layer in `episcout`.
+Use this file to see:
 
+- what has already been planned;
+- what should happen next;
+- what is out of scope for the immediate work;
+- which Codex instruction block to follow.
+
+Detailed design rationale lives in the SDD and ADR files. This file should stay
+short and action-oriented.
+
+## Current status
+
+| Work item | Status | Next action |
+|---|---|---|
+| Phase 0 documentation baseline | Done | Keep docs in sync as scope changes. |
+| PR 1 external fixture files | Next | Follow Instruction 1 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
+| PR 2 fixture-backed failing tests | Not started | Add tests after PR 1 fixtures exist. |
+| PR 3 spec, schema and missingness implementation | Not started | Implement only after PR 2 tests exist. |
+| Later synthetic, summary, plot, report and template work | Not started | Continue through the PR plan after PR 3. |
 
 ## Immediate Codex starting point
 
-Start Codex with this:
+For the next PR, start Codex with this:
 
 ```text
 Read AGENTS.MD and spec_driven_EDA_plan/docs/START_HERE.md.
@@ -21,9 +39,7 @@ Then read:
 - spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 - spec_driven_EDA_plan/docs/codex/review-checklist.md
 
-Then follow Instruction 1 in:
-
-spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
+Then follow Instruction 1 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
 
 Scope:
 - add external fixture files only
@@ -37,7 +53,7 @@ Before making changes, summarise what you plan to edit.
 Keep the change small and reviewable.
 ```
 
-## Development principle
+## Active development principle
 
 Use this order:
 
@@ -57,18 +73,21 @@ fixture data
 → implementation
 ```
 
-## MVP discipline
+PR 2 may intentionally introduce failing tests. CI does not need to stay green
+for that red-test PR. PR 3 is expected to implement the functions needed to make
+those tests pass.
 
-The first MVP should remain small:
+## Immediate scope
+
+The next PR should include only:
 
 ```text
 blood_storage fixture
 data dictionary/spec
 expected schema output
 expected missingness output
-eda_spec()
-check_schema()
-profile_missing()
+fixture provenance
+fixture regeneration script
 ```
 
 Do not start with:
@@ -85,14 +104,13 @@ full plot/report system
 
 These belong in later phases.
 
-## Recommended immediate sequence
+## Source of truth for next steps
 
-```text
-1. Follow Instruction 1 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
-2. Follow Instruction 2 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
-3. Follow Instruction 3 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
-4. Continue test-first through synthetic data, summaries, plots and run_eda().
-```
+- Executable Codex instructions: `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`
+- Full PR sequence: `spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md`
+- Design rationale: `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
+- Fixture TDD rationale: `spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md`
+- Review checklist: `spec_driven_EDA_plan/docs/codex/review-checklist.md`
 
 ## Review rule
 
