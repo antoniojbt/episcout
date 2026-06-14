@@ -30,6 +30,44 @@ library(devtools)
 install_github("AntonioJBT/episcout")
 ```
 
+## Development
+
+Use the repository development environment so local checks run with the same R
+tooling in Positron, Codex and shell sessions. Create it once with:
+
+``` bash
+mamba env create -f environment.yml
+```
+
+Update an existing environment with:
+
+``` bash
+mamba env update -n episcout -f environment.yml --prune
+```
+
+Run package checks through the repository wrapper, not bare `Rscript`:
+
+``` bash
+scripts/rscript -e "cat(R.home())"
+scripts/check-local.sh
+scripts/check-cran.sh
+```
+
+Set `EPISCOUT_RSCRIPT=/path/to/Rscript` if you need to use a different R
+binary.
+
+CRAN does not require `renv`; it requires a source tarball from `R CMD build`
+that passes `R CMD check --as-cran` without errors, warnings or significant
+notes. Strong dependencies should be available from CRAN or Bioconductor,
+suggested packages should be used conditionally in examples and tests, and
+tests/examples should avoid internet requirements, unwanted filesystem writes
+and excessive runtime or parallelism. See the CRAN Repository Policy, CRAN
+submission checklist and Writing R Extensions for the current source of truth:
+
+- <https://cran.r-project.org/web/packages/policies.html>
+- <https://cran.r-project.org/web/packages/submission_checklist.html>
+- <https://cran.r-project.org/doc/manuals/r-release/R-exts.html>
+
 ## Getting Started
 
 Functions are grouped by purpose, e.g.:
