@@ -22,20 +22,20 @@ operational source of truth for what happens next.
 |---|---|---|
 | Phase 0 documentation baseline | Done | Keep docs in sync as scope changes. |
 | PR 1 external fixture files | Done | Fixture files are present under `tests/testthat/fixtures/blood_storage/`. |
-| PR 2 fixture-backed failing tests | Active | Follow Instruction 2 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
-| PR 3 spec, schema and missingness implementation | Not started | Implement only after PR 2 tests exist. |
+| PR 2 fixture-backed failing tests | Done | Tests are present and may fail until PR 3 implements the missing functions. |
+| PR 3 spec, schema and missingness implementation | Active | Follow Instruction 3 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
 | Later synthetic, summary, plot, report and template work | Not started | Continue through the PR plan after PR 3. |
 
 ## Active PR
 
 ```text
-PR 2: Add failing tests for specification, schema and missingness
+PR 3: Implement spec, schema and missingness
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 2 in:
+Follow Instruction 3 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
@@ -52,14 +52,14 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 2 Scope
+## PR 3 Scope
 
 Must edit:
 
 ```text
-tests/testthat/test-eda_spec-fixtures.R
-tests/testthat/test-eda_schema-fixtures.R
-tests/testthat/test-eda_missing-fixtures.R
+R/eda_spec.R
+R/eda_schema.R
+R/eda_missing.R
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
@@ -70,25 +70,28 @@ tests/testthat/fixtures/blood_storage/blood_storage.csv
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
 tests/testthat/fixtures/blood_storage/expected_schema.csv
 tests/testthat/fixtures/blood_storage/expected_missing.csv
+tests/testthat/test-eda_spec-fixtures.R
+tests/testthat/test-eda_schema-fixtures.R
+tests/testthat/test-eda_missing-fixtures.R
 ```
 
 Must not edit:
 
 ```text
-R/eda_spec.R
-R/eda_schema.R
-R/eda_missing.R
-DESCRIPTION
-NAMESPACE
-man/
+R/eda_synthetic.R
+R/eda_summaries.R
+R/eda_plots.R
+R/run_eda.R
+R/eda_report.R
+inst/report-template/
+inst/project-template/
 ```
 
 Expected test state:
 
 ```text
-Some new tests may fail because eda_spec(), validate_eda_spec(),
-check_schema() and profile_missing() are intentionally not implemented until
-PR 3.
+PR 3 should make the PR 2 fixture-backed tests pass by implementing only
+eda_spec(), validate_eda_spec(), check_schema() and profile_missing().
 ```
 
 ## Closeout Rule
