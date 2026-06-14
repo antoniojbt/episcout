@@ -10,6 +10,25 @@ Repeat this often:
 Keep the change small and reviewable. Do not perform broad refactoring. If you find additional issues, document them rather than fixing them in this PR.
 ```
 
+## Standing closeout rule
+
+Every instruction must end by updating
+`spec_driven_EDA_plan/docs/START_HERE.md`.
+
+At closeout:
+
+```text
+1. Mark the completed PR as Done.
+2. Mark the next PR as Active.
+3. Update the Active PR section.
+4. Update must-edit and must-not-edit lists.
+5. Record whether failing tests are expected.
+6. Leave SDD and ADR files unchanged unless the design changed.
+```
+
+If a PR intentionally does not update `START_HERE.md`, record that exception in
+the PR description.
+
 ## Instruction 1: Add external fixture files
 
 ```text
@@ -44,6 +63,9 @@ Requirements:
 5. Do not add medicaldata to Imports.
 6. If medicaldata is needed, use it only in the regeneration script or Suggests.
 7. Add no new package behaviour in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 1 Done and PR 2 Active.
 ```
 
 ## Instruction 2: Add failing tests for spec, schema and missingness
@@ -69,6 +91,10 @@ Requirements:
 3. Tests must not depend on private data.
 4. Tests must compare against independently computed expected outputs.
 5. Do not implement eda_spec(), check_schema() or profile_missing() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 2 Done and PR 3 Active. Record that PR 2 may
+leave tests failing until PR 3 implements the missing functions.
 ```
 
 ## Instruction 3: Implement spec, schema and missingness
@@ -94,6 +120,11 @@ Requirements:
 3. Return machine-readable tibbles or data frames.
 4. Add roxygen2 documentation.
 5. Do not implement synthetic data, summaries, plots, reports or run_eda() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 3 Done and PR 4 Active. Tests should no longer
+fail because eda_spec(), validate_eda_spec(), check_schema() or
+profile_missing() are missing.
 ```
 
 ## Instruction 4: Add failing synthetic-data tests
@@ -115,6 +146,10 @@ Requirements:
 4. Synthetic values respect min/max where provided.
 5. Fixed seed gives identical output.
 6. Do not implement generate_synthetic_data() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 4 Done and PR 5 Active. Record that PR 4 may
+leave tests failing until PR 5 implements generate_synthetic_data().
 ```
 
 ## Instruction 5: Implement synthetic-data generation
@@ -132,6 +167,9 @@ Requirements:
 3. Use deterministic output with a fixed seed.
 4. Do not add heavy dependencies.
 5. Do not implement summaries, plots, reports or run_eda() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 5 Done and PR 6 Active.
 ```
 
 ## Instruction 6: Add failing summary and plot tests
@@ -152,6 +190,11 @@ Requirements:
 1. Expected summary outputs must be independently computed.
 2. Plot tests should check object classes and names, not visual appearance.
 3. Do not implement profile_summaries() or profile_plots() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 6 Done and PR 7 Active. Record that PR 6 may
+leave tests failing until PR 7 implements profile_summaries() and
+profile_plots().
 ```
 
 ## Instruction 7: Implement summaries and plots
@@ -174,6 +217,9 @@ Requirements:
 3. Return machine-readable outputs.
 4. Return plot objects without printing them.
 5. Do not implement run_eda() or reporting in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 7 Done and PR 8 Active.
 ```
 
 ## Instruction 8: Add failing run_eda tests
@@ -191,6 +237,10 @@ Requirements:
 3. Use temporary directories for output-file tests.
 4. Check expected named components: metadata, schema, missing, summaries, plots.
 5. Do not implement run_eda() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 8 Done and PR 9 Active. Record that PR 8 may
+leave tests failing until PR 9 implements run_eda().
 ```
 
 ## Instruction 9: Implement run_eda()
@@ -214,6 +264,9 @@ Requirements:
 9. Support mode = "real" and mode = "synthetic".
 10. Clearly label synthetic-mode outputs.
 11. Do not render reports in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 9 Done and PR 10 Active.
 ```
 
 ## Instruction 10: Report template and project template
@@ -229,4 +282,8 @@ Next steps:
 4. Add large-data design note.
 
 Follow spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md.
+
+Closeout:
+Update START_HERE.md after each remaining PR so it stays the live status
+dashboard.
 ```

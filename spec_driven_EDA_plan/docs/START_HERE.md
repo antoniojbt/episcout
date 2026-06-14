@@ -1,59 +1,115 @@
 # START HERE: episcout SDD/TDD development guide
 
-This is the operational entry point for the specification-first EDA work in
+This is the live control panel for the specification-first EDA work in
 `episcout`.
 
-## Purpose
+Use this file first to see:
 
-Use this file to see:
+- current status;
+- the active PR-sized task;
+- which instruction block to follow;
+- files that are in and out of scope;
+- expected test state;
+- required closeout updates.
 
-- what has already been planned;
-- what should happen next;
-- what is out of scope for the immediate work;
-- which Codex instruction block to follow.
+Design rationale lives in the SDD and ADR files. The full PR sequence lives in
+`spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md`. This file is the
+operational source of truth for what happens next.
 
-Detailed design rationale lives in the SDD and ADR files. This file should stay
-short and action-oriented.
-
-## Current status
+## Current Status
 
 | Work item | Status | Next action |
 |---|---|---|
 | Phase 0 documentation baseline | Done | Keep docs in sync as scope changes. |
-| PR 1 external fixture files | Next | Follow Instruction 1 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
-| PR 2 fixture-backed failing tests | Not started | Add tests after PR 1 fixtures exist. |
+| PR 1 external fixture files | Done | Fixture files are present under `tests/testthat/fixtures/blood_storage/`. |
+| PR 2 fixture-backed failing tests | Active | Follow Instruction 2 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
 | PR 3 spec, schema and missingness implementation | Not started | Implement only after PR 2 tests exist. |
 | Later synthetic, summary, plot, report and template work | Not started | Continue through the PR plan after PR 3. |
 
-## Immediate Codex starting point
-
-For the next PR, start Codex with this:
+## Active PR
 
 ```text
-Read AGENTS.MD and spec_driven_EDA_plan/docs/START_HERE.md.
-
-Then read:
-- spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
-- spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md
-- spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
-- spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
-- spec_driven_EDA_plan/docs/codex/review-checklist.md
-
-Then follow Instruction 1 in spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md.
-
-Scope:
-- add external fixture files only
-- no new package behaviour
-- no DESCRIPTION changes unless a Suggests entry is needed for fixture regeneration
-- no NAMESPACE changes
-- no generated man/ files
-
-Before making changes, summarise what you plan to edit.
-
-Keep the change small and reviewable.
+PR 2: Add failing tests for specification, schema and missingness
 ```
 
-## Active development principle
+Instruction:
+
+```text
+Follow Instruction 2 in:
+spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
+```
+
+Required reading:
+
+```text
+AGENTS.MD
+spec_driven_EDA_plan/docs/START_HERE.md
+spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
+spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md
+spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md
+spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
+spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
+spec_driven_EDA_plan/docs/codex/review-checklist.md
+```
+
+## PR 2 Scope
+
+Must edit:
+
+```text
+tests/testthat/test-eda_spec-fixtures.R
+tests/testthat/test-eda_schema-fixtures.R
+tests/testthat/test-eda_missing-fixtures.R
+spec_driven_EDA_plan/docs/START_HERE.md
+```
+
+May read:
+
+```text
+tests/testthat/fixtures/blood_storage/blood_storage.csv
+tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
+tests/testthat/fixtures/blood_storage/expected_schema.csv
+tests/testthat/fixtures/blood_storage/expected_missing.csv
+```
+
+Must not edit:
+
+```text
+R/eda_spec.R
+R/eda_schema.R
+R/eda_missing.R
+DESCRIPTION
+NAMESPACE
+man/
+```
+
+Expected test state:
+
+```text
+Some new tests may fail because eda_spec(), validate_eda_spec(),
+check_schema() and profile_missing() are intentionally not implemented until
+PR 3.
+```
+
+## Closeout Rule
+
+Every PR must update this file before it is considered complete.
+
+At closeout:
+
+```text
+1. Mark the completed PR as Done.
+2. Mark the next PR as Active.
+3. Update the Active PR section.
+4. Update must-edit and must-not-edit lists.
+5. Record whether failing tests are expected.
+6. Leave SDD and ADR files unchanged unless the design changed.
+```
+
+If a PR intentionally does not update `START_HERE.md`, record that exception in
+the PR description.
+
+## Development Principle
 
 Use this order:
 
@@ -69,26 +125,20 @@ For every new specification-first EDA function, use:
 fixture data
 + fixture specification
 + independently computed expected output
-→ failing tests
-→ implementation
+-> failing tests
+-> implementation
 ```
 
-PR 2 may intentionally introduce failing tests. CI does not need to stay green
-for that red-test PR. PR 3 is expected to implement the functions needed to make
-those tests pass.
+## Source of Truth
 
-## Immediate scope
+- Live status and next action: `spec_driven_EDA_plan/docs/START_HERE.md`
+- Executable Codex instructions: `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`
+- Full PR sequence: `spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md`
+- Design rationale: `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
+- Fixture TDD rationale: `spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md`
+- Review checklist: `spec_driven_EDA_plan/docs/codex/review-checklist.md`
 
-The next PR should include only:
-
-```text
-blood_storage fixture
-data dictionary/spec
-expected schema output
-expected missingness output
-fixture provenance
-fixture regeneration script
-```
+## Out of Scope Until Later PRs
 
 Do not start with:
 
@@ -104,15 +154,7 @@ full plot/report system
 
 These belong in later phases.
 
-## Source of truth for next steps
-
-- Executable Codex instructions: `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`
-- Full PR sequence: `spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md`
-- Design rationale: `spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md`
-- Fixture TDD rationale: `spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md`
-- Review checklist: `spec_driven_EDA_plan/docs/codex/review-checklist.md`
-
-## Review rule
+## Review Rule
 
 Before merging any PR, check:
 
@@ -126,4 +168,5 @@ Did it add heavy dependencies unnecessarily?
 Does it preserve backwards compatibility?
 Are expected outputs independently computed?
 Are synthetic-data outputs clearly labelled where relevant?
+Was START_HERE.md updated for the next PR?
 ```
