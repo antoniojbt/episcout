@@ -2,10 +2,11 @@
 
 ## Purpose
 
-This is the active PR sequence for the specification-first EDA layer.
+This is the stable PR sequence for the specification-first EDA layer.
 
-`START_HERE.md` is the operational entry point. This file defines the full PR
-sequence after the current next step.
+This file is not the live status dashboard. Use
+`spec_driven_EDA_plan/docs/START_HERE.md` for current status, the active PR,
+allowed edits, expected test state and closeout requirements.
 
 The rule is:
 

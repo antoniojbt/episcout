@@ -49,6 +49,7 @@ Use this checklist for every PR.
 
 ## Documentation
 
+- [ ] `START_HERE.md` reflects the completed PR and next active PR.
 - [ ] SDD remains accurate.
 - [ ] ADR is added or updated if architectural decision changed.
 - [ ] Roadmap is updated if scope changed.
