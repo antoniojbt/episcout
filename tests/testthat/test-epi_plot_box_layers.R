@@ -16,7 +16,7 @@ test_that("notch parameter is set", {
 
 test_that("layers include box components", {
   p <- epi_plot_box(df_box, var_x = "group", var_y = "value")
-  layer_classes <- sapply(p$layers, function(x) class(x$geom)[1])
+  layer_classes <- unname(sapply(p$layers, function(x) class(x$geom)[1]))
   expect_equal(
     layer_classes,
     c("GeomErrorbar", "GeomBoxplot", "GeomPoint", "GeomPoint")
