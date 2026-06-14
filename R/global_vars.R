@@ -13,7 +13,8 @@ if (getRversion() >= "2.15.1") {
   utils::globalVariables(
     c(
       ".", "level", "variable", "label", "Column", "Variable", "Value",
-      "Statistic", "Var1", "n_missing", "x", "time", "surv", "count"
+      "Statistic", "Var1", "n_missing", "x", "time", "surv", "count",
+      "i", "v"
     )
   )
 }
