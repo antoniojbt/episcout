@@ -1,0 +1,1 @@
+The older file codex_instructions_for_episcout.md is now historical. Do not use it as the active source unless you first update it to point to the TDD-first plan.
