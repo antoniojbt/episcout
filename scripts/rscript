@@ -20,4 +20,7 @@ EOF
   exit 127
 fi
 
+env_bin="$(cd "$(dirname "$rscript")" && pwd)"
+export PATH="${env_bin}:${PATH}"
+
 exec "$rscript" "$@"
