@@ -26,13 +26,13 @@ Scope:
 Files:
 
 ```text
-docs/sdd/0001-spec-first-eda.md
-docs/sdd/mvp-scope.md
-docs/sdd/data-dictionary-spec.md
-docs/roadmap.md
-docs/repository-audit.md
-docs/adr/*
-docs/codex/*
+spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
+spec_driven_EDA_plan/docs/sdd/mvp-scope.md
+spec_driven_EDA_plan/docs/sdd/data-dictionary-spec.md
+spec_driven_EDA_plan/docs/roadmap.md
+spec_driven_EDA_plan/docs/repository-audit.md
+spec_driven_EDA_plan/docs/adr/*
+spec_driven_EDA_plan/docs/codex/*
 ```
 
 ### PR 2: Add TDD external-fixture plan
@@ -45,11 +45,11 @@ Scope:
 Files:
 
 ```text
-docs/sdd/tdd-external-fixtures.md
-docs/codex/revised-pr-plan-tdd-first.md
-docs/codex/tdd-first-codex-instructions.md
-docs/codex/update-existing-docs.md
-docs/adr/0005-external-fixture-tdd.md
+spec_driven_EDA_plan/docs/sdd/tdd-external-fixtures.md
+spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
+spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
+spec_driven_EDA_plan/docs/codex/update-existing-docs.md
+spec_driven_EDA_plan/docs/adr/0005-external-fixture-tdd.md
 ```
 
 No R code changes.
