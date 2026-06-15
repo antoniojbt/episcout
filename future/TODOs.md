@@ -9,9 +9,8 @@
 - For the activated spec, record baseline package test/check status before package-code changes.
 - Keep implementation work scoped to one numbered spec at a time.
 - Review fixture anti-circularity guardrails before adding new expected outputs.
-- Keep README and `NEWS.md` aligned with user-facing workflow changes.
 
-Use this template and place the task under the appropriate priority heading:
+- Use this template and place the task under the appropriate priority heading:
 
 ```markdown
 - Short title:
@@ -25,7 +24,10 @@ Use this template and place the task under the appropriate priority heading:
     - Suggested spec ID:
 ```
 
-For simple tasks only use e.g. `- [ ] xxx`
+- For simple tasks only use e.g. `- [ ] xxx`
+
+- Keep README and `NEWS.md` aligned with user-facing workflow changes.
+- Move completed items to `changelog.md`
 
 ## Task list
 
@@ -46,6 +48,7 @@ For simple tasks only use e.g. `- [ ] xxx`
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
 - [ ] Revisit large-data backend implementation after the design spec is
       accepted.
+- [ ] review `future/ideas/codex_reviews_from_PRs_to_check_minor.md` and determine whether they are still valid and need addressing.
 
 ### Priority 3
 
