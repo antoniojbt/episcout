@@ -61,7 +61,7 @@ spec_data <- data.frame(
   levels = c("", "Female;Male;Unknown", "0;1", ""),
   min = c(18, NA, 0, 0),
   max = c(110, NA, 1, 3650),
-  missing_codes = c("", "", "", ""),
+  missing_codes = c("", "Unknown", "", ""),
   required = c(TRUE, TRUE, TRUE, TRUE),
   group = c("demographics", "demographics", "outcomes", "outcomes"),
   description = c(
@@ -76,6 +76,11 @@ spec_data <- data.frame(
 spec <- epi_eda_spec(spec_data)
 spec
 ```
+
+The optional `missing_codes` column accepts semicolon-separated sentinel values.
+These values are counted as missing in the missingness profile and excluded from
+observed summaries. Categorical summaries report `p` over all rows and
+`p_observed` over observed non-missing rows.
 
 ## Prepare the workflow before data access
 

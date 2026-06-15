@@ -8,9 +8,9 @@ Status: Implemented
 Run before implementation where practical:
 
 ```bash
-scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
-scripts/rscript_env_caller.R -e "devtools::check(manual = FALSE)"
-scripts/rscript_env_caller.R -e "covr::package_coverage()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::package_coverage()"
 ```
 
 ## Test Files
@@ -38,5 +38,5 @@ Use a narrower new test file only if it makes the edge-case contracts clearer.
 ```bash
 scripts/rscript_env_caller.R -e "devtools::load_all(); testthat::test_file('tests/testthat/test-epi_stats_numeric.R')"
 scripts/rscript_env_caller.R -e "devtools::load_all(); testthat::test_file('tests/testthat/test-stats.R')"
-scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
 ```

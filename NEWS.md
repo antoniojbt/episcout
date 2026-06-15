@@ -12,6 +12,9 @@
 - Added fixture-backed tests for the EDA workflow using a pinned
   `blood_storage` fixture.
 - Added an HTML EDA report template.
+- EDA missingness and summaries now apply specification `missing_codes`.
+- Categorical EDA summaries now include `p_observed` alongside the existing
+  total-row denominator `p`.
 - Documented current MVP limits: basic summaries and plots, synthetic data for
   pipeline preparation only, and no Arrow, DuckDB or data.table EDA backends yet.
 - Cleaned up Rd documentation and CRAN-check issues on the development branch.

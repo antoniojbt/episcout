@@ -12,9 +12,12 @@ epi_eda_profile_summaries(data, spec)
 \item{spec}{An EDA specification data frame or CSV path.}
 }
 \value{
-A named list with \code{numeric} and \code{categorical} data frames.
+A named list with \code{numeric} and \code{categorical} data frames. In
+categorical summaries, \code{p} uses total rows as the denominator and
+\code{p_observed} uses observed non-missing rows.
 }
 \description{
 Produce machine-readable descriptive summaries for variables listed in a
-specification-first EDA data dictionary.
+specification-first EDA data dictionary. Standard \code{NA} values and configured
+\code{missing_codes} are excluded from observed summaries.
 }
