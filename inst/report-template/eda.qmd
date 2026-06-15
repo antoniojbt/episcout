@@ -1,0 +1,56 @@
+---
+title: "Specification-first EDA Report"
+format: html
+params:
+  results: null
+  synthetic: false
+---
+
+```{r setup, include=FALSE}
+results <- params$results
+mode_label <- if (isTRUE(params$synthetic)) "Synthetic" else "Real"
+```
+
+# EDA Report
+
+Mode: `r mode_label`
+
+```{r metadata, echo=FALSE}
+knitr::kable(results$metadata, caption = "Workflow metadata")
+```
+
+## Schema
+
+```{r schema, echo=FALSE}
+knitr::kable(results$schema, caption = "Schema checks")
+```
+
+## Missingness
+
+```{r missingness, echo=FALSE}
+knitr::kable(results$missing, caption = "Missing-value profile")
+```
+
+## Summaries
+
+### Numeric Summaries
+
+```{r numeric-summaries, echo=FALSE}
+knitr::kable(results$summaries$numeric, caption = "Numeric summaries")
+```
+
+### Categorical Summaries
+
+```{r categorical-summaries, echo=FALSE}
+knitr::kable(results$summaries$categorical, caption = "Categorical summaries")
+```
+
+## Plots
+
+```{r plots, echo=FALSE, fig.width=7, fig.height=4}
+for (name in names(results$plots)) {
+  cat("### ", name, "\n\n", sep = "")
+  print(results$plots[[name]])
+  cat("\n\n")
+}
+```
