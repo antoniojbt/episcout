@@ -27,19 +27,20 @@ operational source of truth for what happens next.
 | PR 4 synthetic-data failing tests | Done | Tests are present and may fail until PR 5 implements `generate_synthetic_data()`. |
 | PR 5 synthetic-data implementation | Done | `generate_synthetic_data()` is implemented. |
 | PR 6 summary and plot failing tests | Done | Tests are present and may fail until PR 7 implements `profile_summaries()` and `profile_plots()`. |
-| PR 7 summary and plot implementation | Active | Follow Instruction 7 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
-| Later run, report and template work | Not started | Continue through the PR plan after PR 7. |
+| PR 7 summary and plot implementation | Done | `profile_summaries()` and `profile_plots()` are implemented. |
+| PR 8 run_eda failing tests | Active | Follow Instruction 8 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
+| Later run, report and template work | Not started | Continue through the PR plan after PR 8. |
 
 ## Active PR
 
 ```text
-PR 7: Implement summaries and plots
+PR 8: Add failing run_eda tests
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 7 in:
+Follow Instruction 8 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
@@ -56,23 +57,25 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 7 Scope
+## PR 8 Scope
 
 Must edit:
 
 ```text
-R/eda_summaries.R
-R/eda_plots.R
+tests/testthat/test-run_eda-fixtures.R
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
 May read:
 
 ```text
-tests/testthat/test-eda_summaries-fixtures.R
-tests/testthat/test-eda_plots-fixtures.R
 tests/testthat/fixtures/blood_storage/blood_storage.csv
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
+tests/testthat/test-eda_spec-fixtures.R
+tests/testthat/test-eda_schema-fixtures.R
+tests/testthat/test-eda_missing-fixtures.R
+tests/testthat/test-eda_summaries-fixtures.R
+tests/testthat/test-eda_plots-fixtures.R
 ```
 
 Must not edit:
@@ -82,6 +85,8 @@ R/eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
 R/eda_synthetic.R
+R/eda_summaries.R
+R/eda_plots.R
 R/run_eda.R
 R/eda_report.R
 inst/report-template/
@@ -91,7 +96,7 @@ inst/project-template/
 Expected test state:
 
 ```text
-PR 7 is expected to make the PR 6 summary and plot tests pass by implementing `profile_summaries()` and `profile_plots()`.
+PR 8 may leave tests failing until PR 9 implements `run_eda()`.
 ```
 
 ## Closeout Rule
