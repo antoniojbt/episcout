@@ -6,16 +6,16 @@
 #' @param num_vec Numeric vector to summarise.
 #' @param na.rm Logical; should \code{NA} values be removed prior to computations?
 #'   Default is \code{TRUE}.
-#' @param coef Numeric; multiplier for the IQR in Tukey’s outlier rule.
+#' @param coef Numeric; multiplier for the IQR in Tukey's outlier rule.
 #'   Values more than \code{coef * IQR} below \code{Q1} or above \code{Q3} are
 #'   counted as outliers. Default is \code{1.5}.
 #' @param ... Additional arguments passed to \code{\link[e1071]{skewness}} and
 #'   \code{\link[e1071]{kurtosis}} (e.g., \code{type}).
 #'
-#' @return A one‐row \code{data.frame} with the following columns:
+#' @return A one-row \code{data.frame} with the following columns:
 #' \describe{
 #'   \item{\code{n}}{Total length of the input vector.}
-#'   \item{\code{n_nonNA}}{Number of non‐\code{NA} observations.}
+#'   \item{\code{n_nonNA}}{Number of non-\code{NA} observations.}
 #'   \item{\code{NA_count}}{Count of \code{NA} values.}
 #'   \item{\code{NA_percentage}}{Percentage of values that are \code{NA}.}
 #'   \item{\code{sum}}{Sum of values.}
@@ -25,26 +25,26 @@
 #'   \item{\code{median}}{Median.}
 #'   \item{\code{quantile_75}}{75th percentile (\code{Q3}).}
 #'   \item{\code{max}}{Maximum value.}
-#'   \item{\code{IQR}}{Interquartile range (\code{Q3} – \code{Q1}).}
+#'   \item{\code{IQR}}{Interquartile range (\code{Q3 - Q1}).}
 #'   \item{\code{SD}}{Standard deviation.}
 #'   \item{\code{CV}}{Coefficient of variation (\code{SD / mean}).}
 #'   \item{\code{variance}}{Variance.}
 #'   \item{\code{sem}}{Standard error of the mean (\code{SD / sqrt(n_nonNA)}).}
 #'   \item{\code{skewness}}{Sample skewness (via \pkg{e1071}).}
 #'   \item{\code{kurtosis}}{Sample kurtosis (via \pkg{e1071}).}
-#'   \item{\code{Shapiro_Wilk_p_value}}{P‐value from Shapiro–Wilk test (if 3 &lt; \code{n_nonNA} &lt; 5000; else \code{NA}).}
-#'   \item{\code{lower_fence}}{Lower Tukey fence (\code{Q1} − \code{coef * IQR}).}
+#'   \item{\code{Shapiro_Wilk_p_value}}{P-value from Shapiro-Wilk test (if 3 &lt; \code{n_nonNA} &lt; 5000; else \code{NA}).}
+#'   \item{\code{lower_fence}}{Lower Tukey fence (\code{Q1 - coef * IQR}).}
 #'   \item{\code{upper_fence}}{Upper Tukey fence (\code{Q3} + \code{coef * IQR}).}
 #'   \item{\code{n_below_lower}}{Count of values &lt; \code{lower_fence}.}
 #'   \item{\code{n_above_upper}}{Count of values &gt; \code{upper_fence}.}
 #'   \item{\code{outlier_count}}{Total number of Tukey outliers.}
-#'   \item{\code{outlier_percentage}}{Percentage of non‐\code{NA} values flagged as outliers.}
+#'   \item{\code{outlier_percentage}}{Percentage of non-\code{NA} values flagged as outliers.}
 #' }
 #'
 #' @details
-#' Missing values are dropped when \code{na.rm = TRUE}.  The Shapiro–Wilk test
+#' Missing values are dropped when \code{na.rm = TRUE}.  The Shapiro-Wilk test
 #' for normality is only run for sample sizes between 4 and 4999; otherwise
-#' its p‐value is reported as \code{NA}. For skewness: negative/longer left tail,
+#' its p-value is reported as \code{NA}. For skewness: negative/longer left tail,
 #' positive/longer right tail, values above 1 usually means non-normality.
 #' For kurtosis consider lower values, broader shape and longer tails (platy ~<3),
 #' normal (meso ~3) and slender/no tails (lepto ~<3).
@@ -92,7 +92,7 @@ epi_stats_numeric <- function(num_vec = NULL,
   outlier_count <- epi_stats_count_outliers(num_vec, coef = coef)
   outlier_percentage <- if (n_nonNA > 0) outlier_count / n_nonNA * 100 else NA_real_
 
-  # Shapiro–Wilk normality
+  # Shapiro-Wilk normality
   normality <- NA_real_
   if (n_nonNA > 3 && n_nonNA < 5000) {
     normality <- tryCatch(

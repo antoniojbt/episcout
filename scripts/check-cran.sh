@@ -20,10 +20,26 @@ if [[ ! -x "$r_bin" ]]; then
   exit 127
 fi
 
-rm -f "${check_dir}"/*.tar.gz
+work_dir="$(mktemp -d "${TMPDIR:-/tmp}/episcout-cran-check.XXXXXX")"
+
+copy_check_artifacts() {
+  local status=$?
+
+  rm -f "${check_dir}"/*.tar.gz
+  rm -rf "${check_dir}/episcout.Rcheck"
+  cp "${work_dir}"/episcout_*.tar.gz "${check_dir}/" 2>/dev/null || true
+  if [[ -d "${work_dir}/episcout.Rcheck" ]]; then
+    cp -R "${work_dir}/episcout.Rcheck" "${check_dir}/"
+  fi
+  rm -rf "$work_dir"
+
+  exit "$status"
+}
+
+trap copy_check_artifacts EXIT
 
 (
-  cd "$check_dir"
+  cd "$work_dir"
   "$r_bin" CMD build "$repo_root" --no-resave-data --compact-vignettes=gs+qpdf
   tarball="$(find . -maxdepth 1 -name 'episcout_*.tar.gz' -print -quit)"
   if [[ -z "$tarball" ]]; then
