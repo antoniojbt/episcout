@@ -9,12 +9,12 @@
 #' @return A named list with `numeric` and `categorical` data frames.
 #'
 #' @export
-profile_summaries <- function(data, spec) {
+epi_eda_profile_summaries <- function(data, spec) {
   if (!is.data.frame(data)) {
     stop("EDA data must be a data frame.", call. = FALSE)
   }
 
-  spec <- eda_spec(spec)
+  spec <- epi_eda_spec(spec)
   missing_vars <- setdiff(spec$name, names(data))
 
   if (length(missing_vars) > 0) {

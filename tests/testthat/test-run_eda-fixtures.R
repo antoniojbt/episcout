@@ -1,4 +1,4 @@
-context("fixture-backed run_eda workflow tests")
+context("fixture-backed epi_eda_run workflow tests")
 
 library(testthat)
 library(episcout)
@@ -9,11 +9,11 @@ spec_path <- file.path(fixture_dir, "blood_storage_spec.csv")
 
 expected_components <- c("metadata", "schema", "missing", "summaries", "plots")
 
-test_that("run_eda returns expected components for real fixture data", {
+test_that("epi_eda_run returns expected components for real fixture data", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
 
-  observed <- run_eda(data = data, spec = spec)
+  observed <- epi_eda_run(data = data, spec = spec)
 
   expect_type(observed, "list")
   expect_named(observed, expected_components)
@@ -24,27 +24,27 @@ test_that("run_eda returns expected components for real fixture data", {
   expect_type(observed$plots, "list")
 })
 
-test_that("run_eda real-data workflow matches component functions", {
+test_that("epi_eda_run real-data workflow matches component functions", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
 
-  observed <- run_eda(data = data, spec = spec)
+  observed <- epi_eda_run(data = data, spec = spec)
 
-  expect_equal(observed$schema, check_schema(data, spec), ignore_attr = TRUE)
-  expect_equal(observed$missing, profile_missing(data, spec), ignore_attr = TRUE)
+  expect_equal(observed$schema, epi_eda_check_schema(data, spec), ignore_attr = TRUE)
+  expect_equal(observed$missing, epi_eda_profile_missing(data, spec), ignore_attr = TRUE)
   expect_equal(
     observed$summaries,
-    profile_summaries(data, spec),
+    epi_eda_profile_summaries(data, spec),
     tolerance = 1e-12,
     ignore_attr = TRUE
   )
   expect_named(observed$plots, spec$name)
 })
 
-test_that("run_eda supports synthetic fixture workflow", {
-  spec <- eda_spec(spec_path)
+test_that("epi_eda_run supports synthetic fixture workflow", {
+  spec <- epi_eda_spec(spec_path)
 
-  observed <- run_eda(
+  observed <- epi_eda_run(
     data = NULL,
     spec = spec,
     synthetic = TRUE,
@@ -60,13 +60,13 @@ test_that("run_eda supports synthetic fixture workflow", {
   expect_named(observed$plots, spec$name)
 })
 
-test_that("run_eda writes workflow outputs to a temporary output directory", {
+test_that("epi_eda_run writes workflow outputs to a temporary output directory", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
   output_dir <- tempfile("run-eda-fixture-")
   dir.create(output_dir)
 
-  observed <- run_eda(data = data, spec = spec, output_dir = output_dir)
+  observed <- epi_eda_run(data = data, spec = spec, output_dir = output_dir)
 
   expect_true(dir.exists(output_dir))
   expect_true(file.exists(file.path(output_dir, "metadata.csv")))

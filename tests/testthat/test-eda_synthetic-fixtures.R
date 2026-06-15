@@ -6,27 +6,27 @@ library(episcout)
 fixture_dir <- file.path("fixtures", "blood_storage")
 spec_path <- file.path(fixture_dir, "blood_storage_spec.csv")
 
-spec <- eda_spec(spec_path)
+spec <- epi_eda_spec(spec_path)
 
 split_levels <- function(x) {
   strsplit(x, ";", fixed = TRUE)[[1]]
 }
 
 test_that("synthetic data has the same variable names as the specification", {
-  synthetic <- generate_synthetic_data(spec, n = 25, seed = 1)
+  synthetic <- epi_eda_generate_synthetic_data(spec, n = 25, seed = 1)
 
   expect_s3_class(synthetic, "data.frame")
   expect_identical(names(synthetic), spec$name)
 })
 
 test_that("synthetic data has the requested row count", {
-  synthetic <- generate_synthetic_data(spec, n = 37, seed = 1)
+  synthetic <- epi_eda_generate_synthetic_data(spec, n = 37, seed = 1)
 
   expect_equal(nrow(synthetic), 37L)
 })
 
 test_that("synthetic categorical and binary values respect specification levels", {
-  synthetic <- generate_synthetic_data(spec, n = 100, seed = 1)
+  synthetic <- epi_eda_generate_synthetic_data(spec, n = 100, seed = 1)
 
   categorical_spec <- spec[spec$type %in% c("categorical", "binary") &
     !is.na(spec$levels) & spec$levels != "", , drop = FALSE]
@@ -44,7 +44,7 @@ test_that("synthetic categorical and binary values respect specification levels"
 })
 
 test_that("synthetic numeric and integer values respect specification min and max", {
-  synthetic <- generate_synthetic_data(spec, n = 100, seed = 1)
+  synthetic <- epi_eda_generate_synthetic_data(spec, n = 100, seed = 1)
 
   ranged_spec <- spec[spec$type %in% c("numeric", "integer") &
     !is.na(spec$min) & spec$min != "" &
@@ -64,8 +64,8 @@ test_that("synthetic numeric and integer values respect specification min and ma
 })
 
 test_that("fixed seed gives identical synthetic output", {
-  synthetic_a <- generate_synthetic_data(spec, n = 25, seed = 2024)
-  synthetic_b <- generate_synthetic_data(spec, n = 25, seed = 2024)
+  synthetic_a <- epi_eda_generate_synthetic_data(spec, n = 25, seed = 2024)
+  synthetic_b <- epi_eda_generate_synthetic_data(spec, n = 25, seed = 2024)
 
   expect_identical(synthetic_a, synthetic_b)
 })

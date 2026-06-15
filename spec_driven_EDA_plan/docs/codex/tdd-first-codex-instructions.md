@@ -75,7 +75,7 @@ Task:
 Add fixture-backed tests before implementing the new functions.
 
 Add:
-- tests/testthat/test-eda_spec-fixtures.R
+- tests/testthat/test-epi_eda_spec-fixtures.R
 - tests/testthat/test-eda_schema-fixtures.R
 - tests/testthat/test-eda_missing-fixtures.R
 
@@ -90,7 +90,7 @@ Requirements:
 2. Tests must not require internet.
 3. Tests must not depend on private data.
 4. Tests must compare against independently computed expected outputs.
-5. Do not implement eda_spec(), check_schema() or profile_missing() in this PR.
+5. Do not implement epi_eda_spec(), epi_eda_check_schema() or epi_eda_profile_missing() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 2 Done and PR 3 Active. Record that PR 2 may
@@ -104,27 +104,27 @@ Task:
 Implement only the functions required to pass the fixture-backed tests from the previous PR.
 
 Add:
-- R/eda_spec.R
+- R/epi_eda_spec.R
 - R/eda_schema.R
 - R/eda_missing.R
 
 Functions:
-- eda_spec()
-- validate_eda_spec()
-- check_schema()
-- profile_missing()
+- epi_eda_spec()
+- epi_eda_validate_spec()
+- epi_eda_check_schema()
+- epi_eda_profile_missing()
 
 Requirements:
 1. Keep the API small.
 2. Validate inputs clearly.
 3. Return machine-readable tibbles or data frames.
 4. Add roxygen2 documentation.
-5. Do not implement synthetic data, summaries, plots, reports or run_eda() in this PR.
+5. Do not implement synthetic data, summaries, plots, reports or epi_eda_run() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 3 Done and PR 4 Active. Tests should no longer
-fail because eda_spec(), validate_eda_spec(), check_schema() or
-profile_missing() are missing.
+fail because epi_eda_spec(), epi_eda_validate_spec(), epi_eda_check_schema() or
+epi_eda_profile_missing() are missing.
 ```
 
 ## Instruction 4: Add failing synthetic-data tests
@@ -145,18 +145,18 @@ Requirements:
 3. Synthetic values respect levels where provided.
 4. Synthetic values respect min/max where provided.
 5. Fixed seed gives identical output.
-6. Do not implement generate_synthetic_data() in this PR.
+6. Do not implement epi_eda_generate_synthetic_data() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 4 Done and PR 5 Active. Record that PR 4 may
-leave tests failing until PR 5 implements generate_synthetic_data().
+leave tests failing until PR 5 implements epi_eda_generate_synthetic_data().
 ```
 
 ## Instruction 5: Implement synthetic-data generation
 
 ```text
 Task:
-Implement generate_synthetic_data() only.
+Implement epi_eda_generate_synthetic_data() only.
 
 Add:
 - R/eda_synthetic.R
@@ -166,7 +166,7 @@ Requirements:
 2. Support numeric, integer, categorical, binary, date, datetime and text variables.
 3. Use deterministic output with a fixed seed.
 4. Do not add heavy dependencies.
-5. Do not implement summaries, plots, reports or run_eda() in this PR.
+5. Do not implement summaries, plots, reports or epi_eda_run() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 5 Done and PR 6 Active.
@@ -189,12 +189,12 @@ Optional expected outputs:
 Requirements:
 1. Expected summary outputs must be independently computed.
 2. Plot tests should check object classes and names, not visual appearance.
-3. Do not implement profile_summaries() or profile_plots() in this PR.
+3. Do not implement epi_eda_profile_summaries() or epi_eda_profile_plots() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 6 Done and PR 7 Active. Record that PR 6 may
-leave tests failing until PR 7 implements profile_summaries() and
-profile_plots().
+leave tests failing until PR 7 implements epi_eda_profile_summaries() and
+epi_eda_profile_plots().
 ```
 
 ## Instruction 7: Implement summaries and plots
@@ -208,49 +208,49 @@ Add:
 - R/eda_plots.R
 
 Functions:
-- profile_summaries()
-- profile_plots()
+- epi_eda_profile_summaries()
+- epi_eda_profile_plots()
 
 Requirements:
 1. Use the EDA specification to decide variable handling.
 2. Use existing epi_stats_* helpers where suitable.
 3. Return machine-readable outputs.
 4. Return plot objects without printing them.
-5. Do not implement run_eda() or reporting in this PR.
+5. Do not implement epi_eda_run() or reporting in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 7 Done and PR 8 Active.
 ```
 
-## Instruction 8: Add failing run_eda tests
+## Instruction 8: Add failing epi_eda_run tests
 
 ```text
 Task:
-Add fixture-backed end-to-end tests for run_eda().
+Add fixture-backed end-to-end tests for epi_eda_run().
 
 Add:
-- tests/testthat/test-run_eda-fixtures.R
+- tests/testthat/test-epi_eda_run-fixtures.R
 
 Requirements:
 1. Test real fixture data workflow.
 2. Test synthetic data workflow.
 3. Use temporary directories for output-file tests.
 4. Check expected named components: metadata, schema, missing, summaries, plots.
-5. Do not implement run_eda() in this PR.
+5. Do not implement epi_eda_run() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 8 Done and PR 9 Active. Record that PR 8 may
-leave tests failing until PR 9 implements run_eda().
+leave tests failing until PR 9 implements epi_eda_run().
 ```
 
-## Instruction 9: Implement run_eda()
+## Instruction 9: Implement epi_eda_run()
 
 ```text
 Task:
-Implement run_eda().
+Implement epi_eda_run().
 
 Add:
-- R/run_eda.R
+- R/epi_eda_run.R
 
 Requirements:
 1. Accept data and spec.
@@ -277,9 +277,9 @@ Continue with the revised PR plan.
 
 Next steps:
 1. Add failing report-rendering tests.
-2. Implement render_eda_report().
-3. Add failing project-template and use_episcout_project() contract tests.
-4. Implement project template and use_episcout_project().
+2. Implement epi_eda_render_report().
+3. Add failing project-template and epi_eda_create_project() contract tests.
+4. Implement project template and epi_eda_create_project().
 5. Add large-data design note.
 
 Follow spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md.
@@ -293,17 +293,17 @@ dashboard.
 
 ```text
 Task:
-Add failing tests for the project template and use_episcout_project() contract.
+Add failing tests for the project template and epi_eda_create_project() contract.
 
 Add:
 - tests/testthat/test-project-template.R
 
 Requirements:
 1. Tests define the bundled inst/project-template/ scaffold.
-2. Tests define use_episcout_project(path, overwrite = FALSE).
-3. Tests require reports/eda.qmd to culminate in render_eda_report().
+2. Tests define epi_eda_create_project(path, overwrite = FALSE).
+3. Tests require reports/eda.qmd to culminate in epi_eda_render_report().
 4. Do not add inst/project-template/ in this PR.
-5. Do not implement use_episcout_project() in this PR.
+5. Do not implement epi_eda_create_project() in this PR.
 
 Closeout:
 Update START_HERE.md to mark PR 12 Done and PR 13 Active. Record that PR 12
@@ -314,20 +314,20 @@ may leave tests failing until PR 13 implements the scaffold and helper.
 
 ```text
 Task:
-Implement the project template and use_episcout_project().
+Implement the project template and epi_eda_create_project().
 
 Add:
 - inst/project-template/
-- R/use_episcout_project.R
+- R/epi_eda_create_project.R
 
 Requirements:
 1. Include metadata/data_dictionary.csv, config/eda.yml, _targets.R,
    reports/eda.qmd, R/project-derivations.R and outputs/.
-2. use_episcout_project(path, overwrite = FALSE) creates the destination
+2. epi_eda_create_project(path, overwrite = FALSE) creates the destination
    project and copies the scaffold.
 3. Refuse to overwrite existing files unless overwrite = TRUE.
 4. Return the normalized project path invisibly.
-5. Keep the report path connected to render_eda_report().
+5. Keep the report path connected to epi_eda_render_report().
 
 Closeout:
 Update START_HERE.md to mark PR 13 Done and PR 14 Active.

@@ -49,11 +49,11 @@ make_expected_categorical_summary <- function(data, spec) {
   do.call(rbind, rows)
 }
 
-test_that("profile_summaries returns numeric and categorical summary components", {
+test_that("epi_eda_profile_summaries returns numeric and categorical summary components", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
 
-  observed <- profile_summaries(data, spec)
+  observed <- epi_eda_profile_summaries(data, spec)
 
   expect_type(observed, "list")
   expect_named(observed, c("numeric", "categorical"))
@@ -61,12 +61,12 @@ test_that("profile_summaries returns numeric and categorical summary components"
   expect_s3_class(observed$categorical, "data.frame")
 })
 
-test_that("profile_summaries numeric output matches independent fixture calculations", {
+test_that("epi_eda_profile_summaries numeric output matches independent fixture calculations", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
   expected <- make_expected_numeric_summary(data, spec)
 
-  observed <- profile_summaries(data, spec)
+  observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(
     as.data.frame(observed$numeric),
@@ -76,12 +76,12 @@ test_that("profile_summaries numeric output matches independent fixture calculat
   )
 })
 
-test_that("profile_summaries categorical output matches independent fixture calculations", {
+test_that("epi_eda_profile_summaries categorical output matches independent fixture calculations", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
   expected <- make_expected_categorical_summary(data, spec)
 
-  observed <- profile_summaries(data, spec)
+  observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(
     as.data.frame(observed$categorical),

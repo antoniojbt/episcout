@@ -98,12 +98,12 @@ Only create this test if it is lightweight and does not run fixture-regeneration
 Do not edit implementation files for this PR:
 
 ```text
-R/eda_spec.R
+R/epi_eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
 R/eda_summaries.R
 R/eda_plots.R
-R/run_eda.R
+R/epi_eda_run.R
 ```
 
 Do not add or modify package behaviour.
@@ -151,14 +151,14 @@ The script must not call any of these:
 ```text
 library(episcout)
 episcout::
-eda_spec(
-validate_eda_spec(
-check_schema(
-profile_missing(
-profile_summaries(
-profile_plots(
-run_eda(
-generate_synthetic_data(
+epi_eda_spec(
+epi_eda_validate_spec(
+epi_eda_check_schema(
+epi_eda_profile_missing(
+epi_eda_profile_summaries(
+epi_eda_profile_plots(
+epi_eda_run(
+epi_eda_generate_synthetic_data(
 ```
 
 ## Expected outputs
@@ -386,14 +386,14 @@ test_that("fixture regeneration scripts do not call episcout EDA functions", {
   forbidden <- c(
     "library\\(episcout\\)",
     "episcout::",
-    "eda_spec\\(",
-    "validate_eda_spec\\(",
-    "check_schema\\(",
-    "profile_missing\\(",
-    "profile_summaries\\(",
-    "profile_plots\\(",
-    "run_eda\\(",
-    "generate_synthetic_data\\("
+    "epi_eda_spec\\(",
+    "epi_eda_validate_spec\\(",
+    "epi_eda_check_schema\\(",
+    "epi_eda_profile_missing\\(",
+    "epi_eda_profile_summaries\\(",
+    "epi_eda_profile_plots\\(",
+    "epi_eda_run\\(",
+    "epi_eda_generate_synthetic_data\\("
   )
 
   for (pattern in forbidden) {

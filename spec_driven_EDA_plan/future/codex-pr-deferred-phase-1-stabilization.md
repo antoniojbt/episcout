@@ -36,9 +36,9 @@ user explicitly requests that.
 
 Use this instruction when one of these triggers is present:
 
-- `profile_summaries()` depends on `epi_stats_numeric()` or
+- `epi_eda_profile_summaries()` depends on `epi_stats_numeric()` or
   `epi_stats_summary()`.
-- `run_eda()` depends on older `epi_*` helpers.
+- `epi_eda_run()` depends on older `epi_*` helpers.
 - CI, `R CMD check`, or local tests expose helper failures.
 - A release or broader package hardening pass is being prepared.
 - The user explicitly asks to activate deferred Phase 1 stabilization.
@@ -124,13 +124,13 @@ Do not edit current spec-first implementation files unless a failing test proves
 that the deferred hardening PR directly requires it:
 
 ```text
-R/eda_spec.R
+R/epi_eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
 R/eda_synthetic.R
 R/eda_summaries.R
 R/eda_plots.R
-R/run_eda.R
+R/epi_eda_run.R
 R/eda_report.R
 ```
 

@@ -4,12 +4,14 @@ library(testthat)
 library(episcout)
 
 expected_project_template_entries <- c(
+  "README.md",
   "metadata/data_dictionary.csv",
   "config/eda.yml",
+  "data/.gitkeep",
   "_targets.R",
   "reports/eda.qmd",
   "R/project-derivations.R",
-  "outputs"
+  "outputs/.gitkeep"
 )
 
 expect_project_template_entries <- function(root) {
@@ -28,6 +30,13 @@ read_project_report_template <- function(root) {
   )
 }
 
+read_project_targets <- function(root) {
+  paste(
+    readLines(file.path(root, "_targets.R"), warn = FALSE),
+    collapse = "\n"
+  )
+}
+
 test_that("project template is bundled with the expected scaffold", {
   template_path <- system.file("project-template", package = "episcout")
 
@@ -38,42 +47,46 @@ test_that("project template is bundled with the expected scaffold", {
 
   expect_true(dir.exists(template_path))
   expect_project_template_entries(template_path)
-  expect_match(read_project_report_template(template_path), "render_eda_report")
+  expect_match(read_project_report_template(template_path), "epi_eda_render_report")
+  expect_match(read_project_targets(template_path), "epi_eda_render_report")
+  expect_no_match(read_project_report_template(template_path), "\\brender_eda_report\\b")
+  expect_no_match(read_project_targets(template_path), "\\brender_eda_report\\b")
 })
 
-test_that("use_episcout_project creates the expected scaffold", {
+test_that("epi_eda_create_project creates the expected scaffold", {
   project_path <- tempfile("episcout-project-")
 
-  returned_path <- use_episcout_project(project_path)
+  returned_path <- epi_eda_create_project(project_path)
 
   expect_equal(
     normalizePath(returned_path, winslash = "/", mustWork = TRUE),
     normalizePath(project_path, winslash = "/", mustWork = TRUE)
   )
   expect_project_template_entries(project_path)
-  expect_match(read_project_report_template(project_path), "render_eda_report")
+  expect_match(read_project_report_template(project_path), "epi_eda_render_report")
+  expect_match(read_project_targets(project_path), "epi_eda_render_report")
 })
 
-test_that("use_episcout_project refuses to overwrite existing files by default", {
+test_that("epi_eda_create_project refuses to overwrite existing files by default", {
   project_path <- tempfile("episcout-project-existing-")
   dir.create(file.path(project_path, "metadata"), recursive = TRUE)
   existing_file <- file.path(project_path, "metadata", "data_dictionary.csv")
   writeLines("existing", existing_file)
 
   expect_error(
-    use_episcout_project(project_path),
+    epi_eda_create_project(project_path),
     regexp = "overwrite|exist"
   )
   expect_equal(readLines(existing_file, warn = FALSE), "existing")
 })
 
-test_that("use_episcout_project can overwrite existing files when requested", {
+test_that("epi_eda_create_project can overwrite existing files when requested", {
   project_path <- tempfile("episcout-project-overwrite-")
   dir.create(file.path(project_path, "metadata"), recursive = TRUE)
   existing_file <- file.path(project_path, "metadata", "data_dictionary.csv")
   writeLines("existing", existing_file)
 
-  returned_path <- use_episcout_project(project_path, overwrite = TRUE)
+  returned_path <- epi_eda_create_project(project_path, overwrite = TRUE)
 
   expect_equal(
     normalizePath(returned_path, winslash = "/", mustWork = TRUE),

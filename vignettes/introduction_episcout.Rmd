@@ -55,9 +55,9 @@ install.packages(c(
 
 Many parameters are given as defaults, admittedly with quite a bit of personal preference, but with the aim of processing hundreds of thousands of observations from hundreds of variables from multiple data sets a bit faster. Hence, convenience and standardisation are often preferred. This may not be your case however but it is simple enough to defer to your preferred R packages.
 
-Below are a number of examples of how to use episcout functions.
-
-All functions start with "epi\_".
+Below are a number of examples of how to use lower-level episcout helper
+functions. For a complete specification-first EDA workflow, see the
+`specification-first-eda` vignette.
 
 ```{r library, message=FALSE}
 library(episcout)
@@ -68,6 +68,7 @@ Currently there are functions for:
 - pre-processing: epi\_clean\_\*
 - descriptive statistics: epi\_stats\_\*
 - visualising: epi\_plot\_\*
+- specification-first EDA workflows: epi\_eda\_\*
 - various: epi\_read() ; epi\_write() etc.
 
 ## A few examples with dummy data
@@ -89,8 +90,7 @@ df
 
 `epi_clean_get_dups()` identifies duplicate rows based on a chosen column.
 ```{r}
-epi_clean_get_dups(df, "id", 1)
-epi_clean_get_dups(df, "id", 1)
+epi_clean_get_dups(df, "var_id", 1)
 ```
 
 ## Numeric summaries
@@ -111,4 +111,3 @@ epi_plot_hist(df, "x")
 ```
 
 This vignette only scratches the surface of what `episcout` can do. For more details see the function documentation.
-

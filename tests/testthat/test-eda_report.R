@@ -37,13 +37,13 @@ test_that("EDA report template is bundled with report sections", {
   expect_match(template_text, "plot|Plot")
 })
 
-test_that("render_eda_report renders a real fixture-data report", {
+test_that("epi_eda_render_report renders a real fixture-data report", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
   output_dir <- tempfile("eda-report-real-")
   dir.create(output_dir)
 
-  report_path <- render_eda_report(
+  report_path <- epi_eda_render_report(
     data = data,
     spec = spec,
     output_dir = output_dir
@@ -59,12 +59,12 @@ test_that("render_eda_report renders a real fixture-data report", {
   expect_match(report_text, "real|Real")
 })
 
-test_that("render_eda_report labels synthetic fixture reports", {
-  spec <- eda_spec(spec_path)
+test_that("epi_eda_render_report labels synthetic fixture reports", {
+  spec <- epi_eda_spec(spec_path)
   output_dir <- tempfile("eda-report-synthetic-")
   dir.create(output_dir)
 
-  report_path <- render_eda_report(
+  report_path <- epi_eda_render_report(
     data = NULL,
     spec = spec,
     output_dir = output_dir,
@@ -77,13 +77,13 @@ test_that("render_eda_report labels synthetic fixture reports", {
   expect_match(read_report_text(report_path), "synthetic|Synthetic")
 })
 
-test_that("render_eda_report writes machine-readable workflow outputs", {
+test_that("epi_eda_render_report writes machine-readable workflow outputs", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
   output_dir <- tempfile("eda-report-outputs-")
   dir.create(output_dir)
 
-  render_eda_report(
+  epi_eda_render_report(
     data = data,
     spec = spec,
     output_dir = output_dir
@@ -96,13 +96,13 @@ test_that("render_eda_report writes machine-readable workflow outputs", {
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
 })
 
-test_that("render_eda_report requires an existing output directory", {
+test_that("epi_eda_render_report requires an existing output directory", {
   data <- read.csv(data_path, check.names = FALSE)
-  spec <- eda_spec(spec_path)
+  spec <- epi_eda_spec(spec_path)
   output_dir <- tempfile("eda-report-missing-")
 
   expect_error(
-    render_eda_report(
+    epi_eda_render_report(
       data = data,
       spec = spec,
       output_dir = output_dir

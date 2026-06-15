@@ -20,7 +20,7 @@ The package should not be rewritten from scratch. The preferred approach is to k
 - No specification-first workflow.
 - No data dictionary parser as central project contract.
 - No synthetic-data generator driven by expected variable metadata.
-- No single high-level `run_eda()` orchestration function.
+- No single high-level `epi_eda_run()` orchestration function.
 - No standard EDA report template.
 - No project template for reproducible analysis.
 - No large-data backend abstraction.
@@ -38,15 +38,15 @@ Existing layer:
 - epi_utils_*
 
 New layer:
-- eda_spec()
-- validate_eda_spec()
-- generate_synthetic_data()
-- check_schema()
-- profile_missing()
-- profile_summaries()
-- profile_plots()
-- run_eda()
-- render_eda_report()
+- epi_eda_spec()
+- epi_eda_validate_spec()
+- epi_eda_generate_synthetic_data()
+- epi_eda_check_schema()
+- epi_eda_profile_missing()
+- epi_eda_profile_summaries()
+- epi_eda_profile_plots()
+- epi_eda_run()
+- epi_eda_render_report()
 ```
 
 ## Immediate code review targets

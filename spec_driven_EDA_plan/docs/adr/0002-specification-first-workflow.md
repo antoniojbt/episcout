@@ -46,15 +46,15 @@ Negative:
 Initial functions:
 
 ```r
-eda_spec()
-validate_eda_spec()
-generate_synthetic_data()
-check_schema()
-profile_missing()
-profile_summaries()
-profile_plots()
-run_eda()
-render_eda_report()
+epi_eda_spec()
+epi_eda_validate_spec()
+epi_eda_generate_synthetic_data()
+epi_eda_check_schema()
+epi_eda_profile_missing()
+epi_eda_profile_summaries()
+epi_eda_profile_plots()
+epi_eda_run()
+epi_eda_render_report()
 ```
 
 The package should also allow a dataset-only convenience path later, where a draft specification can be inferred from real data.

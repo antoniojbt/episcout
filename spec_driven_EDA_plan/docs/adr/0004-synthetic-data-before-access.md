@@ -14,7 +14,7 @@ Synthetic data generated from the specification can support code development, re
 
 ## Decision
 
-Add `generate_synthetic_data()` as a first-class part of the specification-first workflow.
+Add `epi_eda_generate_synthetic_data()` as a first-class part of the specification-first workflow.
 
 Synthetic data should be generated from the same EDA specification used to validate real data.
 

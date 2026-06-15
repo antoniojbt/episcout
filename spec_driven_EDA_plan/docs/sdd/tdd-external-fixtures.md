@@ -176,7 +176,7 @@ Expected values must be independently computed.
 Bad:
 
 ```r
-expected_missing <- profile_missing(data, spec)
+expected_missing <- epi_eda_profile_missing(data, spec)
 ```
 
 Good:
@@ -199,7 +199,7 @@ This avoids circular tests.
 Test file:
 
 ```text
-tests/testthat/test-eda_spec-fixtures.R
+tests/testthat/test-epi_eda_spec-fixtures.R
 ```
 
 Tests:
@@ -220,7 +220,7 @@ tests/testthat/test-eda_schema-fixtures.R
 
 Tests:
 
-- `check_schema(blood_storage, blood_storage_spec)` matches `expected_schema.csv`;
+- `epi_eda_check_schema(blood_storage, blood_storage_spec)` matches `expected_schema.csv`;
 - missing variable is flagged;
 - unexpected variable is flagged;
 - all expected variables are present in the unmodified fixture.
@@ -255,7 +255,7 @@ Tests:
 - synthetic values respect levels where provided;
 - synthetic values respect min/max where provided;
 - fixed seed gives identical output;
-- synthetic data can be passed into `run_eda()` once available.
+- synthetic data can be passed into `epi_eda_run()` once available.
 
 ### Summary tests
 
@@ -292,18 +292,18 @@ Tests:
 Test file:
 
 ```text
-tests/testthat/test-run_eda-fixtures.R
+tests/testthat/test-epi_eda_run-fixtures.R
 ```
 
 Tests:
 
-- `run_eda()` returns a named list;
+- `epi_eda_run()` returns a named list;
 - required components exist: metadata, schema, missing, summaries, plots;
-- `run_eda()` works on real fixture data;
-- `run_eda()` works on synthetic data generated from the same spec;
+- `epi_eda_run()` works on real fixture data;
+- `epi_eda_run()` works on synthetic data generated from the same spec;
 - output files are created in a temporary directory.
 
-## Expected named output from `run_eda()`
+## Expected named output from `epi_eda_run()`
 
 The first stable contract should be:
 
@@ -376,14 +376,14 @@ Recommended order:
 2. Add fixture generation script.
 3. Commit blood_storage CSV fixture and spec.
 4. Commit independently computed expected schema and missingness outputs.
-5. Add failing tests for eda_spec(), check_schema(), profile_missing().
+5. Add failing tests for epi_eda_spec(), epi_eda_check_schema(), epi_eda_profile_missing().
 6. Implement or adjust functions until tests pass.
 7. Add failing synthetic-data tests.
-8. Implement generate_synthetic_data().
+8. Implement epi_eda_generate_synthetic_data().
 9. Add failing summary and plot tests.
-10. Implement profile_summaries() and profile_plots().
-11. Add failing run_eda() fixture tests.
-12. Implement run_eda().
+10. Implement epi_eda_profile_summaries() and epi_eda_profile_plots().
+11. Add failing epi_eda_run() fixture tests.
+12. Implement epi_eda_run().
 13. Add scurvy fixture later for categorical and small-n testing.
 14. Add covid_testing later for larger-data smoke testing.
 ```

@@ -10,16 +10,16 @@
 #' @return A named list of ggplot objects, one per specified variable.
 #'
 #' @export
-profile_plots <- function(data, spec) {
+epi_eda_profile_plots <- function(data, spec) {
   if (!is.data.frame(data)) {
     stop("EDA data must be a data frame.", call. = FALSE)
   }
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("The ggplot2 package is required for profile_plots().", call. = FALSE)
+    stop("The ggplot2 package is required for epi_eda_profile_plots().", call. = FALSE)
   }
 
-  spec <- eda_spec(spec)
+  spec <- epi_eda_spec(spec)
   missing_vars <- setdiff(spec$name, names(data))
 
   if (length(missing_vars) > 0) {

@@ -69,7 +69,7 @@ death,Death during follow-up,binary,outcome,,"0;1",,,TRUE,outcomes
 
 ## Validation rules
 
-`validate_eda_spec()` should check:
+`epi_eda_validate_spec()` should check:
 
 - required columns exist;
 - variable names are non-empty;
@@ -100,7 +100,7 @@ These should be standardised to `NA` during EDA, with a record of what was chang
 
 ## Synthetic-data use
 
-The data dictionary should drive `generate_synthetic_data()`.
+The data dictionary should drive `epi_eda_generate_synthetic_data()`.
 
 For MVP:
 

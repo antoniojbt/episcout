@@ -8,7 +8,7 @@
 #' @return A validated data frame specification.
 #'
 #' @export
-eda_spec <- function(path_or_data) {
+epi_eda_spec <- function(path_or_data) {
   if (is.character(path_or_data) && length(path_or_data) == 1) {
     spec <- utils::read.csv(
       path_or_data,
@@ -21,7 +21,7 @@ eda_spec <- function(path_or_data) {
     stop("EDA specification must be a CSV path or a data frame.", call. = FALSE)
   }
 
-  validate_eda_spec(spec)
+  epi_eda_validate_spec(spec)
 }
 
 #' Validate an EDA specification
@@ -34,7 +34,7 @@ eda_spec <- function(path_or_data) {
 #' @return The validated specification as a data frame.
 #'
 #' @export
-validate_eda_spec <- function(spec) {
+epi_eda_validate_spec <- function(spec) {
   if (!is.data.frame(spec)) {
     stop("EDA specification must be a data frame.", call. = FALSE)
   }

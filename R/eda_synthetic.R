@@ -6,7 +6,7 @@
 #' control.
 #'
 #' @param spec A data frame containing an EDA specification, or a path accepted
-#'   by [eda_spec()].
+#'   by [epi_eda_spec()].
 #' @param n Number of rows to generate.
 #' @param seed Optional random seed. When supplied, repeated calls with the same
 #'   specification, row count and seed return identical data.
@@ -14,11 +14,11 @@
 #' @return A data frame with one column per specification variable and `n` rows.
 #'
 #' @export
-generate_synthetic_data <- function(spec, n = 100, seed = NULL) {
+epi_eda_generate_synthetic_data <- function(spec, n = 100, seed = NULL) {
   spec <- if (is.data.frame(spec)) {
-    validate_eda_spec(spec)
+    epi_eda_validate_spec(spec)
   } else {
-    eda_spec(spec)
+    epi_eda_spec(spec)
   }
 
   if (!is.numeric(n) || length(n) != 1 || is.na(n) || n < 0 || n != floor(n)) {

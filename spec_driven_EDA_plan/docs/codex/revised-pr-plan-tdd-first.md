@@ -54,7 +54,7 @@ Scope:
 Files:
 
 ```text
-tests/testthat/test-eda_spec-fixtures.R
+tests/testthat/test-epi_eda_spec-fixtures.R
 tests/testthat/test-eda_schema-fixtures.R
 tests/testthat/test-eda_missing-fixtures.R
 ```
@@ -74,7 +74,7 @@ Scope:
 Files:
 
 ```text
-R/eda_spec.R
+R/epi_eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
 ```
@@ -82,10 +82,10 @@ R/eda_missing.R
 Functions:
 
 ```r
-eda_spec()
-validate_eda_spec()
-check_schema()
-profile_missing()
+epi_eda_spec()
+epi_eda_validate_spec()
+epi_eda_check_schema()
+epi_eda_profile_missing()
 ```
 
 ### PR 4: Add failing synthetic-data tests
@@ -93,7 +93,7 @@ profile_missing()
 Scope:
 
 - add fixture-backed tests for synthetic data generation;
-- do not implement `generate_synthetic_data()` yet.
+- do not implement `epi_eda_generate_synthetic_data()` yet.
 
 File:
 
@@ -122,7 +122,7 @@ R/eda_synthetic.R
 Function:
 
 ```r
-generate_synthetic_data()
+epi_eda_generate_synthetic_data()
 ```
 
 ### PR 6: Add failing summary and plot tests
@@ -130,7 +130,7 @@ generate_synthetic_data()
 Scope:
 
 - add fixture-backed tests for summaries and plots;
-- do not implement `profile_summaries()` or `profile_plots()` yet.
+- do not implement `epi_eda_profile_summaries()` or `epi_eda_profile_plots()` yet.
 
 Files:
 
@@ -162,21 +162,21 @@ R/eda_plots.R
 Functions:
 
 ```r
-profile_summaries()
-profile_plots()
+epi_eda_profile_summaries()
+epi_eda_profile_plots()
 ```
 
-### PR 8: Add failing run_eda end-to-end tests
+### PR 8: Add failing epi_eda_run end-to-end tests
 
 Scope:
 
 - add fixture-backed end-to-end workflow tests;
-- do not implement `run_eda()` yet.
+- do not implement `epi_eda_run()` yet.
 
 File:
 
 ```text
-tests/testthat/test-run_eda-fixtures.R
+tests/testthat/test-epi_eda_run-fixtures.R
 ```
 
 Tests:
@@ -186,7 +186,7 @@ Tests:
 - temporary output directory;
 - expected named components.
 
-### PR 9: Implement run_eda()
+### PR 9: Implement epi_eda_run()
 
 Scope:
 
@@ -195,13 +195,13 @@ Scope:
 File:
 
 ```text
-R/run_eda.R
+R/epi_eda_run.R
 ```
 
 Function:
 
 ```r
-run_eda()
+epi_eda_run()
 ```
 
 ### PR 10: Add report-template tests
@@ -209,7 +209,7 @@ run_eda()
 Scope:
 
 - add tests for report rendering;
-- do not implement `render_eda_report()` yet.
+- do not implement `epi_eda_render_report()` yet.
 
 File:
 
@@ -233,7 +233,7 @@ inst/report-template/eda.qmd
 Function:
 
 ```r
-render_eda_report()
+epi_eda_render_report()
 ```
 
 ### PR 12: Add project-template contract tests
@@ -253,7 +253,7 @@ tests/testthat/test-project-template.R
 Future function contract:
 
 ```r
-use_episcout_project(path, overwrite = FALSE)
+epi_eda_create_project(path, overwrite = FALSE)
 ```
 
 Expected template entries:
@@ -270,7 +270,7 @@ outputs/
 Expected state:
 
 - tests may fail because `inst/project-template/` and
-  `use_episcout_project()` are not implemented yet;
+  `epi_eda_create_project()` are not implemented yet;
 - PR 13 is expected to restore passing tests by implementing the missing
   scaffold and helper.
 
@@ -285,13 +285,13 @@ Files:
 
 ```text
 inst/project-template/
-R/use_episcout_project.R
+R/epi_eda_create_project.R
 ```
 
 Function:
 
 ```r
-use_episcout_project(path, overwrite = FALSE)
+epi_eda_create_project(path, overwrite = FALSE)
 ```
 
 ### PR 14: Add large-data design note

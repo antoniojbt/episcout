@@ -60,28 +60,28 @@ No new EDA API should be implemented before the first fixture-backed tests are i
 New files:
 
 ```text
-R/eda_spec.R
+R/epi_eda_spec.R
 R/eda_schema.R
 R/eda_synthetic.R
 R/eda_missing.R
 R/eda_summaries.R
 R/eda_plots.R
 R/eda_report.R
-R/run_eda.R
+R/epi_eda_run.R
 ```
 
 Initial public functions:
 
 ```r
-eda_spec()
-validate_eda_spec()
-generate_synthetic_data()
-check_schema()
-profile_missing()
-profile_summaries()
-profile_plots()
-run_eda()
-render_eda_report()
+epi_eda_spec()
+epi_eda_validate_spec()
+epi_eda_generate_synthetic_data()
+epi_eda_check_schema()
+epi_eda_profile_missing()
+epi_eda_profile_summaries()
+epi_eda_profile_plots()
+epi_eda_run()
+epi_eda_render_report()
 ```
 
 ## Phase 4: Reporting and project template
