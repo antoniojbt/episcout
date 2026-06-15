@@ -1,0 +1,29 @@
+id: "<id>"
+slug: "<slug>"
+status: draft
+owner: TBD
+base_branch: episcout2
+working_branch: TBD
+created: 2026-06-15
+updated: 2026-06-15
+
+related_files:
+  - R/<file>.R
+  - tests/testthat/test-<feature>.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::check(manual = FALSE)"
+
+notes:
+  - Keep executable tests under tests/testthat/.
+  - Keep this spec directory for planning and review only.

@@ -1,0 +1,31 @@
+id: "002"
+slug: "penguins-raw-fixture"
+status: ready
+owner: TBD
+base_branch: episcout2
+working_branch: TBD
+created: 2026-06-15
+updated: 2026-06-15
+
+related_files:
+  - data-raw/test-fixtures/make_penguins_raw_fixture.R
+  - tests/testthat/fixtures/penguins_raw/
+  - tests/testthat/fixtures/README.md
+  - tests/testthat/test-fixture-generation-guardrails.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::check(manual = FALSE)"
+
+notes:
+  - Do not add palmerpenguins to Imports.
+  - Routine tests must use committed fixture files.
