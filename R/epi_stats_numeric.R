@@ -17,7 +17,7 @@
 #'   \item{\code{n}}{Total length of the input vector.}
 #'   \item{\code{n_nonNA}}{Number of non-\code{NA} observations.}
 #'   \item{\code{NA_count}}{Count of \code{NA} values.}
-#'   \item{\code{NA_percentage}}{Percentage of values that are \code{NA}.}
+#'   \item{\code{NA_percentage}}{Percentage of values that are \code{NA}; \code{NA} for zero-length inputs.}
 #'   \item{\code{sum}}{Sum of values.}
 #'   \item{\code{min}}{Minimum value.}
 #'   \item{\code{quantile_25}}{25th percentile (\code{Q1}).}
@@ -27,7 +27,7 @@
 #'   \item{\code{max}}{Maximum value.}
 #'   \item{\code{IQR}}{Interquartile range (\code{Q3 - Q1}).}
 #'   \item{\code{SD}}{Standard deviation.}
-#'   \item{\code{CV}}{Coefficient of variation (\code{SD / mean}).}
+#'   \item{\code{CV}}{Coefficient of variation (\code{SD / mean}); \code{NA} when the mean is zero or unavailable.}
 #'   \item{\code{variance}}{Variance.}
 #'   \item{\code{sem}}{Standard error of the mean (\code{SD / sqrt(n_nonNA)}).}
 #'   \item{\code{skewness}}{Sample skewness (via \pkg{e1071}).}
@@ -44,7 +44,9 @@
 #' @details
 #' Missing values are dropped when \code{na.rm = TRUE}.  The Shapiro-Wilk test
 #' for normality is only run for sample sizes between 4 and 4999; otherwise
-#' its p-value is reported as \code{NA}. For skewness: negative/longer left tail,
+#' its p-value is reported as \code{NA}. Empty and all-missing inputs return one
+#' row with unavailable summaries reported as \code{NA}. For skewness:
+#' negative/longer left tail,
 #' positive/longer right tail, values above 1 usually means non-normality.
 #' For kurtosis consider lower values, broader shape and longer tails (platy ~<3),
 #' normal (meso ~3) and slender/no tails (lepto ~<3).
@@ -77,12 +79,52 @@ epi_stats_numeric <- function(num_vec = NULL,
   n <- length(num_vec)
   n_nonNA <- sum(!is.na(num_vec))
   NA_count <- n - n_nonNA
-  NA_percentage <- (NA_count / n) * 100
+  NA_percentage <- if (n > 0) (NA_count / n) * 100 else NA_real_
+
+  safe_scalar <- function(expr) {
+    value <- tryCatch(
+      expr,
+      warning = function(w) NA_real_,
+      error = function(e) NA_real_
+    )
+    if (length(value) == 0 || is.nan(value)) {
+      return(NA_real_)
+    }
+    as.numeric(value)
+  }
 
   # Summaries
-  q1 <- quantile(num_vec, 0.25, na.rm = na.rm, names = FALSE)
-  q3 <- quantile(num_vec, 0.75, na.rm = na.rm, names = FALSE)
-  iqr_val <- IQR(num_vec, na.rm = na.rm)
+  has_non_missing <- n_nonNA > 0
+  sum_val <- sum(num_vec, na.rm = na.rm)
+  min_val <- if (has_non_missing) safe_scalar(min(num_vec, na.rm = na.rm)) else NA_real_
+  q1 <- if (has_non_missing) {
+    safe_scalar(quantile(num_vec, 0.25, na.rm = na.rm, names = FALSE))
+  } else {
+    NA_real_
+  }
+  mean_val <- if (has_non_missing) safe_scalar(mean(num_vec, na.rm = na.rm)) else NA_real_
+  median_val <- if (has_non_missing) safe_scalar(median(num_vec, na.rm = na.rm)) else NA_real_
+  q3 <- if (has_non_missing) {
+    safe_scalar(quantile(num_vec, 0.75, na.rm = na.rm, names = FALSE))
+  } else {
+    NA_real_
+  }
+  max_val <- if (has_non_missing) safe_scalar(max(num_vec, na.rm = na.rm)) else NA_real_
+  iqr_val <- if (has_non_missing) safe_scalar(IQR(num_vec, na.rm = na.rm)) else NA_real_
+  sd_val <- if (has_non_missing) safe_scalar(sd(num_vec, na.rm = na.rm)) else NA_real_
+  variance_val <- if (has_non_missing) safe_scalar(var(num_vec, na.rm = na.rm)) else NA_real_
+  cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val else NA_real_
+  sem_val <- if (n_nonNA > 0) sd_val / sqrt(n_nonNA) else NA_real_
+  skewness_val <- if (n_nonNA >= 3) {
+    safe_scalar(e1071::skewness(num_vec, na.rm = na.rm, ...))
+  } else {
+    NA_real_
+  }
+  kurtosis_val <- if (n_nonNA >= 3) {
+    safe_scalar(e1071::kurtosis(num_vec, na.rm = na.rm, ...))
+  } else {
+    NA_real_
+  }
 
   # Tukey fences & outlier counts
   lower_fence <- q1 - coef * iqr_val
@@ -96,7 +138,7 @@ epi_stats_numeric <- function(num_vec = NULL,
   normality <- NA_real_
   if (n_nonNA > 3 && n_nonNA < 5000) {
     normality <- tryCatch(
-      shapiro.test(num_vec)$p.value,
+      shapiro.test(num_vec[!is.na(num_vec)])$p.value,
       error = function(e) NA_real_
     )
   }
@@ -108,20 +150,20 @@ epi_stats_numeric <- function(num_vec = NULL,
       n_nonNA              = n_nonNA,
       NA_count             = NA_count,
       NA_percentage        = NA_percentage,
-      sum                  = sum(num_vec, na.rm = na.rm),
-      min                  = min(num_vec, na.rm = na.rm),
+      sum                  = sum_val,
+      min                  = min_val,
       quantile_25          = q1,
-      mean                 = mean(num_vec, na.rm = na.rm),
-      median               = median(num_vec, na.rm = na.rm),
+      mean                 = mean_val,
+      median               = median_val,
       quantile_75          = q3,
-      max                  = max(num_vec, na.rm = na.rm),
+      max                  = max_val,
       IQR                  = iqr_val,
-      SD                   = sd(num_vec, na.rm = na.rm),
-      CV                   = sd(num_vec, na.rm = na.rm) / mean(num_vec, na.rm = na.rm),
-      variance             = var(num_vec, na.rm = na.rm),
-      sem                  = sd(num_vec, na.rm = na.rm) / sqrt(n_nonNA),
-      skewness             = e1071::skewness(num_vec, na.rm = na.rm, ...),
-      kurtosis             = e1071::kurtosis(num_vec, na.rm = na.rm, ...),
+      SD                   = sd_val,
+      CV                   = cv_val,
+      variance             = variance_val,
+      sem                  = sem_val,
+      skewness             = skewness_val,
+      kurtosis             = kurtosis_val,
       Shapiro_Wilk_p_value = normality,
       lower_fence          = lower_fence,
       upper_fence          = upper_fence,

@@ -8,6 +8,7 @@
 #' @param margin 2 for columns, 1 for rows. Default is columns
 #'
 #' @return A dataframe object with counts and percentage of NAs for each column or row.
+#' Invalid margins raise a clear error.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -36,20 +37,41 @@
 epi_stats_na_perc <- function(df = NULL,
                               margin = 2 # 2 for columns, 1 for rows
 ) {
+  if (!is.numeric(margin) || length(margin) != 1 || !margin %in% c(1, 2)) {
+    stop("margin must be either 1 (rows) or 2 (columns)", call. = FALSE)
+  }
+
+  df <- as.data.frame(df)
+
   # For columns:
   if (margin == 2) {
-    na_perc_all <- as.list(apply(X = df, MARGIN = margin, function(x) sum(is.na(x))))
-    na_perc_all <- as.data.frame(na_perc_all)
-    na_perc_all <- as.data.frame(t(na_perc_all))
-    names(na_perc_all)[1] <- "na_counts"
-    na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[1]) * 100
+    na_counts <- vapply(df, function(x) sum(is.na(x)), integer(1))
+    na_perc <- if (nrow(df) > 0) {
+      (na_counts / nrow(df)) * 100
+    } else {
+      rep(NA_real_, length(na_counts))
+    }
+    na_perc_all <- data.frame(
+      na_counts = as.integer(na_counts),
+      na_perc = as.numeric(na_perc),
+      row.names = names(df),
+      check.names = FALSE
+    )
   }
   # For rows:
   else if (margin == 1) {
-    na_perc_all <- apply(X = df, MARGIN = margin, function(x) sum(is.na(x)))
-    na_perc_all <- as.data.frame(na_perc_all)
-    names(na_perc_all)[1] <- "na_counts"
-    na_perc_all$na_perc <- (na_perc_all$na_counts / dim(df)[2]) * 100
+    na_counts <- rowSums(is.na(df))
+    na_perc <- if (ncol(df) > 0) {
+      (na_counts / ncol(df)) * 100
+    } else {
+      rep(NA_real_, length(na_counts))
+    }
+    na_perc_all <- data.frame(
+      na_counts = as.integer(na_counts),
+      na_perc = as.numeric(na_perc),
+      row.names = rownames(df),
+      check.names = FALSE
+    )
   }
   na_perc_all
 }
