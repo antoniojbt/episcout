@@ -24,19 +24,20 @@ operational source of truth for what happens next.
 | PR 1 external fixture files | Done | Fixture files are present under `tests/testthat/fixtures/blood_storage/`. |
 | PR 2 fixture-backed failing tests | Done | Tests are present and may fail until PR 3 implements the missing functions. |
 | PR 3 spec, schema and missingness implementation | Done | Spec, schema and missingness functions are implemented. |
-| PR 4 synthetic-data failing tests | Active | Follow Instruction 4 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
-| Later synthetic, summary, plot, report and template work | Not started | Continue through the PR plan after PR 3. |
+| PR 4 synthetic-data failing tests | Done | Tests are present and may fail until PR 5 implements `generate_synthetic_data()`. |
+| PR 5 synthetic-data implementation | Active | Follow Instruction 5 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
+| Later summary, plot, report and template work | Not started | Continue through the PR plan after PR 5. |
 
 ## Active PR
 
 ```text
-PR 4: Add failing synthetic-data tests
+PR 5: Implement synthetic-data generation
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 4 in:
+Follow Instruction 5 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
@@ -53,26 +54,25 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 4 Scope
+## PR 5 Scope
 
 Must edit:
 
 ```text
-tests/testthat/test-eda_synthetic-fixtures.R
+R/eda_synthetic.R
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
 May read:
 
 ```text
-tests/testthat/fixtures/blood_storage/blood_storage.csv
+tests/testthat/test-eda_synthetic-fixtures.R
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
 ```
 
 Must not edit:
 
 ```text
-R/eda_synthetic.R
 R/eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
@@ -87,7 +87,7 @@ inst/project-template/
 Expected test state:
 
 ```text
-PR 4 may leave tests failing until PR 5 implements generate_synthetic_data().
+PR 5 should make the synthetic-data tests pass.
 ```
 
 ## Closeout Rule
