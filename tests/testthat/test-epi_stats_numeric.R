@@ -82,3 +82,53 @@ test_that("Shapiro–Wilk skipped for too few or too many observations", {
     res_large <- epi_stats_numeric(large)
     expect_true(is.na(res_large$Shapiro_Wilk_p_value))
 })
+
+test_that("all-missing numeric vectors return deterministic missing summaries", {
+    res <- expect_silent(epi_stats_numeric(c(NA_real_, NA_real_, NA_real_)))
+
+    expect_s3_class(res, "data.frame")
+    expect_equal(nrow(res), 1L)
+    expect_equal(res$n, 3L)
+    expect_equal(res$n_nonNA, 0L)
+    expect_equal(res$NA_count, 3L)
+    expect_equal(res$NA_percentage, 100)
+    expect_true(is.na(res$min))
+    expect_true(is.na(res$mean))
+    expect_true(is.na(res$max))
+    expect_true(is.na(res$CV))
+    expect_true(is.na(res$skewness))
+    expect_true(is.na(res$kurtosis))
+    expect_true(is.na(res$Shapiro_Wilk_p_value))
+    expect_true(is.na(res$outlier_percentage))
+})
+
+test_that("zero-length numeric vectors return one stable summary row", {
+    res <- expect_silent(epi_stats_numeric(numeric()))
+
+    expect_s3_class(res, "data.frame")
+    expect_equal(nrow(res), 1L)
+    expect_equal(res$n, 0L)
+    expect_equal(res$n_nonNA, 0L)
+    expect_equal(res$NA_count, 0L)
+    expect_true(is.na(res$NA_percentage))
+    expect_true(is.na(res$mean))
+    expect_true(is.na(res$CV))
+    expect_true(is.na(res$Shapiro_Wilk_p_value))
+    expect_true(is.na(res$outlier_percentage))
+})
+
+test_that("coefficient of variation is missing when the mean is zero", {
+    res <- epi_stats_numeric(c(-1, 0, 1))
+
+    expect_true(is.na(res$CV))
+    expect_false(is.infinite(res$CV))
+})
+
+test_that("shape and normality statistics are skipped when usable values are insufficient", {
+    res <- epi_stats_numeric(c(1, NA_real_))
+
+    expect_equal(res$n_nonNA, 1L)
+    expect_true(is.na(res$skewness))
+    expect_true(is.na(res$kurtosis))
+    expect_true(is.na(res$Shapiro_Wilk_p_value))
+})

@@ -95,6 +95,37 @@ test_that("epi_stats_na_perc", {
   # summary(na_rows)
   expect_identical(length(which(na_rows$na_counts == 0)), length(which(complete.cases(df2))))
 })
+
+test_that("epi_stats_na_perc rejects invalid margins", {
+  expect_error(
+    epi_stats_na_perc(df2, margin = 3),
+    "margin must be either 1 \\(rows\\) or 2 \\(columns\\)"
+  )
+})
+
+test_that("epi_stats_na_perc counts mixed-type data without coercion errors", {
+  mixed_df <- data.frame(
+    num = c(1, NA_real_, 3),
+    chr = c("a", NA_character_, "NA"),
+    fct = factor(c("x", NA, "z")),
+    stringsAsFactors = FALSE
+  )
+
+  na_cols <- epi_stats_na_perc(mixed_df, margin = 2)
+  na_rows <- epi_stats_na_perc(mixed_df, margin = 1)
+
+  expect_s3_class(na_cols, "data.frame")
+  expect_named(na_cols, c("na_counts", "na_perc"))
+  expect_equal(rownames(na_cols), names(mixed_df))
+  expect_equal(na_cols$na_counts, c(1, 1, 1))
+  expect_equal(na_cols$na_perc, rep(100 / 3, 3))
+
+  expect_s3_class(na_rows, "data.frame")
+  expect_named(na_rows, c("na_counts", "na_perc"))
+  expect_equal(nrow(na_rows), nrow(mixed_df))
+  expect_equal(na_rows$na_counts, c(0, 3, 0))
+  expect_equal(na_rows$na_perc, c(0, 100, 0))
+})
 ######################
 
 ######################

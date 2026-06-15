@@ -25,7 +25,7 @@ A one-row \code{data.frame} with the following columns:
 \item{\code{n}}{Total length of the input vector.}
 \item{\code{n_nonNA}}{Number of non-\code{NA} observations.}
 \item{\code{NA_count}}{Count of \code{NA} values.}
-\item{\code{NA_percentage}}{Percentage of values that are \code{NA}.}
+\item{\code{NA_percentage}}{Percentage of values that are \code{NA}; \code{NA} for zero-length inputs.}
 \item{\code{sum}}{Sum of values.}
 \item{\code{min}}{Minimum value.}
 \item{\code{quantile_25}}{25th percentile (\code{Q1}).}
@@ -35,7 +35,7 @@ A one-row \code{data.frame} with the following columns:
 \item{\code{max}}{Maximum value.}
 \item{\code{IQR}}{Interquartile range (\code{Q3 - Q1}).}
 \item{\code{SD}}{Standard deviation.}
-\item{\code{CV}}{Coefficient of variation (\code{SD / mean}).}
+\item{\code{CV}}{Coefficient of variation (\code{SD / mean}); \code{NA} when the mean is zero or unavailable.}
 \item{\code{variance}}{Variance.}
 \item{\code{sem}}{Standard error of the mean (\code{SD / sqrt(n_nonNA)}).}
 \item{\code{skewness}}{Sample skewness (via \pkg{e1071}).}
@@ -56,7 +56,9 @@ including measures of location, dispersion, shape, normality, and outliers.
 \details{
 Missing values are dropped when \code{na.rm = TRUE}.  The Shapiro-Wilk test
 for normality is only run for sample sizes between 4 and 4999; otherwise
-its p-value is reported as \code{NA}. For skewness: negative/longer left tail,
+its p-value is reported as \code{NA}. Empty and all-missing inputs return one
+row with unavailable summaries reported as \code{NA}. For skewness:
+negative/longer left tail,
 positive/longer right tail, values above 1 usually means non-normality.
 For kurtosis consider lower values, broader shape and longer tails (platy ~<3),
 normal (meso ~3) and slender/no tails (lepto ~<3).
