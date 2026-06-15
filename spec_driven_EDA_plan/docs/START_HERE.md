@@ -25,19 +25,20 @@ operational source of truth for what happens next.
 | PR 2 fixture-backed failing tests | Done | Tests are present and may fail until PR 3 implements the missing functions. |
 | PR 3 spec, schema and missingness implementation | Done | Spec, schema and missingness functions are implemented. |
 | PR 4 synthetic-data failing tests | Done | Tests are present and may fail until PR 5 implements `generate_synthetic_data()`. |
-| PR 5 synthetic-data implementation | Active | Follow Instruction 5 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
-| Later summary, plot, report and template work | Not started | Continue through the PR plan after PR 5. |
+| PR 5 synthetic-data implementation | Done | `generate_synthetic_data()` is implemented. |
+| PR 6 summary and plot failing tests | Active | Follow Instruction 6 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
+| Later summary, plot, report and template work | Not started | Continue through the PR plan after PR 6. |
 
 ## Active PR
 
 ```text
-PR 5: Implement synthetic-data generation
+PR 6: Add failing summary and plot tests
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 5 in:
+Follow Instruction 6 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
@@ -54,20 +55,23 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 5 Scope
+## PR 6 Scope
 
 Must edit:
 
 ```text
-R/eda_synthetic.R
+tests/testthat/test-eda_summaries-fixtures.R
+tests/testthat/test-eda_plots-fixtures.R
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
 May read:
 
 ```text
-tests/testthat/test-eda_synthetic-fixtures.R
+tests/testthat/fixtures/blood_storage/blood_storage.csv
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
+R/eda_summaries.R
+R/eda_plots.R
 ```
 
 Must not edit:
@@ -76,6 +80,7 @@ Must not edit:
 R/eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
+R/eda_synthetic.R
 R/eda_summaries.R
 R/eda_plots.R
 R/run_eda.R
@@ -87,7 +92,7 @@ inst/project-template/
 Expected test state:
 
 ```text
-PR 5 should make the synthetic-data tests pass.
+PR 6 may leave tests failing until PR 7 implements `profile_summaries()` and `profile_plots()`.
 ```
 
 ## Closeout Rule
