@@ -13,7 +13,7 @@ Use these files for historical context:
 Use the root-level future workspace for new work:
 
 - `future/README.md`
-- `future/backlog.md`
+- `future/TODOs.md`
 - `future/specs/`
 
 ## Historical Pattern

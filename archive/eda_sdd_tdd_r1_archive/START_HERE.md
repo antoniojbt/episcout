@@ -7,7 +7,7 @@ Do not use this file as the live control panel for new work. Use:
 
 ```text
 future/README.md
-future/backlog.md
+future/TODOs.md
 future/specs/
 ```
 
