@@ -33,20 +33,20 @@ operational source of truth for what happens next.
 | PR 10 report-template tests | Done | Report-rendering tests are present and may fail until PR 11 implements `render_eda_report()`. |
 | PR 11 report rendering implementation | Done | `render_eda_report()` and the bundled Quarto report template are implemented. |
 | PR 12 project-template contract tests | Done | Failing tests define the project template and `use_episcout_project()` contract. |
-| PR 13 project-template implementation | Active | Implement `inst/project-template/` and `use_episcout_project()` to satisfy PR 12 tests. |
-| PR 14 large-data design note | Deferred | Document large-data backend strategy after the project-template PRs. |
+| PR 13 project-template implementation | Done | `inst/project-template/` and `use_episcout_project()` are implemented. |
+| PR 14 large-data design note | Active | Document large-data backend strategy without implementing backends. |
 
 ## Active PR
 
 ```text
-PR 13: Implement project template
+PR 14: Add large-data design note
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 13 in:
-spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
+Follow PR 14 in:
+spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 ```
 
 Required reading:
@@ -62,26 +62,23 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 13 Scope
+## PR 14 Scope
 
 Must edit:
 
 ```text
-inst/project-template/
-R/use_episcout_project.R
-NAMESPACE
-man/
+spec_driven_EDA_plan/docs/sdd/large-data-backend-strategy.md
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
 May read:
 
 ```text
-R/eda_report.R
-inst/report-template/eda.qmd
-tests/testthat/test-project-template.R
-tests/testthat/test-eda_report.R
-tests/testthat/test-run_eda-fixtures.R
+spec_driven_EDA_plan/docs/sdd/0001-spec-first-eda.md
+spec_driven_EDA_plan/docs/sdd/mvp-scope.md
+spec_driven_EDA_plan/docs/adr/0003-r-not-pure-base-r.md
+spec_driven_EDA_plan/docs/roadmap.md
+spec_driven_EDA_plan/docs/repository-audit.md
 spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
@@ -98,13 +95,16 @@ R/eda_plots.R
 R/run_eda.R
 R/eda_report.R
 inst/report-template/eda.qmd
+inst/project-template/
+NAMESPACE
+man/
 ```
 
 Expected test state:
 
 ```text
-PR 13 should make the PR 12 project-template tests pass without regressing
-the PR 11 report-rendering tests.
+PR 14 is documentation-only. No failing tests are expected, and no large-data
+backend implementation should be added.
 ```
 
 ## Closeout Rule

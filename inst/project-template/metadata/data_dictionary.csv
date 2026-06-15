@@ -1,0 +1,2 @@
+"name","label","type","role","units","levels","min","max","missing_codes","required","group","description"
+"example_numeric","Example numeric variable","numeric","covariate","units","",0,100,"",TRUE,"example","Replace this row with your project data dictionary."
