@@ -17,7 +17,7 @@
 #'
 #' @seealso \code{\link[base]{make.names}},
 #' \href{https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658}{stackoverflow test if valid},
-#' \href{https://www.r-bloggers.com/testing-for-valid-variable-names/}{r-bloggers test valid names}.
+#' \href{https://www.r-bloggers.com/2011/07/testing-for-valid-variable-names/}{r-bloggers test valid names}.
 #'
 #'
 #' @examples

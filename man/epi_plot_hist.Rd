@@ -56,7 +56,7 @@ my_hist_plot
 my_hist_plot <- my_hist_plot + geom_density(col = 2)
 my_hist_plot
 # Histogram overlaid with kernel density curve:
-# http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
+# https://ggplot2.tidyverse.org/reference/geom_histogram.html
 my_hist_plot <- my_hist_plot +
   # Density instead of count on y-axis:
   geom_histogram(aes(y = ..density..),

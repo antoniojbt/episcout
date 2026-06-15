@@ -26,7 +26,7 @@ character vector.
 \item \code{\link[rlang]{expr}()} and \code{\link[rlang]{quo}()} quote
 one expression. \code{quo()} wraps the quoted expression in a quosure.
 
-The plural variants \code{\link[rlang:defusing-advanced]{rlang::exprs()}} and
+The plural variants \code{\link[rlang:exprs]{rlang::exprs()}} and
 \code{\link[rlang]{quos}()} return a list of quoted expressions or
 quosures.
 \item \code{\link[rlang]{enexpr}()} and \code{\link[rlang]{enquo}()}
@@ -42,6 +42,6 @@ capture multiple expressions supplied as arguments, including
 therefore one should always use \code{rlang::exprs()}.
 
 To learn more about tidy eval and how to use these tools, visit
-\url{http://rlang.r-lib.org} and the \href{http://adv-r.had.co.nz/Computing-on-the-language.html}{Metaprogramming section} of \href{https://adv-r.hadley.nz}{Advanced R}.
+\url{https://rlang.r-lib.org} and \href{https://adv-r.hadley.nz}{Advanced R}.
 }
 \keyword{internal}

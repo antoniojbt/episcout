@@ -92,7 +92,6 @@ epi_plot_parallel <- function(df,
 #' @param file_prefix Prefix used to create file names.
 #' @param plot_type File type passed to [cowplot::save_plot()].
 #' @param plot_step Number of plots per file.
-#' @inheritParams epi_plot_parallel
 #'
 #' @return A character vector of file names with an attribute `workers`
 #'   reporting the number of workers used.
