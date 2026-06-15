@@ -61,7 +61,7 @@ row with unavailable summaries reported as \code{NA}. For skewness:
 negative/longer left tail,
 positive/longer right tail, values above 1 usually means non-normality.
 For kurtosis consider lower values, broader shape and longer tails (platy ~<3),
-normal (meso ~3) and slender/no tails (lepto ~<3).
+normal (meso ~3) and slender/no tails (lepto ~>3).
 Outliers are detected with the Tukey method (above and below 1.5 * IQR) or
 using the multiplier \code{coef}.  Coefficient of variation (\code{CV}) is
 calculated as \code{SD / mean}.  You may pass further arguments (e.g.,

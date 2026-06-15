@@ -43,5 +43,5 @@ epi_clean_make_names(valid_names) # There shouldn't be anything to correct
 \href{https://www.r-bloggers.com/2011/07/testing-for-valid-variable-names/}{r-bloggers test valid names}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

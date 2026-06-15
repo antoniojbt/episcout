@@ -31,9 +31,15 @@ For simple tasks only use e.g. `- [ ] xxx`
 
 ### Priority 1
 
-#TODO: - [ ] thorough code review, use prompt in `future/prompts/senior-r-package-review.md`
-    - correct small/important aspects
-    - plan improvements and specify in `future`
+- Short title: Address senior R package review follow-ups
+    - Problem: The review in `future/reviews/2026-06-15-senior-r-package-review.md` found API-surface, test-design, EDA edge-case and dependency-guard risks.
+    - Goal: Convert the review findings into a scoped SDD/TDD implementation plan before package-code changes.
+    - User need: Keep the package maintainable and CRAN-ready without widening the current branch ad hoc.
+    - Proposed scope: Create a numbered spec for the highest-value findings: EDA summary edge cases, missing-code semantics, non-circular fixture expectations, public API cleanup and optional dependency guards.
+    - Out of scope: Large-data backend implementation and unrelated helper rewrites.
+    - Candidate files: `future/reviews/2026-06-15-senior-r-package-review.md`, `future/specs/`, `R/eda_*`, `R/epi_plot_parallel.R`, `R/utils-tidy-eval.R`, `tests/testthat/`.
+    - Risks: API cleanup may be breaking if current users rely on accidental exports.
+    - Suggested spec ID: `004-senior-review-followups`
 
 
 - [ ] get instructions to download, install, episcout2 branch
@@ -60,6 +66,10 @@ For simple tasks only use e.g. `- [ ] xxx`
 
 ## Done
 
+- [x] thorough code review, use prompt in `future/prompts/senior-r-package-review.md`
+  - Review written to `future/reviews/2026-06-15-senior-r-package-review.md`.
+  - Corrected the confirmed `epi_stats_numeric()` kurtosis documentation issue.
+  - Planned follow-up work as `004-senior-review-followups` candidate.
 - [x] Completed spec: `001-phase-1-helper-stabilization`
   - Baseline recorded before package-code changes.
   - TDD edge-case tests added before implementation.
