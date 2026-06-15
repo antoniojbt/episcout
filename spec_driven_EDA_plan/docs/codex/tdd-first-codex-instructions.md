@@ -278,12 +278,57 @@ Continue with the revised PR plan.
 Next steps:
 1. Add failing report-rendering tests.
 2. Implement render_eda_report().
-3. Add project template.
-4. Add large-data design note.
+3. Add failing project-template and use_episcout_project() contract tests.
+4. Implement project template and use_episcout_project().
+5. Add large-data design note.
 
 Follow spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md.
 
 Closeout:
 Update START_HERE.md after each remaining PR so it stays the live status
 dashboard.
+```
+
+## Instruction 12: Add project-template contract tests
+
+```text
+Task:
+Add failing tests for the project template and use_episcout_project() contract.
+
+Add:
+- tests/testthat/test-project-template.R
+
+Requirements:
+1. Tests define the bundled inst/project-template/ scaffold.
+2. Tests define use_episcout_project(path, overwrite = FALSE).
+3. Tests require reports/eda.qmd to culminate in render_eda_report().
+4. Do not add inst/project-template/ in this PR.
+5. Do not implement use_episcout_project() in this PR.
+
+Closeout:
+Update START_HERE.md to mark PR 12 Done and PR 13 Active. Record that PR 12
+may leave tests failing until PR 13 implements the scaffold and helper.
+```
+
+## Instruction 13: Implement project template
+
+```text
+Task:
+Implement the project template and use_episcout_project().
+
+Add:
+- inst/project-template/
+- R/use_episcout_project.R
+
+Requirements:
+1. Include metadata/data_dictionary.csv, config/eda.yml, _targets.R,
+   reports/eda.qmd, R/project-derivations.R and outputs/.
+2. use_episcout_project(path, overwrite = FALSE) creates the destination
+   project and copies the scaffold.
+3. Refuse to overwrite existing files unless overwrite = TRUE.
+4. Return the normalized project path invisibly.
+5. Keep the report path connected to render_eda_report().
+
+Closeout:
+Update START_HERE.md to mark PR 13 Done and PR 14 Active.
 ```
