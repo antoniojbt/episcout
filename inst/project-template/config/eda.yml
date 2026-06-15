@@ -1,0 +1,15 @@
+project:
+  name: episcout-eda-project
+
+inputs:
+  data: data/input.csv
+  spec: metadata/data_dictionary.csv
+
+outputs:
+  directory: outputs
+  report: outputs/eda-report.html
+
+synthetic:
+  enabled: false
+  n: 100
+  seed: 1
