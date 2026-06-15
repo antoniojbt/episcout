@@ -74,14 +74,14 @@ Forbidden calls in fixture-generation scripts:
 ```text
 library(episcout)
 episcout::
-eda_spec(
-validate_eda_spec(
-check_schema(
-profile_missing(
-profile_summaries(
-profile_plots(
-run_eda(
-generate_synthetic_data(
+epi_eda_spec(
+epi_eda_validate_spec(
+epi_eda_check_schema(
+epi_eda_profile_missing(
+epi_eda_profile_summaries(
+epi_eda_profile_plots(
+epi_eda_run(
+epi_eda_generate_synthetic_data(
 ```
 
 ## Dataset roles

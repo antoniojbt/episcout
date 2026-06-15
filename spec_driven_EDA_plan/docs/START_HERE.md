@@ -24,16 +24,16 @@ operational source of truth for what happens next.
 | PR 1 external fixture files | Done | Fixture files are present under `tests/testthat/fixtures/blood_storage/`. |
 | PR 2 fixture-backed failing tests | Done | Tests are present and may fail until PR 3 implements the missing functions. |
 | PR 3 spec, schema and missingness implementation | Done | Spec, schema and missingness functions are implemented. |
-| PR 4 synthetic-data failing tests | Done | Tests are present and may fail until PR 5 implements `generate_synthetic_data()`. |
-| PR 5 synthetic-data implementation | Done | `generate_synthetic_data()` is implemented. |
-| PR 6 summary and plot failing tests | Done | Tests are present and may fail until PR 7 implements `profile_summaries()` and `profile_plots()`. |
-| PR 7 summary and plot implementation | Done | `profile_summaries()` and `profile_plots()` are implemented. |
-| PR 8 run_eda failing tests | Done | Tests are present and may fail until PR 9 implements `run_eda()`. |
-| PR 9 run_eda implementation | Done | `run_eda()` is implemented. |
-| PR 10 report-template tests | Done | Report-rendering tests are present and may fail until PR 11 implements `render_eda_report()`. |
-| PR 11 report rendering implementation | Done | `render_eda_report()` and the bundled Quarto report template are implemented. |
-| PR 12 project-template contract tests | Done | Failing tests define the project template and `use_episcout_project()` contract. |
-| PR 13 project-template implementation | Done | `inst/project-template/` and `use_episcout_project()` are implemented. |
+| PR 4 synthetic-data failing tests | Done | Tests are present and may fail until PR 5 implements `epi_eda_generate_synthetic_data()`. |
+| PR 5 synthetic-data implementation | Done | `epi_eda_generate_synthetic_data()` is implemented. |
+| PR 6 summary and plot failing tests | Done | Tests are present and may fail until PR 7 implements `epi_eda_profile_summaries()` and `epi_eda_profile_plots()`. |
+| PR 7 summary and plot implementation | Done | `epi_eda_profile_summaries()` and `epi_eda_profile_plots()` are implemented. |
+| PR 8 epi_eda_run failing tests | Done | Tests are present and may fail until PR 9 implements `epi_eda_run()`. |
+| PR 9 epi_eda_run implementation | Done | `epi_eda_run()` is implemented. |
+| PR 10 report-template tests | Done | Report-rendering tests are present and may fail until PR 11 implements `epi_eda_render_report()`. |
+| PR 11 report rendering implementation | Done | `epi_eda_render_report()` and the bundled Quarto report template are implemented. |
+| PR 12 project-template contract tests | Done | Failing tests define the project template and `epi_eda_create_project()` contract. |
+| PR 13 project-template implementation | Done | `inst/project-template/` and `epi_eda_create_project()` are implemented. |
 | PR 14 large-data design note | Active | Document large-data backend strategy without implementing backends. |
 
 ## Active PR
@@ -86,13 +86,13 @@ spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 Must not edit:
 
 ```text
-R/eda_spec.R
+R/epi_eda_spec.R
 R/eda_schema.R
 R/eda_missing.R
 R/eda_synthetic.R
 R/eda_summaries.R
 R/eda_plots.R
-R/run_eda.R
+R/epi_eda_run.R
 R/eda_report.R
 inst/report-template/eda.qmd
 inst/project-template/

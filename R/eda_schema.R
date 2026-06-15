@@ -9,12 +9,12 @@
 #' @return A data frame with one row per expected or unexpected variable.
 #'
 #' @export
-check_schema <- function(data, spec) {
+epi_eda_check_schema <- function(data, spec) {
   if (!is.data.frame(data)) {
     stop("Data must be a data frame.", call. = FALSE)
   }
 
-  spec <- eda_spec(spec)
+  spec <- epi_eda_spec(spec)
   data_names <- names(data)
   expected_names <- spec$name
 

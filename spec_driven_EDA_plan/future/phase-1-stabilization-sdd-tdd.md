@@ -69,9 +69,9 @@ depends on them or when package checks expose concrete failures.
 
 Reopen this deferred Phase 1 work when any of the following is true:
 
-- `profile_summaries()` depends on `epi_stats_numeric()` or
+- `epi_eda_profile_summaries()` depends on `epi_stats_numeric()` or
   `epi_stats_summary()`.
-- `run_eda()` depends on older `epi_*` helpers.
+- `epi_eda_run()` depends on older `epi_*` helpers.
 - CI, `R CMD check`, or local tests expose helper failures.
 - The package is being prepared for release or broader hardening.
 - The user explicitly asks to run the deferred Phase 1 stabilization PR.

@@ -77,10 +77,10 @@ The same specification should be used to:
 ### Workflow A: real data already available
 
 ```r
-spec <- eda_spec("metadata/data_dictionary.csv")
+spec <- epi_eda_spec("metadata/data_dictionary.csv")
 data <- read_project_data("data/raw/data.parquet")
 
-run_eda(
+epi_eda_run(
   data = data,
   spec = spec,
   out_dir = "outputs/eda_real",
@@ -101,10 +101,10 @@ Expected outputs:
 ### Workflow B: data access pending
 
 ```r
-spec <- eda_spec("metadata/data_dictionary.csv")
-data <- generate_synthetic_data(spec, n = 10000, seed = 1)
+spec <- epi_eda_spec("metadata/data_dictionary.csv")
+data <- epi_eda_generate_synthetic_data(spec, n = 10000, seed = 1)
 
-run_eda(
+epi_eda_run(
   data = data,
   spec = spec,
   out_dir = "outputs/eda_synthetic",
@@ -157,15 +157,15 @@ The package should not immediately optimise every operation for very large data.
 Initial public functions:
 
 ```r
-eda_spec()
-validate_eda_spec()
-generate_synthetic_data()
-check_schema()
-profile_missing()
-profile_summaries()
-profile_plots()
-run_eda()
-render_eda_report()
+epi_eda_spec()
+epi_eda_validate_spec()
+epi_eda_generate_synthetic_data()
+epi_eda_check_schema()
+epi_eda_profile_missing()
+epi_eda_profile_summaries()
+epi_eda_profile_plots()
+epi_eda_run()
+epi_eda_render_report()
 ```
 
 Existing `epi_*` functions should remain available initially. Over time, they may be refactored into lower-level helpers if this can be done without breaking existing users.

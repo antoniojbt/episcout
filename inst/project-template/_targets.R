@@ -16,7 +16,7 @@ list(
   ),
   tar_target(
     eda_report,
-    render_eda_report(
+    epi_eda_render_report(
       data = analysis_data,
       spec = "metadata/data_dictionary.csv",
       output_dir = "outputs"

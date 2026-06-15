@@ -28,7 +28,7 @@ The mapping is hierarchical, not one-to-one:
 | Phase 0: Documentation and baseline | Done. This produced SDD, ADRs, roadmap, Codex instructions, and PR plan. Tracked in `START_HERE.md` as done. |
 | Phase 1: Stabilise current package | Not clearly mapped to PRs. It has audit material, but no active PR sequence or completion evidence. Looks bypassed/deferred. |
 | Phase 2: TDD fixtures for spec-first EDA | PR 1 and PR 2. PR 1 adds external fixtures and expected outputs. PR 2 adds failing tests for spec/schema/missingness. |
-| Phase 3: Specification-first MVP | PR 3 through PR 9, but in test-first slices: implement spec/schema/missingness, test synthetic data, implement synthetic data, test summaries/plots, implement summaries/plots, test `run_eda()`, implement `run_eda()`. Current active PR is PR 4. |
+| Phase 3: Specification-first MVP | PR 3 through PR 9, but in test-first slices: implement spec/schema/missingness, test synthetic data, implement synthetic data, test summaries/plots, implement summaries/plots, test `epi_eda_run()`, implement `epi_eda_run()`. Current active PR is PR 4. |
 | Phase 4: Reporting and project template | PR 10, PR 11, PR 12. Report tests, report implementation, project template. |
 | Phase 5: Large-data optimisation | PR 13 only documents large-data strategy. Actual `data.table`, DuckDB, Arrow implementation is explicitly not planned yet. |
 | Phase 6: Biomedical extensions | No PRs/instructions yet. It is future scope only. |

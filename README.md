@@ -4,14 +4,19 @@
 
 # episcout
 
-episcout provides helper functions for cleaning, exploring and visualising large datasets. It wraps common preprocessing and descriptive tasks so you can focus on analysis. The package builds on the **tidyverse** and **data.table** ecosystems for fast and flexible data manipulation.
+episcout provides helper functions for cleaning, exploring and visualising large
+epidemiological datasets. It also supports specification-first exploratory data
+analysis workflows for epidemiological datasets, where a data dictionary drives
+schema checks, missingness summaries, descriptive summaries, plots and optional
+HTML reports.
 
 ## Features
 
-* **Cleaning** – `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels.
-* **Statistics** – `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
-* **Plotting** – `epi_plot_*` wrappers make it straightforward to produce common graphs with *ggplot2* and *cowplot*.
-* **Utilities** – `epi_utils_*` helpers cover tasks like parallel processing and logging.
+* **Cleaning** - `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels.
+* **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
+* **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
+* **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
+* **Utilities** - `epi_utils_*` helpers cover tasks like parallel processing and logging.
 
 ## Installation
 
@@ -70,16 +75,17 @@ submission checklist and Writing R Extensions for the current source of truth:
 
 ## Getting Started
 
-Functions are grouped by purpose, e.g.:
-epi_clean_* for data wrangling/cleanup.
-epi_stats_* for generating descriptive statistics and contingency tables.
-epi_plot_* for plotting (wrappers around ggplot2 and cowplot).
-epi_utils_* for utilities such as parallel processing, logging, etc.
-Miscellaneous helpers such as epi_read/epi_write.
+There are two main ways to use episcout:
 
-## Example
+* Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*`
+  and `epi_utils_*`.
+* Use the specification-first EDA workflow: `epi_eda_spec()`,
+  `epi_eda_generate_synthetic_data()`, `epi_eda_run()` and
+  `epi_eda_render_report()`.
 
-This is a basic example of things you can do with episcout:
+### Helper functions
+
+This is a basic example of the lower-level helper API:
 
 ``` r
 library(episcout)
@@ -112,6 +118,72 @@ desc_stats
 
 # And many more functions for cleaning, stats and plotting that do things a bit faster or more conveniently and I couldn't easily find in other packages.
 ```
+
+### Specification-first EDA quickstart
+
+Start from a data dictionary with at least these columns:
+
+``` csv
+name,label,type,role,units,levels,min,max,missing_codes,required,group,description
+age,Age at baseline,numeric,covariate,years,,18,110,,TRUE,demographics,Age in years
+sex,Sex at birth,categorical,covariate,,"Female;Male;Unknown",,,,TRUE,demographics,Recorded sex
+death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome indicator
+```
+
+You can prepare the workflow before real data arrive by generating synthetic
+data from the same specification:
+
+``` r
+library(episcout)
+
+spec <- epi_eda_spec("metadata/data_dictionary.csv")
+
+results <- epi_eda_run(
+  data = NULL,
+  spec = spec,
+  synthetic = TRUE,
+  n = 100,
+  seed = 1
+)
+
+names(results)
+results$metadata
+```
+
+When real data are available, keep the same specification and change only the
+data source:
+
+``` r
+data <- read.csv("data/input.csv", stringsAsFactors = FALSE)
+dir.create("outputs", showWarnings = FALSE)
+
+results <- epi_eda_run(
+  data = data,
+  spec = spec,
+  output_dir = "outputs"
+)
+```
+
+Render the optional HTML report when `rmarkdown` is installed:
+
+``` r
+epi_eda_render_report(
+  data = data,
+  spec = spec,
+  output_dir = "outputs"
+)
+```
+
+To create a starter project scaffold:
+
+``` r
+epi_eda_create_project("my-eda-project")
+```
+
+Current EDA workflow limits: summaries and plots are deliberately basic, the
+synthetic data generator is for pipeline preparation and testing only, generated
+synthetic data are not suitable for inference or disclosure control, and the MVP
+does not yet include Arrow, DuckDB or data.table large-data backends.
 
 ## Contribute
 

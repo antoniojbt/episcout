@@ -12,7 +12,7 @@
 #' @return The normalized project path, invisibly.
 #'
 #' @export
-use_episcout_project <- function(path, overwrite = FALSE) {
+epi_eda_create_project <- function(path, overwrite = FALSE) {
   path <- validate_episcout_project_path(path)
   overwrite <- validate_episcout_project_overwrite(overwrite)
 

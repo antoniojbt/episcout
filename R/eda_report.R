@@ -6,30 +6,30 @@
 #' @param data A data frame containing observed data. Required when
 #'   `synthetic = FALSE`; ignored when `synthetic = TRUE`.
 #' @param spec An EDA specification data frame or CSV path accepted by
-#'   [eda_spec()].
+#'   [epi_eda_spec()].
 #' @param output_dir Directory where machine-readable workflow outputs and the
 #'   rendered report are written. The directory must already exist.
 #' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec`
 #'   before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
-#' @param seed Optional random seed passed to [generate_synthetic_data()].
+#' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
 #' @param quiet Logical; passed to [rmarkdown::render()] to control render
 #'   output.
 #'
 #' @return A single character string containing the rendered HTML report path.
 #'
 #' @export
-render_eda_report <- function(data,
-                              spec,
-                              output_dir,
-                              synthetic = FALSE,
-                              n = 100,
-                              seed = NULL,
-                              quiet = TRUE) {
+epi_eda_render_report <- function(data,
+                                  spec,
+                                  output_dir,
+                                  synthetic = FALSE,
+                                  n = 100,
+                                  seed = NULL,
+                                  quiet = TRUE) {
   validate_run_eda_output_dir(output_dir)
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
-    stop("The rmarkdown package is required for render_eda_report().", call. = FALSE)
+    stop("The rmarkdown package is required for epi_eda_render_report().", call. = FALSE)
   }
 
   template_path <- system.file(
@@ -42,7 +42,7 @@ render_eda_report <- function(data,
     stop("The bundled EDA report template could not be found.", call. = FALSE)
   }
 
-  results <- run_eda(
+  results <- epi_eda_run(
     data = data,
     spec = spec,
     output_dir = output_dir,

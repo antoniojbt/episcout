@@ -8,29 +8,29 @@
 #' @param data A data frame containing observed data. Required when
 #'   `synthetic = FALSE`; ignored when `synthetic = TRUE`.
 #' @param spec An EDA specification data frame or CSV path accepted by
-#'   [eda_spec()].
+#'   [epi_eda_spec()].
 #' @param output_dir Optional directory where machine-readable CSV outputs are
 #'   written. The directory must already exist.
 #' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec`
 #'   before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
-#' @param seed Optional random seed passed to [generate_synthetic_data()].
+#' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
 #'
 #' @return A named list with `metadata`, `schema`, `missing`, `summaries` and
 #'   `plots` components.
 #'
 #' @export
-run_eda <- function(data,
-                    spec,
-                    output_dir = NULL,
-                    synthetic = FALSE,
-                    n = 100,
-                    seed = NULL) {
+epi_eda_run <- function(data,
+                        spec,
+                        output_dir = NULL,
+                        synthetic = FALSE,
+                        n = 100,
+                        seed = NULL) {
   synthetic <- validate_run_eda_synthetic(synthetic)
-  spec <- eda_spec(spec)
+  spec <- epi_eda_spec(spec)
 
   if (synthetic) {
-    data <- generate_synthetic_data(spec = spec, n = n, seed = seed)
+    data <- epi_eda_generate_synthetic_data(spec = spec, n = n, seed = seed)
   } else if (!is.data.frame(data)) {
     stop("data must be a data frame when synthetic is FALSE.", call. = FALSE)
   }
@@ -41,10 +41,10 @@ run_eda <- function(data,
 
   results <- list(
     metadata = run_eda_metadata(data, spec, synthetic = synthetic),
-    schema = check_schema(data, spec),
-    missing = profile_missing(data, spec),
-    summaries = profile_summaries(data, spec),
-    plots = profile_plots(data, spec)
+    schema = epi_eda_check_schema(data, spec),
+    missing = epi_eda_profile_missing(data, spec),
+    summaries = epi_eda_profile_summaries(data, spec),
+    plots = epi_eda_profile_plots(data, spec)
   )
 
   if (!is.null(output_dir)) {
@@ -67,7 +67,7 @@ validate_run_eda_output_dir <- function(output_dir) {
   }
 
   if (!dir.exists(output_dir)) {
-    stop("output_dir must exist before run_eda() writes outputs.", call. = FALSE)
+    stop("output_dir must exist before epi_eda_run() writes outputs.", call. = FALSE)
   }
 
   invisible(TRUE)

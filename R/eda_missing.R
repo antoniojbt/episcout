@@ -9,12 +9,12 @@
 #'   missing proportions.
 #'
 #' @export
-profile_missing <- function(data, spec) {
+epi_eda_profile_missing <- function(data, spec) {
   if (!is.data.frame(data)) {
     stop("Data must be a data frame.", call. = FALSE)
   }
 
-  spec <- eda_spec(spec)
+  spec <- epi_eda_spec(spec)
   n <- nrow(data)
   n_missing <- unname(vapply(
     spec$name,
