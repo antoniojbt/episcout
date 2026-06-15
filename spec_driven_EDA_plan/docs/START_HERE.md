@@ -32,18 +32,20 @@ operational source of truth for what happens next.
 | PR 9 run_eda implementation | Done | `run_eda()` is implemented. |
 | PR 10 report-template tests | Done | Report-rendering tests are present and may fail until PR 11 implements `render_eda_report()`. |
 | PR 11 report rendering implementation | Done | `render_eda_report()` and the bundled Quarto report template are implemented. |
-| PR 12 project template work | Active | Follow Instruction 10 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md` and add the project template from the PR plan. |
+| PR 12 project-template contract tests | Done | Failing tests define the project template and `use_episcout_project()` contract. |
+| PR 13 project-template implementation | Active | Implement `inst/project-template/` and `use_episcout_project()` to satisfy PR 12 tests. |
+| PR 14 large-data design note | Deferred | Document large-data backend strategy after the project-template PRs. |
 
 ## Active PR
 
 ```text
-PR 12: Add project template
+PR 13: Implement project template
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 10 in:
+Follow Instruction 13 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
@@ -60,12 +62,15 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 12 Scope
+## PR 13 Scope
 
 Must edit:
 
 ```text
 inst/project-template/
+R/use_episcout_project.R
+NAMESPACE
+man/
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
@@ -74,8 +79,11 @@ May read:
 ```text
 R/eda_report.R
 inst/report-template/eda.qmd
+tests/testthat/test-project-template.R
 tests/testthat/test-eda_report.R
+tests/testthat/test-run_eda-fixtures.R
 spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
+spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
 Must not edit:
@@ -95,7 +103,8 @@ inst/report-template/eda.qmd
 Expected test state:
 
 ```text
-PR 12 should add project-template coverage without regressing PR 11 report tests.
+PR 13 should make the PR 12 project-template tests pass without regressing
+the PR 11 report-rendering tests.
 ```
 
 ## Closeout Rule
@@ -152,7 +161,6 @@ Do not start with:
 ```text
 Arrow
 DuckDB
-project templates
 multiple fixtures
 large-data optimisation
 full plot/report system

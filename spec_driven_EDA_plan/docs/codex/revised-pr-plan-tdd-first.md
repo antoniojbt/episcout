@@ -236,25 +236,65 @@ Function:
 render_eda_report()
 ```
 
-### PR 12: Add project template
+### PR 12: Add project-template contract tests
 
 Scope:
 
-- add reusable project scaffold.
+- add failing tests for the reusable project scaffold;
+- add failing tests for the user-facing project setup helper;
+- do not add the template or implement the helper yet.
+
+Files:
+
+```text
+tests/testthat/test-project-template.R
+```
+
+Future function contract:
+
+```r
+use_episcout_project(path, overwrite = FALSE)
+```
+
+Expected template entries:
+
+```text
+metadata/data_dictionary.csv
+config/eda.yml
+_targets.R
+reports/eda.qmd
+R/project-derivations.R
+outputs/
+```
+
+Expected state:
+
+- tests may fail because `inst/project-template/` and
+  `use_episcout_project()` are not implemented yet;
+- PR 13 is expected to restore passing tests by implementing the missing
+  scaffold and helper.
+
+### PR 13: Implement project template
+
+Scope:
+
+- add reusable project scaffold;
+- implement the user-facing project setup helper.
 
 Files:
 
 ```text
 inst/project-template/
+R/use_episcout_project.R
 ```
 
-Optional function:
+Function:
 
 ```r
-use_episcout_project()
+use_episcout_project(path, overwrite = FALSE)
 ```
 
-### PR 13: Add large-data design note
+### PR 14: Add large-data design note
 
 Scope:
 
