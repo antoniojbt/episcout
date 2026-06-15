@@ -29,19 +29,20 @@ operational source of truth for what happens next.
 | PR 6 summary and plot failing tests | Done | Tests are present and may fail until PR 7 implements `profile_summaries()` and `profile_plots()`. |
 | PR 7 summary and plot implementation | Done | `profile_summaries()` and `profile_plots()` are implemented. |
 | PR 8 run_eda failing tests | Done | Tests are present and may fail until PR 9 implements `run_eda()`. |
-| PR 9 run_eda implementation | Active | Follow Instruction 9 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md`. |
-| Later report and template work | Not started | Continue through the PR plan after PR 9. |
+| PR 9 run_eda implementation | Done | `run_eda()` is implemented. |
+| PR 10 report-template tests | Active | Follow Instruction 10 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md` and add failing report-rendering tests from the PR plan. |
+| Later report and template work | Not started | Continue through the PR plan after PR 10. |
 
 ## Active PR
 
 ```text
-PR 9: Implement run_eda()
+PR 10: Add report-template tests
 ```
 
 Instruction:
 
 ```text
-Follow Instruction 9 in:
+Follow Instruction 10 in:
 spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md
 ```
 
@@ -58,25 +59,23 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 9 Scope
+## PR 10 Scope
 
 Must edit:
 
 ```text
-R/run_eda.R
+tests/testthat/test-eda_report.R
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
 May read:
 
 ```text
+R/run_eda.R
+R/eda_report.R
+inst/report-template/
 tests/testthat/fixtures/blood_storage/blood_storage.csv
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
-tests/testthat/test-eda_spec-fixtures.R
-tests/testthat/test-eda_schema-fixtures.R
-tests/testthat/test-eda_missing-fixtures.R
-tests/testthat/test-eda_summaries-fixtures.R
-tests/testthat/test-eda_plots-fixtures.R
 tests/testthat/test-run_eda-fixtures.R
 ```
 
@@ -89,15 +88,14 @@ R/eda_missing.R
 R/eda_synthetic.R
 R/eda_summaries.R
 R/eda_plots.R
-R/eda_report.R
-inst/report-template/
+R/run_eda.R
 inst/project-template/
 ```
 
 Expected test state:
 
 ```text
-PR 9 should make the run_eda fixture tests pass.
+PR 10 may leave report-rendering tests failing until PR 11 implements render_eda_report().
 ```
 
 ## Closeout Rule
