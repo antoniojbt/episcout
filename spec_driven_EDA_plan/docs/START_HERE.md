@@ -30,13 +30,14 @@ operational source of truth for what happens next.
 | PR 7 summary and plot implementation | Done | `profile_summaries()` and `profile_plots()` are implemented. |
 | PR 8 run_eda failing tests | Done | Tests are present and may fail until PR 9 implements `run_eda()`. |
 | PR 9 run_eda implementation | Done | `run_eda()` is implemented. |
-| PR 10 report-template tests | Active | Follow Instruction 10 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md` and add failing report-rendering tests from the PR plan. |
-| Later report and template work | Not started | Continue through the PR plan after PR 10. |
+| PR 10 report-template tests | Done | Report-rendering tests are present and may fail until PR 11 implements `render_eda_report()`. |
+| PR 11 report rendering implementation | Active | Follow Instruction 10 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md` and implement report rendering from the PR plan. |
+| Later project template work | Not started | Continue through the PR plan after PR 11. |
 
 ## Active PR
 
 ```text
-PR 10: Add report-template tests
+PR 11: Implement report rendering
 ```
 
 Instruction:
@@ -59,12 +60,13 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 10 Scope
+## PR 11 Scope
 
 Must edit:
 
 ```text
-tests/testthat/test-eda_report.R
+R/eda_report.R
+inst/report-template/eda.qmd
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
@@ -72,10 +74,9 @@ May read:
 
 ```text
 R/run_eda.R
-R/eda_report.R
-inst/report-template/
 tests/testthat/fixtures/blood_storage/blood_storage.csv
 tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
+tests/testthat/test-eda_report.R
 tests/testthat/test-run_eda-fixtures.R
 ```
 
@@ -95,7 +96,7 @@ inst/project-template/
 Expected test state:
 
 ```text
-PR 10 may leave report-rendering tests failing until PR 11 implements render_eda_report().
+PR 11 should make the report-rendering fixture tests pass.
 ```
 
 ## Closeout Rule
@@ -152,7 +153,6 @@ Do not start with:
 ```text
 Arrow
 DuckDB
-Quarto report
 project templates
 multiple fixtures
 large-data optimisation

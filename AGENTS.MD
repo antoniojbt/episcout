@@ -17,6 +17,68 @@ It standardises formatting, documentation, testing, and pull request workflows.
 
 ---
 
+## R Environment
+
+Use the repo-local R wrapper for all R commands:
+
+```bash
+scripts/rscript_env_caller.R -e "R.home(); .libPaths()"
+```
+
+The wrapper resolves to the project mamba environment by default:
+
+```text
+~/apps/miniforge3/envs/episcout/bin/Rscript
+```
+
+Do not use bare `Rscript` unless you have verified it resolves to the
+`episcout` mamba environment. To use a different R binary, set
+`EPISCOUT_RSCRIPT`; see `scripts/rscript_env_caller.R`.
+
+## Repo Script Discovery and Naming
+
+Before adding or changing helper commands, inspect existing project entry
+points:
+
+```text
+scripts/
+Makefile
+.github/workflows/
+AGENTS.MD
+```
+
+Do not add a new helper script if an existing script already covers the task.
+If an existing helper has an unclear or misleading name, propose a rename or
+targeted cleanup instead of adding another wrapper.
+
+Script names must describe the project action, not merely mirror a system
+binary. Avoid names that are visually or semantically confusable with common
+commands, such as:
+
+```text
+rscript
+python
+R
+test
+check
+```
+
+Prefer explicit project or task names such as:
+
+```text
+scripts/rscript_env_caller.R
+scripts/check-local.sh
+scripts/check-cran.sh
+scripts/render-report.sh
+```
+
+Before adding a new script, confirm:
+
+1. No existing script already does the job.
+2. The name is unambiguous in chat, docs, logs and CI.
+3. The script follows the repo's existing shell/R conventions.
+
+
 ## Coding Conventions
 
 * Use `snake_case` for object and function names.
@@ -173,4 +235,3 @@ This AGENTS.md should be respected by OpenAI Codex or other automated agents whe
 * Running checks (use scripts provided above)
 
 ---
-

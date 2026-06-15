@@ -15,7 +15,7 @@ Create or update the dedicated package-development environment with:
   mamba env update -n episcout -f environment.yml --prune
 
 To use a different R binary, set EPISCOUT_RSCRIPT:
-  EPISCOUT_RSCRIPT=/path/to/Rscript scripts/rscript -e 'R.version.string'
+  EPISCOUT_RSCRIPT=/path/to/Rscript scripts/rscript_env_caller.R -e 'R.version.string'
 EOF
   exit 127
 fi

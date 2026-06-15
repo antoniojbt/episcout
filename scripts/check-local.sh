@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
-rscript="${script_dir}/rscript"
+rscript="${script_dir}/rscript_env_caller.R"
 
 cd "$repo_root"
 
