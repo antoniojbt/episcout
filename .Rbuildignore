@@ -1,3 +1,5 @@
+^archive$
+^archive/
 ^future$
 ^future/
 ^codecov\.yml$

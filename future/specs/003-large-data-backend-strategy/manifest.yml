@@ -1,0 +1,29 @@
+id: "003"
+slug: "large-data-backend-strategy"
+status: draft
+owner: TBD
+base_branch: episcout2
+working_branch: TBD
+created: 2026-06-15
+updated: 2026-06-15
+
+related_files:
+  - README.md
+  - future/specs/003-large-data-backend-strategy/
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::check(manual = FALSE)"
+
+notes:
+  - Design-only first.
+  - Do not implement Arrow, DuckDB or data.table backends in this spec.

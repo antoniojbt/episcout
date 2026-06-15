@@ -3,6 +3,18 @@
 This file defines conventions and instructions to guide OpenAI Codex and other agents in contributing to this R package.
 It standardises formatting, documentation, testing, and pull request workflows.
 
+It should be respected by automated agents when:
+
+* Writing new functions (must include roxygen2 and tests)
+* Refactoring existing code (preserve naming and indentation)
+* Editing documentation (run `devtools::document()`)
+* Opening a PR (follow title/description/branch rules)
+* Running checks (use scripts provided above)
+
+Do not overcomplicate and over-engineer. Prefer the simpler solution. Make it easy for a human to review, supervise and monitor work. Do not bloat file content or create numerous files when one would suffice. e.g. use one `TODOs.md`, not a dir with `now.md`, `next.md`, `later.md`.
+
+---
+
 ## 📁 Project Structure
 
 | Folder             | Purpose                                          |
@@ -221,17 +233,5 @@ If modifying `.github/workflows/`, test using:
 ```bash
 act -j check  # if act is installed for local testing
 ```
-
----
-
-## Agent-Specific Instructions
-
-This AGENTS.md should be respected by OpenAI Codex or other automated agents when:
-
-* Writing new functions (must include roxygen2 and tests)
-* Refactoring existing code (preserve naming and indentation)
-* Editing documentation (run `devtools::document()`)
-* Opening a PR (follow title/description/branch rules)
-* Running checks (use scripts provided above)
 
 ---
