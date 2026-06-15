@@ -14,6 +14,20 @@ skip_if_not_installed("withr")
 skip_if_not_installed("ggplot2")
 skip_if_not_installed("cowplot")
 
+test_that("parallel plotting functions declare explicit suggested package guards", {
+  parallel_body <- paste(deparse(body(epi_plot_parallel)), collapse = "\n")
+  save_body <- paste(deparse(body(epi_plot_save_parallel)), collapse = "\n")
+
+  expect_match(parallel_body, "check_suggests")
+  expect_match(parallel_body, "future")
+  expect_match(parallel_body, "doFuture")
+  expect_match(parallel_body, "foreach")
+  expect_match(save_body, "check_suggests")
+  expect_match(save_body, "future")
+  expect_match(save_body, "doFuture")
+  expect_match(save_body, "foreach")
+})
+
 # Multisession futures start fresh R workers that must be able to attach
 # the installed package. devtools::test()/pkgload exposes the source tree to
 # the main process, but not as an installed package to worker processes.

@@ -54,3 +54,50 @@ test_that("epi_eda_profile_missing reports zero missingness for complete variabl
   expect_true(all(complete_rows$n_missing == 0))
   expect_true(all(complete_rows$p_missing == 0))
 })
+
+test_that("epi_eda_profile_missing counts sentinel missing codes", {
+  data <- data.frame(
+    age = c(45, 999, NA, 50),
+    status = c("A", "UNK", "B", "REF"),
+    complete = c(1, 2, 3, 4),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = c("age", "status", "complete"),
+    label = c("Age", "Status", "Complete"),
+    type = c("numeric", "categorical", "integer"),
+    role = c("covariate", "covariate", "covariate"),
+    levels = c("", "A;B;UNK;REF", ""),
+    missing_codes = c("999", "UNK; REF", ""),
+    stringsAsFactors = FALSE
+  )
+
+  observed <- epi_eda_profile_missing(data, spec)
+
+  expect_equal(observed$n, c(4L, 4L, 4L))
+  expect_equal(observed$n_missing, c(2L, 2L, 0L))
+  expect_equal(observed$p_missing, c(0.5, 0.5, 0))
+})
+
+test_that("epi_eda_profile_missing uses NA proportions for zero-row data", {
+  data <- data.frame(
+    age = numeric(),
+    status = character(),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = c("age", "status"),
+    label = c("Age", "Status"),
+    type = c("numeric", "categorical"),
+    role = c("covariate", "covariate"),
+    levels = c("", "A;B"),
+    missing_codes = c("999", ""),
+    stringsAsFactors = FALSE
+  )
+
+  observed <- epi_eda_profile_missing(data, spec)
+
+  expect_equal(observed$n, c(0L, 0L))
+  expect_equal(observed$n_missing, c(0L, 0L))
+  expect_true(all(is.na(observed$p_missing)))
+})

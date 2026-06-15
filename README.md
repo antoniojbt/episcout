@@ -126,9 +126,15 @@ Start from a data dictionary with at least these columns:
 ``` csv
 name,label,type,role,units,levels,min,max,missing_codes,required,group,description
 age,Age at baseline,numeric,covariate,years,,18,110,,TRUE,demographics,Age in years
-sex,Sex at birth,categorical,covariate,,"Female;Male;Unknown",,,,TRUE,demographics,Recorded sex
+sex,Sex at birth,categorical,covariate,,"Female;Male;Unknown",,,Unknown,TRUE,demographics,Recorded sex
 death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome indicator
 ```
+
+The optional `missing_codes` column accepts semicolon-separated sentinel values
+such as `Unknown;Refused`. These values are counted as missing in
+`epi_eda_profile_missing()` and excluded from observed EDA summaries. In
+categorical summaries, `p` uses all rows as the denominator and `p_observed`
+uses only observed non-missing rows.
 
 You can prepare the workflow before real data arrive by generating synthetic
 data from the same specification:

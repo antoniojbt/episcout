@@ -7,48 +7,6 @@ fixture_dir <- file.path("fixtures", "blood_storage")
 data_path <- file.path(fixture_dir, "blood_storage.csv")
 spec_path <- file.path(fixture_dir, "blood_storage_spec.csv")
 
-make_expected_numeric_summary <- function(data, spec) {
-  numeric_spec <- spec[spec$type %in% c("numeric", "integer"), , drop = FALSE]
-
-  rows <- lapply(numeric_spec$name, function(name) {
-    values <- data[[name]]
-    data.frame(
-      name = name,
-      n = length(values),
-      n_missing = sum(is.na(values)),
-      mean = mean(values, na.rm = TRUE),
-      sd = stats::sd(values, na.rm = TRUE),
-      median = stats::median(values, na.rm = TRUE),
-      min = min(values, na.rm = TRUE),
-      max = max(values, na.rm = TRUE),
-      stringsAsFactors = FALSE
-    )
-  })
-
-  do.call(rbind, rows)
-}
-
-make_expected_categorical_summary <- function(data, spec) {
-  categorical_spec <- spec[spec$type %in% c("categorical", "binary"), , drop = FALSE]
-
-  rows <- lapply(categorical_spec$name, function(name) {
-    values <- data[[name]]
-    observed <- as.character(values[!is.na(values)])
-    levels <- strsplit(categorical_spec$levels[categorical_spec$name == name], ";", fixed = TRUE)[[1]]
-    counts <- vapply(levels, function(level) sum(observed == level), integer(1))
-
-    data.frame(
-      name = name,
-      level = levels,
-      n = as.integer(counts),
-      p = as.numeric(counts) / length(values),
-      stringsAsFactors = FALSE
-    )
-  })
-
-  do.call(rbind, rows)
-}
-
 test_that("epi_eda_profile_summaries returns numeric and categorical summary components", {
   data <- read.csv(data_path, check.names = FALSE)
   spec <- epi_eda_spec(spec_path)
@@ -61,10 +19,31 @@ test_that("epi_eda_profile_summaries returns numeric and categorical summary com
   expect_s3_class(observed$categorical, "data.frame")
 })
 
-test_that("epi_eda_profile_summaries numeric output matches independent fixture calculations", {
-  data <- read.csv(data_path, check.names = FALSE)
-  spec <- epi_eda_spec(spec_path)
-  expected <- make_expected_numeric_summary(data, spec)
+test_that("epi_eda_profile_summaries numeric output matches hand-computed values", {
+  data <- data.frame(
+    age = c(10, 20, 999, NA),
+    all_missing = c(999, NA, 999, NA),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = c("age", "all_missing"),
+    label = c("Age", "All missing"),
+    type = c("numeric", "numeric"),
+    role = c("covariate", "covariate"),
+    missing_codes = c("999", "999"),
+    stringsAsFactors = FALSE
+  )
+  expected <- data.frame(
+    name = c("age", "all_missing"),
+    n = c(4L, 4L),
+    n_missing = c(2L, 4L),
+    mean = c(15, NA_real_),
+    sd = c(sqrt(50), NA_real_),
+    median = c(15, NA_real_),
+    min = c(10, NA_real_),
+    max = c(20, NA_real_),
+    stringsAsFactors = FALSE
+  )
 
   observed <- epi_eda_profile_summaries(data, spec)
 
@@ -76,10 +55,28 @@ test_that("epi_eda_profile_summaries numeric output matches independent fixture 
   )
 })
 
-test_that("epi_eda_profile_summaries categorical output matches independent fixture calculations", {
-  data <- read.csv(data_path, check.names = FALSE)
-  spec <- epi_eda_spec(spec_path)
-  expected <- make_expected_categorical_summary(data, spec)
+test_that("epi_eda_profile_summaries categorical output documents denominators", {
+  data <- data.frame(
+    status = c("A", "B", "UNK", NA, "A"),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = "status",
+    label = "Status",
+    type = "categorical",
+    role = "covariate",
+    levels = "A;B;C",
+    missing_codes = "UNK",
+    stringsAsFactors = FALSE
+  )
+  expected <- data.frame(
+    name = c("status", "status", "status"),
+    level = c("A", "B", "C"),
+    n = c(2L, 1L, 0L),
+    p = c(2 / 5, 1 / 5, 0),
+    p_observed = c(2 / 3, 1 / 3, 0),
+    stringsAsFactors = FALSE
+  )
 
   observed <- epi_eda_profile_summaries(data, spec)
 

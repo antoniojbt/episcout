@@ -38,14 +38,17 @@ future/
 Use the repo-local wrapper for R commands:
 
 ```bash
-scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
-scripts/rscript_env_caller.R -e "devtools::check(manual = FALSE)"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 ```
 
-Do not use bare `Rscript` in future specs or check instructions.
+Do not use bare `Rscript` in future specs or check instructions. For
+`devtools::check()`, always set an explicit CRAN mirror instead of relying on
+`@CRAN@`; otherwise checks can spend a long time probing repository indexes.
 
 ## Active Specs
 
 - `001-phase-1-helper-stabilization`
 - `002-penguins-raw-fixture`
 - `003-large-data-backend-strategy`
+- `004-senior-review-followups`

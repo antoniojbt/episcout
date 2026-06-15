@@ -53,5 +53,5 @@ super_data <- epi_read("super_data.tsv")
 \code{\link[data.table]{fread}}, \code{\link[tibble]{as.tibble}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

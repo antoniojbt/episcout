@@ -56,3 +56,24 @@ test_that("all expected variables are present in the unmodified fixture", {
   expect_true(all(expected_rows$observed_present))
   expect_false(any(expected_rows$status == "missing"))
 })
+
+test_that("epi_eda_check_schema remains descriptive for numeric and binary types", {
+  data <- data.frame(
+    integer_count = c(1L, 2L),
+    logical_flag = c(TRUE, FALSE),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = c("integer_count", "logical_flag"),
+    label = c("Integer count", "Logical flag"),
+    type = c("integer", "binary"),
+    role = c("covariate", "covariate"),
+    stringsAsFactors = FALSE
+  )
+
+  observed <- epi_eda_check_schema(data, spec)
+
+  expect_equal(observed$expected_type, c("integer", "binary"))
+  expect_equal(observed$observed_type, c("numeric", "binary"))
+  expect_equal(observed$status, c("present", "present"))
+})

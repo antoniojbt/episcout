@@ -16,5 +16,6 @@ A data frame with variable names, row counts, missing counts and
 missing proportions.
 }
 \description{
-Count standard missing values for variables listed in an EDA specification.
+Count standard missing values and configured missing codes for variables
+listed in an EDA specification.
 }

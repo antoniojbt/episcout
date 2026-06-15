@@ -7,6 +7,6 @@ rscript="${script_dir}/rscript_env_caller.R"
 
 cd "$repo_root"
 
-"$rscript" -e 'devtools::document()'
-"$rscript" -e 'devtools::test(reporter = "summary")'
-"$rscript" -e 'devtools::check(manual = FALSE)'
+"$rscript" -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); devtools::document()'
+"$rscript" -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); devtools::test(reporter = "summary")'
+"$rscript" -e 'options(repos = c(CRAN = "https://cloud.r-project.org")); devtools::check(manual = FALSE)'

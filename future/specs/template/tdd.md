@@ -10,7 +10,7 @@ Status: Draft
 ## Baseline Commands
 
 ```bash
-scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
 ```
 
 ## Behaviour Tests
@@ -28,6 +28,6 @@ scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
 ## Acceptance Commands
 
 ```bash
-scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
-scripts/rscript_env_caller.R -e "devtools::check(manual = FALSE)"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 ```
