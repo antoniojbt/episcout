@@ -24,7 +24,8 @@ Default is 'Spearman'}
 
 \item{show_values}{Values to show in plot, 'pval' or 'corr'. Default is 'pval'.}
 
-\item{show_labels}{Logical indicating whether numeric labels are displayed. Default is TRUE.}
+\item{show_labels}{Logical indicating whether numeric labels should be
+displayed inside the tiles. Default is \code{TRUE}.}
 }
 \value{
 Returns a heatmap as a ggplot2 object
@@ -83,5 +84,5 @@ ggsave("epi_heatmap_triangle.svg",
 \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

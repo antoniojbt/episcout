@@ -18,6 +18,7 @@ string value
 \description{
 Generate a simple output name, given a string (filename)
 splits at the last '.', drops the current suffix and adds the one provided.
+If \code{input_name} lacks a dot, the whole string is used as is.
 }
 \examples{
 \dontrun{

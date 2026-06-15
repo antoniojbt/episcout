@@ -1,6 +1,9 @@
+^future$
+^future/
 ^codecov\.yml$
 ^cran-comments\.md$
 ^\.travis\.yml$
+^\.DS_Store$
 ^data-raw$
 ^LICENSE\.md$
 ^episcout\.Rproj$
@@ -26,4 +29,5 @@
 ^environment\.yml$
 ^scripts$
 ^build$
+^legacy$
 # .Rbuildignore
