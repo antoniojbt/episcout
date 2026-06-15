@@ -48,7 +48,7 @@ mamba env update -n episcout -f environment.yml --prune
 Run package checks through the repository wrapper, not bare `Rscript`:
 
 ``` bash
-scripts/rscript -e "cat(R.home())"
+scripts/rscript_env_caller.R -e "cat(R.home())"
 scripts/check-local.sh
 scripts/check-cran.sh
 ```
