@@ -6,10 +6,15 @@
 \alias{episcout-package}
 \title{episcout: Quickly Clean, Explore and Visualise Large Epidemiological Datasets}
 \description{
-Facilitates cleaning, exploring and visualising large-ish datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). These are mostly wrapper and convenience functions to pre-process (wrangle, explore, clean, etc.) data-sets. Assumes you're happy with tidyverse and the basics of data.table.
+Facilitates cleaning, exploring and visualising large-ish epidemiological datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). Provides helper functions for preprocessing and descriptive work, plus specification-first exploratory data analysis workflows for epidemiological datasets. Assumes you're happy with tidyverse and the basics of data.table.
 }
 \author{
 \strong{Maintainer}: Antonio Berlanga-Taylor \email{antoniojberlanga@gmail.com}
+
+Authors:
+\itemize{
+  \item Antonio Berlanga-Taylor \email{antoniojberlanga@gmail.com}
+}
 
 }
 \keyword{internal}

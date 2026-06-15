@@ -47,10 +47,9 @@ one with your preferences or modify directly in a ggplot2 call.
 For examples see eg \code{\link{epi_plot_heatmap_triangle}} and others.
 If creating your own themes see for instance:
 \href{https://github.com/jrnold/ggthemes}{ggthemes},
-\href{http://sape.inf.usi.ch/quick-reference/ggplot2/themes}{ggplot2 themes}.
+\href{https://ggplot2.tidyverse.org/reference/ggtheme.html}{ggplot2 themes}.
 Some colour codes:
-\href{http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/}{Colors ggplot2},
-\href{http://sape.inf.usi.ch/quick-reference/ggplot2/colour}{ggplot2 Quick Reference}
+\href{https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html}{ggplot2 colour scales}
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
