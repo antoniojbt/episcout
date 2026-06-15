@@ -31,13 +31,13 @@ operational source of truth for what happens next.
 | PR 8 run_eda failing tests | Done | Tests are present and may fail until PR 9 implements `run_eda()`. |
 | PR 9 run_eda implementation | Done | `run_eda()` is implemented. |
 | PR 10 report-template tests | Done | Report-rendering tests are present and may fail until PR 11 implements `render_eda_report()`. |
-| PR 11 report rendering implementation | Active | Follow Instruction 10 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md` and implement report rendering from the PR plan. |
-| Later project template work | Not started | Continue through the PR plan after PR 11. |
+| PR 11 report rendering implementation | Done | `render_eda_report()` and the bundled Quarto report template are implemented. |
+| PR 12 project template work | Active | Follow Instruction 10 in `spec_driven_EDA_plan/docs/codex/tdd-first-codex-instructions.md` and add the project template from the PR plan. |
 
 ## Active PR
 
 ```text
-PR 11: Implement report rendering
+PR 12: Add project template
 ```
 
 Instruction:
@@ -60,24 +60,22 @@ spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 spec_driven_EDA_plan/docs/codex/review-checklist.md
 ```
 
-## PR 11 Scope
+## PR 12 Scope
 
 Must edit:
 
 ```text
-R/eda_report.R
-inst/report-template/eda.qmd
+inst/project-template/
 spec_driven_EDA_plan/docs/START_HERE.md
 ```
 
 May read:
 
 ```text
-R/run_eda.R
-tests/testthat/fixtures/blood_storage/blood_storage.csv
-tests/testthat/fixtures/blood_storage/blood_storage_spec.csv
+R/eda_report.R
+inst/report-template/eda.qmd
 tests/testthat/test-eda_report.R
-tests/testthat/test-run_eda-fixtures.R
+spec_driven_EDA_plan/docs/codex/revised-pr-plan-tdd-first.md
 ```
 
 Must not edit:
@@ -90,13 +88,14 @@ R/eda_synthetic.R
 R/eda_summaries.R
 R/eda_plots.R
 R/run_eda.R
-inst/project-template/
+R/eda_report.R
+inst/report-template/eda.qmd
 ```
 
 Expected test state:
 
 ```text
-PR 11 should make the report-rendering fixture tests pass.
+PR 12 should add project-template coverage without regressing PR 11 report tests.
 ```
 
 ## Closeout Rule
