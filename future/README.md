@@ -12,7 +12,7 @@ agent handoff material. Keep executable package tests in `tests/testthat/`.
 ```text
 future/
 ├── README.md
-├── backlog.md
+├── TODOs.md
 ├── decisions.md
 ├── changelog.md
 ├── prompts/
@@ -24,7 +24,7 @@ future/
 
 ## Workflow
 
-1. Add candidate work to `backlog.md`.
+1. Add candidate work to `TODOs.md`.
 2. Promote active work to a numbered directory under `specs/`.
 3. Fill in `brief.md`, `sdd.md`, `tdd.md`, `acceptance.md` and
    `manifest.yml` before implementation.

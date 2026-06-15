@@ -14,7 +14,7 @@ Use the root-level `future/` directory for next-phase planning:
 
 ```text
 future/README.md
-future/backlog.md
+future/TODOs.md
 future/specs/
 ```
 
