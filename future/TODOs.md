@@ -25,13 +25,18 @@
 ```
 
 - For simple tasks only use e.g. `- [ ] xxx`
-
 - Keep README and `NEWS.md` aligned with user-facing workflow changes.
-- Move completed items to `changelog.md`
+- Move completed items to `changelog.md`.
+- Check this `TODOs.md` file and `future/specs/` specs are aligned.
 
 ## Task list
 
 ### Priority 1
+
+- [ ] run task from codex cloud thread locally (clone, install, follow vignette)
+- [ ] check findings in `future/reviews/2026-06-15-senior-r-package-review.md` were implemented
+- [ ] move 'implemented' specs in `future/specs` to a `future/done` dir
+- why aren't specs in `future/specs` mirrored here, in `TODOs.md`?
 
 - [ ] get instructions to download, install, episcout2 branch
 - [ ] human live walkthrough, no agent needed here
@@ -46,9 +51,10 @@
 
 - [ ] Add functions to create a data dictionary when real data already exists but does not have a dictionary.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] Revisit large-data backend implementation after the design spec is
-      accepted.
+- [ ] Revisit large-data backend implementation after the design spec is accepted.
 - [ ] review `future/ideas/codex_reviews_from_PRs_to_check_minor.md` and determine whether they are still valid and need addressing.
+- [ ] add functions to pseudonimise PII: identify columns, create toke ID, bridge file, remove columns, pass for check, write read-only raw data file.
+- [ ] add functions to load, connect, etc data into db. 
 
 ### Priority 3
 
