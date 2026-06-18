@@ -28,8 +28,12 @@ test_that("synthetic data has the requested row count", {
 test_that("synthetic categorical and binary values respect specification levels", {
   synthetic <- epi_eda_generate_synthetic_data(spec, n = 100, seed = 1)
 
-  categorical_spec <- spec[spec$type %in% c("categorical", "binary") &
-    !is.na(spec$levels) & spec$levels != "", , drop = FALSE]
+  categorical_spec <- spec[
+    spec$type %in% c("categorical", "binary") &
+      !is.na(spec$levels) & spec$levels != "",
+    ,
+    drop = FALSE
+  ]
 
   for (i in seq_len(nrow(categorical_spec))) {
     name <- categorical_spec$name[i]
@@ -46,9 +50,13 @@ test_that("synthetic categorical and binary values respect specification levels"
 test_that("synthetic numeric and integer values respect specification min and max", {
   synthetic <- epi_eda_generate_synthetic_data(spec, n = 100, seed = 1)
 
-  ranged_spec <- spec[spec$type %in% c("numeric", "integer") &
-    !is.na(spec$min) & spec$min != "" &
-    !is.na(spec$max) & spec$max != "", , drop = FALSE]
+  ranged_spec <- spec[
+    spec$type %in% c("numeric", "integer") &
+      !is.na(spec$min) & spec$min != "" &
+      !is.na(spec$max) & spec$max != "",
+    ,
+    drop = FALSE
+  ]
 
   for (i in seq_len(nrow(ranged_spec))) {
     name <- ranged_spec$name[i]

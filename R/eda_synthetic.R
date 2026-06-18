@@ -14,7 +14,7 @@
 #' @return A data frame with one column per specification variable and `n` rows.
 #'
 #' @export
-epi_eda_generate_synthetic_data <- function(spec, n = 100, seed = NULL) {
+epi_eda_generate_synthetic_data <- function(spec, n = 100, seed = NULL) { # nolint: object_length_linter
   spec <- if (is.data.frame(spec)) {
     epi_eda_validate_spec(spec)
   } else {
@@ -41,7 +41,7 @@ epi_eda_generate_synthetic_data <- function(spec, n = 100, seed = NULL) {
           rm(".Random.seed", envir = .GlobalEnv)
         }
       } else {
-        assign(".Random.seed", old_seed, envir = .GlobalEnv)
+        assign(".Random.seed", old_seed, envir = .GlobalEnv) # nolint: object_name_linter
       }
     }, add = TRUE)
     set.seed(seed)
