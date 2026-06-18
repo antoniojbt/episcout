@@ -3,7 +3,7 @@ context("project template contract tests")
 library(testthat)
 library(episcout)
 
-expected_project_template_entries <- c(
+template_entries <- c(
   "README.md",
   "metadata/data_dictionary.csv",
   "config/eda.yml",
@@ -14,8 +14,8 @@ expected_project_template_entries <- c(
   "outputs/.gitkeep"
 )
 
-expect_project_template_entries <- function(root) {
-  for (entry in expected_project_template_entries) {
+expect_template_entries <- function(root) {
+  for (entry in template_entries) {
     expect_true(
       file.exists(file.path(root, entry)),
       info = paste("Missing project template entry:", entry)
@@ -46,7 +46,7 @@ test_that("project template is bundled with the expected scaffold", {
   }
 
   expect_true(dir.exists(template_path))
-  expect_project_template_entries(template_path)
+  expect_template_entries(template_path)
   expect_match(read_project_report_template(template_path), "epi_eda_render_report")
   expect_match(read_project_targets(template_path), "epi_eda_render_report")
   expect_no_match(read_project_report_template(template_path), "\\brender_eda_report\\b")
@@ -62,7 +62,7 @@ test_that("epi_eda_create_project creates the expected scaffold", {
     normalizePath(returned_path, winslash = "/", mustWork = TRUE),
     normalizePath(project_path, winslash = "/", mustWork = TRUE)
   )
-  expect_project_template_entries(project_path)
+  expect_template_entries(project_path)
   expect_match(read_project_report_template(project_path), "epi_eda_render_report")
   expect_match(read_project_targets(project_path), "epi_eda_render_report")
 })
@@ -92,6 +92,6 @@ test_that("epi_eda_create_project can overwrite existing files when requested", 
     normalizePath(returned_path, winslash = "/", mustWork = TRUE),
     normalizePath(project_path, winslash = "/", mustWork = TRUE)
   )
-  expect_project_template_entries(project_path)
+  expect_template_entries(project_path)
   expect_false(identical(readLines(existing_file, warn = FALSE), "existing"))
 })
