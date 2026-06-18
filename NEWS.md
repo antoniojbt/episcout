@@ -2,6 +2,8 @@
 
 ## Development version
 
+- Added `epi_sec_pseudonym()` to create secure participant pseudonymisation
+  bridge tables using cryptographic random tokens.
 - Added a specification-first EDA workflow driven by data dictionaries:
   `epi_eda_spec()`, `epi_eda_check_schema()`, `epi_eda_profile_missing()`,
   `epi_eda_profile_summaries()`, `epi_eda_profile_plots()`,
