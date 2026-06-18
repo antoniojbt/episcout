@@ -1,0 +1,25 @@
+# Keep GitHub Actions dependencies current.
+#
+# Dependabot does not currently support CRAN/R package dependencies in
+# DESCRIPTION files, so this configuration covers the supported dependency
+# ecosystem used by this repository.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
