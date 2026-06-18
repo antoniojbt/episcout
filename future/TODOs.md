@@ -53,7 +53,7 @@
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
 - [ ] Revisit large-data backend implementation after the design spec is accepted.
 - [ ] review `future/ideas/codex_reviews_from_PRs_to_check_minor.md` and determine whether they are still valid and need addressing.
-- [ ] add functions to pseudonimise PII: identify columns, create toke ID, bridge file, remove columns, pass for check, write read-only raw data file.
+- [ ] Add pseudonymisation helpers. Activated v1 as spec `005-pseudonymisation-bridge`: create secure token bridge table only. Later scope remains: identify PII columns, pseudonymise datasets, remove identifier columns, validate outputs, and write read-only raw data files.
 - [ ] add functions to load, connect, etc data into db. 
 
 ### Priority 3
