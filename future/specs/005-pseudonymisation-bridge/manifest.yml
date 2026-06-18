@@ -1,0 +1,33 @@
+id: "005"
+slug: "pseudonymisation-bridge"
+status: implemented
+owner: Antonio Berlanga-Taylor
+base_branch: episcout2
+working_branch: feature/pseudonymisation-bridge
+created: 2026-06-18
+updated: 2026-06-18
+
+related_files:
+  - R/epi_sec_pseudonym.R
+  - tests/testthat/test-epi_sec_pseudonym.R
+  - DESCRIPTION
+  - NEWS.md
+  - future/TODOs.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+
+notes:
+  - V1 creates a secure bridge table only.
+  - Full dataset pseudonymisation, PII detection and database-backed bridges are out of scope.

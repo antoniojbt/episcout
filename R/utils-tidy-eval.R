@@ -25,19 +25,17 @@
 #' therefore one should always use `rlang::exprs()`.
 #'
 #' To learn more about tidy eval and how to use these tools, visit
-#' <http://rlang.r-lib.org> and the [Metaprogramming
-#' section](http://adv-r.had.co.nz/Computing-on-the-language.html) of [Advanced
-#' R](https://adv-r.hadley.nz).
+#' <https://rlang.r-lib.org> and [Advanced R](https://adv-r.hadley.nz).
 #'
 #' @md
 #' @name     tidyeval
 #' @keywords internal
-#' @importFrom rlang quo quos enquo enquos quo_name sym ensym syms
-#'                   ensyms expr exprs enexpr enexprs .data :=
-#' @aliases  quo quos enquo enquos quo_name
-#'           sym ensym syms ensyms
-#'           expr exprs enexpr enexprs
-#'           .data :=
+#' @importFrom rlang quo quos enquo enquos quo_name sym ensym syms ensyms
+#' @importFrom rlang expr exprs enexpr enexprs .data :=
+#' @aliases quo quos enquo enquos quo_name
+#' @aliases sym ensym syms ensyms
+#' @aliases expr exprs enexpr enexprs
+#' @aliases .data :=
 #' @export   quo quos enquo enquos quo_name
 #' @export   sym ensym syms ensyms
 #' @export   expr enexpr enexprs

@@ -2,187 +2,76 @@
 % Please edit documentation in R/epi_stats_numeric.R
 \name{epi_stats_numeric}
 \alias{epi_stats_numeric}
-\title{Get summary descriptive statistics for numeric columns.}
+\title{Summarise Numeric Vector with Descriptive Statistics}
 \usage{
 epi_stats_numeric(num_vec = NULL, na.rm = TRUE, coef = 1.5, ...)
 }
 \arguments{
-\item{num_vec}{Numeric vector to test.}
+\item{num_vec}{Numeric vector to summarise.}
 
-\item{na.rm}{Remove NA values, default is TRUE}
+\item{na.rm}{Logical; should \code{NA} values be removed prior to computations?
+Default is \code{TRUE}.}
 
-\item{coef}{Coefficient for outlier detection, default is 1.5}
+\item{coef}{Numeric; multiplier for the IQR in Tukey's outlier rule.
+Values more than \code{coef * IQR} below \code{Q1} or above \code{Q3} are
+counted as outliers. Default is \code{1.5}.}
 
-\item{...}{is passed to skewness() and kurtosis()}
+\item{...}{Additional arguments passed to \code{\link[e1071]{skewness}} and
+\code{\link[e1071]{kurtosis}} (e.g., \code{type}).}
 }
 \value{
-Data.frame with results from tests performed
+A one-row \code{data.frame} with the following columns:
+\describe{
+\item{\code{n}}{Total length of the input vector.}
+\item{\code{n_nonNA}}{Number of non-\code{NA} observations.}
+\item{\code{NA_count}}{Count of \code{NA} values.}
+\item{\code{NA_percentage}}{Percentage of values that are \code{NA}; \code{NA} for zero-length inputs.}
+\item{\code{sum}}{Sum of values.}
+\item{\code{min}}{Minimum value.}
+\item{\code{quantile_25}}{25th percentile (\code{Q1}).}
+\item{\code{mean}}{Arithmetic mean.}
+\item{\code{median}}{Median.}
+\item{\code{quantile_75}}{75th percentile (\code{Q3}).}
+\item{\code{max}}{Maximum value.}
+\item{\code{IQR}}{Interquartile range (\code{Q3 - Q1}).}
+\item{\code{SD}}{Standard deviation.}
+\item{\code{CV}}{Coefficient of variation (\code{SD / mean}); \code{NA} when the mean is zero or unavailable.}
+\item{\code{variance}}{Variance.}
+\item{\code{sem}}{Standard error of the mean (\code{SD / sqrt(n_nonNA)}).}
+\item{\code{skewness}}{Sample skewness (via \pkg{e1071}).}
+\item{\code{kurtosis}}{Sample kurtosis (via \pkg{e1071}).}
+\item{\code{Shapiro_Wilk_p_value}}{P-value from Shapiro-Wilk test (if 3 < \code{n_nonNA} < 5000; else \code{NA}).}
+\item{\code{lower_fence}}{Lower Tukey fence (\code{Q1 - coef * IQR}).}
+\item{\code{upper_fence}}{Upper Tukey fence (\code{Q3} + \code{coef * IQR}).}
+\item{\code{n_below_lower}}{Count of values < \code{lower_fence}.}
+\item{\code{n_above_upper}}{Count of values > \code{upper_fence}.}
+\item{\code{outlier_count}}{Total number of Tukey outliers.}
+\item{\code{outlier_percentage}}{Percentage of non-\code{NA} values flagged as outliers.}
+}
 }
 \description{
-epi_stats_numeric() generates several descriptive summary statistics for numeric
-variables.
+Compute a comprehensive set of descriptive statistics for a numeric vector,
+including measures of location, dispersion, shape, normality, and outliers.
 }
-\note{
-Normality is tested with Shapiro-Wilk (small values indicate
-non-normality). Testing normality can be contentious, likely uninformative
-and with Shapiro-Wilk can only be done for sample size between 3-5000.
-The package e1071 is used for skewness and kurtosis.
-For skewness: negative/longer left tail, positive/longer right tail,
-values above 1 usually means non-normality. For kurtosis consider lower values,
-broader shape and longer tails (platy ~<3), normal (meso ~3)
-and slender/no tails (lepto ~<3). Outliers are detected with the Tukey
-method (above and below 1.5 * IQR). na.rm is TRUE by default for all tests.
-}
-\examples{
-#####
-# Load libraries needed:
-library(episcout)
-library(dplyr)
-library(purrr)
-library(e1071)
-library(tibble)
-library(tidyr)
-#####
-
-#####
-# Generate a data frame:
-n <- 1000
-df <- data.frame(
-  var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c("Pre", "Post"), n / 2),
-  x = rnorm(n),
-  y = rbinom(n, 1, 0.50),
-  z = rpois(n, 2)
-)
-
-# Explore first and last rows for first columns:
-epi_head_and_tail(df)
-
-# Add character/factor columns:
-col_chr <- data.frame(
-  "chr1" = rep(c("A", "B"), length.out = 1000),
-  "chr2" = rep(c("C", "D"), length.out = 1000)
-)
-dim(col_chr)
-df_cont_chr <- tibble::as.tibble(cbind(df, col_chr))
-epi_head_and_tail(df_cont_chr)
-epi_head_and_tail(df_cont_chr, last_cols = TRUE)
-
-# Check variable types are what you expect:
-epi_clean_count_classes(df_cont_chr)
-str(df_cont_chr)
-dim(df_cont_chr)
-# var_id, y and z can be treated as factors or characters.
-summary(as.factor(df_cont_chr$y))
-summary(as.factor(df_cont_chr$z))
-# Here we'll only transform y though:
-df_cont_chr$y <- as.factor(df_cont_chr$y)
-epi_clean_count_classes(df_cont_chr)
-str(df_cont_chr)
-
-# Designate some values as codes to be counted separately:
-codes <- c("Pre", "A", "C", "1", "3")
-#####
-
-#####
-# Count when codes are present, pass these as character or factor, specify
-#  action is to count codes only:
-stat_sum1 <- epi_stats_summary(
-  df = df_cont_chr,
-  codes = codes,
-  class_type = "chr_fct",
-  action = "codes_only"
-)
-class(stat_sum1)
-stat_sum1
-#####
-
-#####
-# Add total for percentage calculation and order column to tidy up results:
-perc_n <- nrow(df_cont_chr)
-order_by <- "percent"
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum1,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-# Format them if needed:
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 2)
-#####
-
-#####
-# Count integer or numeric codes:
-stat_sum2 <- epi_stats_summary(df_cont_chr,
-  codes = codes,
-  class_type = "int_num",
-  action = "codes_only"
-)
-stat_sum2
-# Tidy and format them:
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum2,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 2, skip = c(2, 3))
-#####
-
-#####
-# Get summary stats excluding contingency codes for character and factor columns:
-stat_sum3 <- epi_stats_summary(df_cont_chr,
-  codes = codes,
-  class_type = "chr_fct",
-  action = "exclude"
-)
-stat_sum3
-# Tidy and format:
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum3,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 1)
-#####
-
-#####
-# Get summary stats for numeric/integer columns
-# while excluding certain codes/values:
-stat_sum4 <- epi_stats_summary(
-  df = df_cont_chr,
-  codes = codes,
-  class_type = "int_num",
-  action = "exclude"
-)
-class(stat_sum4)
-stat_sum4
-# Numeric data summary doesn't need tidying but could be formatted:
-epi_stats_format(stat_sum4, digits = 2)
-#####
-
-#####
-# If there are no codes to return the result is an empty data.frame (tibble):
-codes <- c("Per", "X", "55")
-stat_sum_zero <- epi_stats_summary(df_cont_chr,
-  codes = codes,
-  class_type = "chr_fct",
-  action = "codes_only"
-)
-stat_sum_zero
-#####
+\details{
+Missing values are dropped when \code{na.rm = TRUE}.  The Shapiro-Wilk test
+for normality is only run for sample sizes between 4 and 4999; otherwise
+its p-value is reported as \code{NA}. Empty and all-missing inputs return one
+row with unavailable summaries reported as \code{NA}. For skewness:
+negative/longer left tail,
+positive/longer right tail, values above 1 usually means non-normality.
+For kurtosis consider lower values, broader shape and longer tails (platy ~<3),
+normal (meso ~3) and slender/no tails (lepto ~>3).
+Outliers are detected with the Tukey method (above and below 1.5 * IQR) or
+using the multiplier \code{coef}.  Coefficient of variation (\code{CV}) is
+calculated as \code{SD / mean}.  You may pass further arguments (e.g.,
+\code{type}) to the skewness and kurtosis functions from \pkg{e1071}.
+na.rm is TRUE by default for all tests.
 }
 \seealso{
-\code{\link{epi_stats_summary}},
-\code{\link{epi_stats_format}},
-\code{\link{epi_stats_tidy}},
-\code{\link[e1071]{skewness}},
-\code{\link[e1071]{kurtosis}}.
+\code{\link{epi_stats_count_outliers}}, \code{\link[e1071]{skewness}},
+\code{\link[e1071]{kurtosis}}, \code{\link[stats]{shapiro.test}}
 }
 \author{
-Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio J. Berlanga-Taylor
 }

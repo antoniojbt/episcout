@@ -1,0 +1,29 @@
+---
+title: "Project EDA Report"
+format: html
+params:
+  data_path: data/input.csv
+  spec_path: metadata/data_dictionary.csv
+  output_dir: outputs
+  synthetic: false
+  n: 100
+  seed: 1
+---
+
+# Project EDA Report
+
+Render the specification-first EDA report for this project with
+`episcout::epi_eda_render_report()`.
+
+```{r render-eda-report, eval=FALSE}
+data <- read.csv(params$data_path, stringsAsFactors = FALSE)
+
+episcout::epi_eda_render_report(
+  data = data,
+  spec = params$spec_path,
+  output_dir = params$output_dir,
+  synthetic = params$synthetic,
+  n = params$n,
+  seed = params$seed
+)
+```

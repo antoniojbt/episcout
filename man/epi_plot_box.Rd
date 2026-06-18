@@ -80,34 +80,34 @@ var_x and var_y are passed to ggplot2::aes.
 For colour and fill see ggplot2::fill for further information.
 }
 \examples{
-
 \dontrun{
-Boxplot of one variable:
+# Boxplot of one variable:
 library(ggplot2)
 library(ggthemes)
 set.seed(12345)
 n <- 20
-df <- data.frame(var_id = rep(1:(n / 2), each = 2),
-                 var_to_rep = rep(c("Pre", "Post"), n / 2),
-                 x = rnorm(n),
-                 y = rbinom(n, 1, 0.50),
-                 z = rpois(n, 2)
-                 )
+df <- data.frame(
+  var_id = rep(1:(n / 2), each = 2),
+  var_to_rep = rep(c("Pre", "Post"), n / 2),
+  x = rnorm(n),
+  y = rbinom(n, 1, 0.50),
+  z = rpois(n, 2)
+)
 df
 df$x # continuous variable
-epi_plot_box(df, var_y = 'x')
+epi_plot_box(df, var_y = "x")
 # Add notch:
-epi_plot_box(df, var_y = 'x', notch = TRUE)
+epi_plot_box(df, var_y = "x", notch = TRUE)
 
 # Boxplot for x and y variables:
 df$x # continuous variable
 df$var_to_rep # factor
-epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
+epi_plot_box(df, var_x = "var_to_rep", var_y = "x")
 # Change colours, remove legend, etc.:
-my_boxplot <- epi_plot_box(df, var_x = 'var_to_rep', var_y = 'x')
+my_boxplot <- epi_plot_box(df, var_x = "var_to_rep", var_y = "x")
 my_boxplot +
   # scale_fill_grey() +
-scale_fill_brewer(palette = "Blues") +
+  scale_fill_brewer(palette = "Blues") +
   # scale_fill_brewer(palette = "Dark2") +
   theme(legend.position = "none") # Remove legend
 # dev.off()

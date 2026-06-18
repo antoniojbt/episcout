@@ -43,6 +43,8 @@ epi_plot_parallel <- function(df,
                               num_cores = NULL,
                               future_plan = "multisession",
                               ...) {
+  check_suggests(c("future", "doFuture", "foreach", "iterators", "parallel"))
+
   if (is.null(vars_to_plot)) {
     if (!requireNamespace("dplyr", quietly = TRUE)) {
       stop("Package dplyr needed for this function to work. Please install it.",
@@ -57,12 +59,7 @@ epi_plot_parallel <- function(df,
     )
     vars_to_plot <- names(cond)
   }
-  if (!requireNamespace("foreach", quietly = TRUE)) {
-    stop("Package foreach needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
-  
+
   # Capture existing plan for cleanup
   prev_plan <- future::plan()
   on.exit({
@@ -92,7 +89,6 @@ epi_plot_parallel <- function(df,
 #' @param file_prefix Prefix used to create file names.
 #' @param plot_type File type passed to [cowplot::save_plot()].
 #' @param plot_step Number of plots per file.
-#' @inheritParams epi_plot_parallel
 #'
 #' @return A character vector of file names with an attribute `workers`
 #'   reporting the number of workers used.
@@ -117,6 +113,8 @@ epi_plot_save_parallel <- function(plot_list,
                                    num_cores = NULL,
                                    future_plan = "multisession",
                                    ...) {
+  check_suggests(c("future", "doFuture", "foreach", "iterators", "parallel"))
+
   if (!length(plot_list)) {
     stop("plot_list must contain at least one plot")
   }
