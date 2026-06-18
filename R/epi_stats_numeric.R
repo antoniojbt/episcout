@@ -77,8 +77,8 @@ epi_stats_numeric <- function(num_vec = NULL,
 
   # Basic counts
   n <- length(num_vec)
-  n_nonNA <- sum(!is.na(num_vec))
-  NA_count <- n - n_nonNA
+  n_non_na <- sum(!is.na(num_vec))
+  NA_count <- n - n_non_na
   NA_percentage <- if (n > 0) (NA_count / n) * 100 else NA_real_
 
   safe_scalar <- function(expr) {
@@ -94,7 +94,7 @@ epi_stats_numeric <- function(num_vec = NULL,
   }
 
   # Summaries
-  has_non_missing <- n_nonNA > 0
+  has_non_missing <- n_non_na > 0
   sum_val <- sum(num_vec, na.rm = na.rm)
   min_val <- if (has_non_missing) safe_scalar(min(num_vec, na.rm = na.rm)) else NA_real_
   q1 <- if (has_non_missing) {
@@ -114,13 +114,13 @@ epi_stats_numeric <- function(num_vec = NULL,
   sd_val <- if (has_non_missing) safe_scalar(sd(num_vec, na.rm = na.rm)) else NA_real_
   variance_val <- if (has_non_missing) safe_scalar(var(num_vec, na.rm = na.rm)) else NA_real_
   cv_val <- if (!is.na(mean_val) && mean_val != 0) sd_val / mean_val else NA_real_
-  sem_val <- if (n_nonNA > 0) sd_val / sqrt(n_nonNA) else NA_real_
-  skewness_val <- if (n_nonNA >= 3) {
+  sem_val <- if (n_non_na > 0) sd_val / sqrt(n_non_na) else NA_real_
+  skewness_val <- if (n_non_na >= 3) {
     safe_scalar(e1071::skewness(num_vec, na.rm = na.rm, ...))
   } else {
     NA_real_
   }
-  kurtosis_val <- if (n_nonNA >= 3) {
+  kurtosis_val <- if (n_non_na >= 3) {
     safe_scalar(e1071::kurtosis(num_vec, na.rm = na.rm, ...))
   } else {
     NA_real_
@@ -132,11 +132,11 @@ epi_stats_numeric <- function(num_vec = NULL,
   n_below_lower <- sum(num_vec < lower_fence, na.rm = TRUE)
   n_above_upper <- sum(num_vec > upper_fence, na.rm = TRUE)
   outlier_count <- epi_stats_count_outliers(num_vec, coef = coef)
-  outlier_percentage <- if (n_nonNA > 0) outlier_count / n_nonNA * 100 else NA_real_
+  outlier_percentage <- if (n_non_na > 0) outlier_count / n_non_na * 100 else NA_real_
 
   # Shapiro-Wilk normality
   normality <- NA_real_
-  if (n_nonNA > 3 && n_nonNA < 5000) {
+  if (n_non_na > 3 && n_non_na < 5000) {
     normality <- tryCatch(
       shapiro.test(num_vec[!is.na(num_vec)])$p.value,
       error = function(e) NA_real_
@@ -147,7 +147,7 @@ epi_stats_numeric <- function(num_vec = NULL,
   desc_stats <-
     data.frame(
       n                    = n,
-      n_nonNA              = n_nonNA,
+      n_nonNA              = n_non_na, # nolint: object_name_linter
       NA_count             = NA_count,
       NA_percentage        = NA_percentage,
       sum                  = sum_val,
