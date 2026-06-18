@@ -22,6 +22,7 @@ Imports:
     utils,
     stats,
     grDevices,
+    openssl,
     magrittr,
     rlang (>= 0.1.2),
     broom,
