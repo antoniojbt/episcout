@@ -1,7 +1,26 @@
 # AGENTS.md
 
 This file defines conventions and instructions to guide OpenAI Codex and other agents in contributing to this R package.
-It standardises formatting, documentation, testing, and pull request workflows.
+It standardises code writing, formatting, documentation, testing, and pull request workflows.
+
+It should be respected by automated agents at all times, particularly when:
+
+* Writing new functions (must include roxygen2 and tests)
+* Refactoring existing code (preserve naming and indentation)
+* Editing documentation (run `devtools::document()`)
+* Opening a PR (follow title/description/branch rules)
+* Running checks (use scripts provided above)
+* Debugging, identifying errors and making improvements
+
+Do not overcomplicate and over-engineer. Prefer the simpler solution. Make it easy for a human to review, supervise and monitor work. Do not bloat file content or create numerous files when one would suffice. e.g. use one `TODOs.md`, not a dir with `now.md`, `next.md`, `later.md`.
+
+When fixing code, identify the cause; do not simply fix the symptom.
+
+Never hide behaviour behind 'clean up' when refactoring.
+
+When writing tests, never mirror the implementation. Always test against the intended behaviour. If this is unclear, undocumented or may be wrong, always stop and report.
+
+---
 
 ## 📁 Project Structure
 
@@ -16,6 +35,76 @@ It standardises formatting, documentation, testing, and pull request workflows.
 | `/docs/`           | Site output (e.g., pkgdown)                      |
 
 ---
+
+## R Environment
+
+Use the repo-local R wrapper for all R commands:
+
+```bash
+scripts/rscript_env_caller.R -e "R.home(); .libPaths()"
+```
+
+The wrapper resolves to the project mamba environment by default:
+
+```text
+~/apps/miniforge3/envs/episcout/bin/Rscript
+```
+
+Do not use bare `Rscript` unless you have verified it resolves to the
+`episcout` mamba environment. To use a different R binary, set
+`EPISCOUT_RSCRIPT`; see `scripts/rscript_env_caller.R`.
+
+For `devtools` checks, set a real CRAN mirror inside the R expression. Do not
+leave `repos` as the placeholder `@CRAN@`, because package checks may spend a
+long time probing package repositories.
+
+```bash
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+```
+
+## Repo Script Discovery and Naming
+
+Before adding or changing helper commands, inspect existing project entry
+points:
+
+```text
+scripts/
+Makefile
+.github/workflows/
+AGENTS.MD
+```
+
+Do not add a new helper script if an existing script already covers the task.
+If an existing helper has an unclear or misleading name, propose a rename or
+targeted cleanup instead of adding another wrapper.
+
+Script names must describe the project action, not merely mirror a system
+binary. Avoid names that are visually or semantically confusable with common
+commands, such as:
+
+```text
+rscript
+python
+R
+test
+check
+```
+
+Prefer explicit project or task names such as:
+
+```text
+scripts/rscript_env_caller.R
+scripts/check-local.sh
+scripts/check-cran.sh
+scripts/render-report.sh
+```
+
+Before adding a new script, confirm:
+
+1. No existing script already does the job.
+2. The name is unambiguous in chat, docs, logs and CI.
+3. The script follows the repo's existing shell/R conventions.
+
 
 ## Coding Conventions
 
@@ -52,13 +141,13 @@ All new functions must include unit tests in `/tests/testthat/`.
 Run tests locally before committing:
 
 ```bash
-Rscript -e "devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
 ```
 
 Use `covr` to monitor test coverage:
 
 ```bash
-Rscript -e "covr::report()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::report()"
 ```
 
 Ensure test coverage does not decrease for existing functions.
@@ -71,19 +160,19 @@ Always update documentation and verify build integrity before PRs.
 
 ```bash
 # Regenerate documentation
-Rscript -e "devtools::document()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"
 
 # Build the package tarball
 R CMD build . --no-resave-data --compact-vignettes=gs+qpdf
 
 # Run CRAN-like checks
-R CMD check --no-manual --as-cran
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 ```
 
 Optional: rebuild vignettes manually
 
 ```bash
-Rscript -e "devtools::build_vignettes()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::build_vignettes()"
 ```
 
 ---
@@ -127,10 +216,10 @@ Examples:
 Run all checks **before requesting a review**:
 
 ```bash
-Rscript -e "styler::style_pkg()"
-Rscript -e "lintr::lint_package()"
-Rscript -e "devtools::check(manual = FALSE)"
-Rscript -e "covr::report()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); styler::style_pkg()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); lintr::lint_package()"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::report()"
 ```
 
 All of the above must pass before merging.
@@ -161,16 +250,3 @@ act -j check  # if act is installed for local testing
 ```
 
 ---
-
-## Agent-Specific Instructions
-
-This AGENTS.md should be respected by OpenAI Codex or other automated agents when:
-
-* Writing new functions (must include roxygen2 and tests)
-* Refactoring existing code (preserve naming and indentation)
-* Editing documentation (run `devtools::document()`)
-* Opening a PR (follow title/description/branch rules)
-* Running checks (use scripts provided above)
-
----
-

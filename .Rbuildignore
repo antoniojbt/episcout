@@ -1,6 +1,11 @@
+^archive$
+^archive/
+^future$
+^future/
 ^codecov\.yml$
 ^cran-comments\.md$
 ^\.travis\.yml$
+^\.DS_Store$
 ^data-raw$
 ^LICENSE\.md$
 ^episcout\.Rproj$
@@ -23,4 +28,8 @@
 ^AGENTS\.MD$
 ^fishers_results\.txt$
 ^spec_driven_EDA_plan$
+^environment\.yml$
+^scripts$
+^build$
+^legacy$
 # .Rbuildignore

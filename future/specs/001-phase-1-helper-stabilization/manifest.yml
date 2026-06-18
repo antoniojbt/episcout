@@ -1,0 +1,32 @@
+id: "001"
+slug: "phase-1-helper-stabilization"
+status: implemented
+owner: TBD
+base_branch: episcout2
+working_branch: TBD
+created: 2026-06-15
+updated: 2026-06-15
+
+related_files:
+  - R/epi_stats_numeric.R
+  - R/epi_stats_na_perc.R
+  - tests/testthat/test-epi_stats_numeric.R
+  - tests/testthat/test-stats.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::package_coverage()"
+
+notes:
+  - Add tests before implementation.
+  - Do not broaden into package-wide modernization.

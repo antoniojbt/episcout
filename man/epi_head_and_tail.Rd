@@ -14,10 +14,14 @@ epi_head_and_tail(df = NULL, rows = 5, cols = 5, last_cols = FALSE)
 \item{cols}{Number of columns to print, default is 5}
 
 \item{last_cols}{Print the last columns instead of the first few,
-default is FALSE}
+default is FALSE
+
+Row and column counts outside the available range are clamped to the
+data dimensions.}
 }
 \value{
-A data.frame containing the selected head and tail rows and columns.
+A data.frame containing the selected head and tail rows and
+columns. The value is returned invisibly after printing.
 }
 \description{
 epi_head_and_tail() prints the first and last few rows of a data.frame

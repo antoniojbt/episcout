@@ -20,15 +20,15 @@ epi_plot_volcano(
 \item{p_val}{Numeric vector of raw p-values (will be transformed to
 \code{-log10(p_val)}).}
 
-\item{main}{Main title passed to \code{\link[graphics:plot.default]{graphics::plot()}}.}
+\item{main}{Main title passed to \code{\link[graphics:plot]{graphics::plot()}}.}
 
-\item{pch}{Plotting character passed to \code{\link[graphics:plot.default]{graphics::plot()}}.}
+\item{pch}{Plotting character passed to \code{\link[graphics:plot]{graphics::plot()}}.}
 
 \item{h_abline}{Horizontal line position passed to \code{\link[graphics:abline]{graphics::abline()}}.}
 
 \item{v_abline}{Vertical line positions passed to \code{\link[graphics:abline]{graphics::abline()}}.}
 
-\item{...}{Additional arguments passed to \code{\link[graphics:plot.default]{graphics::plot()}}.}
+\item{...}{Additional arguments passed to \code{\link[graphics:plot]{graphics::plot()}}.}
 }
 \value{
 Invisibly returns \code{NULL} and draws the plot to the active device.
@@ -50,7 +50,7 @@ epi_plot_volcano(log2fc, pvals)
 }
 \seealso{
 \code{\link[=epi_plot_list]{epi_plot_list()}}, \code{\link[=epi_plots_to_grid]{epi_plots_to_grid()}},
-\code{\link[=epi_plot_cow_save]{epi_plot_cow_save()}}, \code{\link[graphics:plot.default]{graphics::plot()}}
+\code{\link[=epi_plot_cow_save]{epi_plot_cow_save()}}, \code{\link[graphics:plot]{graphics::plot()}}
 }
 \author{
 Antonio Berlanga-Taylor \url{https://github.com/AntonioJBT/episcout}
