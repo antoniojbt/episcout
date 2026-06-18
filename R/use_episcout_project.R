@@ -14,7 +14,7 @@
 #' @export
 epi_eda_create_project <- function(path, overwrite = FALSE) {
   path <- validate_episcout_project_path(path)
-  overwrite <- validate_episcout_project_overwrite(overwrite)
+  overwrite <- validate_project_overwrite(overwrite)
 
   template_path <- system.file("project-template", package = "episcout")
   if (!nzchar(template_path) || !dir.exists(template_path)) {
@@ -94,7 +94,7 @@ validate_episcout_project_path <- function(path) {
   path.expand(path)
 }
 
-validate_episcout_project_overwrite <- function(overwrite) {
+validate_project_overwrite <- function(overwrite) {
   if (!is.logical(overwrite) || length(overwrite) != 1 || is.na(overwrite)) {
     stop("overwrite must be TRUE or FALSE.", call. = FALSE)
   }
