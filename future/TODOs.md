@@ -58,6 +58,7 @@
 
 ### Priority 3
 
+- [ ] check codecov percentage decrease
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.
 - [ ] Add biomedical EDA extensions as separate numbered specs.
