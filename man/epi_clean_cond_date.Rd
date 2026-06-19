@@ -45,5 +45,5 @@ epi_clean_cond_date(df_date[, "date_col"]) # should be 'TRUE'
 \code{\link[base]{is.factor}}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }
