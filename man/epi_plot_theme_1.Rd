@@ -52,5 +52,5 @@ Some colour codes:
 \href{https://ggplot2.tidyverse.org/reference/scale_colour_discrete.html}{ggplot2 colour scales}
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

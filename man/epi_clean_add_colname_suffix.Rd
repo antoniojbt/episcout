@@ -48,5 +48,5 @@ names(df2)
 \code{\link{epi_clean_spread_repeated}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

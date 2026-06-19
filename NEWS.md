@@ -1,6 +1,6 @@
 # episcout News
 
-## Development version
+## 0.2.0
 
 - Added `epi_sec_pseudonym()` to create secure participant pseudonymisation
   bridge tables using cryptographic random tokens.

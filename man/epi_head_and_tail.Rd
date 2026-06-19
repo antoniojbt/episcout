@@ -49,5 +49,5 @@ epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

@@ -122,5 +122,5 @@ my_boxplot +
 \code{\link[ggplot2]{geom_boxplot}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }
