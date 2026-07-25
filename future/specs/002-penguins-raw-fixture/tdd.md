@@ -1,13 +1,13 @@
 # Test Design
 
 Spec ID: `002-penguins-raw-fixture`  
-Status: Ready for activation  
+Status: Active
 
 ## Test Files
 
+- `tests/testthat/test-penguins-raw-fixtures.R` must consume the source data,
+  specification and every committed expected-output CSV.
 - `tests/testthat/test-fixture-generation-guardrails.R` if lightweight.
-- Existing fixture-backed EDA tests may consume the committed files in later
-  implementation specs.
 
 ## Fixture Expectations
 
@@ -21,6 +21,9 @@ Status: Ready for activation
 - [ ] `expected_summary_categorical.csv` is independently computed.
 - [ ] `expected_plot_inventory.csv` records plot-dispatch expectations without
       visual snapshots.
+- [ ] Executable tests compare every expected-output CSV with package behavior.
+- [ ] Plot tests distinguish specification-based numeric, categorical and
+      binary dispatch through non-visual plot structure.
 
 ## Guardrail Test
 

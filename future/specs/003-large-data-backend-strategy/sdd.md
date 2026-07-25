@@ -8,6 +8,10 @@ Status: Draft
 Define how the specification-first EDA workflow should later support larger
 datasets while preserving the current data-frame/tibble API.
 
+This spec remains deferred until a representative workload and measurable
+performance target are available. Backend choice must follow profiling against
+that workload rather than the candidate sequence below.
+
 ## Design Direction
 
 - Keep data frames and tibbles as the baseline backend.

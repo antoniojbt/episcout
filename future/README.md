@@ -46,9 +46,26 @@ Do not use bare `Rscript` in future specs or check instructions. For
 `devtools::check()`, always set an explicit CRAN mirror instead of relying on
 `@CRAN@`; otherwise checks can spend a long time probing repository indexes.
 
-## Active Specs
+## Spec Status
+
+### Active
+
+- `002-penguins-raw-fixture`
+
+### Ready Next
+
+- None currently.
+
+### Draft
+
+- `003-large-data-backend-strategy`
+
+### Completed
 
 - `001-phase-1-helper-stabilization`
-- `002-penguins-raw-fixture`
-- `003-large-data-backend-strategy`
 - `004-senior-review-followups`
+- `005-pseudonymisation-bridge`
+- `006-synthetic-integer-generation`
+
+Completed specs stay under `future/specs/` so existing review and changelog
+links remain stable.

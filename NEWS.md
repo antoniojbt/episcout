@@ -1,5 +1,10 @@
 # episcout News
 
+## Development version
+
+- Fixed synthetic integer generation for singleton bounds and intervals that
+  contain no integer values.
+
 ## 0.2.0
 
 - Added `epi_sec_pseudonym()` to create secure participant pseudonymisation
