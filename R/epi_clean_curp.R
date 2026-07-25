@@ -1,8 +1,6 @@
 #' @title Extraer datos del CURP en Mexico
-#' @description Esta funcion descompone un CURP en sus componentes principales
-#' segun las posiciones definidas en su estructura.
-#' @param curp Un vector de texto que contiene uno o mas CURPs.
-#' Cada CURP debe tener exactamente 18 caracteres.
+#' @description Esta funcion descompone un CURP en sus componentes principales segun las posiciones definidas en su estructura.
+#' @param curp Un vector de texto que contiene uno o mas CURPs. Cada CURP debe tener exactamente 18 caracteres.
 #' @return Un `tibble` con los componentes del CURP organizados en columnas:
 #'   \itemize{
 #'     \item \code{CURP}: El CURP original.
@@ -70,11 +68,9 @@ epi_clean_curp <- function(curp) {
 
 # La primera letra del primer apellido y la primera vocal del primer apellido.
 # Primera letra del Segundo apellido.
-# Primera letra del primer nombre (Excepto los nombres compuestos cuando estos
-# se  antepongan los nombre de Jose y Maria)
+# Primera letra del primer nombre (Excepto los nombres compuestos cuando estos se  antepongan los nombre de Jose y Maria)
 # Ejemplo: si tu nombre es Maria Isabel, se utilizara la I del segundo nombre.
-# Los siguientes 6 digitos corresponden a tu fecha de nacimiento que aparece
-# en tu acta de nacimiento, se comienza desde el ano, mes y dia.
+# Los siguientes 6 digitos corresponden a tu fecha de nacimiento que aparece en tu acta de nacimiento, se comienza desde el ano, mes y dia.
 # Letra del Genero de la persona, H hombres y M mujeres.
 # Los 2 digitos de tu Entidad de Nacimiento, aparecen en tu acta de nacimiento.
 # Recuerda no confundirla con la entidad de tu registro.

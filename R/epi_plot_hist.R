@@ -8,16 +8,11 @@
 #'
 #' @return Prints a ggplot2 histogram
 #'
-#' @note For other options, save as object and build on the layers.
-#' var_x is passed to ggplot2 aesthetics using tidy evaluation
+#' @note For other options, save as object and build on the layers. var_x is passed to ggplot2 aesthetics using tidy evaluation
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_plot_list}},
-#' \code{\link{epi_plots_to_grid}},
-#' \code{\link[ggplot2]{ggplot}},
-#' \code{\link[ggplot2]{geom_histogram}},
-#' \code{\link{epi_plot_cow_save}}.
+#' @seealso \code{\link{epi_plot_list}}, \code{\link{epi_plots_to_grid}}, \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{geom_histogram}}, \code{\link{epi_plot_cow_save}}.
 #'
 #' @examples
 #' \dontrun{

@@ -9,18 +9,13 @@ epi_stats_corr(df = NULL, method = "spearman")
 \arguments{
 \item{df}{a data frame class object coerced to matrix and passed to Hmisc::rcorr()}
 
-\item{method}{should be a string that can be accepted by type parameter in
-Hmisc::rcorr(). 'Spearman' (default here) or 'pearson'}
+\item{method}{should be a string that can be accepted by type parameter in Hmisc::rcorr(). 'Spearman' (default here) or 'pearson'}
 }
 \value{
-Returns a list object cormat_all containing the correlation matrix (cormat),
-the melted correlation values (cormat_melted_r) (ie long format for plotting for example)
-and the melted p-values (cormat_melted_pval).
+Returns a list object cormat_all containing the correlation matrix (cormat), the melted correlation values (cormat_melted_r) (ie long format for plotting for example) and the melted p-values (cormat_melted_pval).
 }
 \description{
-Get a correlation matrix using Hmisc for many numerical variables.
-epi_stats_corr() wraps Hmisc::rcorr(), melts the matrix and
-returns correlation and p-values.
+Get a correlation matrix using Hmisc for many numerical variables. epi_stats_corr() wraps Hmisc::rcorr(), melts the matrix and returns correlation and p-values.
 }
 \examples{
 \dontrun{
@@ -46,13 +41,8 @@ class(cormat_all)
 
 }
 \seealso{
-\code{\link{epi_stats_corr_triangle}},
-\code{\link{epi_stats_corr_rename}},
-\code{\link{epi_plot_heatmap}},
-\code{\link{epi_plot_heatmap_triangle}},
-\code{\link[Hmisc]{rcorr}},
-\code{\link[data.table]{melt}}.
+\code{\link{epi_stats_corr_triangle}}, \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}}, \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

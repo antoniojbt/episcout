@@ -1,12 +1,9 @@
 #' Tabulate counts of factor levels
 #'
-#' Creates a tidy table of counts for each level of factor or character
-#' columns in a data frame. Missing values are reported with the level
-#' `NA`.
+#' Creates a tidy table of counts for each level of factor or character columns in a data frame. Missing values are reported with the level `NA`.
 #'
 #' @param df A data frame.
-#' @param vars_list Optional character vector of column names to include.
-#'   When `NULL` (default) all factor and character columns are used.
+#' @param vars_list Optional character vector of column names to include. When `NULL` (default) all factor and character columns are used.
 #'
 #' @return A tibble with columns `variable`, `level` and `count`.
 #'
@@ -19,8 +16,7 @@
 #' epi_stats_fct_table(df)
 #' epi_stats_fct_table(df, vars_list = "group")
 #'
-#' @seealso \code{\link{epi_stats_factors}},
-#'   \code{\link{epi_stats_summary}}
+#' @seealso \code{\link{epi_stats_factors}}, \code{\link{epi_stats_summary}}
 #'
 #' @export
 epi_stats_fct_table <- function(df, vars_list = NULL) {

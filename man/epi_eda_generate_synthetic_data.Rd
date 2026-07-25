@@ -7,20 +7,15 @@
 epi_eda_generate_synthetic_data(spec, n = 100, seed = NULL)
 }
 \arguments{
-\item{spec}{A data frame containing an EDA specification, or a path accepted
-by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
+\item{spec}{A data frame containing an EDA specification, or a path accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
 \item{n}{Number of rows to generate.}
 
-\item{seed}{Optional random seed. When supplied, repeated calls with the same
-specification, row count and seed return identical data.}
+\item{seed}{Optional random seed. When supplied, repeated calls with the same specification, row count and seed return identical data.}
 }
 \value{
 A data frame with one column per specification variable and \code{n} rows.
 }
 \description{
-Generate simple deterministic synthetic data from a validated
-specification-first EDA data dictionary. Synthetic data are intended for
-pipeline preparation and testing only, not for inference or disclosure
-control.
+Generate simple deterministic synthetic data from a validated specification-first EDA data dictionary. Synthetic data are intended for pipeline preparation and testing only, not for inference or disclosure control.
 }

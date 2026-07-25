@@ -1,14 +1,12 @@
 #' @title Get counts and percentage of NAs
 #'
-#' @description epi_stats_na_perc() gets the total counts and percentage for missing values
-#' across rows or columns
+#' @description epi_stats_na_perc() gets the total counts and percentage for missing values across rows or columns
 #'
 #' @param df A dataframe with missing values
 #'
 #' @param margin 2 for columns, 1 for rows. Default is columns
 #'
-#' @return A dataframe object with counts and percentage of NAs for each column or row.
-#' Invalid margins raise a clear error.
+#' @return A dataframe object with counts and percentage of NAs for each column or row. Invalid margins raise a clear error.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'

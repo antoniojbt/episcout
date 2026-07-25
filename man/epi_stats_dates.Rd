@@ -10,13 +10,10 @@ epi_stats_dates(date_vector)
 \item{date_vector}{A vector of dates of class \code{Date} or \code{IDate}.}
 }
 \value{
-A \code{data.frame} containing statistics such as N, N Missing, N Unique, Min,
-25\%, Median, 75\%, Max, IQR, Most Common, and Range (Days).
+A \code{data.frame} containing statistics such as N, N Missing, N Unique, Min, 25\%, Median, 75\%, Max, IQR, Most Common, and Range (Days).
 }
 \description{
-Calculates and returns key descriptive statistics for a vector of
-dates, including minimum, maximum, interquartile range (IQR), and quartiles. It
-is compatible with both \code{Date} and \code{IDate} objects.
+Calculates and returns key descriptive statistics for a vector of dates, including minimum, maximum, interquartile range (IQR), and quartiles. It is compatible with both \code{Date} and \code{IDate} objects.
 }
 \note{
 The default origin for numeric date conversion in R is "1970-01-01".
@@ -27,10 +24,8 @@ epi_stats_dates(sample_dates)
 
 }
 \seealso{
-\code{\link{epi_stats_summary}},
-\code{\link{epi_stats_format}},
-\code{\link{epi_stats_numeric}}
+\code{\link{epi_stats_summary}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_numeric}}
 }
 \author{
-Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

@@ -14,10 +14,6 @@ Status: Implemented
 
 ## Check Results
 
-- `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"`:
-  passed and generated `man/epi_sec_pseudonym.Rd`.
-- `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"`:
-  passed with existing skips and one existing parallel-worker warning.
-- `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"`:
-  passed with 0 errors, 0 warnings and 1 NOTE for bundled `.gitkeep` files in
-  `inst/project-template/`.
+- `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"`: passed and generated `man/epi_sec_pseudonym.Rd`.
+- `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"`: passed with existing skips and one existing parallel-worker warning.
+- `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"`: passed with 0 errors, 0 warnings and 1 NOTE for bundled `.gitkeep` files in `inst/project-template/`.

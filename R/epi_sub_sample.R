@@ -1,13 +1,10 @@
 #' Subsample a dataset while preserving class balance
 #'
-#' Draws a stratified random sample from a data frame using an outcome
-#' variable to maintain class balance. The same proportion of rows is drawn
-#' from each class.
+#' Draws a stratified random sample from a data frame using an outcome variable to maintain class balance. The same proportion of rows is drawn from each class.
 #'
 #' @param data A data.frame containing the data to sample from.
 #' @param outcome_var A character string giving the name of the outcome column.
-#' @param sample_prop A numeric value between 0 and 1 indicating the proportion
-#'   of rows to sample from each outcome class.
+#' @param sample_prop A numeric value between 0 and 1 indicating the proportion of rows to sample from each outcome class.
 #' @param seed Optional numeric seed to make the sampling reproducible.
 #'
 #' @return A data frame containing the stratified subsample.

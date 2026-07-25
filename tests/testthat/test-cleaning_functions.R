@@ -41,8 +41,7 @@ df <- data.frame(
 print("Function being tested: epi_clean_get_dups")
 
 test_that("Test expected output after epi_clean_get_dups", {
-  # Should contain all the df (because each row is duplicated
-  # if looking at 'var_id' only)
+  # Should contain all the df (because each row is duplicated if looking at 'var_id' only)
   check_dups <- epi_clean_get_dups(df, "var_id", 1)
   # str(dim(check_dups))
   # check_dups
@@ -242,8 +241,7 @@ test_that("epi_clean_add_rep_num", {
   ))
   # Bind:
   df2 <- tibble::as_tibble(cbind(df, "rep_num" = reps$rep_num))
-  # merge() adds all rows from both data frames as there are duplicates
-  # so use cbind after making sure order is exact
+  # merge() adds all rows from both data frames as there are duplicates so use cbind after making sure order is exact
   # epi_head_and_tail(df2, rows = 3, last_cols = TRUE)
   expect_equal(df2$rep_num[1:6], c(1, 2, 1, 2, 1, 2))
   expect_equal(tail(df2$rep_num), c(1, 2, 1, 2, 1, 2))
@@ -286,9 +284,7 @@ test_that("epi_clean_merge_nested_dfs", {
   # Create a nested list of dataframes using the repeated measurements variable:
   df_spread <- epi_clean_spread_repeated(df, "var_to_rep", 1)
   # Returns a nested list
-  # Run an example with epi_clean_merge_nested_dfs()
-  # to create a single dataframe with repeated observations spread and
-  # no duplicate IDs (create a wide instead of a long dataframe):
+  # Run an example with epi_clean_merge_nested_dfs() to create a single dataframe with repeated observations spread and no duplicate IDs (create a wide instead of a long dataframe):
   nested_list_dfs <- purrr::flatten(list(df_spread, df_spread, df_spread))
   id_col <- "var_id"
   # epi_list_head(nested_list_dfs, 2, 3)

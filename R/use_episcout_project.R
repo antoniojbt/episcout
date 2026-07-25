@@ -1,13 +1,9 @@
 #' Create an episcout project scaffold
 #'
-#' Copy the bundled specification-first EDA project template into a destination
-#' directory.
+#' Copy the bundled specification-first EDA project template into a destination directory.
 #'
-#' @param path A single directory path where the project scaffold should be
-#'   created.
-#' @param overwrite Logical; when `FALSE`, existing destination files are left
-#'   untouched and cause an error. When `TRUE`, existing destination files may
-#'   be replaced by template files.
+#' @param path A single directory path where the project scaffold should be created.
+#' @param overwrite Logical; when `FALSE`, existing destination files are left untouched and cause an error. When `TRUE`, existing destination files may be replaced by template files.
 #'
 #' @return The normalized project path, invisibly.
 #'

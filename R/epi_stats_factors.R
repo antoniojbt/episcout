@@ -2,16 +2,12 @@
 
 #' Summarise factor variables
 #'
-#' Produce summary metrics for all factor columns in a data frame. The output
-#' includes counts of missing values, proportion of complete cases, whether the
-#' factor is ordered, the number of unique levels and the three most frequent
-#' levels with their counts.
+#' Produce summary metrics for all factor columns in a data frame. The output includes counts of missing values, proportion of complete cases, whether the factor is ordered, the number of unique levels and the three most frequent levels with their counts.
 #'
 #' @param df A data frame containing factor variables.
 #'
 #' @return A tibble in wide format with one row per factor column.
-#' @seealso \code{\link{epi_stats_chars}}, \code{\link{epi_stats_numeric}},
-#'   \code{\link{epi_stats_summary}}
+#' @seealso \code{\link{epi_stats_chars}}, \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_summary}}
 #'
 #' @examples
 #' df <- data.frame(

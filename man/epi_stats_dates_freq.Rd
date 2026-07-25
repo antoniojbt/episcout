@@ -17,8 +17,7 @@ A list with two elements:
 }
 }
 \description{
-Computes differences between consecutive dates and frequency of
-observations by year-month for a vector of dates.
+Computes differences between consecutive dates and frequency of observations by year-month for a vector of dates.
 }
 \examples{
 sample_dates <- as.Date(c("2020-01-01", "2020-01-03", "2020-02-01"))

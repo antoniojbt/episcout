@@ -4,9 +4,7 @@
 
 This is the stable PR sequence for the specification-first EDA layer.
 
-This file is not the live status dashboard. Use
-`archive/eda_sdd_tdd_r1_archive/START_HERE.md` for current status, the active PR,
-allowed edits, expected test state and closeout requirements.
+This file is not the live status dashboard. Use `archive/eda_sdd_tdd_r1_archive/START_HERE.md` for current status, the active PR, allowed edits, expected test state and closeout requirements.
 
 The rule is:
 
@@ -48,8 +46,7 @@ Scope:
 
 - add tests that use the blood_storage fixture;
 - do not implement the new functions yet.
-- this PR may intentionally leave CI red because the functions under test do
-  not exist yet.
+- this PR may intentionally leave CI red because the functions under test do not exist yet.
 
 Files:
 
@@ -62,8 +59,7 @@ tests/testthat/test-eda_missing-fixtures.R
 Expected state:
 
 - tests may fail because functions are not implemented yet;
-- PR 3 is expected to restore passing tests by implementing the missing
-  functions.
+- PR 3 is expected to restore passing tests by implementing the missing functions.
 
 ### PR 3: Implement specification, schema and missingness functions
 
@@ -269,10 +265,8 @@ outputs/
 
 Expected state:
 
-- tests may fail because `inst/project-template/` and
-  `epi_eda_create_project()` are not implemented yet;
-- PR 13 is expected to restore passing tests by implementing the missing
-  scaffold and helper.
+- tests may fail because `inst/project-template/` and `epi_eda_create_project()` are not implemented yet;
+- PR 13 is expected to restore passing tests by implementing the missing scaffold and helper.
 
 ### PR 13: Implement project template
 

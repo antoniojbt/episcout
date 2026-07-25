@@ -5,14 +5,11 @@ Status: Active
 
 ## Problem
 
-The current EDA tests use `blood_storage`, which is useful for biomedical
-schema and missingness testing but is not a broadly recognised standard EDA
-fixture.
+The current EDA tests use `blood_storage`, which is useful for biomedical schema and missingness testing but is not a broadly recognised standard EDA fixture.
 
 ## Goal
 
-Add `palmerpenguins::penguins_raw` as a pinned external truth fixture for
-standard EDA behaviour.
+Add `palmerpenguins::penguins_raw` as a pinned external truth fixture for standard EDA behaviour.
 
 ## Non-goals
 

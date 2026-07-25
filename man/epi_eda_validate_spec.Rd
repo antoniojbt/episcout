@@ -13,6 +13,5 @@ epi_eda_validate_spec(spec)
 The validated specification as a data frame.
 }
 \description{
-Validate the columns and basic values required by a specification-first EDA
-data dictionary.
+Validate the columns and basic values required by a specification-first EDA data dictionary.
 }

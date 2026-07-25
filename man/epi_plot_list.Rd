@@ -13,16 +13,14 @@ epi_plot_list(vars_to_plot = NULL)
 a list object
 }
 \description{
-Create a list to hold plots for later plotting (in a multi-
-plot figure for example). Allows maximum 8 plots per list holder.
+Create a list to hold plots for later plotting (in a multi- plot figure for example). Allows maximum 8 plots per list holder.
 }
 \note{
 See example in \code{\link{epi_plot_cow_save}} and ggplot2 wrappers epi_plot_*().
 }
 \seealso{
-\code{\link{epi_plots_to_grid}},
-\code{\link{epi_plot_cow_save}}.
+\code{\link{epi_plots_to_grid}}, \code{\link{epi_plot_cow_save}}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

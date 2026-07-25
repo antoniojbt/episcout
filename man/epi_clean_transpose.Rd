@@ -7,18 +7,15 @@
 epi_clean_transpose(df = NULL, id_col_num = "")
 }
 \arguments{
-\item{df}{A dataframe object to transpose. Coerced to data.table and returned
-as data.frame.}
+\item{df}{A dataframe object to transpose. Coerced to data.table and returned as data.frame.}
 
 \item{id_col_num}{Index to identify the column with IDs}
 }
 \value{
-A transposed dataframe with the first column containing the transposed
-values of the column passed as id_col_num.
+A transposed dataframe with the first column containing the transposed values of the column passed as id_col_num.
 }
 \description{
-Transposes a dataframe preserving row and column names. Based on
-data.table transpose. Assumes there is an id column with unique IDs
+Transposes a dataframe preserving row and column names. Based on data.table transpose. Assumes there is an id column with unique IDs
 }
 \examples{
 \dontrun{
@@ -45,11 +42,7 @@ names(df_t)
 
 }
 \seealso{
-\code{\link{epi_clean_add_colname_suffix}},
-\code{\link{epi_clean_spread_repeated}},
-\code{\link{epi_clean_merge_nested_dfs}},
-\code{\link[data.table]{transpose}},
-\code{\link[data.table]{as.data.table}}.
+\code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_spread_repeated}}, \code{\link{epi_clean_merge_nested_dfs}}, \code{\link[data.table]{transpose}}, \code{\link[data.table]{as.data.table}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

@@ -1,18 +1,13 @@
 #' Export text files to a single Excel workbook
 #'
-#' Reads text files from a directory and writes each as a separate sheet in a
-#' new Excel workbook.
+#' Reads text files from a directory and writes each as a separate sheet in a new Excel workbook.
 #'
 #' @param path_to_files Directory containing the files to be combined.
-#' @param pattern Regular expression used to match files. Defaults to
-#'   `"\\.txt$"`.
-#' @param output_file Path for the resulting workbook. Defaults to
-#'   `file.path(path_to_files, "grob_files.xlsx")`.
+#' @param pattern Regular expression used to match files. Defaults to `"\\.txt$"`.
+#' @param output_file Path for the resulting workbook. Defaults to `file.path(path_to_files, "grob_files.xlsx")`.
 #'
 #' @return Invisibly returns the path to the saved workbook.
-#' @details Sheet names are derived from file names, truncated to 29 characters
-#'   to comply with Excel's limit. Numeric suffixes are appended to resolve
-#'   clashes.
+#' @details Sheet names are derived from file names, truncated to 29 characters to comply with Excel's limit. Numeric suffixes are appended to resolve clashes.
 #' @examples
 #' \dontrun{
 #' epi_grob_to_excel("path/to/files")

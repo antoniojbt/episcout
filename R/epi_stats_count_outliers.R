@@ -1,8 +1,6 @@
 #' @title Count univariate outliers
 #'
-#' @description epi_stat_count_outliers() counts how many outliers a vector has
-#' using a univariate approach. Returns the number of observations that are greater than
-#' the cutoff. Outliers are detected with the Tukey method (above and below coef * IQR).
+#' @description epi_stat_count_outliers() counts how many outliers a vector has using a univariate approach. Returns the number of observations that are greater than the cutoff. Outliers are detected with the Tukey method (above and below coef * IQR).
 #'
 #' @param num_vec Numeric vector to test.
 #' @param coef Coefficient for outlier detection, default is 1.5
@@ -10,8 +8,7 @@
 #'
 #' @return Returns the number of observations above the cut-off specified.
 #'
-#' @note coef = 0 returns no outliers, see ?boxplot.stats
-#' An alternative, not implemented, is to consider those eg > 5 * SD
+#' @note coef = 0 returns no outliers, see ?boxplot.stats An alternative, not implemented, is to consider those eg > 5 * SD
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -38,9 +35,7 @@
 #' @importFrom grDevices boxplot.stats
 #'
 
-#' @details
-#' Returns 0 for empty or all-`NA` vectors and raises an error when `coef`
-#' is negative. Setting `coef` to `0` disables outlier detection.
+#' @details Returns 0 for empty or all-`NA` vectors and raises an error when `coef` is negative. Setting `coef` to `0` disables outlier detection.
 epi_stats_count_outliers <- function(num_vec = NULL,
                                      coef = 1.5,
                                      ...) {
@@ -65,12 +60,9 @@ epi_stats_count_outliers <- function(num_vec = NULL,
   outliers
 }
 
-# Alternative thresholds such as multiples of the standard deviation or
-# inner/outer fences (e.g. 3 * IQR) are not currently implemented but may
-# be explored in future iterations.
+# Alternative thresholds such as multiples of the standard deviation or inner/outer fences (e.g. 3 * IQR) are not currently implemented but may be explored in future iterations.
 
-# Using the Qn estimator to avoid assuming that the underlying distribution
-# is symmetric:
+# Using the Qn estimator to avoid assuming that the underlying distribution is symmetric:
 # https://stats.stackexchange.com/questions/1519/on-univariate-outlier-tests-or-dixon-q-versus-grubbs?rq=1
 # median+/-delta* Qn
 # get_qn <- robustbase::Qn(num_vec)

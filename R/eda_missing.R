@@ -1,13 +1,11 @@
 #' Profile missingness using an EDA specification
 #'
-#' Count standard missing values and configured missing codes for variables
-#' listed in an EDA specification.
+#' Count standard missing values and configured missing codes for variables listed in an EDA specification.
 #'
 #' @param data A data frame to profile.
 #' @param spec An EDA specification data frame or CSV path.
 #'
-#' @return A data frame with variable names, row counts, missing counts and
-#'   missing proportions.
+#' @return A data frame with variable names, row counts, missing counts and missing proportions.
 #'
 #' @export
 epi_eda_profile_missing <- function(data, spec) {

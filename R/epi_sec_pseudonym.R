@@ -1,30 +1,18 @@
 #' Generate a Secure Pseudonymisation Bridge Table
 #'
-#' Generate random, non-derivable token identifiers for participant
-#' pseudonymisation. The returned bridge table maps each original participant
-#' identifier to a cryptographically random token.
+#' Generate random, non-derivable token identifiers for participant pseudonymisation. The returned bridge table maps each original participant identifier to a cryptographically random token.
 #'
-#' @param participant_id Character, numeric or factor vector of participant
-#'   identifiers. Values must be unique and non-missing.
-#' @param n_bytes Number of random bytes per token. Must be at least 16. The
-#'   default of 24 gives 192-bit tokens.
+#' @param participant_id Character, numeric or factor vector of participant identifiers. Values must be unique and non-missing.
+#' @param n_bytes Number of random bytes per token. Must be at least 16. The default of 24 gives 192-bit tokens.
 #' @param prefix Character prefix added before each token.
-#' @param bridge_path Optional file path for writing the bridge table as CSV.
-#'   If `NULL`, no file is written.
-#' @param overwrite Logical. If `FALSE`, an existing `bridge_path` is not
-#'   overwritten.
+#' @param bridge_path Optional file path for writing the bridge table as CSV. If `NULL`, no file is written.
+#' @param overwrite Logical. If `FALSE`, an existing `bridge_path` is not overwritten.
 #'
 #' @return A tibble with columns `participant_id` and `token_id`.
 #'
-#' @details
-#' Tokens are generated from cryptographic random bytes using
-#' `openssl::rand_bytes()`. The function does not accept a seed and does not
-#' provide deterministic output.
+#' @details Tokens are generated from cryptographic random bytes using `openssl::rand_bytes()`. The function does not accept a seed and does not provide deterministic output.
 #'
-#' The bridge table remains re-identifying information. Store it separately
-#' from pseudonymised analysis datasets and protect it with appropriate access
-#' controls. Pseudonymisation reduces risk but does not by itself anonymise a
-#' dataset.
+#' The bridge table remains re-identifying information. Store it separately from pseudonymised analysis datasets and protect it with appropriate access controls. Pseudonymisation reduces risk but does not by itself anonymise a dataset.
 #'
 #' @examples
 #' participant_ids <- sprintf("study_%04d", 1:10)

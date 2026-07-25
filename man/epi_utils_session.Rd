@@ -7,13 +7,9 @@
 epi_utils_session(output_prefix = NULL, objects_to_save = NULL, ...)
 }
 \arguments{
-\item{output_prefix}{File name as string, '.RData' is appended
-to saved objects. Default is e.g.
-'session_date.RData' eg 'session_2019-03-01.RData'}
+\item{output_prefix}{File name as string, '.RData' is appended to saved objects. Default is e.g. 'session_date.RData' eg 'session_2019-03-01.RData'}
 
-\item{objects_to_save}{String with list of objects to save. Assumes you only
-want a subset from the R session. Use saveRDS() for one object or save.image()
-for the whole session instead.}
+\item{objects_to_save}{String with list of objects to save. Assumes you only want a subset from the R session. Use saveRDS() for one object or save.image() for the whole session instead.}
 
 \item{...}{pass any other parameters from save() such as compress = 'gzip'}
 }
@@ -21,8 +17,7 @@ for the whole session instead.}
 Saves an external representation of the R objects to file
 }
 \description{
-epi_utils_session() is a convenience function to save an R
-session.
+epi_utils_session() is a convenience function to save an R session.
 }
 \examples{
 \dontrun{
@@ -45,12 +40,8 @@ ls()
 
 }
 \seealso{
-\code{\link[base]{save.image}},
-\code{\link[base]{saveRDS}},
-\code{\link[base]{load}},
-\code{\link[base]{readRDS}},
-\code{\link[episcout]{epi_utils_log}}.
+\code{\link[base]{save.image}}, \code{\link[base]{saveRDS}}, \code{\link[base]{load}}, \code{\link[base]{readRDS}}, \code{\link[episcout]{epi_utils_log}}.
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

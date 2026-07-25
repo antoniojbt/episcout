@@ -4,11 +4,7 @@
 
 # episcout
 
-episcout provides helper functions for cleaning, exploring and visualising large
-epidemiological datasets. It also supports specification-first exploratory data
-analysis workflows for epidemiological datasets, where a data dictionary drives
-schema checks, missingness summaries, descriptive summaries, plots and optional
-HTML reports.
+episcout provides helper functions for cleaning, exploring and visualising large epidemiological datasets. It also supports specification-first exploratory data analysis workflows for epidemiological datasets, where a data dictionary drives schema checks, missingness summaries, descriptive summaries, plots and optional HTML reports.
 
 ## Features
 
@@ -37,8 +33,7 @@ install_github("AntonioJBT/episcout")
 
 ## Development
 
-Use the repository development environment so local checks run with the same R
-tooling in Positron, Codex and shell sessions. Create it once with:
+Use the repository development environment so local checks run with the same R tooling in Positron, Codex and shell sessions. Create it once with:
 
 ``` bash
 mamba env create -f environment.yml
@@ -58,16 +53,9 @@ scripts/check-local.sh
 scripts/check-cran.sh
 ```
 
-Set `EPISCOUT_RSCRIPT=/path/to/Rscript` if you need to use a different R
-binary.
+Set `EPISCOUT_RSCRIPT=/path/to/Rscript` if you need to use a different R binary.
 
-CRAN does not require `renv`; it requires a source tarball from `R CMD build`
-that passes `R CMD check --as-cran` without errors, warnings or significant
-notes. Strong dependencies should be available from CRAN or Bioconductor,
-suggested packages should be used conditionally in examples and tests, and
-tests/examples should avoid internet requirements, unwanted filesystem writes
-and excessive runtime or parallelism. See the CRAN Repository Policy, CRAN
-submission checklist and Writing R Extensions for the current source of truth:
+CRAN does not require `renv`; it requires a source tarball from `R CMD build` that passes `R CMD check --as-cran` without errors, warnings or significant notes. Strong dependencies should be available from CRAN or Bioconductor, suggested packages should be used conditionally in examples and tests, and tests/examples should avoid internet requirements, unwanted filesystem writes and excessive runtime or parallelism. See the CRAN Repository Policy, CRAN submission checklist and Writing R Extensions for the current source of truth:
 
 - <https://cran.r-project.org/web/packages/policies.html>
 - <https://cran.r-project.org/web/packages/submission_checklist.html>
@@ -77,11 +65,8 @@ submission checklist and Writing R Extensions for the current source of truth:
 
 There are two main ways to use episcout:
 
-* Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*`
-  and `epi_utils_*`.
-* Use the specification-first EDA workflow: `epi_eda_spec()`,
-  `epi_eda_generate_synthetic_data()`, `epi_eda_run()` and
-  `epi_eda_render_report()`.
+* Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
+* Use the specification-first EDA workflow: `epi_eda_spec()`, `epi_eda_generate_synthetic_data()`, `epi_eda_run()` and `epi_eda_render_report()`.
 
 ### Helper functions
 
@@ -130,14 +115,9 @@ sex,Sex at birth,categorical,covariate,,"Female;Male;Unknown",,,Unknown,TRUE,dem
 death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome indicator
 ```
 
-The optional `missing_codes` column accepts semicolon-separated sentinel values
-such as `Unknown;Refused`. These values are counted as missing in
-`epi_eda_profile_missing()` and excluded from observed EDA summaries. In
-categorical summaries, `p` uses all rows as the denominator and `p_observed`
-uses only observed non-missing rows.
+The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries. In categorical summaries, `p` uses all rows as the denominator and `p_observed` uses only observed non-missing rows.
 
-You can prepare the workflow before real data arrive by generating synthetic
-data from the same specification:
+You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 
 ``` r
 library(episcout)
@@ -156,8 +136,7 @@ names(results)
 results$metadata
 ```
 
-When real data are available, keep the same specification and change only the
-data source:
+When real data are available, keep the same specification and change only the data source:
 
 ``` r
 data <- read.csv("data/input.csv", stringsAsFactors = FALSE)
@@ -186,10 +165,7 @@ To create a starter project scaffold:
 epi_eda_create_project("my-eda-project")
 ```
 
-Current EDA workflow limits: summaries and plots are deliberately basic, the
-synthetic data generator is for pipeline preparation and testing only, generated
-synthetic data are not suitable for inference or disclosure control, and the MVP
-does not yet include Arrow, DuckDB or data.table large-data backends.
+Current EDA workflow limits: summaries and plots are deliberately basic, the synthetic data generator is for pipeline preparation and testing only, generated synthetic data are not suitable for inference or disclosure control, and the MVP does not yet include Arrow, DuckDB or data.table large-data backends.
 
 ## Contribute
 
@@ -205,16 +181,10 @@ If you have any issues, pull requests, etc. please report them in the issue trac
 
 ## News
 
-- Version 0.1.4
-  Added `epi_plot_theme_imss` and colour palette helpers.
-  New `epi_plot_add_var_labels` layer.
-  Rewritten `epi_stats_*` summary functions.
+- Version 0.1.4 Added `epi_plot_theme_imss` and colour palette helpers. New `epi_plot_add_var_labels` layer. Rewritten `epi_stats_*` summary functions.
 
-- Version 0.1.3
-  Improved coverage tests, added a few wrappers, slightly improved documentation
+- Version 0.1.3 Improved coverage tests, added a few wrappers, slightly improved documentation
   
-- Version 0.1.2
-  Minor bug fixes and internal improvements
+- Version 0.1.2 Minor bug fixes and internal improvements
 
-- Version 0.1.1
-  First release
+- Version 0.1.1 First release

@@ -17,9 +17,7 @@ epi_clean_compare_dup_rows(
 \arguments{
 \item{df_dups}{a data frame with duplicated entries to compare}
 
-\item{val_id}{is a value that is thought to be duplicated (eg a repeating row ID),
-passed as a string. Grep is used to search for duplicates without regex with
-fixed = TRUE}
+\item{val_id}{is a value that is thought to be duplicated (eg a repeating row ID), passed as a string. Grep is used to search for duplicates without regex with fixed = TRUE}
 
 \item{col_id}{is a string to indicate an ID column}
 
@@ -32,15 +30,10 @@ fixed = TRUE}
 \item{...}{pass any other options from compare::compare()}
 }
 \value{
-returns a list object with the differing columns ('differing_cols'),
-their names ('col_names') and the duplicated indices
+returns a list object with the differing columns ('differing_cols'), their names ('col_names') and the duplicated indices
 }
 \description{
-Compare two rows which may have duplicated information.
-epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows.
-compare::compare allows all transformations, sorting, etc. so can be loose.
-This function is intended to make manual inspection easier,
-compare::compare can miss differences though so care is needed.
+Compare two rows which may have duplicated information. epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows. compare::compare allows all transformations, sorting, etc. so can be loose. This function is intended to make manual inspection easier, compare::compare can miss differences though so care is needed.
 }
 \examples{
 \dontrun{

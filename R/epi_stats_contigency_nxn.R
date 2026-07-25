@@ -1,7 +1,6 @@
 #' Generate a Wide-Format Summary Table for Multiple Variables
 #'
-#' This function creates a summary table for a dependent variable and one or more independent variables.
-#' It calculates frequencies, reshapes the data into a wide format, and adds totals and percentages dynamically.
+#' This function creates a summary table for a dependent variable and one or more independent variables. It calculates frequencies, reshapes the data into a wide format, and adds totals and percentages dynamically.
 #'
 #' @param df A data frame containing the data to analyze.
 #' @param dep_var A string specifying the dependent variable (column in `df`).

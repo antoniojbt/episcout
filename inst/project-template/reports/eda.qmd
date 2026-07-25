@@ -12,8 +12,7 @@ params:
 
 # Project EDA Report
 
-Render the specification-first EDA report for this project with
-`episcout::epi_eda_render_report()`.
+Render the specification-first EDA report for this project with `episcout::epi_eda_render_report()`.
 
 ```{r render-eda-report, eval=FALSE}
 data <- read.csv(params$data_path, stringsAsFactors = FALSE)

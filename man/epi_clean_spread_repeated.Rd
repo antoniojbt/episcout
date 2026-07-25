@@ -14,16 +14,12 @@ epi_clean_spread_repeated(df = NULL, rep_col = "", id_col_num = 1)
 \item{id_col_num}{Column index with ID values. Default is 1.}
 }
 \value{
-a nested list with as many sub-lists as unique values contained in the
-column passed as rep_col. Column headers are renamed using
+a nested list with as many sub-lists as unique values contained in the column passed as rep_col. Column headers are renamed using
 \code{\link{epi_clean_add_colname_suffix}} and will contain suffixes taken from
-the unique values in rep_col.
-The ID column passed as id_col_num is included in each sub-list.
+the unique values in rep_col. The ID column passed as id_col_num is included in each sub-list.
 }
 \description{
-Create a single data frame with unique rows (individuals) and
-repeated observations across columns. A column with the replicate/repeated
-observation/time-point number for each row must be provided.
+Create a single data frame with unique rows (individuals) and repeated observations across columns. A column with the replicate/repeated observation/time-point number for each row must be provided.
 }
 \examples{
 \dontrun{
@@ -43,8 +39,7 @@ df_spread
 
 }
 \seealso{
-\code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_merge_nested_dfs}},
-\code{\link{epi_clean_transpose}}
+\code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_merge_nested_dfs}}, \code{\link{epi_clean_transpose}}
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

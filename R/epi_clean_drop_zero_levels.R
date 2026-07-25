@@ -1,8 +1,6 @@
 #' Drop Unused Levels from a Factor Vector
 #'
-#' Removes any factor levels that have zero occurrences, which can arise
-#' after introducing `NA` values or subsetting. Handy for cleaning up
-#' factor vectors before analysis or modeling.
+#' Removes any factor levels that have zero occurrences, which can arise after introducing `NA` values or subsetting. Handy for cleaning up factor vectors before analysis or modeling.
 #'
 #' @param factor_var A factor vector in which you want to drop unused levels.
 #'

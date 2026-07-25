@@ -1,15 +1,11 @@
 #' Profile summaries using an EDA specification
 #'
-#' Produce machine-readable descriptive summaries for variables listed in a
-#' specification-first EDA data dictionary. Standard `NA` values and configured
-#' `missing_codes` are excluded from observed summaries.
+#' Produce machine-readable descriptive summaries for variables listed in a specification-first EDA data dictionary. Standard `NA` values and configured `missing_codes` are excluded from observed summaries.
 #'
 #' @param data A data frame containing observed data.
 #' @param spec An EDA specification data frame or CSV path.
 #'
-#' @return A named list with `numeric` and `categorical` data frames. In
-#'   categorical summaries, `p` uses total rows as the denominator and
-#'   `p_observed` uses observed non-missing rows.
+#' @return A named list with `numeric` and `categorical` data frames. In categorical summaries, `p` uses total rows as the denominator and `p_observed` uses observed non-missing rows.
 #'
 #' @export
 epi_eda_profile_summaries <- function(data, spec) {

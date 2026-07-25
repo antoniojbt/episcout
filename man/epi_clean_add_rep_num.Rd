@@ -9,28 +9,18 @@ epi_clean_add_rep_num(df = NULL, var_id = NULL, var_to_rep = "")
 \arguments{
 \item{df}{a dataframe object as input}
 
-\item{var_id}{Column to use as ID, read as dataframe vector, can be index
-or string. This will be used to test if row is duplicate, if it is it will add
-a replicate number.}
+\item{var_id}{Column to use as ID, read as dataframe vector, can be index or string. This will be used to test if row is duplicate, if it is it will add a replicate number.}
 
-\item{var_to_rep}{Column variable that can distinguish replicates (eg date,
-'baseline' vs 'treated', etc.)}
+\item{var_to_rep}{Column variable that can distinguish replicates (eg date, 'baseline' vs 'treated', etc.)}
 }
 \value{
-Returns a dataframe with one column which can be merged with
-existing dataframe.
+Returns a dataframe with one column which can be merged with existing dataframe.
 }
 \description{
-Add a column with count of duplicate/replicate (ie for
-repeated screening, replicate counts, etc.). Assumes the dataframe passed
-is sorted logically with repeating IDs next to each other and
-if date is used as a second ordering criteria for example,
-then earlier dates are first. Useful for data with repeated
-measurements but without a column/variable clearly identifying them as such.
+Add a column with count of duplicate/replicate (ie for repeated screening, replicate counts, etc.). Assumes the dataframe passed is sorted logically with repeating IDs next to each other and if date is used as a second ordering criteria for example, then earlier dates are first. Useful for data with repeated measurements but without a column/variable clearly identifying them as such.
 }
 \note{
-Facilitates spreading a dataframe and extracting baseline vs repeated
-measurement rows for example
+Facilitates spreading a dataframe and extracting baseline vs repeated measurement rows for example
 }
 \examples{
 \dontrun{
@@ -63,5 +53,5 @@ df2
 
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

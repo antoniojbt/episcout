@@ -11,8 +11,7 @@ epi_sub_sample(data, outcome_var, sample_prop, seed = NULL)
 
 \item{outcome_var}{A character string giving the name of the outcome column.}
 
-\item{sample_prop}{A numeric value between 0 and 1 indicating the proportion
-of rows to sample from each outcome class.}
+\item{sample_prop}{A numeric value between 0 and 1 indicating the proportion of rows to sample from each outcome class.}
 
 \item{seed}{Optional numeric seed to make the sampling reproducible.}
 }
@@ -20,9 +19,7 @@ of rows to sample from each outcome class.}
 A data frame containing the stratified subsample.
 }
 \description{
-Draws a stratified random sample from a data frame using an outcome
-variable to maintain class balance. The same proportion of rows is drawn
-from each class.
+Draws a stratified random sample from a data frame using an outcome variable to maintain class balance. The same proportion of rows is drawn from each class.
 }
 \examples{
 df <- data.frame(outcome = rep(c("a", "b"), c(80, 20)), value = rnorm(100))

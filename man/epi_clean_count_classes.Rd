@@ -10,17 +10,13 @@ epi_clean_count_classes(df = NULL)
 \item{df}{data frame object with columns to count}
 }
 \value{
-Returns a table with the counts of column types contained in the
-data frame.
+Returns a table with the counts of column types contained in the data frame.
 }
 \description{
-Count by column type in a data frame. Uses dplyr and purrr, useful
-when handling large data frames (hundreds of columns and thousands of observations
-for example).
+Count by column type in a data frame. Uses dplyr and purrr, useful when handling large data frames (hundreds of columns and thousands of observations for example).
 }
 \note{
-Note that columns with more than one class will be counted each time
-(such as POSIX dates), hence ncol() and epi_clean_count_classes() may not match
+Note that columns with more than one class will be counted each time (such as POSIX dates), hence ncol() and epi_clean_count_classes() may not match
 }
 \examples{
 \dontrun{
@@ -39,9 +35,7 @@ epi_clean_count_classes(df)
 
 }
 \seealso{
-\code{\link{epi_clean_cond_numeric}},
-\code{\link{epi_clean_class_to_factor}},
-\code{\link{epi_clean_cond_date}}.
+\code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_cond_date}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

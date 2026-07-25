@@ -15,5 +15,4 @@ Useful entry points:
 - `archive/eda_sdd_tdd_r1_archive/codex/revised-pr-plan-tdd-first.md`
 - `archive/eda_sdd_tdd_r1_archive/codex/review-checklist.md`
 
-Archived files are reference material. The active future planning workspace is
-`future/`.
+Archived files are reference material. The active future planning workspace is `future/`.

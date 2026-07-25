@@ -13,22 +13,18 @@ epi_head_and_tail(df = NULL, rows = 5, cols = 5, last_cols = FALSE)
 
 \item{cols}{Number of columns to print, default is 5}
 
-\item{last_cols}{Print the last columns instead of the first few,
-default is FALSE
+\item{last_cols}{Print the last columns instead of the first few, default is FALSE
 
-Row and column counts outside the available range are clamped to the
-data dimensions.}
+Row and column counts outside the available range are clamped to the data dimensions.}
 }
 \value{
-A data.frame containing the selected head and tail rows and
-columns. The value is returned invisibly after printing.
+A data.frame containing the selected head and tail rows and columns. The value is returned invisibly after printing.
 }
 \description{
 epi_head_and_tail() prints the first and last few rows of a data.frame
 }
 \note{
-Similar to data.table printing of a data.table object but works for
-a tibble or data.frame, or any object that can be coerced to a data.frame
+Similar to data.table printing of a data.table object but works for a tibble or data.frame, or any object that can be coerced to a data.frame
 }
 \examples{
 \dontrun{
@@ -49,5 +45,5 @@ epi_head_and_tail(df, rows = 2, cols = 2, last_cols = TRUE)
 
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

@@ -10,12 +10,10 @@ epi_stats_dates_multi(df)
 \item{df}{A data frame containing one or more date columns.}
 }
 \value{
-A tibble where each row corresponds to a date column and columns contain
-the statistics produced by \code{\link[=epi_stats_dates]{epi_stats_dates()}}.
+A tibble where each row corresponds to a date column and columns contain the statistics produced by \code{\link[=epi_stats_dates]{epi_stats_dates()}}.
 }
 \description{
-Applies \code{\link[=epi_stats_dates]{epi_stats_dates()}} to each date column in a data frame and
-returns a wide-format tibble with the results.
+Applies \code{\link[=epi_stats_dates]{epi_stats_dates()}} to each date column in a data frame and returns a wide-format tibble with the results.
 }
 \examples{
 df <- data.frame(

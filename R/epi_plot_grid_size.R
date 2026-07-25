@@ -1,18 +1,14 @@
 #' Calculate grid layout for multi-plot figures
 #'
-#' Determine the number of rows and columns required to arrange a list of
-#' plots in a grid. The default aims for at most a 2 x 3 layout (six plots)
-#' but can handle other layouts by adjusting `max_cols` and `max_rows`.
+#' Determine the number of rows and columns required to arrange a list of plots in a grid. The default aims for at most a 2 x 3 layout (six plots) but can handle other layouts by adjusting `max_cols` and `max_rows`.
 #'
 #' @param plot_list List of plots to arrange.
 #' @param max_cols Maximum number of columns. Default is 2.
 #' @param max_rows Maximum number of rows. Default is 6.
 #'
-#' @return A list with elements `ncol_grid` and `nrow_grid` indicating the
-#'   grid dimensions.
+#' @return A list with elements `ncol_grid` and `nrow_grid` indicating the grid dimensions.
 #'
-#' @note It may be simpler to define these values manually unless plotting a
-#'   large number of variables.
+#' @note It may be simpler to define these values manually unless plotting a large number of variables.
 #'
 #' @keywords internal
 #'
