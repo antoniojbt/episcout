@@ -1,5 +1,25 @@
 # Future Workspace Changelog
 
+## 2026-07-25
+
+- Reconciled spec status after the 0.2.0 release. Specs 001, 004, 005 and 006
+  are completed; spec 002 is active; spec 003 remains draft.
+- Kept completed specs under `future/specs/` so existing references remain
+  stable instead of introducing a separate `future/done/` tree.
+- Triaged deferred PR review notes and completed spec
+  `006-synthetic-integer-generation`.
+  - Corrected singleton integer sampling and rejected bounds containing no
+    integer values.
+  - Added non-vacuous range/level assertions and focused integer-domain tests.
+  - Targeted synthetic tests and the full package test suite passed.
+  - `devtools::check(manual = FALSE)` passed with the existing `.gitkeep` NOTE.
+  - Restored tracked `vdiffr` snapshots removed by the known skipped-snapshot
+    cleanup behavior.
+- Revised spec 002 to extend the existing external-fixture generator and to
+  require executable consumers for all committed expected outputs.
+- Deferred spec 003 until a concrete workload and measurable performance target
+  are available.
+
 ## 2026-06-15
 
 - Created root-level `future/` SDD/TDD workspace.

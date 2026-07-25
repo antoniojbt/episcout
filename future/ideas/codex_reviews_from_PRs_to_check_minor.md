@@ -2,6 +2,19 @@
 
 Review if still valid, if correct/useful/needed/etc.
 
+## Triage - 2026-07-25
+
+| Finding | Status | Disposition |
+| --- | --- | --- |
+| Singleton integer ranges expand through `sample()` | Confirmed | Promoted to spec `006-synthetic-integer-generation`. |
+| Plot tests do not prove specification-based dispatch | Valid test gap | Retain for fixture/test hardening after spec 006. |
+| Synthetic range/level assertions can pass on empty observed values | Valid test gap | Included in spec 006. |
+| Categorical summaries require declared levels | Resolved | Current code derives levels from observed non-missing values when specification levels are absent. |
+| `epi_eda_run()` should use `mode=` | Obsolete | Version 0.2.0 consistently documents and tests the released `synthetic=` API. |
+| Expected schema should be derived from serialized fixture data | Partly valid | Revise under spec 002 so fixture generation reads the committed representation and independently applies the documented schema-type contract. |
+
+The original review comments remain below as historical context.
+
 
 In R/eda_synthetic.R:
 

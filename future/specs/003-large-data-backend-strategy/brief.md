@@ -19,6 +19,12 @@ Write a design-first plan for large-data backend support before implementation.
 - Rewriting the existing EDA workflow.
 - Adding heavy dependencies without an implementation spec.
 
+## Activation Prerequisites
+
+- A representative large-data workload with data shape and storage format.
+- A measurable performance or memory target that the data-frame baseline does
+  not meet.
+
 ## Candidate Backends
 
 - data.table for fast in-memory aggregation.

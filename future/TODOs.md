@@ -33,27 +33,22 @@
 
 ### Priority 1
 
-- [ ] run task from codex cloud thread locally (clone, install, follow vignette)
-- [ ] check findings in `future/reviews/2026-06-15-senior-r-package-review.md` were implemented
-- [ ] move 'implemented' specs in `future/specs` to a `future/done` dir
-- why aren't specs in `future/specs` mirrored here, in `TODOs.md`?
-
-- [ ] get instructions to download, install, episcout2 branch
+- [ ] Complete active spec `002-penguins-raw-fixture`. Extend the existing
+      external-fixture generator and require executable tests to consume every
+      committed expected-output file.
+- [ ] Run task from Codex cloud thread locally (clone, install, follow vignette).
 - [ ] human live walkthrough, no agent needed here
 - [ ] carry out changes needed from human review
-
-- [ ] run devtools and CRAN checks
-- [ ] merge with main
-- [ ] tag v0.2.0
-
 
 ### Priority 2
 
 - [ ] Add functions to create a data dictionary when real data already exists but does not have a dictionary.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] Revisit large-data backend implementation after the design spec is accepted.
-- [ ] review `future/ideas/codex_reviews_from_PRs_to_check_minor.md` and determine whether they are still valid and need addressing.
-- [ ] Add pseudonymisation helpers. Activated v1 as spec `005-pseudonymisation-bridge`: create secure token bridge table only. Later scope remains: identify PII columns, pseudonymise datasets, remove identifier columns, validate outputs, and write read-only raw data files.
+- [ ] Complete the remaining test-hardening items recorded in
+      `future/ideas/codex_reviews_from_PRs_to_check_minor.md`.
+- [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
+      rewriting, identifier removal, output validation and read-only raw-data
+      files. Secure bridge-table v1 was completed in spec 005.
 - [ ] add functions to load, connect, etc data into db. 
 
 ### Priority 3
@@ -62,3 +57,5 @@
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.
 - [ ] Add biomedical EDA extensions as separate numbered specs.
+- [ ] Revisit spec `003-large-data-backend-strategy` only after a concrete
+      workload and performance target are defined.

@@ -2,10 +2,10 @@ id: "003"
 slug: "large-data-backend-strategy"
 status: draft
 owner: TBD
-base_branch: episcout2
+base_branch: master
 working_branch: TBD
 created: 2026-06-15
-updated: 2026-06-15
+updated: 2026-07-25
 
 related_files:
   - README.md
@@ -27,3 +27,4 @@ check_commands:
 notes:
   - Design-only first.
   - Do not implement Arrow, DuckDB or data.table backends in this spec.
+  - Do not activate until a concrete workload and measurable performance target are defined.

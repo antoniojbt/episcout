@@ -78,7 +78,23 @@ generate_synthetic_numeric <- function(row, n) {
 
 generate_synthetic_integer <- function(row, n) {
   bounds <- synthetic_numeric_bounds(row, default_min = 0, default_max = 100)
-  sample(seq.int(ceiling(bounds[["min"]]), floor(bounds[["max"]])), n, replace = TRUE)
+  lower_bound <- ceiling(bounds[["min"]])
+  upper_bound <- floor(bounds[["max"]])
+
+  if (lower_bound > upper_bound) {
+    stop(
+      "Synthetic integer variable '", row$name[[1]],
+      "' bounds contain no integer values.",
+      call. = FALSE
+    )
+  }
+
+  candidates <- seq.int(lower_bound, upper_bound)
+  if (n == 0) {
+    return(candidates[integer()])
+  }
+
+  candidates[sample.int(length(candidates), n, replace = TRUE)]
 }
 
 generate_synthetic_categorical <- function(row, n) {

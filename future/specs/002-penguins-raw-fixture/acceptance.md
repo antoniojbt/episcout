@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `002-penguins-raw-fixture`  
-Status: Ready for activation  
+Status: Active
 
 - [ ] `penguins_raw` fixture files are committed.
 - [ ] Fixture provenance is documented.
@@ -12,4 +12,7 @@ Status: Ready for activation
 - [ ] No EDA implementation files are changed.
 - [ ] Documentation explains why `blood_storage` and `penguins_raw` both exist.
 - [ ] Review checklist includes anti-circularity checks.
+- [ ] Every committed expected-output CSV is consumed by an executable test.
+- [ ] The existing external-fixture generator is extended; no competing fixture
+      generation entry point is added.
 - [ ] R package checks are not made worse.
