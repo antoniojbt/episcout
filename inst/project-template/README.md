@@ -1,12 +1,10 @@
 # episcout EDA project
 
-This scaffold is a starting point for specification-first exploratory data
-analysis with `episcout`.
+This scaffold is a starting point for specification-first exploratory data analysis with `episcout`.
 
 ## Files
 
-- `metadata/data_dictionary.csv`: edit this first. It defines the expected
-  variables and drives synthetic data, schema checks, summaries and plots.
+- `metadata/data_dictionary.csv`: edit this first. It defines the expected variables and drives synthetic data, schema checks, summaries and plots.
 - `data/input.csv`: place the real input dataset here when it is available.
 - `outputs/`: generated CSV outputs and the HTML report are written here.
 - `R/project-derivations.R`: add project-specific derived-variable code.
@@ -44,8 +42,7 @@ epi_eda_render_report(
 )
 ```
 
-Synthetic data are for pipeline preparation and testing only. They are not for
-inference or disclosure control.
+Synthetic data are for pipeline preparation and testing only. They are not for inference or disclosure control.
 
 ## Optional targets workflow
 
@@ -55,5 +52,4 @@ If `targets` is installed, run:
 targets::tar_make()
 ```
 
-The targets pipeline reads `data/input.csv`, applies `derive_project_data()`,
-and renders the EDA report.
+The targets pipeline reads `data/input.csv`, applies `derive_project_data()`, and renders the EDA report.

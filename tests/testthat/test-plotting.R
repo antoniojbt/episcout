@@ -38,8 +38,7 @@ test_that("histograms draw correctly - vdiffr dummy run", {
 # within RStudio to get the vdiffr widget and validate images manually
 # Run devtools::test() as usual to test
 # Update as needed for failed tests
-# Consider these as monitoring tools with regression testing as opposed to strict
-# unit tests
+# Consider these as monitoring tools with regression testing as opposed to strict unit tests
 ######################
 
 ######################
@@ -64,8 +63,7 @@ df[, "y"] <- as.factor(df[, "y"])
 
 ######################
 context("episcout_plots")
-# All episcout reference plots will/should be saved in
-# XXXX/episcout/tests/figs/episcout_plots
+# All episcout reference plots will/should be saved in XXXX/episcout/tests/figs/episcout_plots
 print("episcout plot function tests")
 print("Function being tested: epi_plot_list")
 

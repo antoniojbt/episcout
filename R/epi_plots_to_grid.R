@@ -1,9 +1,6 @@
 #' @title Send a list of plots to a grid object
 #'
-#' @description A light wrapper for cowplot::plot_grid().
-#' Send a list of plots to a grid for multi-plot figures.
-#' Makes assumptions and hard-codes preferences. All options are passed to
-#' plot_grid().
+#' @description A light wrapper for cowplot::plot_grid(). Send a list of plots to a grid for multi-plot figures. Makes assumptions and hard-codes preferences. All options are passed to plot_grid().
 #'
 #' @param plot_list List of plots to be arranged into the grid.
 #' @param align cowplot vertical and/or horizontal alignment. Default is 'hv'.
@@ -17,10 +14,7 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_plot_list}},
-#' \code{\link{epi_plot_cow_save}},
-#' \code{\link[cowplot]{plot_grid}},
-#' \code{\link[cowplot]{save_plot}}.
+#' @seealso \code{\link{epi_plot_list}}, \code{\link{epi_plot_cow_save}}, \code{\link[cowplot]{plot_grid}}, \code{\link[cowplot]{save_plot}}.
 #'
 #' @note See example in \code{\link{epi_plot_cow_save}} and ggplot2 wrappers epi_plot_*().
 #'

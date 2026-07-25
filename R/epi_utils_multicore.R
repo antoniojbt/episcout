@@ -1,29 +1,20 @@
 #' @title Setup a parallel run
 #'
-#' @description epi_utils_multicore() setups a parallel function call
-#' using the package future.
+#' @description epi_utils_multicore() setups a parallel function call using the package future.
 #'
 #' @param num_cores Number of cores to use. Default cores - 1.
-#' @param future_plan The strategy to use for plan().
-#' Default is 'multisession'.
-#' @param gc Garbage collection. Default is TRUE. Not all strategies use it though
-#' and cause an overhead.
+#' @param future_plan The strategy to use for plan(). Default is 'multisession'.
+#' @param gc Garbage collection. Default is TRUE. Not all strategies use it though and cause an overhead.
 #' @param verbose Prints out the settings for future::plan(). Default is TRUE.
 #' @param ... pass any further parameters accepted by future::plan().
 #'
 #' @return Nothing
 #'
-#' @note num_cores is calculated as max(1, parallel::detectCores() - 1). If using
-#' sequential a warning will be emitted for workers. Not all strategies use gc().
-#' See \code{\link[future]{plan}}.
+#' @note num_cores is calculated as max(1, parallel::detectCores() - 1). If using sequential a warning will be emitted for workers. Not all strategies use gc(). See \code{\link[future]{plan}}.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[future]{plan}},
-#' \code{\link[parallel]{detectCores}},
-#' \code{\link[doFuture]{registerDoFuture}},
-#' \code{\link[future]{availableCores}},
-#' \code{\link[future]{availableWorkers}}.
+#' @seealso \code{\link[future]{plan}}, \code{\link[parallel]{detectCores}}, \code{\link[doFuture]{registerDoFuture}}, \code{\link[future]{availableCores}}, \code{\link[future]{availableWorkers}}.
 #'
 #' @examples
 #' \dontrun{

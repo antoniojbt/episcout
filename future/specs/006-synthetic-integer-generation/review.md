@@ -12,11 +12,8 @@ Status: Implemented
 
 ## Findings
 
-- Candidate indices are sampled with `sample.int()`, avoiding the special
-  singleton behavior of `sample()`.
-- Integer-free intervals fail before sampling and identify the affected
-  variable.
+- Candidate indices are sampled with `sample.int()`, avoiding the special singleton behavior of `sample()`.
+- Integer-free intervals fail before sampling and identify the affected variable.
 - Zero-row output retains the specified column and integer type.
-- Tests assert bounds and reproducibility without locking an incidental random
-  sequence.
+- Tests assert bounds and reproducibility without locking an incidental random sequence.
 - No public API, documentation or dependency changes were required.

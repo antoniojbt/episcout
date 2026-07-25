@@ -15,24 +15,15 @@ Status: Implemented
 
 ## Baseline
 
-- Existing synthetic fixture tests pass despite the confirmed singleton-range
-  bug.
-- The full package suite currently has one unrelated environment-specific
-  failure when a parallel worker cannot open a local socket.
-- A skipped `vdiffr` file causes `devtools::test()` to remove tracked snapshots;
-  those files must be restored after verification until that harness issue is
-  addressed separately.
+- Existing synthetic fixture tests pass despite the confirmed singleton-range bug.
+- The full package suite currently has one unrelated environment-specific failure when a parallel worker cannot open a local socket.
+- A skipped `vdiffr` file causes `devtools::test()` to remove tracked snapshots; those files must be restored after verification until that harness issue is addressed separately.
 
 ## Results
 
-- The pre-implementation run failed on the positive singleton range and the
-  empty integer-domain error contract, as intended.
+- The pre-implementation run failed on the positive singleton range and the empty integer-domain error contract, as intended.
 - The final targeted synthetic fixture suite passed.
-- The final full package suite passed outside the restricted sandbox, with two
-  existing skips and no failures or warnings.
-- `devtools::check(manual = FALSE)` passed outside the restricted sandbox with
-  0 errors, 0 warnings and the existing NOTE for bundled `.gitkeep` files.
-- The initial sandboxed check attempt failed only when the pre-existing
-  multisession test could not open a localhost server socket.
-- The full run removed skipped `vdiffr` snapshots; they were restored from the
-  unchanged repository versions.
+- The final full package suite passed outside the restricted sandbox, with two existing skips and no failures or warnings.
+- `devtools::check(manual = FALSE)` passed outside the restricted sandbox with 0 errors, 0 warnings and the existing NOTE for bundled `.gitkeep` files.
+- The initial sandboxed check attempt failed only when the pre-existing multisession test could not open a localhost server socket.
+- The full run removed skipped `vdiffr` snapshots; they were restored from the unchanged repository versions.

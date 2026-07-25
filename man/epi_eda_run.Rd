@@ -14,29 +14,21 @@ epi_eda_run(
 )
 }
 \arguments{
-\item{data}{A data frame containing observed data. Required when
-\code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
+\item{data}{A data frame containing observed data. Required when \code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
 
-\item{spec}{An EDA specification data frame or CSV path accepted by
-\code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
+\item{spec}{An EDA specification data frame or CSV path accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
-\item{output_dir}{Optional directory where machine-readable CSV outputs are
-written. The directory must already exist.}
+\item{output_dir}{Optional directory where machine-readable CSV outputs are written. The directory must already exist.}
 
-\item{synthetic}{Logical; when \code{TRUE}, generate synthetic data from \code{spec}
-before running the workflow.}
+\item{synthetic}{Logical; when \code{TRUE}, generate synthetic data from \code{spec} before running the workflow.}
 
 \item{n}{Number of synthetic rows to generate when \code{synthetic = TRUE}.}
 
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
 }
 \value{
-A named list with \code{metadata}, \code{schema}, \code{missing}, \code{summaries} and
-\code{plots} components.
+A named list with \code{metadata}, \code{schema}, \code{missing}, \code{summaries} and \code{plots} components.
 }
 \description{
-Orchestrate the specification-first EDA helpers for either observed data or
-deterministic synthetic data. The function validates the specification, runs
-schema, missingness, summary and plot profiling, optionally writes
-machine-readable outputs, and returns all results as a named list.
+Orchestrate the specification-first EDA helpers for either observed data or deterministic synthetic data. The function validates the specification, runs schema, missingness, summary and plot profiling, optionally writes machine-readable outputs, and returns all results as a named list.
 }

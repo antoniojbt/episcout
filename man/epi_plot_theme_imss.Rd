@@ -15,8 +15,7 @@ epi_plot_theme_imss(base_size = 13, base_family = "Times")
 A ggplot2 theme object.
 }
 \description{
-Provides a ggplot2 theme with IMSS corporate colours. Package dependencies are
-checked at run time.
+Provides a ggplot2 theme with IMSS corporate colours. Package dependencies are checked at run time.
 }
 \examples{
 if (requireNamespace('ggplot2', quietly = TRUE) &&

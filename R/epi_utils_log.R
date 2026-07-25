@@ -1,18 +1,14 @@
 #' @title Save a log of an R session
 #'
-#' @description epi_utils_log() is a convenience function to log details of an R
-#' session.
+#' @description epi_utils_log() is a convenience function to log details of an R session.
 #'
-#' @param output_prefix File name as string, '_log.txt' is appended
-#' to a log file. Default is e.g.
-#' 'session_date_log.txt' eg 'session_2019-03-01_log.txt'
+#' @param output_prefix File name as string, '_log.txt' is appended to a log file. Default is e.g. 'session_date_log.txt' eg 'session_2019-03-01_log.txt'
 #'
 #' @return Saves a log file to disk
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[utils]{sessionInfo}},
-#' \code{\link[episcout]{epi_utils_session}}.
+#' @seealso \code{\link[utils]{sessionInfo}}, \code{\link[episcout]{epi_utils_session}}.
 #'
 #' @examples
 #' \dontrun{

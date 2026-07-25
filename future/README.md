@@ -1,11 +1,8 @@
 # Future SDD/TDD Workspace
 
-This directory is the active planning workspace for next-phase `episcout`
-development. It is committed to Git but excluded from R package builds by
-`.Rbuildignore`.
+This directory is the active planning workspace for next-phase `episcout` development. It is committed to Git but excluded from R package builds by `.Rbuildignore`.
 
-Use this workspace for internal design notes, TDD plans, review prompts and
-agent handoff material. Keep executable package tests in `tests/testthat/`.
+Use this workspace for internal design notes, TDD plans, review prompts and agent handoff material. Keep executable package tests in `tests/testthat/`.
 
 ## Directory Structure
 
@@ -26,8 +23,7 @@ future/
 
 1. Add candidate work to `TODOs.md`.
 2. Promote active work to a numbered directory under `specs/`.
-3. Fill in `brief.md`, `sdd.md`, `tdd.md`, `acceptance.md` and
-   `manifest.yml` before implementation.
+3. Fill in `brief.md`, `sdd.md`, `tdd.md`, `acceptance.md` and `manifest.yml` before implementation.
 4. Implement executable tests under `tests/testthat/`.
 5. Implement package code under `R/`, `inst/` or other package directories.
 6. Record review notes in the spec `review.md`.
@@ -42,9 +38,7 @@ scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-proje
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 ```
 
-Do not use bare `Rscript` in future specs or check instructions. For
-`devtools::check()`, always set an explicit CRAN mirror instead of relying on
-`@CRAN@`; otherwise checks can spend a long time probing repository indexes.
+Do not use bare `Rscript` in future specs or check instructions. For `devtools::check()`, always set an explicit CRAN mirror instead of relying on `@CRAN@`; otherwise checks can spend a long time probing repository indexes.
 
 ## Spec Status
 
@@ -67,5 +61,4 @@ Do not use bare `Rscript` in future specs or check instructions. For
 - `005-pseudonymisation-bridge`
 - `006-synthetic-integer-generation`
 
-Completed specs stay under `future/specs/` so existing review and changelog
-links remain stable.
+Completed specs stay under `future/specs/` so existing review and changelog links remain stable.

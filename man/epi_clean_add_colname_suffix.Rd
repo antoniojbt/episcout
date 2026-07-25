@@ -14,12 +14,10 @@ epi_clean_add_colname_suffix(df = NULL, id_col_num = 1, suffix = "")
 \item{suffix}{String to add as a suffix to each column except id_col_num}
 }
 \value{
-String of column names with suffix added.
-Change headers manually with these.
+String of column names with suffix added. Change headers manually with these.
 }
 \description{
-Add a suffix to column names except for an ID header.
-Useful if changing labels to include eg baseline, time_1, time_2, etc.
+Add a suffix to column names except for an ID header. Useful if changing labels to include eg baseline, time_1, time_2, etc.
 }
 \examples{
 \dontrun{
@@ -44,8 +42,7 @@ names(df2)
 
 }
 \seealso{
-\code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_get_dups}},
-\code{\link{epi_clean_spread_repeated}}
+\code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_get_dups}}, \code{\link{epi_clean_spread_repeated}}
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

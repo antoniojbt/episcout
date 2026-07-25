@@ -17,9 +17,7 @@ epi_plot_dates(x, type = c("hist", "box", "line"), ...)
 A \code{ggplot} object representing the requested plot.
 }
 \description{
-\code{epi_plot_dates()} creates a histogram, boxplot or line plot for a vector of
-dates. It acts as a small wrapper around \code{ggplot2} with the package's default
-theme.
+\code{epi_plot_dates()} creates a histogram, boxplot or line plot for a vector of dates. It acts as a small wrapper around \code{ggplot2} with the package's default theme.
 }
 \examples{
 \dontrun{

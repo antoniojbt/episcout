@@ -1,49 +1,31 @@
 #' @title Boxplot wrapper function using ggplot2
 #'
-#' @description epi_plot_box() wraps ggplot2 boxplot for one or two variables with
-#' a number of set preferences, see below.
+#' @description epi_plot_box() wraps ggplot2 boxplot for one or two variables with a number of set preferences, see below.
 #'
 #' @param df data.frame with x var to plot
 #' @param var_y Variable to plot on y-axis, pass as a string.
 #' @param var_x Variable to plot on x-axis, pass as a string.
 #' @param outlier_alpha Outlier transparency. Default is 0.7.
-#' @param fill Interior colour used to fill. If only passing var_y it defaults to 'grey80'.
-#' If passing both var_y and var_x, it uses var_x.
+#' @param fill Interior colour used to fill. If only passing var_y it defaults to 'grey80'. If passing both var_y and var_x, it uses var_x.
 #' @param colour Aesthetics for ggplot2. Default is 'grey20' if only var_y.
-#' @param stat_geom ggplot2::stat_boxplot parameter used for 2 variable boxplot only.
-#' Default is 'errorbar'.
-#' @param stat_width ggplot2::stat_boxplot parameter used for 2 variable boxplot only.
-#' Default is 0.5.
-#' @param jitter_shape ggplot2::geom_jitter parameter used for 2 variable boxplot only.
-#' Default is 16.
-#' @param jitter_position ggplot2::geom_jitter parameter used for 2 variable boxplot only.
-#' Default is 0.2.
-#' @param jitter_alpha ggplot2::geom_jitter parameter used for 2 variable boxplot only.
-#' Default is 0.5.
-#' @param sum_fun ggplot2::stat_summary parameter used for 2 variable boxplot only.
-#' Default is mean.
-#' @param sum_geom ggplot2::stat_summary parameter used for 2 variable boxplot only.
-#' Default is "point".
-#' @param sum_shape ggplot2::stat_summary parameter used for 2 variable boxplot only.
-#' Default is 23.
-#' @param sum_size ggplot2::stat_summary parameter used for 2 variable boxplot only.
-#' Default is 4.
-#' @param ... passes any further arguments to ggplot2::geom_boxplot() for both one and two
-#' column plots.
+#' @param stat_geom ggplot2::stat_boxplot parameter used for 2 variable boxplot only. Default is 'errorbar'.
+#' @param stat_width ggplot2::stat_boxplot parameter used for 2 variable boxplot only. Default is 0.5.
+#' @param jitter_shape ggplot2::geom_jitter parameter used for 2 variable boxplot only. Default is 16.
+#' @param jitter_position ggplot2::geom_jitter parameter used for 2 variable boxplot only. Default is 0.2.
+#' @param jitter_alpha ggplot2::geom_jitter parameter used for 2 variable boxplot only. Default is 0.5.
+#' @param sum_fun ggplot2::stat_summary parameter used for 2 variable boxplot only. Default is mean.
+#' @param sum_geom ggplot2::stat_summary parameter used for 2 variable boxplot only. Default is "point".
+#' @param sum_shape ggplot2::stat_summary parameter used for 2 variable boxplot only. Default is 23.
+#' @param sum_size ggplot2::stat_summary parameter used for 2 variable boxplot only. Default is 4.
+#' @param ... passes any further arguments to ggplot2::geom_boxplot() for both one and two column plots.
 #'
 #' @return Prints a ggplot2 boxplot
 #'
-#' @note For other options, save as object and build on the layers.
-#' var_x and var_y are passed to ggplot2::aes.
-#' For colour and fill see ggplot2::fill for further information.
+#' @note For other options, save as object and build on the layers. var_x and var_y are passed to ggplot2::aes. For colour and fill see ggplot2::fill for further information.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_plot_list}},
-#' \code{\link{epi_plots_to_grid}},
-#' \code{\link{epi_plot_hist}},
-#' \code{\link[ggplot2]{ggplot}},
-#' \code{\link[ggplot2]{geom_boxplot}}.
+#' @seealso \code{\link{epi_plot_list}}, \code{\link{epi_plots_to_grid}}, \code{\link{epi_plot_hist}}, \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{geom_boxplot}}.
 #'
 #' @examples
 #' \dontrun{

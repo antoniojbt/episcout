@@ -20,8 +20,7 @@ palette_IMSS <- c(
 
 #' Colour-blind-friendly IMSS palette
 #'
-#' A ten-hex vector that's easier to distinguish for viewers
-#' with colour-vision deficiencies.
+#' A ten-hex vector that's easier to distinguish for viewers with colour-vision deficiencies.
 #'
 #' @return A character vector of hex colour codes.
 #' @export

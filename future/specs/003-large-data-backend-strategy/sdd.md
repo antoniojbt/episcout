@@ -5,12 +5,9 @@ Status: Draft
 
 ## Scope
 
-Define how the specification-first EDA workflow should later support larger
-datasets while preserving the current data-frame/tibble API.
+Define how the specification-first EDA workflow should later support larger datasets while preserving the current data-frame/tibble API.
 
-This spec remains deferred until a representative workload and measurable
-performance target are available. Backend choice must follow profiling against
-that workload rather than the candidate sequence below.
+This spec remains deferred until a representative workload and measurable performance target are available. Backend choice must follow profiling against that workload rather than the candidate sequence below.
 
 ## Design Direction
 
@@ -19,8 +16,7 @@ that workload rather than the candidate sequence below.
 - Compute summaries on full data where practical.
 - Collect small, deterministic samples for plotting.
 - Cache machine-readable outputs so reports do not recompute expensive steps.
-- Keep optional backend dependencies optional unless implementation proves they
-  should move to `Imports`.
+- Keep optional backend dependencies optional unless implementation proves they should move to `Imports`.
 
 ## Candidate Sequence
 
@@ -32,9 +28,7 @@ that workload rather than the candidate sequence below.
 
 ## Compatibility
 
-Existing calls to `epi_eda_run()`, `epi_eda_profile_missing()`,
-`epi_eda_profile_summaries()` and `epi_eda_profile_plots()` should continue to
-work on ordinary data frames.
+Existing calls to `epi_eda_run()`, `epi_eda_profile_missing()`, `epi_eda_profile_summaries()` and `epi_eda_profile_plots()` should continue to work on ordinary data frames.
 
 ## Out Of Scope
 

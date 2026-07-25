@@ -8,12 +8,7 @@ Authors@R:
            email = "antoniojberlanga@gmail.com")
 Author: Antonio Berlanga-Taylor [aut, cre]
 Maintainer: Antonio Berlanga-Taylor <antoniojberlanga@gmail.com>
-Description: Facilitates cleaning, exploring and visualising large-ish
-    epidemiological datasets (hundreds of thousands to millions of
-    observations with tens to hundreds of variables). Provides helper functions
-    for preprocessing and descriptive work, plus specification-first
-    exploratory data analysis workflows for epidemiological datasets. Assumes
-    you're happy with tidyverse and the basics of data.table.
+Description: Facilitates cleaning, exploring and visualising large-ish epidemiological datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). Provides helper functions for preprocessing and descriptive work, plus specification-first exploratory data analysis workflows for epidemiological datasets. Assumes you're happy with tidyverse and the basics of data.table.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

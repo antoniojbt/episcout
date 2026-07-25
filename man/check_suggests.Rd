@@ -10,8 +10,7 @@ check_suggests(pkgs)
 \item{pkgs}{Character vector of package names.}
 }
 \value{
-Invisibly returns TRUE if all packages are installed. Throws an
-error listing missing packages otherwise.
+Invisibly returns TRUE if all packages are installed. Throws an error listing missing packages otherwise.
 }
 \description{
 Checks that all packages listed are available for optional functionality.

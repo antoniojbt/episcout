@@ -7,8 +7,7 @@ Status: Draft
 
 - Does the design avoid premature backend implementation?
 - Does it preserve current user-facing APIs?
-- Are dependency and caching policies clear enough for a later implementation
-  spec?
+- Are dependency and caching policies clear enough for a later implementation spec?
 
 ## Findings
 

@@ -6,16 +6,11 @@ Owner: Antonio Berlanga-Taylor
 
 ## Problem
 
-Synthetic integer generation passes its candidate values directly to
-`sample()`. Base R treats a single positive numeric value specially, so bounds
-such as `min = max = 5` can produce values from 1 through 5 instead of only 5.
-Fractional bounds containing no integer also lack a clear failure contract.
+Synthetic integer generation passes its candidate values directly to `sample()`. Base R treats a single positive numeric value specially, so bounds such as `min = max = 5` can produce values from 1 through 5 instead of only 5. Fractional bounds containing no integer also lack a clear failure contract.
 
 ## Goal
 
-Make synthetic integer generation respect the inclusive specification bounds
-for singleton, multi-value and empty integer domains, with tests that cannot
-pass vacuously on all-missing output.
+Make synthetic integer generation respect the inclusive specification bounds for singleton, multi-value and empty integer domains, with tests that cannot pass vacuously on all-missing output.
 
 ## Non-goals
 

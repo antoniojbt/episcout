@@ -1,10 +1,6 @@
 #' Summarise Character Variables
 #'
-#' Compute summary statistics for all character columns in a data frame.
-#' For each character variable, this function returns the number of missing
-#' values (`NA`), the proportion of non-missing values, the minimum and maximum
-#' string lengths, the count of empty strings, the number of unique values, and
-#' the count of values consisting only of whitespace.
+#' Compute summary statistics for all character columns in a data frame. For each character variable, this function returns the number of missing values (`NA`), the proportion of non-missing values, the minimum and maximum string lengths, the count of empty strings, the number of unique values, and the count of values consisting only of whitespace.
 #'
 #' @param df A \code{data.frame} (or tibble) containing one or more character columns.
 #'
@@ -19,13 +15,9 @@
 #'   \item{\code{n_unique}}{Number of unique non-\code{NA} values.}
 #'   \item{\code{whitespace}}{Count of strings consisting only of whitespace.}
 #' }
-#' @seealso \code{\link{epi_stats_factors}}, \code{\link{epi_stats_numeric}},
-#'   \code{\link{epi_stats_summary}}
+#' @seealso \code{\link{epi_stats_factors}}, \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_summary}}
 #'
-#' @details
-#' This function uses \pkg{dplyr} for manipulation, \pkg{tidyr} for reshaping
-#' and \pkg{stringr} for trimming whitespace. Character columns are gathered
-#' into long format and statistics computed per column.
+#' @details This function uses \pkg{dplyr} for manipulation, \pkg{tidyr} for reshaping and \pkg{stringr} for trimming whitespace. Character columns are gathered into long format and statistics computed per column.
 #'
 #' @examples
 #' library(dplyr)

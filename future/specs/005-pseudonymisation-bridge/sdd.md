@@ -28,6 +28,4 @@ epi_sec_pseudonym(
 
 ## Security Notes
 
-The bridge table remains re-identifying information. Documentation must state
-that it should be stored separately from pseudonymised analysis data and
-protected with appropriate access controls.
+The bridge table remains re-identifying information. Documentation must state that it should be stored separately from pseudonymised analysis data and protected with appropriate access controls.

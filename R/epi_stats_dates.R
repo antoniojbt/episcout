@@ -1,14 +1,11 @@
 #############
 #' @title Calculate Descriptive Date Statistics
 #'
-#' @description Calculates and returns key descriptive statistics for a vector of
-#' dates, including minimum, maximum, interquartile range (IQR), and quartiles. It
-#' is compatible with both `Date` and `IDate` objects.
+#' @description Calculates and returns key descriptive statistics for a vector of dates, including minimum, maximum, interquartile range (IQR), and quartiles. It is compatible with both `Date` and `IDate` objects.
 #'
 #' @param date_vector A vector of dates of class `Date` or `IDate`.
 #'
-#' @return A `data.frame` containing statistics such as N, N Missing, N Unique, Min,
-#'   25%, Median, 75%, Max, IQR, Most Common, and Range (Days).
+#' @return A `data.frame` containing statistics such as N, N Missing, N Unique, Min, 25%, Median, 75%, Max, IQR, Most Common, and Range (Days).
 #'
 #' @examples
 #' sample_dates <- as.Date(c("2020-01-01", "2020-05-15", "2020-12-31", "2021-01-01"))
@@ -18,9 +15,7 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_stats_summary}},
-#'   \code{\link{epi_stats_format}},
-#'   \code{\link{epi_stats_numeric}}
+#' @seealso \code{\link{epi_stats_summary}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_numeric}}
 #'
 #' @export
 #'
@@ -71,13 +66,11 @@ epi_stats_dates <- function(date_vector) {
 
 #' @title Summarise Multiple Date Columns
 #'
-#' @description Applies [epi_stats_dates()] to each date column in a data frame and
-#'   returns a wide-format tibble with the results.
+#' @description Applies [epi_stats_dates()] to each date column in a data frame and returns a wide-format tibble with the results.
 #'
 #' @param df A data frame containing one or more date columns.
 #'
-#' @return A tibble where each row corresponds to a date column and columns contain
-#'   the statistics produced by [epi_stats_dates()].
+#' @return A tibble where each row corresponds to a date column and columns contain the statistics produced by [epi_stats_dates()].
 #'
 #' 
 #' @examples
@@ -105,8 +98,7 @@ epi_stats_dates_multi <- function(df) {
 #############
 #' @title Date Differences and Monthly Frequencies
 #'
-#' @description Computes differences between consecutive dates and frequency of
-#'   observations by year-month for a vector of dates.
+#' @description Computes differences between consecutive dates and frequency of observations by year-month for a vector of dates.
 #'
 #' @param date_vector A vector of dates of class `Date` or `IDate`.
 #'

@@ -5,8 +5,7 @@ Status: Active
 
 ## Test Files
 
-- `tests/testthat/test-penguins-raw-fixtures.R` must consume the source data,
-  specification and every committed expected-output CSV.
+- `tests/testthat/test-penguins-raw-fixtures.R` must consume the source data, specification and every committed expected-output CSV.
 - `tests/testthat/test-fixture-generation-guardrails.R` if lightweight.
 
 ## Fixture Expectations
@@ -27,8 +26,7 @@ Status: Active
 
 ## Guardrail Test
 
-If added, the guardrail test should scan fixture-generation scripts and fail on
-forbidden calls:
+If added, the guardrail test should scan fixture-generation scripts and fail on forbidden calls:
 
 - `library(episcout)`
 - `episcout::`

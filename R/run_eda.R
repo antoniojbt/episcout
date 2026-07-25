@@ -1,23 +1,15 @@
 #' Run a specification-first EDA workflow
 #'
-#' Orchestrate the specification-first EDA helpers for either observed data or
-#' deterministic synthetic data. The function validates the specification, runs
-#' schema, missingness, summary and plot profiling, optionally writes
-#' machine-readable outputs, and returns all results as a named list.
+#' Orchestrate the specification-first EDA helpers for either observed data or deterministic synthetic data. The function validates the specification, runs schema, missingness, summary and plot profiling, optionally writes machine-readable outputs, and returns all results as a named list.
 #'
-#' @param data A data frame containing observed data. Required when
-#'   `synthetic = FALSE`; ignored when `synthetic = TRUE`.
-#' @param spec An EDA specification data frame or CSV path accepted by
-#'   [epi_eda_spec()].
-#' @param output_dir Optional directory where machine-readable CSV outputs are
-#'   written. The directory must already exist.
-#' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec`
-#'   before running the workflow.
+#' @param data A data frame containing observed data. Required when `synthetic = FALSE`; ignored when `synthetic = TRUE`.
+#' @param spec An EDA specification data frame or CSV path accepted by [epi_eda_spec()].
+#' @param output_dir Optional directory where machine-readable CSV outputs are written. The directory must already exist.
+#' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec` before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
 #'
-#' @return A named list with `metadata`, `schema`, `missing`, `summaries` and
-#'   `plots` components.
+#' @return A named list with `metadata`, `schema`, `missing`, `summaries` and `plots` components.
 #'
 #' @export
 epi_eda_run <- function(data,

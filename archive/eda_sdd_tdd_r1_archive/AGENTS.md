@@ -1,12 +1,10 @@
 # Archived AGENTS.md
 
-This file is historical guidance for the archived specification-first EDA
-planning flow. Use root `AGENTS.MD` and `future/README.md` for new work.
+This file is historical guidance for the archived specification-first EDA planning flow. Use root `AGENTS.MD` and `future/README.md` for new work.
 
 ## Scope
 
-This repository is an R package. The specification-first EDA plan in this
-directory is archived reference material.
+This repository is an R package. The specification-first EDA plan in this directory is archived reference material.
 
 ## Required reading
 

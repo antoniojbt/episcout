@@ -7,8 +7,7 @@
 epi_output_name(input_name = "", suffix = ".tsv")
 }
 \arguments{
-\item{input_name}{string to split, usually an input file name
-previously saved as an object}
+\item{input_name}{string to split, usually an input file name previously saved as an object}
 
 \item{suffix}{any string you wish to add, default is '.tsv'}
 }
@@ -16,9 +15,7 @@ previously saved as an object}
 string value
 }
 \description{
-Generate a simple output name, given a string (filename)
-splits at the last '.', drops the current suffix and adds the one provided.
-If \code{input_name} lacks a dot, the whole string is used as is.
+Generate a simple output name, given a string (filename) splits at the last '.', drops the current suffix and adds the one provided. If \code{input_name} lacks a dot, the whole string is used as is.
 }
 \examples{
 \dontrun{

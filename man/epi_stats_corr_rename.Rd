@@ -13,33 +13,21 @@ epi_stats_corr_rename(
 )
 }
 \arguments{
-\item{r_vals}{Correlation values in melted (long) format.
-Default is melted_triangles$cormat_melted_triangle_r}
+\item{r_vals}{Correlation values in melted (long) format. Default is melted_triangles$cormat_melted_triangle_r}
 
-\item{p_vals}{p-values from correlations in melted (long) format.
-Default is melted_triangles$cormat_melted_triangle_pval}
+\item{p_vals}{p-values from correlations in melted (long) format. Default is melted_triangles$cormat_melted_triangle_pval}
 
-\item{vars_list}{List of variables to rename from 'Var1' and 'Var2'.
-Default is vars_list}
+\item{vars_list}{List of variables to rename from 'Var1' and 'Var2'. Default is vars_list}
 
-\item{var_labels}{List of labels to use for renaming values from 'Var1' and 'Var2'.
-vars_list and var_labels must match by position. Default is var_labels}
+\item{var_labels}{List of labels to use for renaming values from 'Var1' and 'Var2'. vars_list and var_labels must match by position. Default is var_labels}
 
 \item{digits}{Rounding integer for correlation and p-values. Default is 2}
 }
 \value{
-Returns a list object melted_triangles containing the lower triangle of the
-correlation matrix (cormat) with the correlation (cormat_melted_triangle_r) and
-p-values (cormat_melted_triangle_pval) with the variables 'Var1' and 'Var2'
-converted to factors and re-labelled.
+Returns a list object melted_triangles containing the lower triangle of the correlation matrix (cormat) with the correlation (cormat_melted_triangle_r) and p-values (cormat_melted_triangle_pval) with the variables 'Var1' and 'Var2' converted to factors and re-labelled.
 }
 \description{
-Rename variables from melted triangles and convert to factors
-for plotting. Requires correlation matrices with r and p-values with columns
-named 'Var1' and 'Var2'. The output of epi_stats_corr_triangle() can be
-used as input. Variables are converted to factors and re-labelled
-Values are rounded to digits (default is 2 so that they fit in the heatmap).
-The output can be used for prettier plotting.
+Rename variables from melted triangles and convert to factors for plotting. Requires correlation matrices with r and p-values with columns named 'Var1' and 'Var2'. The output of epi_stats_corr_triangle() can be used as input. Variables are converted to factors and re-labelled Values are rounded to digits (default is 2 so that they fit in the heatmap). The output can be used for prettier plotting.
 }
 \note{
 vars_list and var_labels must match by position.
@@ -70,9 +58,7 @@ renamed_triangles
 }
 }
 \seealso{
-\code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_triangle}},
-\code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}},
-\code{\link[Hmisc]{rcorr}}.
+\code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_triangle}}, \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}}, \code{\link[Hmisc]{rcorr}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

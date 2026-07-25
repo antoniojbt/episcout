@@ -12,10 +12,8 @@ epi_eda_profile_missing(data, spec)
 \item{spec}{An EDA specification data frame or CSV path.}
 }
 \value{
-A data frame with variable names, row counts, missing counts and
-missing proportions.
+A data frame with variable names, row counts, missing counts and missing proportions.
 }
 \description{
-Count standard missing values and configured missing codes for variables
-listed in an EDA specification.
+Count standard missing values and configured missing codes for variables listed in an EDA specification.
 }

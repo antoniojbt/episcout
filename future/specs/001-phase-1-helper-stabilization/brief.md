@@ -5,13 +5,11 @@ Status: Implemented
 
 ## Problem
 
-Some existing helper functions have under-specified edge-case behaviour. The
-highest-risk examples are `epi_stats_numeric()` and `epi_stats_na_perc()`.
+Some existing helper functions have under-specified edge-case behaviour. The highest-risk examples are `epi_stats_numeric()` and `epi_stats_na_perc()`.
 
 ## Goal
 
-Create a small TDD-first hardening PR that makes selected edge cases
-deterministic without redesigning the public helper API.
+Create a small TDD-first hardening PR that makes selected edge cases deterministic without redesigning the public helper API.
 
 ## Non-goals
 

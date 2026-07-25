@@ -1,21 +1,14 @@
 #' @title Check if column is date using lubridate
 #'
-#' @description Check if column is date (TRUE). Useful when
-#' extracting columns from a large data frame using dplyr
-#' (ie get all date type columns)
+#' @description Check if column is date (TRUE). Useful when extracting columns from a large data frame using dplyr (ie get all date type columns)
 #'
-#' @param col column header. This will be passed to
-#' lubridate::is.Date(col) and lubridate::is.POSIXt(col)
+#' @param col column header. This will be passed to lubridate::is.Date(col) and lubridate::is.POSIXt(col)
 #'
 #' @return boolean TRUE/FALSE indicating whether column passed is type date
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_cond_numeric}},
-#' \code{\link{epi_clean_class_to_factor}},
-#' \code{\link{epi_clean_count_classes}},
-#' \code{\link[base]{is.character}},
-#' \code{\link[base]{is.factor}}.
+#' @seealso \code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}}, \code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
 #'
 #' @examples
 #' \dontrun{

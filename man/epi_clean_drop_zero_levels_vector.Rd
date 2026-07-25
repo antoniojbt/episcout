@@ -13,9 +13,7 @@ epi_clean_drop_zero_levels_vector(factor_var)
 A factor vector with all levels that have zero observations removed.
 }
 \description{
-Removes any factor levels that have zero occurrences, which can arise
-after introducing \code{NA} values or subsetting. Handy for cleaning up
-factor vectors before analysis or modeling.
+Removes any factor levels that have zero occurrences, which can arise after introducing \code{NA} values or subsetting. Handy for cleaning up factor vectors before analysis or modeling.
 }
 \examples{
 \dontrun{

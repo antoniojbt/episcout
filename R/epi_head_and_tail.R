@@ -8,17 +8,13 @@
 #'
 #' @param cols Number of columns to print, default is 5
 #'
-#' @param last_cols Print the last columns instead of the first few,
-#' default is FALSE
+#' @param last_cols Print the last columns instead of the first few, default is FALSE
 #'
-#' Row and column counts outside the available range are clamped to the
-#' data dimensions.
+#' Row and column counts outside the available range are clamped to the data dimensions.
 #'
-#' @return A data.frame containing the selected head and tail rows and
-#'   columns. The value is returned invisibly after printing.
+#' @return A data.frame containing the selected head and tail rows and columns. The value is returned invisibly after printing.
 #'
-#' @note Similar to data.table printing of a data.table object but works for
-#' a tibble or data.frame, or any object that can be coerced to a data.frame
+#' @note Similar to data.table printing of a data.table object but works for a tibble or data.frame, or any object that can be coerced to a data.frame
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'

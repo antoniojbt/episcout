@@ -44,9 +44,7 @@ scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-proje
 
 ## Anti-circularity
 
-Expected summary outputs must not be calculated by copying implementation logic.
-Use small hand-computed data frames or committed expected fixture CSVs with
-transparent values.
+Expected summary outputs must not be calculated by copying implementation logic. Use small hand-computed data frames or committed expected fixture CSVs with transparent values.
 
 ## Acceptance Commands
 

@@ -13,16 +13,13 @@ epi_clean_replace_value(df = NULL, col_id = "", pattern = "", replace_str = NA)
 
 \item{pattern}{String pattern to look for (passed to str_detect pattern parameter)}
 
-\item{replace_str}{String that will replace value if pattern matches in the
-column passed}
+\item{replace_str}{String that will replace value if pattern matches in the column passed}
 }
 \value{
 The column passed as a vector
 }
 \description{
-Uses stringr to match string pattern provided and replace value
-in column with string provided. Useful for partial matching for dates
-and replacing with NA for example. Uses stringr::str_detect().
+Uses stringr to match string pattern provided and replace value in column with string provided. Useful for partial matching for dates and replacing with NA for example. Uses stringr::str_detect().
 }
 \examples{
 \dontrun{
@@ -55,10 +52,8 @@ df_factor$date_col
 
 }
 \seealso{
-\code{\link{epi_clean_add_rep_num}},
-\code{\link{epi_clean_add_colname_suffix}},
-\code{\link[stringr]{str_detect}}.
+\code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_add_colname_suffix}}, \code{\link[stringr]{str_detect}}.
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

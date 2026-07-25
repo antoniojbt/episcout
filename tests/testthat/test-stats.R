@@ -166,8 +166,7 @@ print("epi_stats_format")
 
 test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
-  # Count when codes are present, pass these as character or factor, specify
-  #  action is to count codes only:
+  # Count when codes are present, pass these as character or factor, specify action is to count codes only:
   stat_sum1 <- epi_stats_summary(
     df = df_cont_chr,
     codes = codes,
@@ -253,8 +252,7 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
 
 test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
-  # Get summary stats for numeric/integer columns
-  # while excluding certain codes/values:
+  # Get summary stats for numeric/integer columns while excluding certain codes/values:
   stat_sum4 <- epi_stats_summary(
     df = df_cont_chr,
     codes = codes,

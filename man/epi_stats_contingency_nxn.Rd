@@ -17,8 +17,7 @@ epi_stats_contingency_nxn(df, dep_var, ind_vars)
 A data frame summarizing the relationships between the dependent variable and the independent variable(s).
 }
 \description{
-This function creates a summary table for a dependent variable and one or more independent variables.
-It calculates frequencies, reshapes the data into a wide format, and adds totals and percentages dynamically.
+This function creates a summary table for a dependent variable and one or more independent variables. It calculates frequencies, reshapes the data into a wide format, and adds totals and percentages dynamically.
 }
 \examples{
 # Example dataset

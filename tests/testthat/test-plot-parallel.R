@@ -1,8 +1,6 @@
 print("Function being tested: epi_utils_multicore in plotting context")
 
-# Skip parallel plot tests if multicore support is unavailable or
-# when CRAN limits cores via _R_CHECK_LIMIT_CORES_. This prevents
-# false failures on systems unable to run multicore futures.
+# Skip parallel plot tests if multicore support is unavailable or when CRAN limits cores via _R_CHECK_LIMIT_CORES_. This prevents false failures on systems unable to run multicore futures.
 skip_if(!future::supportsMulticore() || nzchar(Sys.getenv("_R_CHECK_LIMIT_CORES_")))
 
 skip_if_not_installed("future")
@@ -28,9 +26,7 @@ test_that("parallel plotting functions declare explicit suggested package guards
   expect_match(save_body, "foreach")
 })
 
-# Multisession futures start fresh R workers that must be able to attach
-# the installed package. devtools::test()/pkgload exposes the source tree to
-# the main process, but not as an installed package to worker processes.
+# Multisession futures start fresh R workers that must be able to attach the installed package. devtools::test()/pkgload exposes the source tree to the main process, but not as an installed package to worker processes.
 skip_if_not(dir.exists(file.path(system.file(package = "episcout"), "Meta")),
   "parallel plot tests require episcout to be installed"
 )

@@ -1,41 +1,25 @@
 #' @title Recursively merge data frames that are stored as lists within a list
 #'
-#' @description Recursively merge data frames that are stored as lists within a list.
-#' Flattens with purrr::flatten() if there is more than one level. Assumes:
-#' - there are are 3 or more data frames to merge
-#'   (if only two are supplied the function performs a single merge and returns)
+#' @description Recursively merge data frames that are stored as lists within a list. Flattens with purrr::flatten() if there is more than one level. Assumes:
+#' - there are are 3 or more data frames to merge (if only two are supplied the function performs a single merge and returns)
 #' - there are no duplicates in any of the data frames
-#' The function performs a full outer join with base R
-#' merge(df1, df2, by = id_col, all = TRUE)
+#' The function performs a full outer join with base R merge(df1, df2, by = id_col, all = TRUE)
 #'
-#' @param nested_list_dfs A nested list of dataframes to merge, such as the output
-#' from \code{\link{epi_clean_spread_repeated}}.
+#' @param nested_list_dfs A nested list of dataframes to merge, such as the output from \code{\link{epi_clean_spread_repeated}}.
 #'
-#' @param id_col A string to identify the column to merge by. This is passed to
-#' the by parameter in merge(). Requires all dataframes to have the same column
-#' name.
+#' @param id_col A string to identify the column to merge by. This is passed to the by parameter in merge(). Requires all dataframes to have the same column name.
 #'
 #' @param all.x corresponds to merge() all.x parameter. TRUE by default.
 #'
-#' @param ... any further arguments that merge.data.frame or merge.data.table can
-#' take.
+#' @param ... any further arguments that merge.data.frame or merge.data.table can take.
 #'
-#' @return A data.table in wide format with each sub-dataframe contained as a
-#' sub-list
+#' @return A data.table in wide format with each sub-dataframe contained as a sub-list
 #'
-#' @note This function helps with spreading and gathering long and wide dataframes.
-#' You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as
-#' well as similar base functions and other packages such as data.table depending
-#' on your problem. See example below in case you have a messier dataframe which
-#' doesn't easily yield to existing workflows and functions. Note that
-#' merge.data.table is dispatched (as opposed to merge.data.frame). To get all = TRUE,
-#' pass all.x = TRUE and all.y = TRUE.
+#' @note This function helps with spreading and gathering long and wide dataframes. You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as well as similar base functions and other packages such as data.table depending on your problem. See example below in case you have a messier dataframe which doesn't easily yield to existing workflows and functions. Note that merge.data.table is dispatched (as opposed to merge.data.frame). To get all = TRUE, pass all.x = TRUE and all.y = TRUE.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_add_colname_suffix}},
-#' \code{\link{epi_clean_spread_repeated}},
-#' \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
+#' @seealso \code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_spread_repeated}}, \code{\link{epi_clean_transpose}}, \code{\link[base]{merge}}.
 #'
 #' @examples
 #' \dontrun{
@@ -180,8 +164,7 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
     return(temp_df)
   }
   # Loop through nested data frames and merge each to previous merged df:
-  # For large numbers of very big data frames a parallel approach could be
-  # considered, but the current implementation uses a sequential merge.
+  # For large numbers of very big data frames a parallel approach could be considered, but the current implementation uses a sequential merge.
   print("Merging further dataframes.")
   print("Suffixes are only used if there are clashes.")
   for (i in 3:length(nested_list_dfs)) { # skip 1 and 2 as these are

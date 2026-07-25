@@ -2,8 +2,7 @@
 % Please edit documentation in R/epi_stats_prop_outcome.R
 \name{epi_stats_prop_outcome}
 \alias{epi_stats_prop_outcome}
-\title{Calculate the proportion of individuals who suffered an event
-at a given point in time}
+\title{Calculate the proportion of individuals who suffered an event at a given point in time}
 \usage{
 epi_stats_prop_outcome(
   df,

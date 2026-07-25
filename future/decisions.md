@@ -1,7 +1,6 @@
 # Decisions
 
-Record decisions that affect package scope, architecture, testing or review
-standards.
+Record decisions that affect package scope, architecture, testing or review standards.
 
 | Date | Decision | Rationale | Consequences |
 |---|---|---|---|

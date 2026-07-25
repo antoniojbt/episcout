@@ -11,20 +11,16 @@ epi_clean_get_dups(df = NULL, var = "", freq = 1)
 
 \item{var}{Variable/column name as a string to use to detect duplicate values}
 
-\item{freq}{Frequency count, an integer. Defaults to 1 (so will return original
-plus any repeating values)}
+\item{freq}{Frequency count, an integer. Defaults to 1 (so will return original plus any repeating values)}
 }
 \value{
 a data.frame with original and duplicated rows
 }
 \description{
-base R duplicated() does not return the originals (duplicated - 1).
-See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
+base R duplicated() does not return the originals (duplicated - 1). See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
 }
 \note{
-Creates a table with frequencies, checks those which have more than 1
-(or value passed to freq and considers these as variables with duplicates)
-and extracts them.
+Creates a table with frequencies, checks those which have more than 1 (or value passed to freq and considers these as variables with duplicates) and extracts them.
 }
 \examples{
 \dontrun{

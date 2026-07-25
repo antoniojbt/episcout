@@ -1,30 +1,20 @@
 #' @title Compare two strings
 #'
-#' @description Compare two strings and determine if one is substring of the other.
-#' epi_clean_compare_str() uses stringi::stri_detect(). Developed when comparing
-#' a database of observed and matched values for drug treatments from the BNF.
-#' Can be used generically as a light wrapper for stri_detect().
-#' stri_detect() determines if there is at least one match to a corresponding pattern.
+#' @description Compare two strings and determine if one is substring of the other. epi_clean_compare_str() uses stringi::stri_detect(). Developed when comparing a database of observed and matched values for drug treatments from the BNF. Can be used generically as a light wrapper for stri_detect(). stri_detect() determines if there is at least one match to a corresponding pattern.
 #'
 #' @param df a data frame object containing rows with strings to compare
 #'
-#' @param row_n row number within the data frame with two columns to compare,
-#' default is 1
+#' @param row_n row number within the data frame with two columns to compare, default is 1
 #'
-#' @param string_col column number with value which will be passed to
-#' stri_detect as stri_detect(str = string, fixed = fixed_chr)
+#' @param string_col column number with value which will be passed to stri_detect as stri_detect(str = string, fixed = fixed_chr)
 #'
-#' @param fixed_chr_col column number value which will be passed to
-#' stri_detect as stri_detect(str = string, fixed = fixed_chr)
+#' @param fixed_chr_col column number value which will be passed to stri_detect as stri_detect(str = string, fixed = fixed_chr)
 #'
 #' @param ... other options passed to stri_detect()
 #'
-#' @return returns the output of stri_detect(), a boolean TRUE/FALSE testing
-#' whether the value of fixed_chr_col is a sub-string of that in string_col
+#' @return returns the output of stri_detect(), a boolean TRUE/FALSE testing whether the value of fixed_chr_col is a sub-string of that in string_col
 #'
-#' @note   fixed_chr_col and string_col are extracted as characters and compared
-#' as fixed characters, not with regex. The value in string_col will be the
-#' character vector with strings to search in.
+#' @note   fixed_chr_col and string_col are extracted as characters and compared as fixed characters, not with regex. The value in string_col will be the character vector with strings to search in.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'

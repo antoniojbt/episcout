@@ -36,17 +36,10 @@ epi_write(
 None
 }
 \description{
-epi_write() writes files with a consistent convenience function.
-Wraps data.table's fwrite with several assumptions as defaults.
+epi_write() writes files with a consistent convenience function. Wraps data.table's fwrite with several assumptions as defaults.
 }
 \note{
-Other parameters as specified by data.table::fwrite()
-You are probably better off using the standard write.csv(),
-data.table::fwrite() directly or other functions unless you are
-writing out several similarly constructed objects.
-Files are written with data.table. Column names are written,
-row names are not, quotes are not used. Columns are tab separated.
-NAs are written as 'NA'. Assumes the first row in the object is a header.
+Other parameters as specified by data.table::fwrite() You are probably better off using the standard write.csv(), data.table::fwrite() directly or other functions unless you are writing out several similarly constructed objects. Files are written with data.table. Column names are written, row names are not, quotes are not used. Columns are tab separated. NAs are written as 'NA'. Assumes the first row in the object is a header.
 }
 \examples{
 \dontrun{
@@ -58,5 +51,5 @@ epi_write(some_dataframe, "some_dataframe.tsv")
 \code{\link[data.table]{fwrite}}
 }
 \author{
-Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

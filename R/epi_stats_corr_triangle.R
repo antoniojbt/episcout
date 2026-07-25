@@ -1,22 +1,14 @@
 #' @title Get the lower triangle from a correlation matrix
 #'
-#' @description Keep only the lower triangle of the correlation matrix
-#' Useful to create a nicer heatmap. Requires the original, unmelted correlation
-#' matrix with both correlation (r) and p-values (P). The lower triangles are
-#' converted to \code{data.table} before melting.
+#' @description Keep only the lower triangle of the correlation matrix Useful to create a nicer heatmap. Requires the original, unmelted correlation matrix with both correlation (r) and p-values (P). The lower triangles are converted to \code{data.table} before melting.
 #'
-#' @param cormat a matrix object (usually the output of Hmisc::rcorr()
-#' or episcout::epi_stats_corr()). Default 'cormat_all$cormat'
+#' @param cormat a matrix object (usually the output of Hmisc::rcorr() or episcout::epi_stats_corr()). Default 'cormat_all$cormat'
 #'
-#' @return Returns a list object melted_triangles containing the lower triangle of the
-#' correlation matrix (cormat) with the correlation (cormat_melted_triangle_r) and
-#' p-values (cormat_melted_triangle_pval).
+#' @return Returns a list object melted_triangles containing the lower triangle of the correlation matrix (cormat) with the correlation (cormat_melted_triangle_r) and p-values (cormat_melted_triangle_pval).
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_rename}},
-#' \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}},
-#' \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
+#' @seealso \code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}}, \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
 #'
 #' @examples
 #' \dontrun{

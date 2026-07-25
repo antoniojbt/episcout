@@ -7,8 +7,7 @@
 epi_clean_curp(curp)
 }
 \arguments{
-\item{curp}{Un vector de texto que contiene uno o mas CURPs.
-Cada CURP debe tener exactamente 18 caracteres.}
+\item{curp}{Un vector de texto que contiene uno o mas CURPs. Cada CURP debe tener exactamente 18 caracteres.}
 }
 \value{
 Un \code{tibble} con los componentes del CURP organizados en columnas:
@@ -29,8 +28,7 @@ Un \code{tibble} con los componentes del CURP organizados en columnas:
 }
 }
 \description{
-Esta funcion descompone un CURP en sus componentes principales
-segun las posiciones definidas en su estructura.
+Esta funcion descompone un CURP en sus componentes principales segun las posiciones definidas en su estructura.
 }
 \examples{
 # Ejemplo de uso con un solo CURP

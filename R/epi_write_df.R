@@ -7,8 +7,7 @@
 #' @param file_n A character string specifying the base name of the file (without the suffix).
 #' @param suffix A character string specifying the file extension (e.g., "txt", "csv").
 #'
-#' @return The full file path of the saved file.
-#'         Prints a message indicating the file's location.
+#' @return The full file path of the saved file. Prints a message indicating the file's location.
 #'
 #' @examples
 #' \dontrun{
