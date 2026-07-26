@@ -6,8 +6,9 @@
 #' @param codes Specify codes to summarise or exclude as string. Default is NULL.
 #' @param class_type Class of variables to summarise, 'chr_fct' or 'int_num'. Default is character and factor.
 #' @param action Values to summarise, 'codes_only' or 'exclude'. Default is 'exclude'.
+#' @param output Output contract. `"current"` preserves the existing class/action-specific tibble. `"typed"` returns complete typed summary components for every supported column and treats `codes` as global sentinel-missing values.
 #'
-#' @return A data.frame as tibble with summaries.
+#' @return With `output = "current"`, a tibble using the historical mode-specific schema. With `output = "typed"`, a list containing `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped` data frames.
 #'
 #' @note Desgined with data frames that require pre-processing and likely have contingency and database codes. Action 'exclude' excludes the string values provided from the summary. Useful to quickly assess what a data.frame contains, types of values in each column and summary statistics if excluding codes.
 #'
@@ -24,9 +25,38 @@
 epi_stats_summary <- function(df = NULL,
                               codes = NULL,
                               class_type = "chr_fct", # 'int_num'
-                              action = "exclude" # 'codes_only'
+                              action = "exclude", # 'codes_only'
+                              output = c("current", "typed")
 ) {
+  output <- match.arg(output)
   df <- tibble::as_tibble(df)
+  if (output == "typed") {
+    if (action != "exclude") {
+      stop("Typed output requires action = \"exclude\".", call. = FALSE)
+    }
+    if (class_type != "chr_fct") {
+      stop("class_type applies only to current output; leave it at the default for typed output.", call. = FALSE)
+    }
+    types <- vapply(df, summary_infer_type, character(1))
+    levels <- vapply(df, function(values) {
+      if (is.factor(values)) {
+        return(paste(levels(values), collapse = ";"))
+      }
+      if (is.logical(values)) {
+        return("FALSE;TRUE")
+      }
+      ""
+    }, character(1))
+    spec <- data.frame(
+      name = names(df),
+      label = names(df),
+      type = unname(types),
+      role = rep(NA_character_, ncol(df)),
+      levels = unname(levels),
+      stringsAsFactors = FALSE
+    )
+    return(profile_summaries_v2(as.data.frame(df), spec, global_missing_codes = codes))
+  }
   # Determine which group of columns to use:
   if (class_type == "chr_fct") {
     cond <- expression(epi_clean_cond_chr_fct(.))
@@ -44,7 +74,7 @@ epi_stats_summary <- function(df = NULL,
     stop("action parameter not specified correctly?")
   }
   # Determine if to count or sum depending on class cond and action asked for codes are expected to be summarised as factors (so count()) as they are assumed to represent database codes for NA explanations chr and factor columns would be counted regardless of codes only or codes excluded so summary() should only be needed for num/int columns where codes are excluded
-  if (class_type == "int_num" & action == "exclude") {
+  if (class_type == "int_num" && action == "exclude") {
     sum_func <- function(.x) epi_stats_numeric(.x)
   } else {
     # count is designed for data frames, not vectors, so pass as:
@@ -57,7 +87,8 @@ epi_stats_summary <- function(df = NULL,
     purrr::map(sum_func) # Returns a list
 
   # Convert to dataframe with the same names for the var of interest:
-  df <- as.data.frame(purrr::map_df(df,
+  df <- as.data.frame(purrr::map_df(
+    df,
     tibble::rownames_to_column,
     "var",
     .id = "id"

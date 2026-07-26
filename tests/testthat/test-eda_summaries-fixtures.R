@@ -87,3 +87,16 @@ test_that("epi_eda_profile_summaries categorical output documents denominators",
     ignore_attr = TRUE
   )
 })
+
+test_that("blood storage v2 summaries cover every specified variable", {
+  data <- read.csv(data_path, check.names = FALSE)
+  spec <- epi_eda_spec(spec_path)
+
+  observed <- epi_eda_profile_summaries(data, spec, summary_version = "v2")
+
+  expect_equal(observed$variables$name, spec$name)
+  expect_true(all(observed$variables$status == "summarised"))
+  expect_equal(nrow(observed$skipped), 0L)
+  expect_setequal(observed$numeric$name, spec$name[spec$type %in% c("numeric", "integer")])
+  expect_setequal(unique(observed$categorical$name), spec$name[spec$type %in% c("categorical", "binary")])
+})

@@ -3,6 +3,8 @@
 ## Development version
 
 - Fixed synthetic integer generation for singleton bounds and intervals that contain no integer values.
+- Added opt-in version 2 EDA summaries covering numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable status/skips and six machine-readable output tables; version 1 remains the default for one compatibility release.
+- Aligned active univariate `epi_stats_*` and EDA summaries on shared internal type cores, added typed `epi_stats_summary()` output, and stabilised non-finite numeric, zero-row character/factor and empty temporal behaviour.
 
 ## 0.2.0
 

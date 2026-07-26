@@ -93,11 +93,27 @@ synthetic_results$schema
 head(synthetic_results$missing)
 ```
 
-The `summaries` component contains separate machine-readable tables for numeric and categorical variables.
+The default version 1 `summaries` component retains the original machine-readable numeric and categorical tables for compatibility.
 
 ```{r}
 synthetic_results$summaries$numeric
 synthetic_results$summaries$categorical
+```
+
+Use version 2 when you need complete typed coverage, variable status and explicit skips. It returns `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped` and writes the corresponding six CSV files when `output_dir` is supplied.
+
+```{r}
+typed_results <- epi_eda_run(
+  data = NULL,
+  spec = spec,
+  synthetic = TRUE,
+  n = 100,
+  seed = 1,
+  summary_version = "v2"
+)
+
+names(typed_results$summaries)
+typed_results$summaries$variables
 ```
 
 Plots are returned as ggplot objects without being printed by the workflow.

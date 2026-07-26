@@ -17,7 +17,7 @@
 #' }
 #' @seealso \code{\link{epi_stats_factors}}, \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_summary}}
 #'
-#' @details This function uses \pkg{dplyr} for manipulation, \pkg{tidyr} for reshaping and \pkg{stringr} for trimming whitespace. Character columns are gathered into long format and statistics computed per column.
+#' @details Each selected column is summarised independently through the same internal text contract used by specification-first EDA. Zero-row and all-missing columns retain one stable output row.
 #'
 #' @examples
 #' library(dplyr)
@@ -32,36 +32,24 @@
 #' @importFrom stringr str_trim
 #' @export
 epi_stats_chars <- function(df) {
-  if (!requireNamespace("stringr", quietly = TRUE)) {
-    stop("Package stringr needed for this function to work. Please install it.",
-      call. = FALSE
-    )
-  }
   char_cols <- dplyr::select(df, dplyr::where(~ is.character(.x) || all(is.na(.x))))
   if (ncol(char_cols) == 0) {
     return(dplyr::tibble())
   }
-  char_cols %>%
-    tidyr::pivot_longer(
-      cols = dplyr::everything(),
-      names_to = "Variable",
-      values_to = "Value"
-    ) %>%
-    dplyr::group_by(Variable) %>%
-    dplyr::summarise(
-      n_missing = sum(is.na(Value)),
-      complete_rate = mean(!is.na(Value)),
-      min_length = {
-        len <- nchar(Value)
-        if (all(is.na(len))) NA_integer_ else min(len, na.rm = TRUE)
-      },
-      max_length = {
-        len <- nchar(Value)
-        if (all(is.na(len))) NA_integer_ else max(len, na.rm = TRUE)
-      },
-      empty = sum(Value == "", na.rm = TRUE),
-      n_unique = dplyr::n_distinct(Value, na.rm = TRUE),
-      whitespace = sum(stringr::str_trim(Value) == "" & Value != "", na.rm = TRUE)
-    ) %>%
-    dplyr::ungroup()
+  purrr::imap_dfr(char_cols, function(values, name) {
+    if (!is.character(values)) {
+      values <- rep(NA_character_, length(values))
+    }
+    core <- summary_text_core(values)
+    tibble::tibble(
+      Variable = name,
+      n_missing = core$n_missing,
+      complete_rate = summary_safe_proportion(core$n_observed, core$n),
+      min_length = core$min_length,
+      max_length = core$max_length,
+      empty = core$n_empty,
+      n_unique = core$n_unique,
+      whitespace = core$n_whitespace
+    )
+  })
 }

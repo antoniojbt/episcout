@@ -96,6 +96,38 @@ test_that("epi_eda_render_report writes machine-readable workflow outputs", {
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
 })
 
+test_that("epi_eda_render_report renders complete v2 summary sections", {
+  data <- data.frame(
+    value = c(1, 2),
+    note = c("x", " "),
+    observed = as.Date(c("2020-01-01", "2020-01-02")),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = c("value", "note", "observed"),
+    label = c("Value", "Note", "Observed"),
+    type = c("numeric", "text", "date"),
+    role = c("covariate", "metadata", "covariate")
+  )
+  output_dir <- tempfile("eda-report-v2-")
+  dir.create(output_dir)
+
+  report_path <- epi_eda_render_report(
+    data = data,
+    spec = spec,
+    output_dir = output_dir,
+    summary_version = "v2"
+  )
+  report_text <- read_report_text(report_path)
+
+  expect_match(report_text, "Variables Summaries")
+  expect_match(report_text, "Numeric Summaries")
+  expect_match(report_text, "Text Summaries")
+  expect_match(report_text, "Temporal Summaries")
+  expect_true(file.exists(file.path(output_dir, "summary_variables.csv")))
+  expect_true(file.exists(file.path(output_dir, "summary_skipped.csv")))
+})
+
 test_that("epi_eda_render_report requires an existing output directory", {
   data <- read.csv(data_path, check.names = FALSE)
   spec <- epi_eda_spec(spec_path)
