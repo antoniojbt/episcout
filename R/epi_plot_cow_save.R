@@ -55,7 +55,8 @@ epi_plot_cow_save <- function(file_name = NULL,
                               base_width = 8.27, # A4
                               ...) {
   if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package cowplot needed for this function to work. Please install it.",
+    stop(
+      "Package cowplot needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

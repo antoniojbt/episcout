@@ -40,17 +40,20 @@
 epi_stats_corr <- function(df = NULL,
                            method = "spearman") {
   if (!requireNamespace("Hmisc", quietly = TRUE)) {
-    stop("Package Hmisc needed for this function to work. Please install it.",
+    stop(
+      "Package Hmisc needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("dplyr", quietly = TRUE)) {
-    stop("Package dplyr needed for this function to work. Please install it.",
+    stop(
+      "Package dplyr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("tidyr", quietly = TRUE)) {
-    stop("Package tidyr needed for this function to work. Please install it.",
+    stop(
+      "Package tidyr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

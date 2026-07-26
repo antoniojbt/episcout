@@ -38,11 +38,13 @@ epi_plot_parallel <- function(df,
 
   if (is.null(vars_to_plot)) {
     if (!requireNamespace("dplyr", quietly = TRUE)) {
-      stop("Package dplyr needed for this function to work. Please install it.",
+      stop(
+        "Package dplyr needed for this function to work. Please install it.",
         call. = FALSE
       )
     }
-    cond <- switch(var_type,
+    cond <- switch( # Select variables matching the requested class.
+      var_type,
       numeric = dplyr::select_if(df, is.numeric),
       integer = dplyr::select_if(df, is.integer),
       factor = dplyr::select_if(df, is.factor),
@@ -53,11 +55,14 @@ epi_plot_parallel <- function(df,
 
   # Capture existing plan for cleanup
   prev_plan <- future::plan()
-  on.exit({
-    future::plan("sequential")
-    future::plan(prev_plan)
-  }, add = TRUE)
-  
+  on.exit(
+    {
+      future::plan("sequential")
+      future::plan(prev_plan)
+    },
+    add = TRUE
+  )
+
   epi_utils_multicore(num_cores = num_cores, future_plan = future_plan, ...)
   workers <- foreach::getDoParWorkers()
   plot_list <- foreach::foreach(
@@ -107,14 +112,17 @@ epi_plot_save_parallel <- function(plot_list,
   if (!length(plot_list)) {
     stop("plot_list must contain at least one plot")
   }
-  
+
   # Capture existing plan for cleanup
   prev_plan <- future::plan()
-  on.exit({
-    future::plan("sequential")
-    future::plan(prev_plan)
-  }, add = TRUE)
-  
+  on.exit(
+    {
+      future::plan("sequential")
+      future::plan(prev_plan)
+    },
+    add = TRUE
+  )
+
   epi_utils_multicore(num_cores = num_cores, future_plan = future_plan, ...)
   workers <- foreach::getDoParWorkers()
   idx <- seq(1, length(plot_list), by = plot_step)

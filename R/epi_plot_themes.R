@@ -28,7 +28,8 @@
 epi_plot_theme_1 <- function(base_size = 11,
                              base_family = "Times") {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
@@ -83,22 +84,26 @@ epi_plot_theme_2 <- function(base_size = 13,
                              font_size_y = NULL) {
   # Use this instead or library or require inside functions:
   if (!requireNamespace("scales", quietly = TRUE)) {
-    stop("Package scales needed for this function to work. Please install it.",
+    stop(
+      "Package scales needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("grid", quietly = TRUE)) {
-    stop("Package grid needed for this function to work. Please install it.",
+    stop(
+      "Package grid needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("ggthemes", quietly = TRUE)) {
-    stop("Package ggthemes needed for this function to work. Please install it.",
+    stop(
+      "Package ggthemes needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
@@ -150,12 +155,14 @@ epi_plot_theme_2 <- function(base_size = 13,
 
 scale_fill_epi_plot_theme_2 <- function(...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("scales", quietly = TRUE)) {
-    stop("Package scales needed for this function to work. Please install it.",
+    stop(
+      "Package scales needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
@@ -179,12 +186,14 @@ scale_fill_epi_plot_theme_2 <- function(...) {
 
 scale_colour_epi_plot_theme_2 <- function(...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("scales", quietly = TRUE)) {
-    stop("Package scales needed for this function to work. Please install it.",
+    stop(
+      "Package scales needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

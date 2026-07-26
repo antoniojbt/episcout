@@ -27,14 +27,15 @@
 #'
 #' @export
 #' @importFrom graphics abline plot
-epi_plot_volcano <- function(logFC = NULL,
+epi_plot_volcano <- function(logFC = NULL, # nolint: object_name_linter. Historical public argument.
                              p_val = NULL,
                              main = "",
                              pch = 20,
                              h_abline = 2,
                              v_abline = c(0.8, 1.2),
                              ...) {
-  plot(logFC,
+  plot(
+    logFC,
     -log10(p_val),
     pch = pch,
     main = main,

@@ -36,7 +36,8 @@ cormat_all <- epi_stats_corr(df_corr, method = "pearson")
 melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
 vars_list <- c("x", "y", "z")
 var_labels <- c("numeric", "binomial", "poisson")
-renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
+renamed_triangles <- epi_stats_corr_rename(
+  melted_triangles$cormat_melted_triangle_r,
   melted_triangles$cormat_melted_triangle_pval,
   vars_list = vars_list,
   var_labels = var_labels
@@ -70,7 +71,9 @@ print("Function being tested: epi_stats_corr_rename")
 
 test_that("epi_stats_corr_rename", {
   expect_true(nrow(renamed_triangles$cormat_melted_triangle_r) > 0)
-  expect_true(all(c("Var1", "Var2", "value") %in%
-    names(renamed_triangles$cormat_melted_triangle_r)))
+  expect_true(all(
+    c("Var1", "Var2", "value") %in%
+      names(renamed_triangles$cormat_melted_triangle_r)
+  ))
 })
 ######################

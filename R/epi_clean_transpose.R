@@ -41,7 +41,8 @@
 epi_clean_transpose <- function(df = NULL,
                                 id_col_num = "") {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

@@ -23,8 +23,11 @@ epi_sub_sample <- function(data, outcome_var, sample_prop, seed = NULL) {
   if (!outcome_var %in% names(data)) {
     stop("outcome_var must be a column in data")
   }
-  if (!is.numeric(sample_prop) || length(sample_prop) != 1 ||
-    sample_prop <= 0 || sample_prop > 1) {
+  valid_sample_prop <- is.numeric(sample_prop) &&
+    length(sample_prop) == 1 &&
+    sample_prop > 0 &&
+    sample_prop <= 1
+  if (!valid_sample_prop) {
     stop("sample_prop must be a numeric between 0 and 1")
   }
   if (!is.null(seed)) {
@@ -33,7 +36,7 @@ epi_sub_sample <- function(data, outcome_var, sample_prop, seed = NULL) {
     }
     if (exists(".Random.seed", envir = .GlobalEnv)) {
       old_seed <- get(".Random.seed", envir = .GlobalEnv)
-      on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv))
+      on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv)) # nolint: object_name_linter. Base R state name.
     } else {
       on.exit(rm(".Random.seed", envir = .GlobalEnv))
     }

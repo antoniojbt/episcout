@@ -26,9 +26,10 @@ epi_sec_pseudonym <- function(participant_id,
                               prefix = "P",
                               bridge_path = NULL,
                               overwrite = FALSE) {
-  if (!is.character(participant_id) &&
-      !is.numeric(participant_id) &&
-      !is.factor(participant_id)) {
+  valid_participant_id <- is.character(participant_id) ||
+    is.numeric(participant_id) ||
+    is.factor(participant_id)
+  if (!valid_participant_id) {
     stop(
       "participant_id must be a character, numeric or factor vector.",
       call. = FALSE
@@ -47,12 +48,14 @@ epi_sec_pseudonym <- function(participant_id,
     stop("participant_id values must be unique.", call. = FALSE)
   }
 
-  if (!is.numeric(n_bytes) ||
-      length(n_bytes) != 1 ||
-      is.na(n_bytes) ||
-      n_bytes != as.integer(n_bytes) ||
-      n_bytes < 16) {
-    stop("n_bytes must be a whole number greater than or equal to 16.",
+  valid_n_bytes <- is.numeric(n_bytes) &&
+    length(n_bytes) == 1 &&
+    !is.na(n_bytes) &&
+    n_bytes == as.integer(n_bytes) &&
+    n_bytes >= 16
+  if (!valid_n_bytes) {
+    stop(
+      "n_bytes must be a whole number greater than or equal to 16.",
       call. = FALSE
     )
   }
@@ -66,9 +69,10 @@ epi_sec_pseudonym <- function(participant_id,
   }
 
   if (!is.null(bridge_path)) {
-    if (!is.character(bridge_path) ||
-        length(bridge_path) != 1 ||
-        is.na(bridge_path)) {
+    valid_bridge_path <- is.character(bridge_path) &&
+      length(bridge_path) == 1 &&
+      !is.na(bridge_path)
+    if (!valid_bridge_path) {
       stop("bridge_path must be NULL or a single file path.", call. = FALSE)
     }
 

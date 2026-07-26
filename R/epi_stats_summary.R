@@ -59,17 +59,17 @@ epi_stats_summary <- function(df = NULL,
   }
   # Determine which group of columns to use:
   if (class_type == "chr_fct") {
-    cond <- expression(epi_clean_cond_chr_fct(.))
+    selected <- dplyr::select_if(df, epi_clean_cond_chr_fct)
   } else if (class_type == "int_num") {
-    cond <- expression(epi_clean_cond_numeric(.))
+    selected <- dplyr::select_if(df, epi_clean_cond_numeric)
   } else {
     stop("class_type parameter not specified correctly?")
   }
   # Determine what to do with the codes provided (count only codes or exclude codes from counting):
   if (action == "codes_only") {
-    map_func <- expression(purrr::keep(., .p = (. %in% codes)))
+    filter_values <- function(.x) purrr::keep(.x, .p = .x %in% codes)
   } else if (action == "exclude") {
-    map_func <- expression(purrr::discard(., .p = (. %in% codes)))
+    filter_values <- function(.x) purrr::discard(.x, .p = .x %in% codes)
   } else {
     stop("action parameter not specified correctly?")
   }
@@ -81,9 +81,8 @@ epi_stats_summary <- function(df = NULL,
     sum_func <- function(.x) dplyr::count(data.frame(x = .x), x)
   }
 
-  df <- df %>%
-    dplyr::select_if(~ eval(cond)) %>%
-    purrr::map(~ eval(map_func)) %>%
+  df <- selected %>%
+    purrr::map(filter_values) %>%
     purrr::map(sum_func) # Returns a list
 
   # Convert to dataframe with the same names for the var of interest:

@@ -53,15 +53,18 @@ epi_clean_replace_value <- function(df = NULL,
                                     pattern = "",
                                     replace_str = NA) {
   if (!requireNamespace("stringr", quietly = TRUE)) {
-    stop("Package stringr needed for this function to work. Please install it.",
+    stop(
+      "Package stringr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
-  df[[col_id]] <- ifelse(stringr::str_detect(df[[col_id]],
-    pattern = pattern
-  ) == TRUE,
-  replace_str,
-  df[[col_id]]
+  df[[col_id]] <- ifelse(
+    stringr::str_detect(
+      df[[col_id]],
+      pattern = pattern
+    ) == TRUE,
+    replace_str,
+    df[[col_id]]
   )
   # df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
   df[[col_id]]

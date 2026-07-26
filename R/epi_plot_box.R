@@ -101,9 +101,8 @@ epi_plot_box <- function(df = NULL,
       )
 
     box_plot_one
-  }
-  # If both x and y are passed, boxplot of two variables:
-  else if (!is.null(var_x)) {
+  } else if (!is.null(var_x)) {
+    # If both x and y are passed, boxplot of two variables:
     box_plot <- ggplot2::ggplot(
       data = df,
       ggplot2::aes(

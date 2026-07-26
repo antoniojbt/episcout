@@ -62,21 +62,25 @@ epi_stats_corr_rename <- function(r_vals = "melted_triangles$cormat_melted_trian
     ))
   }
 
-  r_vals$Var1 <- factor(r_vals$Var1,
+  r_vals$Var1 <- factor(
+    r_vals$Var1,
     levels = vars_list,
     labels = var_labels
   )
-  r_vals$Var2 <- factor(r_vals$Var2,
+  r_vals$Var2 <- factor(
+    r_vals$Var2,
     levels = vars_list,
     labels = var_labels
   )
   # head_and_tail(cormat_melted_triangle_r, cols = 3)
   # summary(cormat_melted_triangle_r) Rename p-values:
-  p_vals$Var1 <- factor(p_vals$Var1,
+  p_vals$Var1 <- factor(
+    p_vals$Var1,
     levels = vars_list,
     labels = var_labels
   )
-  p_vals$Var2 <- factor(p_vals$Var2,
+  p_vals$Var2 <- factor(
+    p_vals$Var2,
     levels = vars_list,
     labels = var_labels
   )

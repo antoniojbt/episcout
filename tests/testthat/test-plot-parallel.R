@@ -27,7 +27,8 @@ test_that("parallel plotting functions declare explicit suggested package guards
 })
 
 # Multisession futures start fresh R workers that must be able to attach the installed package. devtools::test()/pkgload exposes the source tree to the main process, but not as an installed package to worker processes.
-skip_if_not(dir.exists(file.path(system.file(package = "episcout"), "Meta")),
+skip_if_not(
+  dir.exists(file.path(system.file(package = "episcout"), "Meta")),
   "parallel plot tests require episcout to be installed"
 )
 
@@ -64,10 +65,11 @@ test_that("epi_utils_multicore uses multisession plan", {
 mt <- mtcars
 
 test_that("epi_plot_parallel generates plots using multiple workers", {
-  plots <- epi_plot_parallel(mt,
+  plots <- epi_plot_parallel(
+    mt,
     vars_to_plot = c("mpg", "disp"),
     num_cores = 2,
-    future_plan = "multisession"  # Changed from "multicore" for better compatibility
+    future_plan = "multisession" # Changed from "multicore" for better compatibility
   )
   expect_equal(length(plots), 2)
   expect_equal(sort(names(plots)), sort(c("mpg", "disp")))
@@ -83,7 +85,7 @@ test_that("epi_plot_save_parallel saves plots in parallel", {
     plot_type = "png",
     plot_step = 1,
     num_cores = 2,
-    future_plan = "multisession"  # Changed from "multicore" for better compatibility
+    future_plan = "multisession" # Changed from "multicore" for better compatibility
   )
   expect_equal(length(files), 2)
   expect_true(all(file.exists(files)))

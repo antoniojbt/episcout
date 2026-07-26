@@ -64,17 +64,18 @@
 #'
 
 
-
 epi_plot_hist <- function(df = NULL,
                           var_x = "",
                           ...) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("ggthemes", quietly = TRUE)) {
-    stop("Package ggthemes needed for this function to work. Please install it.",
+    stop(
+      "Package ggthemes needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

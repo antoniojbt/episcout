@@ -121,7 +121,7 @@ Before adding a new script, confirm:
   }
   ```
 
-* Use `styler::style_pkg()` and `lintr::lint_package()` to enforce style.
+* Use `styler::style_file()` on changed files and package-loaded `lintr::lint_package()` to enforce style. Reserve a full `styler::style_pkg()` rewrite for an explicitly scoped style-only task. The package retains `%>%` to preserve its current R compatibility floor, and line-length linting remains disabled because prose must not be hard-wrapped.
 
 * Avoid `<<-`, `assign()`, and hidden state unless strictly necessary.
 
@@ -207,8 +207,7 @@ Examples:
 Run all checks **before requesting a review**:
 
 ```bash
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); styler::style_pkg()"
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); lintr::lint_package()"
+scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::report()"
 ```

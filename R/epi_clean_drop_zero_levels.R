@@ -34,7 +34,7 @@
 #' }
 
 #' @export
-epi_clean_drop_zero_levels_vector <- function(factor_var) {
+epi_clean_drop_zero_levels_vector <- function(factor_var) { # nolint: object_length_linter. Historical exported name.
   # Ensure the input is a factor
   if (!is.factor(factor_var)) {
     stop("The input variable is not a factor.")
