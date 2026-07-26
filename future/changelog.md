@@ -2,7 +2,20 @@
 
 ## 2026-07-25
 
-- Reconciled spec status after the 0.2.0 release. Specs 001, 004, 005 and 006 are completed; spec 002 is active; spec 003 remains draft.
+- Reconciled spec status after the 0.2.0 release. Specs 001, 002, 004, 005 and
+  006 are completed; spec 003 remains draft.
+- Completed spec `002-penguins-raw-fixture`.
+  - Added the pinned 344-row, 17-column `palmerpenguins::penguins_raw` fixture
+    with provenance and a reviewed data dictionary.
+  - Added independent schema, missingness, numeric summary, categorical summary
+    and non-visual plot-dispatch expectations.
+  - Added offline executable consumers for every expected output and a source
+    guard against calls to the package under test.
+  - Preserved all 336 upstream missing cells through CSV serialization.
+  - Extended the existing generator to rebuild both external fixtures and
+    updated regeneration commands to use the repo-local R wrapper.
+  - Targeted tests and the full package suite passed; `devtools::check()` passed
+    with the existing `.gitkeep` NOTE.
 - Kept completed specs under `future/specs/` so existing references remain stable instead of introducing a separate `future/done/` tree.
 - Triaged deferred PR review notes and completed spec `006-synthetic-integer-generation`.
   - Corrected singleton integer sampling and rejected bounds containing no

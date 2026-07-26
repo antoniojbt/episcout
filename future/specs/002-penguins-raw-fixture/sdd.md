@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `002-penguins-raw-fixture`  
-Status: Active
+Status: Implemented
 
 ## Scope
 
@@ -18,6 +18,7 @@ The fixture should complement `blood_storage`:
 tests/testthat/fixtures/penguins_raw/SOURCE.md
 tests/testthat/fixtures/penguins_raw/penguins_raw.csv
 tests/testthat/fixtures/penguins_raw/penguins_raw_spec.csv
+tests/testthat/fixtures/penguins_raw/expected_schema.csv
 tests/testthat/fixtures/penguins_raw/expected_missing.csv
 tests/testthat/fixtures/penguins_raw/expected_summary_numeric.csv
 tests/testthat/fixtures/penguins_raw/expected_summary_categorical.csv

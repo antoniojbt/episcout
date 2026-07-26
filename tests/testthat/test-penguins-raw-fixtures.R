@@ -44,7 +44,7 @@ expected_roles <- c(
   "covariate", "metadata"
 )
 
-skip_if_penguins_fixture_missing <- function() {
+skip_if_penguins_missing <- function() {
   missing <- required_fixture_files[!file.exists(required_fixture_files)]
   skip_if(length(missing) > 0, "penguins_raw fixture has not been generated")
 }
@@ -57,7 +57,7 @@ test_that("the complete penguins_raw fixture contract is committed", {
 })
 
 test_that("penguins_raw provenance is complete", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   source <- paste(readLines(source_path, warn = FALSE), collapse = "\n")
 
   expect_match(source, "palmerpenguins")
@@ -74,15 +74,18 @@ test_that("penguins_raw provenance is complete", {
 })
 
 test_that("penguins_raw preserves the upstream dimensions and raw names", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
 
   expect_equal(dim(data), c(344L, 17L))
   expect_identical(names(data), expected_names)
+  expect_equal(sum(is.na(data)), 336L)
+  expect_equal(sum(is.na(data$Sex)), 11L)
+  expect_equal(sum(is.na(data$Comments)), 290L)
 })
 
 test_that("penguins_raw specification has the reviewed contracts", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   spec <- epi_eda_spec(spec_path)
 
   expect_identical(spec$name, expected_names)
@@ -93,7 +96,7 @@ test_that("penguins_raw specification has the reviewed contracts", {
 })
 
 test_that("penguins_raw schema matches its independent expectation", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
   spec <- epi_eda_spec(spec_path)
   expected <- read.csv(expected_schema_path, check.names = FALSE, stringsAsFactors = FALSE)
@@ -104,7 +107,7 @@ test_that("penguins_raw schema matches its independent expectation", {
 })
 
 test_that("penguins_raw missingness matches its independent expectation", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
   spec <- epi_eda_spec(spec_path)
   expected <- read.csv(expected_missing_path, check.names = FALSE, stringsAsFactors = FALSE)
@@ -115,7 +118,7 @@ test_that("penguins_raw missingness matches its independent expectation", {
 })
 
 test_that("penguins_raw summaries match their independent expectations", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
   spec <- epi_eda_spec(spec_path)
   expected_numeric <- read.csv(expected_numeric_path, check.names = FALSE, stringsAsFactors = FALSE)
@@ -138,7 +141,7 @@ test_that("penguins_raw summaries match their independent expectations", {
 })
 
 test_that("penguins_raw plot inventory proves specification-based dispatch", {
-  skip_if_penguins_fixture_missing()
+  skip_if_penguins_missing()
   skip_if_not_installed("ggplot2")
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
   spec <- epi_eda_spec(spec_path)
@@ -146,12 +149,13 @@ test_that("penguins_raw plot inventory proves specification-based dispatch", {
 
   plots <- epi_eda_profile_plots(data, spec)
   observed <- data.frame(
-    name = names(plots),
+    name = unname(names(plots)),
     type = spec$type,
     layer_geom = vapply(plots, function(plot) class(plot$layers[[1]]$geom)[1], character(1)),
     layer_stat = vapply(plots, function(plot) class(plot$layers[[1]]$stat)[1], character(1)),
     stringsAsFactors = FALSE
   )
+  row.names(observed) <- NULL
 
   expect_equal(observed, expected, ignore_attr = TRUE)
 })

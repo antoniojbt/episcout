@@ -1,6 +1,6 @@
 id: "002"
 slug: "penguins-raw-fixture"
-status: active
+status: implemented
 owner: Antonio Berlanga-Taylor
 base_branch: master
 working_branch: feature/penguins-raw-fixture
@@ -24,6 +24,7 @@ documents:
 review_required: true
 
 check_commands:
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); testthat::test_file('tests/testthat/test-penguins-raw-fixtures.R', reporter = 'summary'); testthat::test_file('tests/testthat/test-fixture-generation-guardrails.R', reporter = 'summary')"
   - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
   - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 
@@ -32,3 +33,4 @@ notes:
   - Routine tests must use committed fixture files.
   - Extend the existing external-fixture generator instead of adding another entry point.
   - Every committed expected-output file must have an executable test consumer.
+  - Generated with palmerpenguins 0.1.1 and medicaldata 0.2.0.
