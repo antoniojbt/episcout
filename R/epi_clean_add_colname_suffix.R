@@ -1,7 +1,6 @@
 #' @title Add a suffix to column names
 #'
-#' @description Add a suffix to column names except for an ID header.
-#' Useful if changing labels to include eg baseline, time_1, time_2, etc.
+#' @description Add a suffix to column names except for an ID header. Useful if changing labels to include eg baseline, time_1, time_2, etc.
 #'
 #' @param df A dataframe object with headers
 #'
@@ -9,13 +8,11 @@
 #'
 #' @param suffix String to add as a suffix to each column except id_col_num
 #'
-#' @return String of column names with suffix added.
-#' Change headers manually with these.
+#' @return String of column names with suffix added. Change headers manually with these.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_get_dups}},
-#' \code{\link{epi_clean_spread_repeated}}
+#' @seealso \code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_get_dups}}, \code{\link{epi_clean_spread_repeated}}
 #'
 #' @examples
 #' \dontrun{

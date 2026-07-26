@@ -11,8 +11,7 @@ epi_list_tail(list = list, rows = 3, max = length(list))
 
 \item{rows}{Number of rows to print, default is 3}
 
-\item{max}{Maximum number of elements in list to print, default is the
-length of the list passed}
+\item{max}{Maximum number of elements in list to print, default is the length of the list passed}
 }
 \description{
 epi_list_tail() Prettier print of lists for head and tail

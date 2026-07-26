@@ -1,15 +1,10 @@
 #' Generate synthetic data from an EDA specification
 #'
-#' Generate simple deterministic synthetic data from a validated
-#' specification-first EDA data dictionary. Synthetic data are intended for
-#' pipeline preparation and testing only, not for inference or disclosure
-#' control.
+#' Generate simple deterministic synthetic data from a validated specification-first EDA data dictionary. Synthetic data are intended for pipeline preparation and testing only, not for inference or disclosure control.
 #'
-#' @param spec A data frame containing an EDA specification, or a path accepted
-#'   by [epi_eda_spec()].
+#' @param spec A data frame containing an EDA specification, or a path accepted by [epi_eda_spec()].
 #' @param n Number of rows to generate.
-#' @param seed Optional random seed. When supplied, repeated calls with the same
-#'   specification, row count and seed return identical data.
+#' @param seed Optional random seed. When supplied, repeated calls with the same specification, row count and seed return identical data.
 #'
 #' @return A data frame with one column per specification variable and `n` rows.
 #'
@@ -78,7 +73,23 @@ generate_synthetic_numeric <- function(row, n) {
 
 generate_synthetic_integer <- function(row, n) {
   bounds <- synthetic_numeric_bounds(row, default_min = 0, default_max = 100)
-  sample(seq.int(ceiling(bounds[["min"]]), floor(bounds[["max"]])), n, replace = TRUE)
+  lower_bound <- ceiling(bounds[["min"]])
+  upper_bound <- floor(bounds[["max"]])
+
+  if (lower_bound > upper_bound) {
+    stop(
+      "Synthetic integer variable '", row$name[[1]],
+      "' bounds contain no integer values.",
+      call. = FALSE
+    )
+  }
+
+  candidates <- seq.int(lower_bound, upper_bound)
+  if (n == 0) {
+    return(candidates[integer()])
+  }
+
+  candidates[sample.int(length(candidates), n, replace = TRUE)]
 }
 
 generate_synthetic_categorical <- function(row, n) {

@@ -38,8 +38,7 @@ test_that("histograms draw correctly - vdiffr dummy run", {
 # within RStudio to get the vdiffr widget and validate images manually
 # Run devtools::test() as usual to test
 # Update as needed for failed tests
-# Consider these as monitoring tools with regression testing as opposed to strict
-# unit tests
+# Consider these as monitoring tools with regression testing as opposed to strict unit tests
 ######################
 
 ######################
@@ -64,8 +63,7 @@ df[, "y"] <- as.factor(df[, "y"])
 
 ######################
 context("episcout_plots")
-# All episcout reference plots will/should be saved in
-# XXXX/episcout/tests/figs/episcout_plots
+# All episcout reference plots will/should be saved in XXXX/episcout/tests/figs/episcout_plots
 print("episcout plot function tests")
 print("Function being tested: epi_plot_list")
 
@@ -140,7 +138,8 @@ test_that("epi_plot_hist", {
   # http://www.cookbook-r.com/Graphs/Plotting_distributions_(ggplot2)/
   my_hist_plot <- my_hist_plot +
     # Density instead of count on y-axis:
-    geom_histogram(aes(y = after_stat(density)),
+    geom_histogram(
+      aes(y = after_stat(density)),
       binwidth = 0.5,
       colour = "black",
       fill = "white"
@@ -213,7 +212,8 @@ test_that("epi_plot_bar", {
   # ggplot(df_bar, aes(x = id_unique, y = value, fill = variable)) +
   #       geom_bar(stat = 'identity', position = 'dodge') +
   # 	theme(axis.text.x = element_text(angle = 90, hjust = 1))
-  plot_bar <- epi_plot_bar(df_bar,
+  plot_bar <- epi_plot_bar(
+    df_bar,
     var_x = "id_unique",
     var_y = "value",
     fill = "variable"
@@ -238,7 +238,8 @@ test_that("epi_plot_heatmap", {
   melted_triangles <- epi_stats_corr_triangle(cormat = cormat_all$cormat)
   vars_list <- c("x", "y", "z")
   var_labels <- c("numeric", "binomial", "poisson")
-  renamed_triangles <- epi_stats_corr_rename(melted_triangles$cormat_melted_triangle_r,
+  renamed_triangles <- epi_stats_corr_rename(
+    melted_triangles$cormat_melted_triangle_r,
     melted_triangles$cormat_melted_triangle_pval,
     vars_list = vars_list,
     var_labels = var_labels
@@ -258,7 +259,8 @@ test_that("epi_plot_heatmap", {
 
   # Test epi_plot_heatmap_triangle:
   # Nicer triangle:
-  nicer_triangle <- epi_plot_heatmap_triangle(renamed_triangles$cormat_melted_triangle_r,
+  nicer_triangle <- epi_plot_heatmap_triangle(
+    renamed_triangles$cormat_melted_triangle_r,
     renamed_triangles$cormat_melted_triangle_pval,
     show_values = "pval" # "corr"
   )

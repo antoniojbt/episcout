@@ -1,7 +1,6 @@
 # ARCHIVED: episcout SDD/TDD development guide
 
-This file is historical. The original specification-first EDA PR sequence has
-been completed or moved into the root `future/` workspace for later work.
+This file is historical. The original specification-first EDA PR sequence has been completed or moved into the root `future/` workspace for later work.
 
 Do not use this file as the live control panel for new work. Use:
 
@@ -11,11 +10,9 @@ future/TODOs.md
 future/specs/
 ```
 
-The archived SDD, ADR, roadmap and Codex instruction files remain useful as
-design references.
+The archived SDD, ADR, roadmap and Codex instruction files remain useful as design references.
 
-This was the live control panel for the specification-first EDA work in
-`episcout`.
+This was the live control panel for the specification-first EDA work in `episcout`.
 
 This file originally tracked:
 
@@ -26,9 +23,7 @@ This file originally tracked:
 - expected test state;
 - required closeout updates.
 
-Design rationale lives in the SDD and ADR files. The full historical PR
-sequence lives in
-`archive/eda_sdd_tdd_r1_archive/codex/revised-pr-plan-tdd-first.md`.
+Design rationale lives in the SDD and ADR files. The full historical PR sequence lives in `archive/eda_sdd_tdd_r1_archive/codex/revised-pr-plan-tdd-first.md`.
 
 ## Current Status
 
@@ -52,8 +47,7 @@ sequence lives in
 
 ## Archived Active PR
 
-There is no active PR in this archived workflow. The last open design thread
-was moved to:
+There is no active PR in this archived workflow. The last open design thread was moved to:
 
 ```text
 future/specs/003-large-data-backend-strategy/
@@ -132,8 +126,7 @@ At closeout:
 6. Leave SDD and ADR files unchanged unless the design changed.
 ```
 
-If a PR intentionally does not update `START_HERE.md`, record that exception in
-the PR description.
+If a PR intentionally does not update `START_HERE.md`, record that exception in the PR description.
 
 ## Development Principle
 

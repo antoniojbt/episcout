@@ -15,32 +15,22 @@ epi_clean_compare_str(
 \arguments{
 \item{df}{a data frame object containing rows with strings to compare}
 
-\item{row_n}{row number within the data frame with two columns to compare,
-default is 1}
+\item{row_n}{row number within the data frame with two columns to compare, default is 1}
 
-\item{string_col}{column number with value which will be passed to
-stri_detect as stri_detect(str = string, fixed = fixed_chr)}
+\item{string_col}{column number with value which will be passed to stri_detect as stri_detect(str = string, fixed = fixed_chr)}
 
-\item{fixed_chr_col}{column number value which will be passed to
-stri_detect as stri_detect(str = string, fixed = fixed_chr)}
+\item{fixed_chr_col}{column number value which will be passed to stri_detect as stri_detect(str = string, fixed = fixed_chr)}
 
 \item{...}{other options passed to stri_detect()}
 }
 \value{
-returns the output of stri_detect(), a boolean TRUE/FALSE testing
-whether the value of fixed_chr_col is a sub-string of that in string_col
+returns the output of stri_detect(), a boolean TRUE/FALSE testing whether the value of fixed_chr_col is a sub-string of that in string_col
 }
 \description{
-Compare two strings and determine if one is substring of the other.
-epi_clean_compare_str() uses stringi::stri_detect(). Developed when comparing
-a database of observed and matched values for drug treatments from the BNF.
-Can be used generically as a light wrapper for stri_detect().
-stri_detect() determines if there is at least one match to a corresponding pattern.
+Compare two strings and determine if one is substring of the other. epi_clean_compare_str() uses stringi::stri_detect(). Developed when comparing a database of observed and matched values for drug treatments from the BNF. Can be used generically as a light wrapper for stri_detect(). stri_detect() determines if there is at least one match to a corresponding pattern.
 }
 \note{
-fixed_chr_col and string_col are extracted as characters and compared
-as fixed characters, not with regex. The value in string_col will be the
-character vector with strings to search in.
+fixed_chr_col and string_col are extracted as characters and compared as fixed characters, not with regex. The value in string_col will be the character vector with strings to search in.
 }
 \examples{
 \dontrun{

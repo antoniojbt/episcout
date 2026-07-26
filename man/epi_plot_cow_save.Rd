@@ -27,12 +27,10 @@ epi_plot_cow_save(
 None, file saved to disk.
 }
 \description{
-epi_plot_cow_save() A light wrapper to save plots to disk with
-cowplot::save_plot()
+epi_plot_cow_save() A light wrapper to save plots to disk with cowplot::save_plot()
 }
 \note{
-height and width are for A4 size.
-See also ggplot2 wrappers epi_plot_*().
+height and width are for A4 size. See also ggplot2 wrappers epi_plot_*().
 }
 \examples{
 \dontrun{
@@ -66,10 +64,7 @@ epi_plot_cow_save(file_name = "plots_1.pdf", plot_grid = my_plot_grid)
 
 }
 \seealso{
-\code{\link{epi_plot_list}},
-\code{\link{epi_plots_to_grid}},
-\code{\link[cowplot]{plot_grid}},
-\code{\link[cowplot]{save_plot}}.
+\code{\link{epi_plot_list}}, \code{\link{epi_plots_to_grid}}, \code{\link[cowplot]{plot_grid}}, \code{\link[cowplot]{save_plot}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

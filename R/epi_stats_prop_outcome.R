@@ -1,5 +1,4 @@
-#' Calculate the proportion of individuals who suffered an event
-#' at a given point in time
+#' Calculate the proportion of individuals who suffered an event at a given point in time
 #'
 #' It can be used to estimate the case fatality rate.
 #'

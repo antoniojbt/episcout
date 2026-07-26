@@ -1,8 +1,6 @@
 #' Profile plots using an EDA specification
 #'
-#' Create one basic ggplot object for each variable listed in a
-#' specification-first EDA data dictionary. Plot objects are returned without
-#' being printed.
+#' Create one basic ggplot object for each variable listed in a specification-first EDA data dictionary. Plot objects are returned without being printed.
 #'
 #' @param data A data frame containing observed data.
 #' @param spec An EDA specification data frame or CSV path.

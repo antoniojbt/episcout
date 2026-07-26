@@ -20,8 +20,7 @@ Prints a ggplot2 histogram
 epi_plot_hist()
 }
 \note{
-For other options, save as object and build on the layers.
-var_x is passed to ggplot2 aesthetics using tidy evaluation
+For other options, save as object and build on the layers. var_x is passed to ggplot2 aesthetics using tidy evaluation
 }
 \examples{
 \dontrun{
@@ -71,11 +70,7 @@ my_hist_plot
 
 }
 \seealso{
-\code{\link{epi_plot_list}},
-\code{\link{epi_plots_to_grid}},
-\code{\link[ggplot2]{ggplot}},
-\code{\link[ggplot2]{geom_histogram}},
-\code{\link{epi_plot_cow_save}}.
+\code{\link{epi_plot_list}}, \code{\link{epi_plots_to_grid}}, \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{geom_histogram}}, \code{\link{epi_plot_cow_save}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

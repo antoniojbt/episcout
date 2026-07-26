@@ -15,14 +15,11 @@ epi_plot_km(
 \arguments{
 \item{survfit_obj}{A \code{survival::survfit} object.}
 
-\item{group_var}{Optional name of the column to use for colour.
-Defaults to the first strata variable if present.}
+\item{group_var}{Optional name of the column to use for colour. Defaults to the first strata variable if present.}
 
-\item{facet_var}{Optional name of the column to facet by.
-Defaults to the second strata variable if present.}
+\item{facet_var}{Optional name of the column to facet by. Defaults to the second strata variable if present.}
 
-\item{save_path}{Optional file path to save the plot via \code{ggplot2::ggsave}.
-If \code{NULL}, the plot is not saved.}
+\item{save_path}{Optional file path to save the plot via \code{ggplot2::ggsave}. If \code{NULL}, the plot is not saved.}
 
 \item{...}{Further arguments passed to \code{ggplot2::ggsave} when saving.}
 }
@@ -30,8 +27,7 @@ If \code{NULL}, the plot is not saved.}
 A ggplot object of the Kaplan-Meier curves.
 }
 \description{
-\code{epi_plot_km()} creates Kaplan-Meier plots using ggplot2 from a
-\code{survival::survfit} object.
+\code{epi_plot_km()} creates Kaplan-Meier plots using ggplot2 from a \code{survival::survfit} object.
 }
 \examples{
 \dontrun{

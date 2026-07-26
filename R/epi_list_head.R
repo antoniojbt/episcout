@@ -4,8 +4,7 @@
 #'
 #' @param list a list object to print
 #' @param rows Number of rows to print, default is 3
-#' @param max Maximum number of elements in list to print, default is the
-#' length of the list passed
+#' @param max Maximum number of elements in list to print, default is the length of the list passed
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'

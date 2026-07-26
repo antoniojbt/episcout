@@ -1,23 +1,16 @@
 #' Run a specification-first EDA workflow
 #'
-#' Orchestrate the specification-first EDA helpers for either observed data or
-#' deterministic synthetic data. The function validates the specification, runs
-#' schema, missingness, summary and plot profiling, optionally writes
-#' machine-readable outputs, and returns all results as a named list.
+#' Orchestrate the specification-first EDA helpers for either observed data or deterministic synthetic data. The function validates the specification, runs schema, missingness, summary and plot profiling, optionally writes machine-readable outputs, and returns all results as a named list.
 #'
-#' @param data A data frame containing observed data. Required when
-#'   `synthetic = FALSE`; ignored when `synthetic = TRUE`.
-#' @param spec An EDA specification data frame or CSV path accepted by
-#'   [epi_eda_spec()].
-#' @param output_dir Optional directory where machine-readable CSV outputs are
-#'   written. The directory must already exist.
-#' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec`
-#'   before running the workflow.
+#' @param data A data frame containing observed data. Required when `synthetic = FALSE`; ignored when `synthetic = TRUE`.
+#' @param spec An EDA specification data frame or CSV path accepted by [epi_eda_spec()].
+#' @param output_dir Optional directory where machine-readable CSV outputs are written. The directory must already exist.
+#' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec` before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
+#' @param summary_version Summary contract passed to [epi_eda_profile_summaries()]. `"v1"` remains the compatibility default; `"v2"` writes all six typed summary tables.
 #'
-#' @return A named list with `metadata`, `schema`, `missing`, `summaries` and
-#'   `plots` components.
+#' @return A named list with `metadata`, `schema`, `missing`, `summaries` and `plots` components.
 #'
 #' @export
 epi_eda_run <- function(data,
@@ -25,8 +18,10 @@ epi_eda_run <- function(data,
                         output_dir = NULL,
                         synthetic = FALSE,
                         n = 100,
-                        seed = NULL) {
+                        seed = NULL,
+                        summary_version = c("v1", "v2")) {
   synthetic <- validate_run_eda_synthetic(synthetic)
+  summary_version <- match.arg(summary_version)
   spec <- epi_eda_spec(spec)
 
   if (synthetic) {
@@ -39,12 +34,13 @@ epi_eda_run <- function(data,
     validate_run_eda_output_dir(output_dir)
   }
 
+  plot_spec <- if (summary_version == "v2") spec[spec$name %in% names(data), , drop = FALSE] else spec
   results <- list(
     metadata = run_eda_metadata(data, spec, synthetic = synthetic),
     schema = epi_eda_check_schema(data, spec),
     missing = epi_eda_profile_missing(data, spec),
-    summaries = epi_eda_profile_summaries(data, spec),
-    plots = epi_eda_profile_plots(data, spec)
+    summaries = epi_eda_profile_summaries(data, spec, summary_version = summary_version),
+    plots = epi_eda_profile_plots(data, plot_spec)
   )
 
   if (!is.null(output_dir)) {
@@ -99,16 +95,13 @@ write_run_eda_outputs <- function(results, output_dir) {
     file.path(output_dir, "missing.csv"),
     row.names = FALSE
   )
-  utils::write.csv(
-    results$summaries$numeric,
-    file.path(output_dir, "summary_numeric.csv"),
-    row.names = FALSE
-  )
-  utils::write.csv(
-    results$summaries$categorical,
-    file.path(output_dir, "summary_categorical.csv"),
-    row.names = FALSE
-  )
+  for (name in names(results$summaries)) {
+    utils::write.csv(
+      results$summaries[[name]],
+      file.path(output_dir, paste0("summary_", name, ".csv")),
+      row.names = FALSE
+    )
+  }
 
   invisible(TRUE)
 }

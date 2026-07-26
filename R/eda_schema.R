@@ -1,7 +1,6 @@
 #' Check observed data against an EDA specification
 #'
-#' Compare expected variables in an EDA specification with variables observed in
-#' a data frame.
+#' Compare expected variables in an EDA specification with variables observed in a data frame.
 #'
 #' @param data A data frame to check.
 #' @param spec An EDA specification data frame or CSV path.

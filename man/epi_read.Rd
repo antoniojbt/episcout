@@ -30,18 +30,10 @@ epi_read(
 A tibble
 }
 \description{
-epi_read() reads files with a consistent convenience function.
-Wraps as.tibble and data.table's fread.
+epi_read() reads files with a consistent convenience function. Wraps as.tibble and data.table's fread.
 }
 \note{
-Other parameters as specified by data.table::fread()
-You are probably better off using the standard read.csv(),
-data.table::fread() or other functions unless you are
-reading in several similarly constructed files.
-Files are read with data.table first and then converted to a tibble.
-Columns will be read as integer, numeric or character only.
-White space is stripped. Strings are read as character only.
-Assumes the first row is a header.
+Other parameters as specified by data.table::fread() You are probably better off using the standard read.csv(), data.table::fread() or other functions unless you are reading in several similarly constructed files. Files are read with data.table first and then converted to a tibble. Columns will be read as integer, numeric or character only. White space is stripped. Strings are read as character only. Assumes the first row is a header.
 }
 \examples{
 \dontrun{
@@ -53,5 +45,5 @@ super_data <- epi_read("super_data.tsv")
 \code{\link[data.table]{fread}}, \code{\link[tibble]{as.tibble}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

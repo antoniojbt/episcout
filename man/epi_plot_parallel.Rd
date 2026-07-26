@@ -28,20 +28,15 @@ epi_plot_save_parallel(
 \arguments{
 \item{df}{A data frame containing variables to plot.}
 
-\item{vars_to_plot}{Character vector of variable names to plot. If \code{NULL},
-variables will be selected based on \code{var_type}.}
+\item{vars_to_plot}{Character vector of variable names to plot. If \code{NULL}, variables will be selected based on \code{var_type}.}
 
-\item{var_type}{Type of variables to select when \code{vars_to_plot} is \code{NULL}.
-One of "numeric", "integer" or "factor".}
+\item{var_type}{Type of variables to select when \code{vars_to_plot} is \code{NULL}. One of "numeric", "integer" or "factor".}
 
-\item{plot_fun}{Function used to generate each plot. Defaults to
-\code{\link[=epi_plot_hist]{epi_plot_hist()}}.}
+\item{plot_fun}{Function used to generate each plot. Defaults to \code{\link[=epi_plot_hist]{epi_plot_hist()}}.}
 
-\item{num_cores}{Number of cores to use. Passed to \code{\link[=epi_utils_multicore]{epi_utils_multicore()}}.
-Defaults to all available minus one.}
+\item{num_cores}{Number of cores to use. Passed to \code{\link[=epi_utils_multicore]{epi_utils_multicore()}}. Defaults to all available minus one.}
 
-\item{future_plan}{Strategy for parallel execution. See
-\code{\link[future:plan]{future::plan()}}.}
+\item{future_plan}{Strategy for parallel execution. See \code{\link[future:plan]{future::plan()}}.}
 
 \item{...}{Additional arguments passed to \code{\link[=epi_utils_multicore]{epi_utils_multicore()}}.}
 
@@ -54,20 +49,14 @@ Defaults to all available minus one.}
 \item{plot_step}{Number of plots per file.}
 }
 \value{
-A named list of plots with an attribute \code{workers} reporting the
-number of workers used.
+A named list of plots with an attribute \code{workers} reporting the number of workers used.
 
-A character vector of file names with an attribute \code{workers}
-reporting the number of workers used.
+A character vector of file names with an attribute \code{workers} reporting the number of workers used.
 }
 \description{
-\code{epi_plot_parallel()} creates a list of plots for selected
-variables using a parallel backend. The default plotting function is
-\code{\link[=epi_plot_hist]{epi_plot_hist()}}, but any function returning a ggplot object and accepting
-\code{df} and a variable name can be supplied.
+\code{epi_plot_parallel()} creates a list of plots for selected variables using a parallel backend. The default plotting function is \code{\link[=epi_plot_hist]{epi_plot_hist()}}, but any function returning a ggplot object and accepting \code{df} and a variable name can be supplied.
 
-\code{epi_plot_save_parallel()} saves plots produced by
-\code{\link[=epi_plot_parallel]{epi_plot_parallel()}} to disk in parallel.
+\code{epi_plot_save_parallel()} saves plots produced by \code{\link[=epi_plot_parallel]{epi_plot_parallel()}} to disk in parallel.
 }
 \examples{
 \dontrun{

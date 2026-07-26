@@ -1,20 +1,14 @@
 #' @title Check whether column type is integer or numeric
 #'
-#' @description Check if column is integer or numeric (TRUE). Useful when
-#' extracting columns from a large data frame using dplyr
-#' (ie get all integer and numeric columns)
+#' @description Check if column is integer or numeric (TRUE). Useful when extracting columns from a large data frame using dplyr (ie get all integer and numeric columns)
 #'
-#' @param col column header. This will be passed to
-#' is.integer(col) and is.numeric(col)
+#' @param col column header. This will be passed to is.integer(col) and is.numeric(col)
 #'
-#' @return boolean TRUE/FALSE indicating whether column passed is type integer
-#' or numeric
+#' @return boolean TRUE/FALSE indicating whether column passed is type integer or numeric
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_date}},
-#' \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-#' \code{\link[base]{is.integer}}, \code{\link[base]{is.numeric}}
+#' @seealso \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_date}}, \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}}, \code{\link[base]{is.integer}}, \code{\link[base]{is.numeric}}
 #'
 #' @examples
 #' \dontrun{

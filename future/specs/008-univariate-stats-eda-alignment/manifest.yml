@@ -1,0 +1,38 @@
+id: "008"
+slug: "univariate-stats-eda-alignment"
+status: implemented
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: consolidate
+created: 2026-07-25
+updated: 2026-07-25
+
+related_files:
+  - R/summary_cores.R
+  - R/eda_summaries.R
+  - R/epi_stats_summary.R
+  - R/run_eda.R
+  - R/eda_report.R
+  - tests/testthat/test-summary-cores.R
+  - tests/testthat/test-eda-summaries-v2.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); testthat::test_file('tests/testthat/test-eda-summaries-v2.R', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); lintr::lint_package()"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+
+notes:
+  - Keep v1 as the default for one compatibility release.
+  - Add behaviour tests before corresponding package-code implementation.
+  - Keep correlation, contingency, outcome and presentation redesigns out of this spec.

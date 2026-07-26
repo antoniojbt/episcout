@@ -33,19 +33,13 @@ epi_plots_to_grid(
 a cowplot grid object
 }
 \description{
-A light wrapper for cowplot::plot_grid().
-Send a list of plots to a grid for multi-plot figures.
-Makes assumptions and hard-codes preferences. All options are passed to
-plot_grid().
+A light wrapper for cowplot::plot_grid(). Send a list of plots to a grid for multi-plot figures. Makes assumptions and hard-codes preferences. All options are passed to plot_grid().
 }
 \note{
 See example in \code{\link{epi_plot_cow_save}} and ggplot2 wrappers epi_plot_*().
 }
 \seealso{
-\code{\link{epi_plot_list}},
-\code{\link{epi_plot_cow_save}},
-\code{\link[cowplot]{plot_grid}},
-\code{\link[cowplot]{save_plot}}.
+\code{\link{epi_plot_list}}, \code{\link{epi_plot_cow_save}}, \code{\link[cowplot]{plot_grid}}, \code{\link[cowplot]{save_plot}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

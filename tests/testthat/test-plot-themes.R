@@ -47,10 +47,10 @@ test_that("epi_plot_theme_imss returns a ggplot object", {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     skip("ggplot2 not available")
   }
-    if (!requireNamespace("ggthemes", quietly = TRUE)) {
+  if (!requireNamespace("ggthemes", quietly = TRUE)) {
     skip("ggthemes not available")
   }
-  
+
   p <- ggplot2::ggplot(mtcars, ggplot2::aes(mpg, wt)) +
     ggplot2::geom_point() +
     epi_plot_theme_imss()

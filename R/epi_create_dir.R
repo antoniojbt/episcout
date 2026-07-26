@@ -1,15 +1,12 @@
 #' Create a Directory and Nested Subdirectories
 #'
-#' This function creates a directory at the specified path, including nested subdirectories if needed.
-#' If the directory already exists, it does nothing. The directory name can include subdirectories (e.g., `results/today_xxx/`), and these will be created recursively.
-#' The subdirectory can either be a custom name or the current date (`dd_mm_yyyy` format).
+#' This function creates a directory at the specified path, including nested subdirectories if needed. If the directory already exists, it does nothing. The directory name can include subdirectories (e.g., `results/today_xxx/`), and these will be created recursively. The subdirectory can either be a custom name or the current date (`dd_mm_yyyy` format).
 #'
 #' @param base_path A character string specifying the base path where the directory will be created.
 #' @param subdir Optional. A character string specifying the name of the subdirectory. If not provided, the current date will be used. Can include nested paths (e.g., `results/today_xxx`).
 #'
 #'
-#' @return The full path to the created or existing directory.
-#'         Prints a message indicating whether the directory was created or already existed. Also prints the contents.
+#' @return The full path to the created or existing directory. Prints a message indicating whether the directory was created or already existed. Also prints the contents.
 #'
 #' @examples
 #' \dontrun{

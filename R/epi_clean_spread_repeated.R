@@ -1,8 +1,6 @@
 #' @title Spread repeated observations
 #'
-#' @description Create a single data frame with unique rows (individuals) and
-#' repeated observations across columns. A column with the replicate/repeated
-#' observation/time-point number for each row must be provided.
+#' @description Create a single data frame with unique rows (individuals) and repeated observations across columns. A column with the replicate/repeated observation/time-point number for each row must be provided.
 #'
 #' @param df A dataframe in long format
 #'
@@ -10,16 +8,13 @@
 #'
 #' @param id_col_num Column index with ID values. Default is 1.
 #'
-#' @return a nested list with as many sub-lists as unique values contained in the
-#' column passed as rep_col. Column headers are renamed using
+#' @return a nested list with as many sub-lists as unique values contained in the column passed as rep_col. Column headers are renamed using
 #' \code{\link{epi_clean_add_colname_suffix}} and will contain suffixes taken from
-#' the unique values in rep_col.
-#' The ID column passed as id_col_num is included in each sub-list.
+#' the unique values in rep_col. The ID column passed as id_col_num is included in each sub-list.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_merge_nested_dfs}},
-#' \code{\link{epi_clean_transpose}}
+#' @seealso \code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_merge_nested_dfs}}, \code{\link{epi_clean_transpose}}
 #'
 #' @examples
 #' \dontrun{

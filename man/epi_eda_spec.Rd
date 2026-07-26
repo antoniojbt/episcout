@@ -7,8 +7,7 @@
 epi_eda_spec(path_or_data)
 }
 \arguments{
-\item{path_or_data}{A path to a CSV specification file, or a data frame
-containing the specification.}
+\item{path_or_data}{A path to a CSV specification file, or a data frame containing the specification.}
 }
 \value{
 A validated data frame specification.

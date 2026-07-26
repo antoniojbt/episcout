@@ -33,32 +33,27 @@
 
 ### Priority 1
 
-- [ ] run task from codex cloud thread locally (clone, install, follow vignette)
-- [ ] check findings in `future/reviews/2026-06-15-senior-r-package-review.md` were implemented
-- [ ] move 'implemented' specs in `future/specs` to a `future/done` dir
-- why aren't specs in `future/specs` mirrored here, in `TODOs.md`?
-
-- [ ] get instructions to download, install, episcout2 branch
-- [ ] human live walkthrough, no agent needed here
-- [ ] carry out changes needed from human review
-
-- [ ] run devtools and CRAN checks
-- [ ] merge with main
-- [ ] tag v0.2.0
-
+- [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
+- [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
+- [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
+- [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
+- [ ] Carry out changes needed from human review
 
 ### Priority 2
 
 - [ ] Add functions to create a data dictionary when real data already exists but does not have a dictionary.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] Revisit large-data backend implementation after the design spec is accepted.
-- [ ] review `future/ideas/codex_reviews_from_PRs_to_check_minor.md` and determine whether they are still valid and need addressing.
-- [ ] Add pseudonymisation helpers. Activated v1 as spec `005-pseudonymisation-bridge`: create secure token bridge table only. Later scope remains: identify PII columns, pseudonymise datasets, remove identifier columns, validate outputs, and write read-only raw data files.
+- [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
+      rewriting, identifier removal, output validation and read-only raw-data
+      files. Secure bridge-table v1 was completed in spec 005.
 - [ ] add functions to load, connect, etc data into db. 
 
 ### Priority 3
 
+- [ ] Review adoption after one compatibility release and decide when EDA summary version 2 should become the default; retain explicit version 1 until that decision is implemented in a numbered migration spec.
 - [ ] check codecov percentage decrease
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.
 - [ ] Add biomedical EDA extensions as separate numbered specs.
+- [ ] Revisit spec `003-large-data-backend-strategy` only after a concrete
+      workload and performance target are defined.

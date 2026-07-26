@@ -17,8 +17,7 @@ epi_plot_volcano(
 \arguments{
 \item{logFC}{Numeric vector of log2 fold changes.}
 
-\item{p_val}{Numeric vector of raw p-values (will be transformed to
-\code{-log10(p_val)}).}
+\item{p_val}{Numeric vector of raw p-values (will be transformed to \code{-log10(p_val)}).}
 
 \item{main}{Main title passed to \code{\link[graphics:plot]{graphics::plot()}}.}
 
@@ -37,8 +36,7 @@ Invisibly returns \code{NULL} and draws the plot to the active device.
 Draw a simple volcano plot given log2 fold changes and raw p-values.
 }
 \note{
-Assumes small effect sizes with vertical cut-offs at 0.8 and 1.2
-log2 fold change and a horizontal cut-off corresponding to a p-value of 0.05.
+Assumes small effect sizes with vertical cut-offs at 0.8 and 1.2 log2 fold change and a horizontal cut-off corresponding to a p-value of 0.05.
 }
 \examples{
 \dontrun{
@@ -49,8 +47,7 @@ epi_plot_volcano(log2fc, pvals)
 
 }
 \seealso{
-\code{\link[=epi_plot_list]{epi_plot_list()}}, \code{\link[=epi_plots_to_grid]{epi_plots_to_grid()}},
-\code{\link[=epi_plot_cow_save]{epi_plot_cow_save()}}, \code{\link[graphics:plot]{graphics::plot()}}
+\code{\link[=epi_plot_list]{epi_plot_list()}}, \code{\link[=epi_plots_to_grid]{epi_plots_to_grid()}}, \code{\link[=epi_plot_cow_save]{epi_plot_cow_save()}}, \code{\link[graphics:plot]{graphics::plot()}}
 }
 \author{
 Antonio Berlanga-Taylor \url{https://github.com/AntonioJBT/episcout}

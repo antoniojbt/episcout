@@ -5,8 +5,7 @@ Status: Draft
 
 ## Design-only First Step
 
-The first PR for this spec should be documentation-only. No executable tests are
-required unless package-facing behaviour changes.
+The first PR for this spec should be documentation-only. No executable tests are required unless package-facing behaviour changes.
 
 ## Future Test Categories
 

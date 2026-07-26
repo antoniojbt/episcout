@@ -1,7 +1,6 @@
 #' @title Save a grid of plots
 #'
-#' @description epi_plot_cow_save() A light wrapper to save plots to disk with
-#' cowplot::save_plot()
+#' @description epi_plot_cow_save() A light wrapper to save plots to disk with cowplot::save_plot()
 #'
 #' @param file_name Name of the file to save
 #' @param plot_grid plot to save, more often expecting a grid.
@@ -13,13 +12,9 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_plot_list}},
-#' \code{\link{epi_plots_to_grid}},
-#' \code{\link[cowplot]{plot_grid}},
-#' \code{\link[cowplot]{save_plot}}.
+#' @seealso \code{\link{epi_plot_list}}, \code{\link{epi_plots_to_grid}}, \code{\link[cowplot]{plot_grid}}, \code{\link[cowplot]{save_plot}}.
 #'
-#' @note height and width are for A4 size.
-#' See also ggplot2 wrappers epi_plot_*().
+#' @note height and width are for A4 size. See also ggplot2 wrappers epi_plot_*().
 #'
 #' @examples
 #' \dontrun{
@@ -60,7 +55,8 @@ epi_plot_cow_save <- function(file_name = NULL,
                               base_width = 8.27, # A4
                               ...) {
   if (!requireNamespace("cowplot", quietly = TRUE)) {
-    stop("Package cowplot needed for this function to work. Please install it.",
+    stop(
+      "Package cowplot needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

@@ -13,10 +13,7 @@ epi_stats_factors(df)
 A tibble in wide format with one row per factor column.
 }
 \description{
-Produce summary metrics for all factor columns in a data frame. The output
-includes counts of missing values, proportion of complete cases, whether the
-factor is ordered, the number of unique levels and the three most frequent
-levels with their counts.
+Produce summary metrics for all factor columns in a data frame. The output includes counts of missing values, proportion of complete cases, whether the factor is ordered, the number of unique levels and the three most frequent levels with their counts.
 }
 \examples{
 df <- data.frame(
@@ -27,6 +24,5 @@ epi_stats_factors(df)
 
 }
 \seealso{
-\code{\link{epi_stats_chars}}, \code{\link{epi_stats_numeric}},
-\code{\link{epi_stats_summary}}
+\code{\link{epi_stats_chars}}, \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_summary}}
 }

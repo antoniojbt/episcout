@@ -1,0 +1,37 @@
+id: "007"
+slug: "eda-stats-alignment-review"
+status: completed
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: consolidate
+created: 2026-07-25
+updated: 2026-07-25
+
+related_files:
+  - R/eda_summaries.R
+  - R/eda_missing.R
+  - R/run_eda.R
+  - R/epi_stats_numeric.R
+  - R/epi_stats_summary.R
+  - R/epi_stats_contingency_2x2.R
+  - NAMESPACE
+  - tests/testthat/
+  - archive/eda_sdd_tdd_r1_archive/
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+
+notes:
+  - This is a design-only review; it does not authorize package-code changes.
+  - The review covers all exported epi_stats_* functions and the related non-prefixed contingency helper.
+  - Spec 008 must not be created until the target contracts in this review receive human approval.

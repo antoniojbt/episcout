@@ -7,17 +7,13 @@
 epi_clean_cond_numeric(col = NULL)
 }
 \arguments{
-\item{col}{column header. This will be passed to
-is.integer(col) and is.numeric(col)}
+\item{col}{column header. This will be passed to is.integer(col) and is.numeric(col)}
 }
 \value{
-boolean TRUE/FALSE indicating whether column passed is type integer
-or numeric
+boolean TRUE/FALSE indicating whether column passed is type integer or numeric
 }
 \description{
-Check if column is integer or numeric (TRUE). Useful when
-extracting columns from a large data frame using dplyr
-(ie get all integer and numeric columns)
+Check if column is integer or numeric (TRUE). Useful when extracting columns from a large data frame using dplyr (ie get all integer and numeric columns)
 }
 \examples{
 \dontrun{
@@ -37,10 +33,8 @@ epi_clean_cond_numeric(df[, "x"]) # should be TRUE
 
 }
 \seealso{
-\code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_date}},
-\code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}},
-\code{\link[base]{is.integer}}, \code{\link[base]{is.numeric}}
+\code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_date}}, \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}}, \code{\link[base]{is.integer}}, \code{\link[base]{is.numeric}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

@@ -1,12 +1,9 @@
 #' Tabulate counts of factor levels
 #'
-#' Creates a tidy table of counts for each level of factor or character
-#' columns in a data frame. Missing values are reported with the level
-#' `NA`.
+#' Creates a tidy table of counts for each level of factor or character columns in a data frame. Declared factor levels are retained with zero counts. Missing values use an actual `NA` level so they remain distinct from the literal string `"NA"`.
 #'
 #' @param df A data frame.
-#' @param vars_list Optional character vector of column names to include.
-#'   When `NULL` (default) all factor and character columns are used.
+#' @param vars_list Optional character vector of column names to include. When `NULL` (default) all factor and character columns are used.
 #'
 #' @return A tibble with columns `variable`, `level` and `count`.
 #'
@@ -19,8 +16,7 @@
 #' epi_stats_fct_table(df)
 #' epi_stats_fct_table(df, vars_list = "group")
 #'
-#' @seealso \code{\link{epi_stats_factors}},
-#'   \code{\link{epi_stats_summary}}
+#' @seealso \code{\link{epi_stats_factors}}, \code{\link{epi_stats_summary}}
 #'
 #' @export
 epi_stats_fct_table <- function(df, vars_list = NULL) {
@@ -32,16 +28,20 @@ epi_stats_fct_table <- function(df, vars_list = NULL) {
     fct_df <- dplyr::select(df, dplyr::all_of(vars_list))
   }
 
-  fct_df <- purrr::modify(fct_df, as.factor)
-
   purrr::imap_dfr(fct_df, function(col, nm) {
-    tmp <- tibble::tibble(level = addNA(col))
-    dplyr::count(tmp, level, name = "count") %>%
-      dplyr::mutate(
-        variable = nm,
-        level = as.character(level)
-      ) %>%
-      tidyr::replace_na(list(level = "NA")) %>%
-      dplyr::select(variable, level, count)
+    core <- summary_categorical_core(col)
+    observed_missing <- sum(is.na(col))
+    result <- tibble::tibble(
+      variable = rep(nm, nrow(core)),
+      level = core$level,
+      count = core$n
+    )
+    if (observed_missing > 0L) {
+      result <- dplyr::bind_rows(
+        result,
+        tibble::tibble(variable = nm, level = NA_character_, count = as.integer(observed_missing))
+      )
+    }
+    result
   })
 }

@@ -15,6 +15,5 @@ epi_eda_check_schema(data, spec)
 A data frame with one row per expected or unexpected variable.
 }
 \description{
-Compare expected variables in an EDA specification with variables observed in
-a data frame.
+Compare expected variables in an EDA specification with variables observed in a data frame.
 }

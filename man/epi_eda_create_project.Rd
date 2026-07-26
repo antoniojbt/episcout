@@ -7,17 +7,13 @@
 epi_eda_create_project(path, overwrite = FALSE)
 }
 \arguments{
-\item{path}{A single directory path where the project scaffold should be
-created.}
+\item{path}{A single directory path where the project scaffold should be created.}
 
-\item{overwrite}{Logical; when \code{FALSE}, existing destination files are left
-untouched and cause an error. When \code{TRUE}, existing destination files may
-be replaced by template files.}
+\item{overwrite}{Logical; when \code{FALSE}, existing destination files are left untouched and cause an error. When \code{TRUE}, existing destination files may be replaced by template files.}
 }
 \value{
 The normalized project path, invisibly.
 }
 \description{
-Copy the bundled specification-first EDA project template into a destination
-directory.
+Copy the bundled specification-first EDA project template into a destination directory.
 }

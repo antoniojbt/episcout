@@ -6,15 +6,11 @@ Owner: Antonio Berlanga-Taylor
 
 ## Problem
 
-Study datasets often need participant identifiers replaced by non-derivable
-tokens before analysis. Hashing names, CURP, email, study IDs or other direct
-identifiers is unsafe without carefully managed keyed HMAC because identifiers
-can be guessed.
+Study datasets often need participant identifiers replaced by non-derivable tokens before analysis. Hashing names, CURP, email, study IDs or other direct identifiers is unsafe without carefully managed keyed HMAC because identifiers can be guessed.
 
 ## Goal
 
-Add `epi_sec_pseudonym()` to generate a secure bridge table that maps each
-participant identifier to a random cryptographic token.
+Add `epi_sec_pseudonym()` to generate a secure bridge table that maps each participant identifier to a random cryptographic token.
 
 ## Non-goals
 

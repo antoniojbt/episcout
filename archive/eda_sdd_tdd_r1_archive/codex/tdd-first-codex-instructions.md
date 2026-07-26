@@ -12,8 +12,7 @@ Keep the change small and reviewable. Do not perform broad refactoring. If you f
 
 ## Standing closeout rule
 
-Every instruction must end by updating
-`archive/eda_sdd_tdd_r1_archive/START_HERE.md`.
+Every instruction must end by updating `archive/eda_sdd_tdd_r1_archive/START_HERE.md`.
 
 At closeout:
 
@@ -26,8 +25,7 @@ At closeout:
 6. Leave SDD and ADR files unchanged unless the design changed.
 ```
 
-If a PR intentionally does not update `START_HERE.md`, record that exception in
-the PR description.
+If a PR intentionally does not update `START_HERE.md`, record that exception in the PR description.
 
 ## Instruction 1: Add external fixture files
 

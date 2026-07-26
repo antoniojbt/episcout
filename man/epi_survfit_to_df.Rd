@@ -13,9 +13,7 @@ epi_survfit_to_df(survfit_obj)
 A data frame containing survival estimates and any strata variables.
 }
 \description{
-\code{epi_survfit_to_df()} converts a \code{survival::survfit} object into a data frame
-suitable for plotting. Strata information is expanded into individual
-columns when present.
+\code{epi_survfit_to_df()} converts a \code{survival::survfit} object into a data frame suitable for plotting. Strata information is expanded into individual columns when present.
 }
 \examples{
 \dontrun{

@@ -1,9 +1,6 @@
 #' @title Convert survfit object to data frame
 #'
-#' @description
-#' `epi_survfit_to_df()` converts a `survival::survfit` object into a data frame
-#' suitable for plotting. Strata information is expanded into individual
-#' columns when present.
+#' @description `epi_survfit_to_df()` converts a `survival::survfit` object into a data frame suitable for plotting. Strata information is expanded into individual columns when present.
 #'
 #' @param survfit_obj A `survival::survfit` object.
 #'
@@ -49,17 +46,12 @@ epi_survfit_to_df <- function(survfit_obj) {
 
 #' @title Plot Kaplan-Meier survival curves
 #'
-#' @description
-#' `epi_plot_km()` creates Kaplan-Meier plots using ggplot2 from a
-#' `survival::survfit` object.
+#' @description `epi_plot_km()` creates Kaplan-Meier plots using ggplot2 from a `survival::survfit` object.
 #'
 #' @param survfit_obj A `survival::survfit` object.
-#' @param group_var Optional name of the column to use for colour.
-#' Defaults to the first strata variable if present.
-#' @param facet_var Optional name of the column to facet by.
-#' Defaults to the second strata variable if present.
-#' @param save_path Optional file path to save the plot via `ggplot2::ggsave`.
-#' If `NULL`, the plot is not saved.
+#' @param group_var Optional name of the column to use for colour. Defaults to the first strata variable if present.
+#' @param facet_var Optional name of the column to facet by. Defaults to the second strata variable if present.
+#' @param save_path Optional file path to save the plot via `ggplot2::ggsave`. If `NULL`, the plot is not saved.
 #' @param ... Further arguments passed to `ggplot2::ggsave` when saving.
 #'
 #' @return A ggplot object of the Kaplan-Meier curves.

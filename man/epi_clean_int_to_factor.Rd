@@ -13,8 +13,7 @@ epi_clean_int_to_factor(dt)
 A \code{data.table} with integer columns converted to factors.
 }
 \description{
-Converts columns of class integer to factors in a \code{data.table}, excluding
-those of class \code{IDate}.
+Converts columns of class integer to factors in a \code{data.table}, excluding those of class \code{IDate}.
 }
 \examples{
 library(data.table)

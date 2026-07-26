@@ -12,12 +12,10 @@ epi_stats_na_perc(df = NULL, margin = 2)
 \item{margin}{2 for columns, 1 for rows. Default is columns}
 }
 \value{
-A dataframe object with counts and percentage of NAs for each column or row.
-Invalid margins raise a clear error.
+A dataframe object with counts and percentage of NAs for each column or row. Invalid margins raise a clear error.
 }
 \description{
-epi_stats_na_perc() gets the total counts and percentage for missing values
-across rows or columns
+epi_stats_na_perc() gets the total counts and percentage for missing values across rows or columns
 }
 \examples{
 \dontrun{
@@ -41,5 +39,5 @@ length(which(complete.cases(nhanes)))
 \code{\link[stats]{complete.cases}}
 }
 \author{
-Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

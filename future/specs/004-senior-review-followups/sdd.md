@@ -5,8 +5,7 @@ Status: Implemented
 
 ## Scope
 
-Implement the highest-value issues from the senior package review while keeping
-changes small and easy to inspect:
+Implement the highest-value issues from the senior package review while keeping changes small and easy to inspect:
 
 - apply EDA `missing_codes` in missingness and summaries;
 - make numeric summaries stable for all-missing and zero-row data;
@@ -20,15 +19,11 @@ No new exported functions.
 
 Existing outputs change as follows:
 
-- `epi_eda_profile_missing()` counts standard `NA` and specification
-  `missing_codes`.
-- `epi_eda_profile_summaries()` excludes standard `NA` and specification
-  `missing_codes` from numeric calculations and observed categorical counts.
-- Categorical summaries keep `p` as the total-row denominator and add
-  `p_observed` as the observed non-missing denominator.
+- `epi_eda_profile_missing()` counts standard `NA` and specification `missing_codes`.
+- `epi_eda_profile_summaries()` excludes standard `NA` and specification `missing_codes` from numeric calculations and observed categorical counts.
+- Categorical summaries keep `p` as the total-row denominator and add `p_observed` as the observed non-missing denominator.
 
-Tidy-eval re-export cleanup is deferred to a later compatibility review and must
-not be implemented in this spec.
+Tidy-eval re-export cleanup is deferred to a later compatibility review and must not be implemented in this spec.
 
 ## Inputs And Outputs
 
@@ -53,8 +48,7 @@ Categorical summaries:
 - Declared levels are retained even when the observed count is zero.
 - `n` counts observed non-missing values matching the declared level.
 - `p` is `n / total_rows`; for zero-row data it is `NA_real_`.
-- `p_observed` is `n / observed_non_missing_rows`; for no observed values it is
-  `NA_real_`.
+- `p_observed` is `n / observed_non_missing_rows`; for no observed values it is `NA_real_`.
 
 ## Data Flow
 
@@ -67,30 +61,24 @@ Categorical summaries:
 ## Edge Cases
 
 - Zero-row data returns `n = 0` and missing proportions as `NA_real_`.
-- All-missing numeric data returns one stable row with summary statistics as
-  `NA_real_`.
-- Sentinel codes in numeric columns may be numeric or character values; matching
-  is by character representation.
+- All-missing numeric data returns one stable row with summary statistics as `NA_real_`.
+- Sentinel codes in numeric columns may be numeric or character values; matching is by character representation.
 - Categorical levels with no observations remain in output.
-- Missing variables keep existing error behavior in summaries and existing
-  schema reporting behavior.
+- Missing variables keep existing error behavior in summaries and existing schema reporting behavior.
 - Non-syntactic names continue to work through existing name-based indexing.
 
 ## Errors And Warnings
 
 Errors should be clear, actionable and covered by tests.
 
-- Missing suggested packages should fail through `check_suggests()` or an
-  equivalent explicit guard.
+- Missing suggested packages should fail through `check_suggests()` or an equivalent explicit guard.
 - No warnings should be emitted for all-missing numeric summaries.
 
 ## Dependencies
 
 No new dependencies.
 
-Optional dependency guards should be explicit for reviewed plotting, reporting
-and parallel paths. In particular, parallel plotting should check the optional
-packages it uses before calling their namespaces.
+Optional dependency guards should be explicit for reviewed plotting, reporting and parallel paths. In particular, parallel plotting should check the optional packages it uses before calling their namespaces.
 
 ## Deferred Work
 

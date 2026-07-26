@@ -33,16 +33,17 @@ knitr::kable(results$missing, caption = "Missing-value profile")
 
 ## Summaries
 
-### Numeric Summaries
-
-```{r numeric-summaries, echo=FALSE}
-knitr::kable(results$summaries$numeric, caption = "Numeric summaries")
-```
-
-### Categorical Summaries
-
-```{r categorical-summaries, echo=FALSE}
-knitr::kable(results$summaries$categorical, caption = "Categorical summaries")
+```{r summaries, echo=FALSE, results='asis'}
+for (name in names(results$summaries)) {
+  summary_table <- results$summaries[[name]]
+  if (nrow(summary_table) == 0L) {
+    next
+  }
+  heading <- paste(tools::toTitleCase(name), "Summaries")
+  cat("### ", heading, "\n\n", sep = "")
+  print(knitr::kable(summary_table, caption = heading))
+  cat("\n\n")
+}
 ```
 
 ## Plots

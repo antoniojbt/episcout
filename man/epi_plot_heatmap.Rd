@@ -7,8 +7,7 @@
 epi_plot_heatmap(cormat_melted = "cormat_all$cormat_melted_r", title = "")
 }
 \arguments{
-\item{cormat_melted}{a matrix object (usually the output of Hmisc::rcorr()
-r (or P) or episcout::epi_stats_corr()). Default is 'cormat_all$cormat_melted_r'}
+\item{cormat_melted}{a matrix object (usually the output of Hmisc::rcorr() r (or P) or episcout::epi_stats_corr()). Default is 'cormat_all$cormat_melted_r'}
 
 \item{title}{Main title for the plot. Default is blank ('')}
 }
@@ -16,9 +15,7 @@ r (or P) or episcout::epi_stats_corr()). Default is 'cormat_all$cormat_melted_r'
 Returns a heatmap as a ggplot2 object
 }
 \description{
-Plot correlations between numeric variables as a heatmap using
-ggplot2. Pass the correlation values from a melted (long) correlation matrix as
-input.
+Plot correlations between numeric variables as a heatmap using ggplot2. Pass the correlation values from a melted (long) correlation matrix as input.
 }
 \examples{
 \dontrun{
@@ -49,10 +46,7 @@ ggsave("my_heatmap.svg")
 }
 }
 \seealso{
-\code{\link{epi_stats_corr}},
-\code{\link{epi_stats_corr_triangle}},
-\code{\link{epi_stats_corr_rename}},
-\code{\link{epi_plot_heatmap_triangle}}
+\code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_triangle}}, \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap_triangle}}
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
