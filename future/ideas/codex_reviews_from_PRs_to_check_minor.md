@@ -6,12 +6,12 @@ Review if still valid, if correct/useful/needed/etc.
 
 | Finding | Status | Disposition |
 | --- | --- | --- |
-| Singleton integer ranges expand through `sample()` | Confirmed | Promoted to spec `006-synthetic-integer-generation`. |
-| Plot tests do not prove specification-based dispatch | Valid test gap | Retain for fixture/test hardening after spec 006. |
-| Synthetic range/level assertions can pass on empty observed values | Valid test gap | Included in spec 006. |
+| Singleton integer ranges expand through `sample()` | Resolved | Fixed and covered by spec `006-synthetic-integer-generation`. |
+| Plot tests do not prove specification-based dispatch | Resolved | Spec 002 compares ggplot geom and stat classes for all fixture variables. |
+| Synthetic range/level assertions can pass on empty observed values | Resolved | Spec 006 requires observed non-missing values before range and level assertions. |
 | Categorical summaries require declared levels | Resolved | Current code derives levels from observed non-missing values when specification levels are absent. |
 | `epi_eda_run()` should use `mode=` | Obsolete | Version 0.2.0 consistently documents and tests the released `synthetic=` API. |
-| Expected schema should be derived from serialized fixture data | Partly valid | Revise under spec 002 so fixture generation reads the committed representation and independently applies the documented schema-type contract. |
+| Expected schema should be derived from serialized fixture data | Resolved | Spec 002 reads serialized fixtures before independently generating schema and missingness expectations. |
 
 The original review comments remain below as historical context.
 

@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `002-penguins-raw-fixture`  
-Status: Active
+Status: Implemented
 
 ## Problem
 

@@ -33,9 +33,6 @@
 
 ### Priority 1
 
-- [ ] Complete active spec `002-penguins-raw-fixture`. Extend the existing
-      external-fixture generator and require executable tests to consume every
-      committed expected-output file.
 - [ ] Run task from Codex cloud thread locally (clone, install, follow vignette).
 - [ ] human live walkthrough, no agent needed here
 - [ ] carry out changes needed from human review
@@ -44,8 +41,6 @@
 
 - [ ] Add functions to create a data dictionary when real data already exists but does not have a dictionary.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] Complete the remaining test-hardening items recorded in
-      `future/ideas/codex_reviews_from_PRs_to_check_minor.md`.
 - [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
       rewriting, identifier removal, output validation and read-only raw-data
       files. Secure bridge-table v1 was completed in spec 005.

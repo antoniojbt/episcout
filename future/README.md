@@ -44,7 +44,7 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 ### Active
 
-- `002-penguins-raw-fixture`
+- None currently.
 
 ### Ready Next
 
@@ -57,6 +57,7 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 ### Completed
 
 - `001-phase-1-helper-stabilization`
+- `002-penguins-raw-fixture`
 - `004-senior-review-followups`
 - `005-pseudonymisation-bridge`
 - `006-synthetic-integer-generation`
