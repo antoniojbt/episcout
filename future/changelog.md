@@ -2,6 +2,8 @@
 
 ## 2026-07-25
 
+- Triaged `future/ideas/`: removed the superseded pseudonymisation proposal and manual Codex environment script, archived resolved cross-spec PR review notes under `future/reviews/`, and promoted the EDA/statistics alignment proposal into completed design-only spec `007-eda-stats-alignment-review`.
+- Completed spec `007-eda-stats-alignment-review`: confirmed `epi_stats_*` as the active main statistics layer, inventoried all 25 exported `epi_stats_*` functions plus the related non-prefixed contingency helper, mapped all seven EDA specification types, recorded confirmed behavioural gaps, and recommended a shared-core architecture and ordered implementation programme without changing package code.
 - Reconciled spec status after the 0.2.0 release. Specs 001, 002, 004, 005 and
   006 are completed; spec 003 remains draft.
 - Completed spec `002-penguins-raw-fixture`.

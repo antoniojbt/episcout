@@ -33,6 +33,7 @@
 
 ### Priority 1
 
+- [ ] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
 - [ ] Run task from Codex cloud thread locally (clone, install, follow vignette).
 - [ ] human live walkthrough, no agent needed here
 - [ ] carry out changes needed from human review
