@@ -1,6 +1,6 @@
-# Notes from codex checks from PRs that were not addressed
+# Resolved Codex PR Review Notes
 
-Review if still valid, if correct/useful/needed/etc.
+Archived cross-spec review notes. All findings were triaged on 2026-07-25 and are retained here as historical evidence.
 
 ## Triage - 2026-07-25
 

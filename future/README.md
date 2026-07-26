@@ -42,6 +42,8 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 ## Spec Status
 
+There are no untriaged candidates under `future/ideas/`. Add new candidate work to `TODOs.md` before promoting it to a numbered specification.
+
 ### Active
 
 - None currently.
@@ -61,5 +63,6 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 - `004-senior-review-followups`
 - `005-pseudonymisation-bridge`
 - `006-synthetic-integer-generation`
+- `007-eda-stats-alignment-review`
 
 Completed specs stay under `future/specs/` so existing review and changelog links remain stable.
