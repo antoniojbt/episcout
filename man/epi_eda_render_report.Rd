@@ -11,7 +11,8 @@ epi_eda_render_report(
   synthetic = FALSE,
   n = 100,
   seed = NULL,
-  quiet = TRUE
+  quiet = TRUE,
+  summary_version = c("v1", "v2")
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ epi_eda_render_report(
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
 
 \item{quiet}{Logical; passed to \code{\link[rmarkdown:render]{rmarkdown::render()}} to control render output.}
+
+\item{summary_version}{Summary contract passed to \code{\link[=epi_eda_run]{epi_eda_run()}}. \code{"v1"} remains the compatibility default and \code{"v2"} renders complete typed summary sections.}
 }
 \value{
 A single character string containing the rendered HTML report path.

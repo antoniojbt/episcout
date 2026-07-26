@@ -15,7 +15,7 @@ epi_stats_fct_table(df, vars_list = NULL)
 A tibble with columns \code{variable}, \code{level} and \code{count}.
 }
 \description{
-Creates a tidy table of counts for each level of factor or character columns in a data frame. Missing values are reported with the level \code{NA}.
+Creates a tidy table of counts for each level of factor or character columns in a data frame. Declared factor levels are retained with zero counts. Missing values use an actual \code{NA} level so they remain distinct from the literal string \code{"NA"}.
 }
 \examples{
 df <- data.frame(

@@ -33,9 +33,10 @@
 
 ### Priority 1
 
-- [ ] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
-- [ ] Run task from Codex cloud thread locally (clone, install, follow vignette).
-- [ ] human live walkthrough, no agent needed here
+- [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
+- [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
+- [ ] Run task from Codex cloud thread locally
+- [ ] human live walkthrough, no agent needed here (clone, install, follow vignettes).
 - [ ] carry out changes needed from human review
 
 ### Priority 2
@@ -49,6 +50,7 @@
 
 ### Priority 3
 
+- [ ] Review adoption after one compatibility release and decide when EDA summary version 2 should become the default; retain explicit version 1 until that decision is implemented in a numbered migration spec.
 - [ ] check codecov percentage decrease
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.

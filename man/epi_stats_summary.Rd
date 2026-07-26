@@ -8,7 +8,8 @@ epi_stats_summary(
   df = NULL,
   codes = NULL,
   class_type = "chr_fct",
-  action = "exclude"
+  action = "exclude",
+  output = c("current", "typed")
 )
 }
 \arguments{
@@ -19,9 +20,11 @@ epi_stats_summary(
 \item{class_type}{Class of variables to summarise, 'chr_fct' or 'int_num'. Default is character and factor.}
 
 \item{action}{Values to summarise, 'codes_only' or 'exclude'. Default is 'exclude'.}
+
+\item{output}{Output contract. \code{"current"} preserves the existing class/action-specific tibble. \code{"typed"} returns complete typed summary components for every supported column and treats \code{codes} as global sentinel-missing values.}
 }
 \value{
-A data.frame as tibble with summaries.
+With \code{output = "current"}, a tibble using the historical mode-specific schema. With \code{output = "typed"}, a list containing \code{variables}, \code{numeric}, \code{categorical}, \code{text}, \code{temporal} and \code{skipped} data frames.
 }
 \description{
 epi_stats_summary() provides summary descriptive statistics for columns belonging to either character and factor (class_type = 'chr_fct') or integer and numeric (class_type = 'int_num') while discarding values provided (codes). This is useful if data frame has contingency codes. Columns are ordered according to order in contingency codes option. Rows are then ordered in decreasing order according to column provided.

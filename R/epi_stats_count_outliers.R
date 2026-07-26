@@ -35,7 +35,7 @@
 #' @importFrom grDevices boxplot.stats
 #'
 
-#' @details Returns 0 for empty or all-`NA` vectors and raises an error when `coef` is negative. Setting `coef` to `0` disables outlier detection.
+#' @details Returns 0 for empty or all-`NA` vectors, excludes non-finite values from Tukey calculations and raises an error when `coef` is negative. Setting `coef` to `0` disables outlier detection.
 epi_stats_count_outliers <- function(num_vec = NULL,
                                      coef = 1.5,
                                      ...) {
@@ -51,13 +51,7 @@ epi_stats_count_outliers <- function(num_vec = NULL,
   if (coef == 0 || length(num_vec) == 0 || all(is.na(num_vec))) {
     return(0L)
   }
-  q1 <- stats::quantile(num_vec, 0.25, na.rm = TRUE, type = 7)
-  q3 <- stats::quantile(num_vec, 0.75, na.rm = TRUE, type = 7)
-  iqr_val <- q3 - q1
-  lower <- q1 - coef * iqr_val
-  upper <- q3 + coef * iqr_val
-  outliers <- sum(num_vec < lower | num_vec > upper, na.rm = TRUE)
-  outliers
+  summary_numeric_core(num_vec, coef = coef)$outlier_count[[1]]
 }
 
 # Alternative thresholds such as multiples of the standard deviation or inner/outer fences (e.g. 3 * IQR) are not currently implemented but may be explored in future iterations.

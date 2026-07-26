@@ -140,6 +140,22 @@ test_that("penguins_raw summaries match their independent expectations", {
   )
 })
 
+test_that("penguins_raw v2 summaries cover every specified variable", {
+  skip_if_penguins_missing()
+  data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
+  spec <- epi_eda_spec(spec_path)
+
+  observed <- epi_eda_profile_summaries(data, spec, summary_version = "v2")
+
+  expect_equal(observed$variables$name, spec$name)
+  expect_true(all(observed$variables$status == "summarised"))
+  expect_equal(nrow(observed$skipped), 0L)
+  expect_setequal(observed$text$name, c("Individual ID", "Comments"))
+  expect_equal(observed$temporal$name, "Date Egg")
+  expect_equal(observed$temporal$min, "2007-11-09")
+  expect_equal(observed$temporal$max, "2009-12-01")
+})
+
 test_that("penguins_raw plot inventory proves specification-based dispatch", {
   skip_if_penguins_missing()
   skip_if_not_installed("ggplot2")
