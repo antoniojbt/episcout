@@ -36,14 +36,15 @@
 
 epi_write <- function(file_object = NULL,
                       file_name = "my_file.tsv",
-                      row.names = FALSE,
+                      row.names = FALSE, # nolint: object_name_linter. Historical public argument.
                       quote = FALSE,
                       sep = "\t",
                       na = "NA",
-                      col.names = TRUE,
+                      col.names = TRUE, # nolint: object_name_linter. Historical public argument.
                       ...) {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

@@ -26,8 +26,8 @@
 #'
 #' @export
 epi_plot_add_var_labels <- function(var_y = NULL, var_x = NULL, var_lookup = NULL) {
-    ggplot2::labs(
-        y = if (!is.null(var_y) && var_y %in% names(var_lookup)) var_lookup[[var_y]] else NULL,
-        x = if (!is.null(var_x) && var_x %in% names(var_lookup)) var_lookup[[var_x]] else NULL
-    )
+  ggplot2::labs(
+    y = if (!is.null(var_y) && var_y %in% names(var_lookup)) var_lookup[[var_y]] else NULL,
+    x = if (!is.null(var_x) && var_x %in% names(var_lookup)) var_lookup[[var_x]] else NULL
+  )
 }

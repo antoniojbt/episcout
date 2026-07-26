@@ -31,14 +31,14 @@
 #'
 
 epi_read <- function(input_name = "",
-                     na.strings = c(
+                     na.strings = c( # nolint: object_name_linter. Historical public argument.
                        -Inf, "NULL", NULL,
                        ".", "", # ensure white space is read as NA
                        "NA", "NaN", NA, "<NA>"
                      ),
                      header = TRUE,
-                     stringsAsFactors = FALSE,
-                     strip.white = TRUE,
+                     stringsAsFactors = FALSE, # nolint: object_name_linter. Historical public argument.
+                     strip.white = TRUE, # nolint: object_name_linter. Historical public argument.
                      ...) {
   check_suggests("data.table")
   tibble::as_tibble(as.data.frame(data.table::fread(

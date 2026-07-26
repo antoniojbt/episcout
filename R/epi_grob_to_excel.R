@@ -14,8 +14,8 @@
 #' }
 #' @export
 epi_grob_to_excel <- function(path_to_files,
-                                pattern = "\\.txt$",
-                                output_file = file.path(path_to_files, "grob_files.xlsx")) {
+                              pattern = "\\.txt$",
+                              output_file = file.path(path_to_files, "grob_files.xlsx")) {
   file_names <- dir(
     path_to_files,
     pattern = pattern,

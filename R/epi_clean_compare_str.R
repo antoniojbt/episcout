@@ -53,7 +53,8 @@ epi_clean_compare_str <- function(df = NULL,
                                   fixed_chr_col = "",
                                   ...) {
   if (!requireNamespace("stringi", quietly = TRUE)) {
-    stop("Package stringi needed for this function to work. Please install it.",
+    stop(
+      "Package stringi needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

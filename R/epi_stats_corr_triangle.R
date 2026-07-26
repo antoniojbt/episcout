@@ -33,12 +33,13 @@
 
 epi_stats_corr_triangle <- function(cormat = "cormat_all$cormat") {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   cormat_tri_r <- as.matrix(cormat$r)
-  cormat_tri_P <- as.matrix(cormat$P)
+  cormat_tri_p <- as.matrix(cormat$P)
 
   # Turn all upper triangle values to NA:
   cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
@@ -51,8 +52,8 @@ epi_stats_corr_triangle <- function(cormat = "cormat_all$cormat") {
     na.rm = TRUE
   )
 
-  cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
-  dt_p <- data.table::data.table(Var1 = rownames(cormat_tri_P), cormat_tri_P)
+  cormat_tri_p[upper.tri(cormat_tri_p)] <- NA
+  dt_p <- data.table::data.table(Var1 = rownames(cormat_tri_p), cormat_tri_p)
   cormat_melted_triangle_pval <- data.table::melt(
     dt_p,
     id.vars = "Var1",

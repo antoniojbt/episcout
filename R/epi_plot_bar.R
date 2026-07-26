@@ -72,7 +72,8 @@ epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
                          ...) {
   # Load required packages
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

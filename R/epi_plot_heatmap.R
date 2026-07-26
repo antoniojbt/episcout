@@ -45,7 +45,8 @@
 epi_plot_heatmap <- function(cormat_melted = "cormat_all$cormat_melted_r",
                              title = "") {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

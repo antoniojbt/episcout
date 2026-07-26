@@ -48,10 +48,11 @@ epi_clean_curp <- function(curp) {
       PrimeraVocalApellidoPaterno = substr(c, 2, 2),
       PrimeraLetraApellidoMaterno = substr(c, 3, 3),
       PrimeraLetraNombre = substr(c, 4, 4),
-      AnoNacimiento = ifelse(as.numeric(substr(c, 5, 6)) <= 22,
-                             paste0("20", substr(c, 5, 6)),
-                             paste0("19", substr(c, 5, 6))
-                             ),
+      AnoNacimiento = ifelse(
+        as.numeric(substr(c, 5, 6)) <= 22,
+        paste0("20", substr(c, 5, 6)),
+        paste0("19", substr(c, 5, 6))
+      ),
       MesNacimiento = substr(c, 7, 8),
       DiaNacimiento = substr(c, 9, 10),
       Sexo = substr(c, 11, 11),

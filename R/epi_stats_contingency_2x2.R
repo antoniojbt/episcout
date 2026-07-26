@@ -91,7 +91,7 @@ epi_stats_contingency_2x2_df <- function(df, x_var, y_var) {
 
 #' @rdname combined_contingency_2x2_functions
 #' @export
-epi_stats_contingency_2x2_tables <- function(df, x_var) {
+epi_stats_contingency_2x2_tables <- function(df, x_var) { # nolint: object_length_linter. Historical exported name.
   other_vars <- setdiff(colnames(df), x_var)
   results <- lapply(other_vars, function(y_var) {
     epi_stats_contingency_2x2_df(df, x_var = x_var, y_var = y_var)
@@ -124,7 +124,8 @@ epi_stats_contingency_2x2_test <- function(df, target_var, other_var, test_type 
 
   test <- tryCatch(
     {
-      switch(test_type,
+      switch( # Run the requested supported test.
+        test_type,
         "fisher.test" = fisher.test(tab, workspace = 2e7, simulate.p.value = TRUE, B = 1e6),
         "chisq.test" = chisq.test(tab),
         stop("Unsupported test type. Use 'fisher.test' or 'chisq.test'.")

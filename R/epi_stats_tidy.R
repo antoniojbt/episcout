@@ -28,17 +28,20 @@ epi_stats_tidy <- function(sum_df = NULL,
                            digits = 2,
                            decreasing = TRUE) {
   if (!requireNamespace("dplyr", quietly = TRUE)) {
-    stop("Package dplyr needed for this function to work. Please install it.",
+    stop(
+      "Package dplyr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("tidyr", quietly = TRUE)) {
-    stop("Package tidyr needed for this function to work. Please install it.",
+    stop(
+      "Package tidyr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   if (!requireNamespace("tibble", quietly = TRUE)) {
-    stop("Package tibble needed for this function to work. Please install it.",
+    stop(
+      "Package tibble needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
@@ -60,7 +63,8 @@ epi_stats_tidy <- function(sum_df = NULL,
   # Add percentage from total provided:
   df$percent <- (df$row_sums / perc_n) * 100
   # Re-order rows by column decreasing number:
-  set_order <- order(as.numeric(as.character(df[[order_by]])),
+  set_order <- order(
+    as.numeric(as.character(df[[order_by]])),
     decreasing = decreasing
   )
   df <- df[set_order, ]

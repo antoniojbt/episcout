@@ -118,7 +118,8 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
                                        all.x = TRUE,
                                        ...) {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
@@ -153,7 +154,9 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
       suffix_2
     ))
   }
-  temp_df <- merge(df1, df2,
+  temp_df <- merge(
+    df1,
+    df2,
     by = id_col,
     all.x = all.x,
     suffixes = c(suffix_1, suffix_2),
@@ -177,7 +180,8 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
     }
     print(sprintf("Suffix to use: %s", suffix_2))
     df2 <- data.table::as.data.table(nested_list_dfs[[i]]) # new df to merge, starting at 3
-    temp_df <- merge(temp_df,
+    temp_df <- merge(
+      temp_df,
       df2,
       by = id_col,
       all.x = all.x,

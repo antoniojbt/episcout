@@ -65,5 +65,6 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 - `006-synthetic-integer-generation`
 - `007-eda-stats-alignment-review`
 - `008-univariate-stats-eda-alignment`
+- `009-repository-lint-style-cleanup`
 
 Completed specs stay under `future/specs/` so existing review and changelog links remain stable.
