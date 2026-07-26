@@ -13,23 +13,18 @@ epi_grob_to_excel(
 \arguments{
 \item{path_to_files}{Directory containing the files to be combined.}
 
-\item{pattern}{Regular expression used to match files. Defaults to
-\code{"\\\\.txt$"}.}
+\item{pattern}{Regular expression used to match files. Defaults to \code{"\\\\.txt$"}.}
 
-\item{output_file}{Path for the resulting workbook. Defaults to
-\code{file.path(path_to_files, "grob_files.xlsx")}.}
+\item{output_file}{Path for the resulting workbook. Defaults to \code{file.path(path_to_files, "grob_files.xlsx")}.}
 }
 \value{
 Invisibly returns the path to the saved workbook.
 }
 \description{
-Reads text files from a directory and writes each as a separate sheet in a
-new Excel workbook.
+Reads text files from a directory and writes each as a separate sheet in a new Excel workbook.
 }
 \details{
-Sheet names are derived from file names, truncated to 29 characters
-to comply with Excel's limit. Numeric suffixes are appended to resolve
-clashes.
+Sheet names are derived from file names, truncated to 29 characters to comply with Excel's limit. Numeric suffixes are appended to resolve clashes.
 }
 \examples{
 \dontrun{

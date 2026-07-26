@@ -47,42 +47,42 @@ episcout is an R package providing helper functions for cleaning, exploring and 
 ### Testing
 - Run all tests:
   ```bash
-  Rscript -e "devtools::test(reporter = 'summary')"
+  scripts/rscript_env_caller.R -e "devtools::test(reporter = 'summary')"
   ```
   Time: 1-3 minutes. NEVER CANCEL. Set timeout to 10+ minutes.
 
 - Run test coverage:
   ```bash
-  Rscript -e "covr::report()"
+  scripts/rscript_env_caller.R -e "covr::report()"
   ```
   Time: 2-5 minutes. NEVER CANCEL. Set timeout to 15+ minutes.
 
 ### Documentation and Code Quality
 - Regenerate documentation:
   ```bash
-  Rscript -e "devtools::document()"
+  scripts/rscript_env_caller.R -e "devtools::document()"
   ```
   Time: ~10 seconds. Updates man/ files from roxygen2 comments.
 
-- Style code:
+- Style changed code:
   ```bash
-  Rscript -e "styler::style_pkg()"
+  scripts/rscript_env_caller.R -e "styler::style_file(c('R/changed-file.R', 'tests/testthat/test-changed-file.R'))"
   ```
   Time: ~5-10 seconds.
 
 - Lint code:
   ```bash
-  Rscript -e "lintr::lint_package()"
+  scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
   ```
   Time: ~10-30 seconds.
 
 ## Validation
 
 - **ALWAYS run these validation steps before committing changes:**
-  1. `Rscript -e "devtools::document()"` - Update documentation
-  2. `Rscript -e "styler::style_pkg()"` - Format code 
-  3. `Rscript -e "lintr::lint_package()"` - Check code style
-  4. `Rscript -e "devtools::test()"` - Run tests
+  1. `scripts/rscript_env_caller.R -e "devtools::document()"` - Update documentation
+  2. `scripts/rscript_env_caller.R -e "styler::style_file(c('R/changed-file.R', 'tests/testthat/test-changed-file.R'))"` - Format changed code
+  3. `scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"` - Check code style
+  4. `scripts/rscript_env_caller.R -e "devtools::test()"` - Run tests
   5. `R CMD build . --no-manual --no-resave-data --compact-vignettes=gs+qpdf` - Build package
   6. `R CMD check --no-manual --as-cran episcout_*.tar.gz` - Check package
 
@@ -188,7 +188,7 @@ Functions are organized by purpose with consistent prefixes:
 ```
 
 ### Key Configuration Files
-- `.lintr` - Linting rules (150 char line length, snake_case, 2-space indent)
+- `.lintr` - Linting rules (line length disabled, snake_case, 2-space indent and `%>%` pipe consistency)
 - `.github/workflows/r-cmd-check.yml` - R CMD check on Ubuntu/macOS
 - `.github/workflows/test-coverage.yaml` - Code coverage via codecov
 - `DESCRIPTION` - Package dependencies and metadata

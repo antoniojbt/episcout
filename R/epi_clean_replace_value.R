@@ -1,8 +1,6 @@
 #' @title Replace values with string in a column
 #'
-#' @description Uses stringr to match string pattern provided and replace value
-#' in column with string provided. Useful for partial matching for dates
-#' and replacing with NA for example. Uses stringr::str_detect().
+#' @description Uses stringr to match string pattern provided and replace value in column with string provided. Useful for partial matching for dates and replacing with NA for example. Uses stringr::str_detect().
 #'
 #' @param df data frame object with string values in column to match and replace
 #'
@@ -10,16 +8,13 @@
 #'
 #' @param pattern String pattern to look for (passed to str_detect pattern parameter)
 #'
-#' @param replace_str String that will replace value if pattern matches in the
-#' column passed
+#' @param replace_str String that will replace value if pattern matches in the column passed
 #'
 #' @return The column passed as a vector
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_add_rep_num}},
-#' \code{\link{epi_clean_add_colname_suffix}},
-#' \code{\link[stringr]{str_detect}}.
+#' @seealso \code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_add_colname_suffix}}, \code{\link[stringr]{str_detect}}.
 #'
 #' @examples
 #' \dontrun{
@@ -58,15 +53,18 @@ epi_clean_replace_value <- function(df = NULL,
                                     pattern = "",
                                     replace_str = NA) {
   if (!requireNamespace("stringr", quietly = TRUE)) {
-    stop("Package stringr needed for this function to work. Please install it.",
+    stop(
+      "Package stringr needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
-  df[[col_id]] <- ifelse(stringr::str_detect(df[[col_id]],
-    pattern = pattern
-  ) == TRUE,
-  replace_str,
-  df[[col_id]]
+  df[[col_id]] <- ifelse(
+    stringr::str_detect(
+      df[[col_id]],
+      pattern = pattern
+    ) == TRUE,
+    replace_str,
+    df[[col_id]]
   )
   # df[[col_id]][which(str_detect(df[[col_id]], pattern = patterns))] <- NA
   df[[col_id]]

@@ -2,8 +2,7 @@
 #'
 #' Read and validate a specification-first EDA data dictionary.
 #'
-#' @param path_or_data A path to a CSV specification file, or a data frame
-#'   containing the specification.
+#' @param path_or_data A path to a CSV specification file, or a data frame containing the specification.
 #'
 #' @return A validated data frame specification.
 #'
@@ -26,8 +25,7 @@ epi_eda_spec <- function(path_or_data) {
 
 #' Validate an EDA specification
 #'
-#' Validate the columns and basic values required by a specification-first EDA
-#' data dictionary.
+#' Validate the columns and basic values required by a specification-first EDA data dictionary.
 #'
 #' @param spec A data frame containing an EDA specification.
 #'

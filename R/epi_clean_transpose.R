@@ -1,23 +1,16 @@
 #' @title Transposes a dataframe preserving row and column names
 #'
-#' @description Transposes a dataframe preserving row and column names. Based on
-#' data.table transpose. Assumes there is an id column with unique IDs
+#' @description Transposes a dataframe preserving row and column names. Based on data.table transpose. Assumes there is an id column with unique IDs
 #'
-#' @param df A dataframe object to transpose. Coerced to data.table and returned
-#' as data.frame.
+#' @param df A dataframe object to transpose. Coerced to data.table and returned as data.frame.
 #'
 #' @param id_col_num Index to identify the column with IDs
 #'
-#' @return A transposed dataframe with the first column containing the transposed
-#' values of the column passed as id_col_num.
+#' @return A transposed dataframe with the first column containing the transposed values of the column passed as id_col_num.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_clean_add_colname_suffix}},
-#' \code{\link{epi_clean_spread_repeated}},
-#' \code{\link{epi_clean_merge_nested_dfs}},
-#' \code{\link[data.table]{transpose}},
-#' \code{\link[data.table]{as.data.table}}.
+#' @seealso \code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_spread_repeated}}, \code{\link{epi_clean_merge_nested_dfs}}, \code{\link[data.table]{transpose}}, \code{\link[data.table]{as.data.table}}.
 #'
 #' @examples
 #' \dontrun{
@@ -48,7 +41,8 @@
 epi_clean_transpose <- function(df = NULL,
                                 id_col_num = "") {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

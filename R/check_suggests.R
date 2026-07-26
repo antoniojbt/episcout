@@ -4,8 +4,7 @@
 #'
 #' @param pkgs Character vector of package names.
 #'
-#' @return Invisibly returns TRUE if all packages are installed. Throws an
-#'   error listing missing packages otherwise.
+#' @return Invisibly returns TRUE if all packages are installed. Throws an error listing missing packages otherwise.
 #' @keywords internal
 #' @examples
 #' \dontrun{

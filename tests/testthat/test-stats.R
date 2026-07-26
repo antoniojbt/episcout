@@ -36,11 +36,14 @@ df <- data.frame(
 #####
 # Create a dataset with missing NAs:
 df2 <- as.data.frame(lapply(df, function(cc) {
-  cc[sample(c(TRUE, NA),
-    prob = c(0.85, 0.15),
-    size = length(cc),
-    replace = TRUE
-  )]
+  cc[
+    sample(
+      c(TRUE, NA),
+      prob = c(0.85, 0.15),
+      size = length(cc),
+      replace = TRUE
+    )
+  ]
 }))
 # The blurb above to introduce NAs is straight from:
 # https://stackoverflow.com/questions/27454265/randomly-insert-nas-into-dataframe-proportionaly
@@ -166,8 +169,7 @@ print("epi_stats_format")
 
 test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
-  # Count when codes are present, pass these as character or factor, specify
-  #  action is to count codes only:
+  # Count when codes are present, pass these as character or factor, specify action is to count codes only:
   stat_sum1 <- epi_stats_summary(
     df = df_cont_chr,
     codes = codes,
@@ -197,7 +199,8 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
 test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
   # Count integer or numeric codes:
-  stat_sum2 <- epi_stats_summary(df_cont_chr,
+  stat_sum2 <- epi_stats_summary(
+    df_cont_chr,
     codes = codes,
     class_type = "int_num",
     action = "codes_only"
@@ -225,7 +228,8 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
 test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
   # Get summary stats excluding contingency codes for character and factor columns:
-  stat_sum3 <- epi_stats_summary(df_cont_chr,
+  stat_sum3 <- epi_stats_summary(
+    df_cont_chr,
     codes = codes,
     class_type = "chr_fct",
     action = "exclude"
@@ -253,8 +257,7 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
 
 test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
-  # Get summary stats for numeric/integer columns
-  # while excluding certain codes/values:
+  # Get summary stats for numeric/integer columns while excluding certain codes/values:
   stat_sum4 <- epi_stats_summary(
     df = df_cont_chr,
     codes = codes,
@@ -280,7 +283,8 @@ test_that("epi_stats_summary, epi_stats_tidy and epi_stats_format", {
   #####
   # If there are no codes to return the result is an empty data.frame (tibble):
   codes <- c("Per", "X", "55")
-  stat_sum_zero <- epi_stats_summary(df_cont_chr,
+  stat_sum_zero <- epi_stats_summary(
+    df_cont_chr,
     codes = codes,
     class_type = "chr_fct",
     action = "codes_only"

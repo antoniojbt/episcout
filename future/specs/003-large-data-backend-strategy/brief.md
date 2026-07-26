@@ -5,9 +5,7 @@ Status: Draft
 
 ## Problem
 
-The EDA MVP works with ordinary data frames and tibbles. The package describes
-large-ish epidemiological data, but the new EDA workflow does not yet define how
-larger backends should be introduced.
+The EDA MVP works with ordinary data frames and tibbles. The package describes large-ish epidemiological data, but the new EDA workflow does not yet define how larger backends should be introduced.
 
 ## Goal
 
@@ -18,6 +16,11 @@ Write a design-first plan for large-data backend support before implementation.
 - Implementing Arrow, DuckDB or data.table EDA backends in the design PR.
 - Rewriting the existing EDA workflow.
 - Adding heavy dependencies without an implementation spec.
+
+## Activation Prerequisites
+
+- A representative large-data workload with data shape and storage format.
+- A measurable performance or memory target that the data-frame baseline does not meet.
 
 ## Candidate Backends
 

@@ -7,17 +7,13 @@
 epi_clean_cond_chr_fct(col = NULL)
 }
 \arguments{
-\item{col}{column header. This will be passed to
-is.character(col) and is.factor(col)}
+\item{col}{column header. This will be passed to is.character(col) and is.factor(col)}
 }
 \value{
-boolean TRUE/FALSE indicating whether column passed is type character
-or factor
+boolean TRUE/FALSE indicating whether column passed is type character or factor
 }
 \description{
-Check if column is character or factor (TRUE). Useful when
-extracting columns from a large data frame using dplyr
-(ie get all character and factor columns)
+Check if column is character or factor (TRUE). Useful when extracting columns from a large data frame using dplyr (ie get all character and factor columns)
 }
 \examples{
 \dontrun{
@@ -35,12 +31,7 @@ epi_clean_cond_chr_fct(df_cont_chr[, "x"]) # should be 'FALSE'
 
 }
 \seealso{
-\code{\link[episcout]{epi_clean_cond_numeric}},
-\code{\link[episcout]{epi_clean_cond_date}},
-\code{\link[episcout]{epi_clean_class_to_factor}},
-\code{\link[episcout]{epi_clean_count_classes}},
-\code{\link[base]{is.character}},
-\code{\link[base]{is.factor}}.
+\code{\link[episcout]{epi_clean_cond_numeric}}, \code{\link[episcout]{epi_clean_cond_date}}, \code{\link[episcout]{epi_clean_class_to_factor}}, \code{\link[episcout]{epi_clean_count_classes}}, \code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

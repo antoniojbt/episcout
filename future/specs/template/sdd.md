@@ -35,5 +35,4 @@ Errors should be clear, actionable and covered by tests.
 
 ## Dependencies
 
-List any new or optional dependencies. Avoid adding dependencies unless the spec
-requires them.
+List any new or optional dependencies. Avoid adding dependencies unless the spec requires them.

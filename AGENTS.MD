@@ -1,7 +1,6 @@
 # AGENTS.md
 
-This file defines conventions and instructions to guide OpenAI Codex and other agents in contributing to this R package.
-It standardises code writing, formatting, documentation, testing, and pull request workflows.
+This file defines conventions and instructions to guide OpenAI Codex and other agents in contributing to this R package. It standardises code writing, formatting, documentation, testing, and pull request workflows.
 
 It should be respected by automated agents at all times, particularly when:
 
@@ -19,6 +18,8 @@ When fixing code, identify the cause; do not simply fix the symptom.
 Never hide behaviour behind 'clean up' when refactoring.
 
 When writing tests, never mirror the implementation. Always test against the intended behaviour. If this is unclear, undocumented or may be wrong, always stop and report.
+
+Do not hard-wrap prose anywhere in the repository. Keep each prose paragraph and standalone prose comment on a single line, while preserving required or intentional line breaks in lists, tables, code examples, and other structured content.
 
 ---
 
@@ -50,13 +51,9 @@ The wrapper resolves to the project mamba environment by default:
 ~/apps/miniforge3/envs/episcout/bin/Rscript
 ```
 
-Do not use bare `Rscript` unless you have verified it resolves to the
-`episcout` mamba environment. To use a different R binary, set
-`EPISCOUT_RSCRIPT`; see `scripts/rscript_env_caller.R`.
+Do not use bare `Rscript` unless you have verified it resolves to the `episcout` mamba environment. To use a different R binary, set `EPISCOUT_RSCRIPT`; see `scripts/rscript_env_caller.R`.
 
-For `devtools` checks, set a real CRAN mirror inside the R expression. Do not
-leave `repos` as the placeholder `@CRAN@`, because package checks may spend a
-long time probing package repositories.
+For `devtools` checks, set a real CRAN mirror inside the R expression. Do not leave `repos` as the placeholder `@CRAN@`, because package checks may spend a long time probing package repositories.
 
 ```bash
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
@@ -64,8 +61,7 @@ scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-proje
 
 ## Repo Script Discovery and Naming
 
-Before adding or changing helper commands, inspect existing project entry
-points:
+Before adding or changing helper commands, inspect existing project entry points:
 
 ```text
 scripts/
@@ -74,13 +70,9 @@ Makefile
 AGENTS.MD
 ```
 
-Do not add a new helper script if an existing script already covers the task.
-If an existing helper has an unclear or misleading name, propose a rename or
-targeted cleanup instead of adding another wrapper.
+Do not add a new helper script if an existing script already covers the task. If an existing helper has an unclear or misleading name, propose a rename or targeted cleanup instead of adding another wrapper.
 
-Script names must describe the project action, not merely mirror a system
-binary. Avoid names that are visually or semantically confusable with common
-commands, such as:
+Script names must describe the project action, not merely mirror a system binary. Avoid names that are visually or semantically confusable with common commands, such as:
 
 ```text
 rscript
@@ -129,7 +121,7 @@ Before adding a new script, confirm:
   }
   ```
 
-* Use `styler::style_pkg()` and `lintr::lint_package()` to enforce style.
+* Use `styler::style_file()` on changed files and package-loaded `lintr::lint_package()` to enforce style. Reserve a full `styler::style_pkg()` rewrite for an explicitly scoped style-only task. The package retains `%>%` to preserve its current R compatibility floor, and line-length linting remains disabled because prose must not be hard-wrapped.
 
 * Avoid `<<-`, `assign()`, and hidden state unless strictly necessary.
 
@@ -137,8 +129,7 @@ Before adding a new script, confirm:
 
 ## Testing Protocols
 
-All new functions must include unit tests in `/tests/testthat/`.
-Run tests locally before committing:
+All new functions must include unit tests in `/tests/testthat/`. Run tests locally before committing:
 
 ```bash
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
@@ -216,8 +207,7 @@ Examples:
 Run all checks **before requesting a review**:
 
 ```bash
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); styler::style_pkg()"
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); lintr::lint_package()"
+scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::report()"
 ```

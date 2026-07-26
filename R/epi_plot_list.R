@@ -1,7 +1,6 @@
 #' @title Lists to hold plots
 #'
-#' @description Create a list to hold plots for later plotting (in a multi-
-#' plot figure for example). Allows maximum 8 plots per list holder.
+#' @description Create a list to hold plots for later plotting (in a multi- plot figure for example). Allows maximum 8 plots per list holder.
 #'
 #' @param vars_to_plot string with variable names or possibly labels
 #'
@@ -9,8 +8,7 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_plots_to_grid}},
-#' \code{\link{epi_plot_cow_save}}.
+#' @seealso \code{\link{epi_plots_to_grid}}, \code{\link{epi_plot_cow_save}}.
 #'
 #' @note See example in \code{\link{epi_plot_cow_save}} and ggplot2 wrappers epi_plot_*().
 #'

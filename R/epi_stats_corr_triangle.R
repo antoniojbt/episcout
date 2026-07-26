@@ -1,22 +1,14 @@
 #' @title Get the lower triangle from a correlation matrix
 #'
-#' @description Keep only the lower triangle of the correlation matrix
-#' Useful to create a nicer heatmap. Requires the original, unmelted correlation
-#' matrix with both correlation (r) and p-values (P). The lower triangles are
-#' converted to \code{data.table} before melting.
+#' @description Keep only the lower triangle of the correlation matrix Useful to create a nicer heatmap. Requires the original, unmelted correlation matrix with both correlation (r) and p-values (P). The lower triangles are converted to \code{data.table} before melting.
 #'
-#' @param cormat a matrix object (usually the output of Hmisc::rcorr()
-#' or episcout::epi_stats_corr()). Default 'cormat_all$cormat'
+#' @param cormat a matrix object (usually the output of Hmisc::rcorr() or episcout::epi_stats_corr()). Default 'cormat_all$cormat'
 #'
-#' @return Returns a list object melted_triangles containing the lower triangle of the
-#' correlation matrix (cormat) with the correlation (cormat_melted_triangle_r) and
-#' p-values (cormat_melted_triangle_pval).
+#' @return Returns a list object melted_triangles containing the lower triangle of the correlation matrix (cormat) with the correlation (cormat_melted_triangle_r) and p-values (cormat_melted_triangle_pval).
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_rename}},
-#' \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}},
-#' \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
+#' @seealso \code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}, \code{\link{epi_plot_heatmap_triangle}}, \code{\link[Hmisc]{rcorr}}, \code{\link[data.table]{melt}}
 #'
 #' @examples
 #' \dontrun{
@@ -41,12 +33,13 @@
 
 epi_stats_corr_triangle <- function(cormat = "cormat_all$cormat") {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   cormat_tri_r <- as.matrix(cormat$r)
-  cormat_tri_P <- as.matrix(cormat$P)
+  cormat_tri_p <- as.matrix(cormat$P)
 
   # Turn all upper triangle values to NA:
   cormat_tri_r[upper.tri(cormat_tri_r)] <- NA
@@ -59,8 +52,8 @@ epi_stats_corr_triangle <- function(cormat = "cormat_all$cormat") {
     na.rm = TRUE
   )
 
-  cormat_tri_P[upper.tri(cormat_tri_P)] <- NA
-  dt_p <- data.table::data.table(Var1 = rownames(cormat_tri_P), cormat_tri_P)
+  cormat_tri_p[upper.tri(cormat_tri_p)] <- NA
+  dt_p <- data.table::data.table(Var1 = rownames(cormat_tri_p), cormat_tri_p)
   cormat_melted_triangle_pval <- data.table::melt(
     dt_p,
     id.vars = "Var1",

@@ -7,16 +7,13 @@
 epi_clean_cond_date(col = NULL)
 }
 \arguments{
-\item{col}{column header. This will be passed to
-lubridate::is.Date(col) and lubridate::is.POSIXt(col)}
+\item{col}{column header. This will be passed to lubridate::is.Date(col) and lubridate::is.POSIXt(col)}
 }
 \value{
 boolean TRUE/FALSE indicating whether column passed is type date
 }
 \description{
-Check if column is date (TRUE). Useful when
-extracting columns from a large data frame using dplyr
-(ie get all date type columns)
+Check if column is date (TRUE). Useful when extracting columns from a large data frame using dplyr (ie get all date type columns)
 }
 \examples{
 \dontrun{
@@ -38,11 +35,7 @@ epi_clean_cond_date(df_date[, "date_col"]) # should be 'TRUE'
 
 }
 \seealso{
-\code{\link{epi_clean_cond_numeric}},
-\code{\link{epi_clean_class_to_factor}},
-\code{\link{epi_clean_count_classes}},
-\code{\link[base]{is.character}},
-\code{\link[base]{is.factor}}.
+\code{\link{epi_clean_cond_numeric}}, \code{\link{epi_clean_class_to_factor}}, \code{\link{epi_clean_count_classes}}, \code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
 }
 \author{
 Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>

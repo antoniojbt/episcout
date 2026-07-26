@@ -9,16 +9,13 @@ epi_stats_fct_table(df, vars_list = NULL)
 \arguments{
 \item{df}{A data frame.}
 
-\item{vars_list}{Optional character vector of column names to include.
-When \code{NULL} (default) all factor and character columns are used.}
+\item{vars_list}{Optional character vector of column names to include. When \code{NULL} (default) all factor and character columns are used.}
 }
 \value{
 A tibble with columns \code{variable}, \code{level} and \code{count}.
 }
 \description{
-Creates a tidy table of counts for each level of factor or character
-columns in a data frame. Missing values are reported with the level
-\code{NA}.
+Creates a tidy table of counts for each level of factor or character columns in a data frame. Declared factor levels are retained with zero counts. Missing values use an actual \code{NA} level so they remain distinct from the literal string \code{"NA"}.
 }
 \examples{
 df <- data.frame(
@@ -31,6 +28,5 @@ epi_stats_fct_table(df, vars_list = "group")
 
 }
 \seealso{
-\code{\link{epi_stats_factors}},
-\code{\link{epi_stats_summary}}
+\code{\link{epi_stats_factors}}, \code{\link{epi_stats_summary}}
 }

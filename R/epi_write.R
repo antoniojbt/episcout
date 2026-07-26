@@ -1,7 +1,6 @@
 #' @title Write files with a consistent convenience function
 #'
-#' @description epi_write() writes files with a consistent convenience function.
-#' Wraps data.table's fwrite with several assumptions as defaults.
+#' @description epi_write() writes files with a consistent convenience function. Wraps data.table's fwrite with several assumptions as defaults.
 #'
 #' @param file_object Object to write
 #'
@@ -19,13 +18,7 @@
 #'
 #' @param ... pass any other data.table::fwrite() parameters
 #'
-#' @note Other parameters as specified by data.table::fwrite()
-#' You are probably better off using the standard write.csv(),
-#' data.table::fwrite() directly or other functions unless you are
-#' writing out several similarly constructed objects.
-#' Files are written with data.table. Column names are written,
-#' row names are not, quotes are not used. Columns are tab separated.
-#' NAs are written as 'NA'. Assumes the first row in the object is a header.
+#' @note Other parameters as specified by data.table::fwrite() You are probably better off using the standard write.csv(), data.table::fwrite() directly or other functions unless you are writing out several similarly constructed objects. Files are written with data.table. Column names are written, row names are not, quotes are not used. Columns are tab separated. NAs are written as 'NA'. Assumes the first row in the object is a header.
 #'
 #' @return None
 #'
@@ -43,14 +36,15 @@
 
 epi_write <- function(file_object = NULL,
                       file_name = "my_file.tsv",
-                      row.names = FALSE,
+                      row.names = FALSE, # nolint: object_name_linter. Historical public argument.
                       quote = FALSE,
                       sep = "\t",
                       na = "NA",
-                      col.names = TRUE,
+                      col.names = TRUE, # nolint: object_name_linter. Historical public argument.
                       ...) {
   if (!requireNamespace("data.table", quietly = TRUE)) {
-    stop("Package data.table needed for this function to work. Please install it.",
+    stop(
+      "Package data.table needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

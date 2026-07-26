@@ -16,8 +16,7 @@ epi_write_df(df, results_subdir, file_n, suffix)
 \item{suffix}{A character string specifying the file extension (e.g., "txt", "csv").}
 }
 \value{
-The full file path of the saved file.
-Prints a message indicating the file's location.
+The full file path of the saved file. Prints a message indicating the file's location.
 }
 \description{
 This function constructs a file path using a specified subdirectory, file name, and suffix, then writes a data frame to that file. It is designed for flexibility in saving results with standardized naming conventions.

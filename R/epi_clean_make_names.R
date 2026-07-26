@@ -1,13 +1,9 @@
 #' @title Check and correct strings which are not syntactically valid or reserved
 #'
-#' @description epi_clean_make_names() Pass a string vector such as column
-#' headers, check they are valid names and if not correct.
-#' Saves some headaches downstream when trying to plot non-syntactically
-#' valid column headers for example.
+#' @description epi_clean_make_names() Pass a string vector such as column headers, check they are valid names and if not correct. Saves some headaches downstream when trying to plot non-syntactically valid column headers for example.
 #'
 #' @param string String with names to test
-#' @param str_replacement string to use instead of the '.' from make.names()
-#' Default is '_'.
+#' @param str_replacement string to use instead of the '.' from make.names() Default is '_'.
 #'
 #' @param unique make.names() unique parameter. Default is TRUE.
 #'
@@ -15,9 +11,7 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[base]{make.names}},
-#' \href{https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658}{stackoverflow test if valid},
-#' \href{https://www.r-bloggers.com/2011/07/testing-for-valid-variable-names/}{r-bloggers test valid names}.
+#' @seealso \code{\link[base]{make.names}}, \href{https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658}{stackoverflow test if valid}, \href{https://www.r-bloggers.com/2011/07/testing-for-valid-variable-names/}{r-bloggers test valid names}.
 #'
 #'
 #' @examples

@@ -1,23 +1,14 @@
 #' @title Check if column is character or factor
 #'
-#' @description Check if column is character or factor (TRUE). Useful when
-#' extracting columns from a large data frame using dplyr
-#' (ie get all character and factor columns)
+#' @description Check if column is character or factor (TRUE). Useful when extracting columns from a large data frame using dplyr (ie get all character and factor columns)
 #'
-#' @param col column header. This will be passed to
-#' is.character(col) and is.factor(col)
+#' @param col column header. This will be passed to is.character(col) and is.factor(col)
 #'
-#' @return boolean TRUE/FALSE indicating whether column passed is type character
-#' or factor
+#' @return boolean TRUE/FALSE indicating whether column passed is type character or factor
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link[episcout]{epi_clean_cond_numeric}},
-#' \code{\link[episcout]{epi_clean_cond_date}},
-#' \code{\link[episcout]{epi_clean_class_to_factor}},
-#' \code{\link[episcout]{epi_clean_count_classes}},
-#' \code{\link[base]{is.character}},
-#' \code{\link[base]{is.factor}}.
+#' @seealso \code{\link[episcout]{epi_clean_cond_numeric}}, \code{\link[episcout]{epi_clean_cond_date}}, \code{\link[episcout]{epi_clean_class_to_factor}}, \code{\link[episcout]{epi_clean_count_classes}}, \code{\link[base]{is.character}}, \code{\link[base]{is.factor}}.
 #'
 #' @examples
 #' \dontrun{

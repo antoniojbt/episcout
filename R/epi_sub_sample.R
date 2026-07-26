@@ -1,13 +1,10 @@
 #' Subsample a dataset while preserving class balance
 #'
-#' Draws a stratified random sample from a data frame using an outcome
-#' variable to maintain class balance. The same proportion of rows is drawn
-#' from each class.
+#' Draws a stratified random sample from a data frame using an outcome variable to maintain class balance. The same proportion of rows is drawn from each class.
 #'
 #' @param data A data.frame containing the data to sample from.
 #' @param outcome_var A character string giving the name of the outcome column.
-#' @param sample_prop A numeric value between 0 and 1 indicating the proportion
-#'   of rows to sample from each outcome class.
+#' @param sample_prop A numeric value between 0 and 1 indicating the proportion of rows to sample from each outcome class.
 #' @param seed Optional numeric seed to make the sampling reproducible.
 #'
 #' @return A data frame containing the stratified subsample.
@@ -26,8 +23,11 @@ epi_sub_sample <- function(data, outcome_var, sample_prop, seed = NULL) {
   if (!outcome_var %in% names(data)) {
     stop("outcome_var must be a column in data")
   }
-  if (!is.numeric(sample_prop) || length(sample_prop) != 1 ||
-    sample_prop <= 0 || sample_prop > 1) {
+  valid_sample_prop <- is.numeric(sample_prop) &&
+    length(sample_prop) == 1 &&
+    sample_prop > 0 &&
+    sample_prop <= 1
+  if (!valid_sample_prop) {
     stop("sample_prop must be a numeric between 0 and 1")
   }
   if (!is.null(seed)) {
@@ -36,7 +36,7 @@ epi_sub_sample <- function(data, outcome_var, sample_prop, seed = NULL) {
     }
     if (exists(".Random.seed", envir = .GlobalEnv)) {
       old_seed <- get(".Random.seed", envir = .GlobalEnv)
-      on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv))
+      on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv)) # nolint: object_name_linter. Base R state name.
     } else {
       on.exit(rm(".Random.seed", envir = .GlobalEnv))
     }

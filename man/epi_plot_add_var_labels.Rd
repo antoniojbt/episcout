@@ -11,22 +11,16 @@ epi_plot_add_var_labels(var_y = NULL, var_x = NULL, var_lookup = NULL)
 
 \item{var_x}{Character string. The name of the variable to use for the x-axis (optional).}
 
-\item{var_lookup}{Named character vector. A lookup table where names are
-variable codes (e.g., column names) and values are human-readable
-descriptions (e.g., "Number of usable beds (x920935)").}
+\item{var_lookup}{Named character vector. A lookup table where names are variable codes (e.g., column names) and values are human-readable descriptions (e.g., "Number of usable beds (x920935)").}
 }
 \value{
 A \code{ggplot2} layer that sets axis labels using metadata.
 }
 \description{
-This function wraps \code{ggplot2::labs()} to dynamically set
-axis labels based on metadata provided in a lookup table. It is
-designed for use as a ggplot layer and can be added with \code{+}.
+This function wraps \code{ggplot2::labs()} to dynamically set axis labels based on metadata provided in a lookup table. It is designed for use as a ggplot layer and can be added with \code{+}.
 }
 \details{
-This function checks whether \code{var_y} and \code{var_x} are present
-in \code{var_lookup}. If so, it uses their corresponding descriptions as axis labels.
-Otherwise, no labels are added for missing variables.
+This function checks whether \code{var_y} and \code{var_x} are present in \code{var_lookup}. If so, it uses their corresponding descriptions as axis labels. Otherwise, no labels are added for missing variables.
 }
 \examples{
 library(ggplot2)

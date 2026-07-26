@@ -19,7 +19,7 @@ test_that("epi_plot_grid_size calculates grid dimensions", {
 
 test_that("epi_plot_volcano runs without error", {
   skip_on_ci()
-  logFC <- rnorm(10)
+  log_fc <- rnorm(10)
   p_val <- runif(10)
-  expect_null(epi_plot_volcano(logFC, p_val))
+  expect_null(epi_plot_volcano(log_fc, p_val))
 })

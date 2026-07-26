@@ -1,11 +1,8 @@
 #' @title Create a name for plots and files to save
 #'
-#' @description Generate a simple output name, given a string (filename)
-#' splits at the last '.', drops the current suffix and adds the one provided.
-#' If `input_name` lacks a dot, the whole string is used as is.
+#' @description Generate a simple output name, given a string (filename) splits at the last '.', drops the current suffix and adds the one provided. If `input_name` lacks a dot, the whole string is used as is.
 #'
-#' @param input_name string to split, usually an input file name
-#' previously saved as an object
+#' @param input_name string to split, usually an input file name previously saved as an object
 #'
 #' @param suffix any string you wish to add, default is '.tsv'
 #'

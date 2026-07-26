@@ -9,12 +9,9 @@ epi_stats_numeric(num_vec = NULL, na.rm = TRUE, coef = 1.5, ...)
 \arguments{
 \item{num_vec}{Numeric vector to summarise.}
 
-\item{na.rm}{Logical; should \code{NA} values be removed prior to computations?
-Default is \code{TRUE}.}
+\item{na.rm}{Logical; should \code{NA} values be removed prior to computations? Default is \code{TRUE}.}
 
-\item{coef}{Numeric; multiplier for the IQR in Tukey's outlier rule.
-Values more than \code{coef * IQR} below \code{Q1} or above \code{Q3} are
-counted as outliers. Default is \code{1.5}.}
+\item{coef}{Numeric; multiplier for the IQR in Tukey's outlier rule. Values more than \code{coef * IQR} below \code{Q1} or above \code{Q3} are counted as outliers. Default is \code{1.5}.}
 
 \item{...}{Additional arguments passed to \code{\link[e1071]{skewness}} and
 \code{\link[e1071]{kurtosis}} (e.g., \code{type}).}
@@ -50,27 +47,15 @@ A one-row \code{data.frame} with the following columns:
 }
 }
 \description{
-Compute a comprehensive set of descriptive statistics for a numeric vector,
-including measures of location, dispersion, shape, normality, and outliers.
+Compute a comprehensive set of descriptive statistics for a numeric vector, including measures of location, dispersion, shape, normality, and outliers.
 }
 \details{
-Missing values are dropped when \code{na.rm = TRUE}.  The Shapiro-Wilk test
-for normality is only run for sample sizes between 4 and 4999; otherwise
-its p-value is reported as \code{NA}. Empty and all-missing inputs return one
-row with unavailable summaries reported as \code{NA}. For skewness:
-negative/longer left tail,
-positive/longer right tail, values above 1 usually means non-normality.
-For kurtosis consider lower values, broader shape and longer tails (platy ~<3),
-normal (meso ~3) and slender/no tails (lepto ~>3).
-Outliers are detected with the Tukey method (above and below 1.5 * IQR) or
-using the multiplier \code{coef}.  Coefficient of variation (\code{CV}) is
-calculated as \code{SD / mean}.  You may pass further arguments (e.g.,
+Missing and non-finite values are excluded from descriptive calculations; infinite values remain included in the historical \code{n_nonNA} count because they are not \code{NA}. The Shapiro-Wilk test for normality is only run for finite sample sizes between 4 and 4999 with non-zero variation; otherwise its p-value is reported as \code{NA}. Empty and all-missing inputs return one row with unavailable summaries reported as \code{NA}. For skewness: negative/longer left tail, positive/longer right tail, values above 1 usually means non-normality. For kurtosis consider lower values, broader shape and longer tails (platy ~<3), normal (meso ~3) and slender/no tails (lepto ~>3). Outliers are detected with the Tukey method (above and below 1.5 * IQR) or using the multiplier \code{coef}. Coefficient of variation (\code{CV}) is calculated as \code{SD / mean}. You may pass further arguments (e.g.,
 \code{type}) to the skewness and kurtosis functions from \pkg{e1071}.
 na.rm is TRUE by default for all tests.
 }
 \seealso{
-\code{\link{epi_stats_count_outliers}}, \code{\link[e1071]{skewness}},
-\code{\link[e1071]{kurtosis}}, \code{\link[stats]{shapiro.test}}
+\code{\link{epi_stats_count_outliers}}, \code{\link[e1071]{skewness}}, \code{\link[e1071]{kurtosis}}, \code{\link[stats]{shapiro.test}}
 }
 \author{
 Antonio J. Berlanga-Taylor

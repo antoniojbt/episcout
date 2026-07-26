@@ -14,15 +14,9 @@ Status: Implemented
 
 ## Results
 
-- Baseline `devtools::test(reporter = 'summary')`: passed with 2 skips and 1
-  pre-existing parallel-worker warning.
-- Baseline `devtools::check(manual = FALSE)`: 0 errors, 0 warnings, 1
-  pre-existing NOTE for `.gitkeep` files under `inst/project-template`.
-- TDD run before implementation: new tests failed for all-missing/empty
-  numeric summaries, zero-mean CV and invalid `margin` messaging.
-- Final targeted tests: passed after `devtools::load_all()` plus
-  `testthat::test_file()`.
-- Final `devtools::test(reporter = 'summary')`: passed with the same 2 skips
-  and 1 parallel-worker warning as baseline.
-- Final `devtools::check(manual = FALSE)`: 0 errors, 0 warnings, 1
-  pre-existing NOTE for `.gitkeep` files under `inst/project-template`.
+- Baseline `devtools::test(reporter = 'summary')`: passed with 2 skips and 1 pre-existing parallel-worker warning.
+- Baseline `devtools::check(manual = FALSE)`: 0 errors, 0 warnings, 1 pre-existing NOTE for `.gitkeep` files under `inst/project-template`.
+- TDD run before implementation: new tests failed for all-missing/empty numeric summaries, zero-mean CV and invalid `margin` messaging.
+- Final targeted tests: passed after `devtools::load_all()` plus `testthat::test_file()`.
+- Final `devtools::test(reporter = 'summary')`: passed with the same 2 skips and 1 parallel-worker warning as baseline.
+- Final `devtools::check(manual = FALSE)`: 0 errors, 0 warnings, 1 pre-existing NOTE for `.gitkeep` files under `inst/project-template`.

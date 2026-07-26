@@ -1,7 +1,6 @@
 #' Convert integer columns to factors
 #'
-#' Converts columns of class integer to factors in a `data.table`, excluding
-#' those of class `IDate`.
+#' Converts columns of class integer to factors in a `data.table`, excluding those of class `IDate`.
 #'
 #' @param dt A `data.table` containing integer columns to convert.
 #'

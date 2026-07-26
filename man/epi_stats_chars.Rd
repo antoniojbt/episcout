@@ -23,16 +23,10 @@ A tibble with one row per character variable containing:
 }
 }
 \description{
-Compute summary statistics for all character columns in a data frame.
-For each character variable, this function returns the number of missing
-values (\code{NA}), the proportion of non-missing values, the minimum and maximum
-string lengths, the count of empty strings, the number of unique values, and
-the count of values consisting only of whitespace.
+Compute summary statistics for all character columns in a data frame. For each character variable, this function returns the number of missing values (\code{NA}), the proportion of non-missing values, the minimum and maximum string lengths, the count of empty strings, the number of unique values, and the count of values consisting only of whitespace.
 }
 \details{
-This function uses \pkg{dplyr} for manipulation, \pkg{tidyr} for reshaping
-and \pkg{stringr} for trimming whitespace. Character columns are gathered
-into long format and statistics computed per column.
+Each selected column is summarised independently through the same internal text contract used by specification-first EDA. Zero-row and all-missing columns retain one stable output row.
 }
 \examples{
 library(dplyr)
@@ -44,6 +38,5 @@ epi_stats_chars(df)
 
 }
 \seealso{
-\code{\link{epi_stats_factors}}, \code{\link{epi_stats_numeric}},
-\code{\link{epi_stats_summary}}
+\code{\link{epi_stats_factors}}, \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_summary}}
 }

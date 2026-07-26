@@ -1,14 +1,12 @@
 #' @title Get counts and percentage of NAs
 #'
-#' @description epi_stats_na_perc() gets the total counts and percentage for missing values
-#' across rows or columns
+#' @description epi_stats_na_perc() gets the total counts and percentage for missing values across rows or columns
 #'
 #' @param df A dataframe with missing values
 #'
 #' @param margin 2 for columns, 1 for rows. Default is columns
 #'
-#' @return A dataframe object with counts and percentage of NAs for each column or row.
-#' Invalid margins raise a clear error.
+#' @return A dataframe object with counts and percentage of NAs for each column or row. Invalid margins raise a clear error.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -45,7 +43,7 @@ epi_stats_na_perc <- function(df = NULL,
 
   # For columns:
   if (margin == 2) {
-    na_counts <- vapply(df, function(x) sum(is.na(x)), integer(1))
+    na_counts <- vapply(df, function(x) sum(summary_missing_mask(x)), integer(1))
     na_perc <- if (nrow(df) > 0) {
       (na_counts / nrow(df)) * 100
     } else {
@@ -57,10 +55,10 @@ epi_stats_na_perc <- function(df = NULL,
       row.names = names(df),
       check.names = FALSE
     )
-  }
-  # For rows:
-  else if (margin == 1) {
-    na_counts <- rowSums(is.na(df))
+  } else if (margin == 1) {
+    # For rows:
+    missing_matrix <- as.data.frame(lapply(df, summary_missing_mask))
+    na_counts <- if (ncol(missing_matrix) > 0L) rowSums(missing_matrix) else integer(nrow(df))
     na_perc <- if (ncol(df) > 0) {
       (na_counts / ncol(df)) * 100
     } else {

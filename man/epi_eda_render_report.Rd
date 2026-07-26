@@ -11,33 +11,30 @@ epi_eda_render_report(
   synthetic = FALSE,
   n = 100,
   seed = NULL,
-  quiet = TRUE
+  quiet = TRUE,
+  summary_version = c("v1", "v2")
 )
 }
 \arguments{
-\item{data}{A data frame containing observed data. Required when
-\code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
+\item{data}{A data frame containing observed data. Required when \code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
 
-\item{spec}{An EDA specification data frame or CSV path accepted by
-\code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
+\item{spec}{An EDA specification data frame or CSV path accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
-\item{output_dir}{Directory where machine-readable workflow outputs and the
-rendered report are written. The directory must already exist.}
+\item{output_dir}{Directory where machine-readable workflow outputs and the rendered report are written. The directory must already exist.}
 
-\item{synthetic}{Logical; when \code{TRUE}, generate synthetic data from \code{spec}
-before running the workflow.}
+\item{synthetic}{Logical; when \code{TRUE}, generate synthetic data from \code{spec} before running the workflow.}
 
 \item{n}{Number of synthetic rows to generate when \code{synthetic = TRUE}.}
 
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
 
-\item{quiet}{Logical; passed to \code{\link[rmarkdown:render]{rmarkdown::render()}} to control render
-output.}
+\item{quiet}{Logical; passed to \code{\link[rmarkdown:render]{rmarkdown::render()}} to control render output.}
+
+\item{summary_version}{Summary contract passed to \code{\link[=epi_eda_run]{epi_eda_run()}}. \code{"v1"} remains the compatibility default and \code{"v2"} renders complete typed summary sections.}
 }
 \value{
 A single character string containing the rendered HTML report path.
 }
 \description{
-Run the specification-first EDA workflow and render a bundled Quarto HTML
-report from the workflow outputs.
+Run the specification-first EDA workflow and render a bundled Quarto HTML report from the workflow outputs.
 }

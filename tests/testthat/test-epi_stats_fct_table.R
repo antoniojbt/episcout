@@ -20,7 +20,7 @@ test_that("counts factor levels including NA", {
   f1_counts <- dplyr::filter(res, variable == "f1")
   expect_equal(dplyr::filter(f1_counts, level == "a")$count, 2)
   expect_equal(dplyr::filter(f1_counts, level == "b")$count, 1)
-  expect_equal(dplyr::filter(f1_counts, level == "NA")$count, 1)
+  expect_equal(dplyr::filter(f1_counts, is.na(level))$count, 1)
 })
 
 test_that("vars_list restricts columns", {

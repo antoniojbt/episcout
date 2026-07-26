@@ -13,33 +13,21 @@ epi_plot_heatmap_triangle(
 )
 }
 \arguments{
-\item{cormat_melted_triangle_r}{a matrix object with correlation values
-Usually the output of episcout::epi_stats_corr_triangle().}
+\item{cormat_melted_triangle_r}{a matrix object with correlation values Usually the output of episcout::epi_stats_corr_triangle().}
 
-\item{cormat_melted_triangle_pval}{a matrix object with correlation p-values
-Usually the output of episcout::epi_stats_corr_triangle().}
+\item{cormat_melted_triangle_pval}{a matrix object with correlation p-values Usually the output of episcout::epi_stats_corr_triangle().}
 
-\item{cor_method}{Correlation method used, will be printed in plot.
-Default is 'Spearman'}
+\item{cor_method}{Correlation method used, will be printed in plot. Default is 'Spearman'}
 
 \item{show_values}{Values to show in plot, 'pval' or 'corr'. Default is 'pval'.}
 
-\item{show_labels}{Logical indicating whether numeric labels should be
-displayed inside the tiles. Default is \code{TRUE}.}
+\item{show_labels}{Logical indicating whether numeric labels should be displayed inside the tiles. Default is \code{TRUE}.}
 }
 \value{
 Returns a heatmap as a ggplot2 object
 }
 \description{
-Plot correlations between numeric variables as a triangle heatmap
-using ggplot2. Prettier plot than a simple heatmap with only the lower
-triangle of a correlation matrix.
-Pass the correlation values from a melted (long) correlation matrix as
-input. Requires a data.frame with correlations and a data.frame with matching p-values.
-Column headers in both must be called Var1 and Var2. Use the output from
-epi_stats_corr_triangle() for example.
-cor_method is a string passed to the legend title It expects the name of the
-method used for correlation (eg 'Spearman')
+Plot correlations between numeric variables as a triangle heatmap using ggplot2. Prettier plot than a simple heatmap with only the lower triangle of a correlation matrix. Pass the correlation values from a melted (long) correlation matrix as input. Requires a data.frame with correlations and a data.frame with matching p-values. Column headers in both must be called Var1 and Var2. Use the output from epi_stats_corr_triangle() for example. cor_method is a string passed to the legend title It expects the name of the method used for correlation (eg 'Spearman')
 }
 \examples{
 \dontrun{
@@ -80,8 +68,7 @@ ggsave("epi_heatmap_triangle.svg",
 }
 }
 \seealso{
-\code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_triangle}},
-\code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}
+\code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_triangle}}, \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap}}
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

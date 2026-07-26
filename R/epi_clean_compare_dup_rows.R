@@ -1,16 +1,10 @@
 #' @title Compare two rows which may be duplicated
 #'
-#' @description Compare two rows which may have duplicated information.
-#' epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows.
-#' compare::compare allows all transformations, sorting, etc. so can be loose.
-#' This function is intended to make manual inspection easier,
-#' compare::compare can miss differences though so care is needed.
+#' @description Compare two rows which may have duplicated information. epi_clean_compare_dup_rows() uses compare::compare() for possibly duplicated rows. compare::compare allows all transformations, sorting, etc. so can be loose. This function is intended to make manual inspection easier, compare::compare can miss differences though so care is needed.
 #'
 #' @param df_dups a data frame with duplicated entries to compare
 #'
-#' @param val_id is a value that is thought to be duplicated (eg a repeating row ID),
-#' passed as a string. Grep is used to search for duplicates without regex with
-#' fixed = TRUE
+#' @param val_id is a value that is thought to be duplicated (eg a repeating row ID), passed as a string. Grep is used to search for duplicates without regex with fixed = TRUE
 #'
 #' @param col_id is a string to indicate an ID column
 #'
@@ -22,8 +16,7 @@
 #'
 #' @param allow_all compare::compare option
 #'
-#' @return returns a list object with the differing columns ('differing_cols'),
-#' their names ('col_names') and the duplicated indices
+#' @return returns a list object with the differing columns ('differing_cols'), their names ('col_names') and the duplicated indices
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -52,14 +45,16 @@ epi_clean_compare_dup_rows <- function(df_dups = NULL,
                                        allow_all = TRUE,
                                        ...) {
   if (!requireNamespace("compare", quietly = TRUE)) {
-    stop("Package compare needed for this function to work. Please install it.",
+    stop(
+      "Package compare needed for this function to work. Please install it.",
       call. = FALSE
     )
   }
   val_id <- as.character(val_id)
   dup_indices <- which(as.character(df_dups[[col_id]]) == val_id)
   # check_dups[dup_indices, 1:2]
-  comp <- compare::compare(df_dups[dup_indices[sub_index_1], , drop = FALSE],
+  comp <- compare::compare(
+    df_dups[dup_indices[sub_index_1], , drop = FALSE],
     df_dups[dup_indices[sub_index_2], , drop = FALSE],
     allowAll = allow_all,
     ...

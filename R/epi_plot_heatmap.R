@@ -1,11 +1,8 @@
 #' @title Plot a simple heatmap using ggplot2
 #'
-#' @description Plot correlations between numeric variables as a heatmap using
-#' ggplot2. Pass the correlation values from a melted (long) correlation matrix as
-#' input.
+#' @description Plot correlations between numeric variables as a heatmap using ggplot2. Pass the correlation values from a melted (long) correlation matrix as input.
 #'
-#' @param cormat_melted a matrix object (usually the output of Hmisc::rcorr()
-#' r (or P) or episcout::epi_stats_corr()). Default is 'cormat_all$cormat_melted_r'
+#' @param cormat_melted a matrix object (usually the output of Hmisc::rcorr() r (or P) or episcout::epi_stats_corr()). Default is 'cormat_all$cormat_melted_r'
 #'
 #' @param title Main title for the plot. Default is blank ('')
 #'
@@ -13,10 +10,7 @@
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_stats_corr}},
-#' \code{\link{epi_stats_corr_triangle}},
-#' \code{\link{epi_stats_corr_rename}},
-#' \code{\link{epi_plot_heatmap_triangle}}
+#' @seealso \code{\link{epi_stats_corr}}, \code{\link{epi_stats_corr_triangle}}, \code{\link{epi_stats_corr_rename}}, \code{\link{epi_plot_heatmap_triangle}}
 #'
 #' @examples
 #' \dontrun{
@@ -51,7 +45,8 @@
 epi_plot_heatmap <- function(cormat_melted = "cormat_all$cormat_melted_r",
                              title = "") {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop("Package ggplot2 needed for this function to work. Please install it.",
+    stop(
+      "Package ggplot2 needed for this function to work. Please install it.",
       call. = FALSE
     )
   }

@@ -1,9 +1,6 @@
 #' Plot distributions of date variables
 #'
-#' @description
-#' `epi_plot_dates()` creates a histogram, boxplot or line plot for a vector of
-#' dates. It acts as a small wrapper around `ggplot2` with the package's default
-#' theme.
+#' @description `epi_plot_dates()` creates a histogram, boxplot or line plot for a vector of dates. It acts as a small wrapper around `ggplot2` with the package's default theme.
 #'
 #' @param x A vector containing dates or values coercible to `Date`.
 #' @param type Type of plot to produce. One of `"hist"`, `"box"`, or `"line"`.

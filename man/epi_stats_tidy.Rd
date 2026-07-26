@@ -17,23 +17,17 @@ epi_stats_tidy(
 
 \item{order_by}{Column to order results by. Default is 'percent'.}
 
-\item{perc_n}{Number of rows from original dataframe to calculate percentage. Must
-be passed manually.}
+\item{perc_n}{Number of rows from original dataframe to calculate percentage. Must be passed manually.}
 
 \item{digits}{= 2,}
 
 \item{decreasing}{Sort values by decreasing order. Default is TRUE.}
 }
 \value{
-Returns a dataframe as a tibble with values ordered and spread.
-Adds row sums and percentage.
+Returns a dataframe as a tibble with values ordered and spread. Adds row sums and percentage.
 }
 \description{
-epi_stats_tidy() cleans up the output from epi_stats_summary() and
-epi_stats_numeric(). Values are rounded to digits (default is 2).
-format(x, nsmall = digits) is used to ensure xx.00 are printed.
-Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric
-column is assumed to be the preferred option. 'decreasing' is passed to order.
+epi_stats_tidy() cleans up the output from epi_stats_summary() and epi_stats_numeric(). Values are rounded to digits (default is 2). format(x, nsmall = digits) is used to ensure xx.00 are printed. Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric column is assumed to be the preferred option. 'decreasing' is passed to order.
 }
 \note{
 Note that format() will likely change the class type.
@@ -182,9 +176,7 @@ stat_sum_zero
 #####
 }
 \seealso{
-\code{\link{epi_stats_summary}},
-\code{\link{epi_stats_format}},
-\code{\link{epi_stats_numeric}}.
+\code{\link{epi_stats_summary}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_numeric}}.
 }
 \author{
 Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

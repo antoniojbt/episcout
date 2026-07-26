@@ -1,7 +1,6 @@
 # Archived Prompt Loop Notes
 
-This file used to hold reusable prompts for the original specification-first
-EDA PR loop. That loop is now archived.
+This file used to hold reusable prompts for the original specification-first EDA PR loop. That loop is now archived.
 
 Use these files for historical context:
 
@@ -26,5 +25,4 @@ failing fixture-backed tests second
 minimal implementation third
 ```
 
-Future specs should preserve that pattern where fixture-backed behaviour is
-being added or changed.
+Future specs should preserve that pattern where fixture-backed behaviour is being added or changed.

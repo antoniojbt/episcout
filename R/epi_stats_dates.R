@@ -1,14 +1,11 @@
 #############
 #' @title Calculate Descriptive Date Statistics
 #'
-#' @description Calculates and returns key descriptive statistics for a vector of
-#' dates, including minimum, maximum, interquartile range (IQR), and quartiles. It
-#' is compatible with both `Date` and `IDate` objects.
+#' @description Calculates and returns key descriptive statistics for a vector of dates or datetimes, including minimum, maximum, interquartile range (IQR), and quartiles. It is compatible with `Date`, `IDate`, `POSIXct` and `POSIXlt` objects.
 #'
-#' @param date_vector A vector of dates of class `Date` or `IDate`.
+#' @param date_vector A vector of dates or datetimes of class `Date`, `IDate`, `POSIXct` or `POSIXlt`.
 #'
-#' @return A `data.frame` containing statistics such as N, N Missing, N Unique, Min,
-#'   25%, Median, 75%, Max, IQR, Most Common, and Range (Days).
+#' @return A `data.frame` containing statistics such as N, N Missing, N Unique, Min, 25%, Median, 75%, Max, IQR, Most Common, and Range (Days).
 #'
 #' @examples
 #' sample_dates <- as.Date(c("2020-01-01", "2020-05-15", "2020-12-31", "2021-01-01"))
@@ -18,68 +15,59 @@
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
-#' @seealso \code{\link{epi_stats_summary}},
-#'   \code{\link{epi_stats_format}},
-#'   \code{\link{epi_stats_numeric}}
+#' @seealso \code{\link{epi_stats_summary}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_numeric}}
 #'
 #' @export
 #'
 #' @importFrom stats IQR quantile
 
 epi_stats_dates <- function(date_vector) {
-  if (!inherits(date_vector, "Date") && !inherits(date_vector, "IDate")) {
-    stop("Input must be a vector of type Date or IDate.")
+  type <- if (inherits(date_vector, c("Date", "IDate"))) {
+    "date"
+  } else if (inherits(date_vector, c("POSIXct", "POSIXlt"))) {
+    "datetime"
+  } else {
+    stop("Input must be a vector of type Date, IDate, POSIXct or POSIXlt.", call. = FALSE)
   }
-  if (inherits(date_vector, "IDate")) {
-    date_vector <- as.Date(date_vector)
+  core <- summary_temporal_core(date_vector, type)
+  iqr_value <- core$iqr_value
+  range_value <- core$range_value
+  if (type == "datetime") {
+    iqr_value <- iqr_value / 86400
+    range_value <- range_value / 86400
   }
-
-  min_date <- min(date_vector, na.rm = TRUE)
-  max_date <- max(date_vector, na.rm = TRUE)
-  iqr_value <- IQR(date_vector, na.rm = TRUE)
-  quantiles_numeric <- quantile(as.numeric(date_vector), na.rm = TRUE)
-  quartiles_dates <- as.Date(
-    quantiles_numeric,
-    origin = "1970-01-01",
-    probs = c(0, 0.25, 0.5, 0.75, 100),
-    na.rm = TRUE
-  )
-
-  sum_stats <- data.frame(
+  data.frame(
     Statistic = c(
       "N", "N Missing", "N Unique", "Min", "25%", "Median", "75%", "Max",
       "IQR", "Most Common", "Range (Days)"
     ),
     Value = c(
-      as.character(length(date_vector)),
-      as.character(sum(is.na(date_vector))),
-      as.character(dplyr::n_distinct(date_vector)),
-      as.character(min_date),
-      as.character(quartiles_dates[2]),
-      as.character(quartiles_dates[3]),
-      as.character(quartiles_dates[4]),
-      as.character(max_date),
+      as.character(core$n),
+      as.character(core$n_missing),
+      as.character(core$n_unique),
+      core$min,
+      core$q1,
+      core$median,
+      core$q3,
+      core$max,
       as.character(iqr_value),
-      names(which.max(table(date_vector))),
-      max_date - min_date
-    )
+      core$most_common,
+      as.character(range_value)
+    ),
+    stringsAsFactors = FALSE
   )
-
-  sum_stats
 }
 #############
 
 #' @title Summarise Multiple Date Columns
 #'
-#' @description Applies [epi_stats_dates()] to each date column in a data frame and
-#'   returns a wide-format tibble with the results.
+#' @description Applies [epi_stats_dates()] to each date or datetime column in a data frame and returns a wide-format tibble with the results.
 #'
 #' @param df A data frame containing one or more date columns.
 #'
-#' @return A tibble where each row corresponds to a date column and columns contain
-#'   the statistics produced by [epi_stats_dates()].
+#' @return A tibble where each row corresponds to a date column and columns contain the statistics produced by [epi_stats_dates()].
 #'
-#' 
+#'
 #' @examples
 #' df <- data.frame(
 #'   start_date = as.Date("2020-01-01") + 0:2,
@@ -89,7 +77,7 @@ epi_stats_dates <- function(date_vector) {
 #'
 #' @export
 epi_stats_dates_multi <- function(df) {
-  date_cols <- df %>% dplyr::select(dplyr::where(lubridate::is.Date))
+  date_cols <- df %>% dplyr::select(dplyr::where(~ inherits(.x, c("Date", "IDate", "POSIXct", "POSIXlt"))))
 
   summary_table <- lapply(names(date_cols), function(col) {
     epi_stats_dates(date_cols[[col]]) %>%
@@ -105,8 +93,7 @@ epi_stats_dates_multi <- function(df) {
 #############
 #' @title Date Differences and Monthly Frequencies
 #'
-#' @description Computes differences between consecutive dates and frequency of
-#'   observations by year-month for a vector of dates.
+#' @description Computes differences between consecutive dates and frequency of observations by year-month for a vector of dates.
 #'
 #' @param date_vector A vector of dates of class `Date` or `IDate`.
 #'
@@ -122,12 +109,7 @@ epi_stats_dates_multi <- function(df) {
 #'
 #' @export
 epi_stats_dates_freq <- function(date_vector) {
-  if (!inherits(date_vector, "Date") && !inherits(date_vector, "IDate")) {
-    stop("Input must be a vector of type Date or IDate.")
-  }
-  if (inherits(date_vector, "IDate")) {
-    date_vector <- as.Date(date_vector)
-  }
+  date_vector <- summary_as_date_vector(date_vector)
 
   date_ord <- sort(as.Date(date_vector))
   date_diffs <- diff(as.numeric(date_ord))

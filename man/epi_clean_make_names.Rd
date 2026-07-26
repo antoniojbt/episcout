@@ -9,8 +9,7 @@ epi_clean_make_names(string = "", str_replacement = "_", unique = TRUE)
 \arguments{
 \item{string}{String with names to test}
 
-\item{str_replacement}{string to use instead of the '.' from make.names()
-Default is '_'.}
+\item{str_replacement}{string to use instead of the '.' from make.names() Default is '_'.}
 
 \item{unique}{make.names() unique parameter. Default is TRUE.}
 }
@@ -18,10 +17,7 @@ Default is '_'.}
 A list of corrected and valid strings.
 }
 \description{
-epi_clean_make_names() Pass a string vector such as column
-headers, check they are valid names and if not correct.
-Saves some headaches downstream when trying to plot non-syntactically
-valid column headers for example.
+epi_clean_make_names() Pass a string vector such as column headers, check they are valid names and if not correct. Saves some headaches downstream when trying to plot non-syntactically valid column headers for example.
 }
 \examples{
 \dontrun{
@@ -38,9 +34,7 @@ epi_clean_make_names(valid_names) # There shouldn't be anything to correct
 
 }
 \seealso{
-\code{\link[base]{make.names}},
-\href{https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658}{stackoverflow test if valid},
-\href{https://www.r-bloggers.com/2011/07/testing-for-valid-variable-names/}{r-bloggers test valid names}.
+\code{\link[base]{make.names}}, \href{https://stackoverflow.com/questions/8396577/check-if-character-value-is-a-valid-r-object-name/8396658#8396658}{stackoverflow test if valid}, \href{https://www.r-bloggers.com/2011/07/testing-for-valid-variable-names/}{r-bloggers test valid names}.
 }
 \author{
 Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}

@@ -1,7 +1,6 @@
 #' IMSS ggplot theme
 #'
-#' Provides a ggplot2 theme with IMSS corporate colours. Package dependencies are
-#' checked at run time.
+#' Provides a ggplot2 theme with IMSS corporate colours. Package dependencies are checked at run time.
 #'
 #' @param base_size Base font size.
 #' @param base_family Base font family.

@@ -84,8 +84,7 @@ A. Executive summary
 - Main risks.
 - Highest-value fixes.
 
-B. Findings table
-Use columns:
+B. Findings table Use columns:
 - Area
 - Severity: blocker / major / minor / note
 - Location
@@ -93,17 +92,13 @@ Use columns:
 - Why it matters
 - Suggested fix
 
-C. Test gaps
-List missing or weak tests, grouped by function or module.
+C. Test gaps List missing or weak tests, grouped by function or module.
 
-D. Statistical concerns
-Separate confirmed issues from assumptions needing clarification.
+D. Statistical concerns Separate confirmed issues from assumptions needing clarification.
 
-E. Maintainability concerns
-Focus on code humans will struggle to understand, trust, or extend.
+E. Maintainability concerns Focus on code humans will struggle to understand, trust, or extend.
 
-F. Suggested next commits
-Give a short, ordered list of concrete commits. Each commit should be small, reviewable, and testable.
+F. Suggested next commits Give a short, ordered list of concrete commits. Each commit should be small, reviewable, and testable.
 
 Review rules:
 - Be specific. Cite files, functions, and line numbers where possible.

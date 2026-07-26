@@ -1,0 +1,35 @@
+id: "009"
+slug: "repository-lint-style-cleanup"
+status: implemented
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: consolidate
+created: 2026-07-25
+updated: 2026-07-25
+
+related_files:
+  - .lintr
+  - scripts/check-local.sh
+  - .github/workflows/r-cmd-check.yml
+  - R/epi_stats_summary.R
+  - R/
+  - tests/testthat/
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+
+notes:
+  - Preserve public APIs and the current minimum R version.
+  - Do not run a full repository styler sweep.
+  - Preserve the uncommitted spec 008 implementation.

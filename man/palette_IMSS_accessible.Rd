@@ -10,6 +10,5 @@ palette_IMSS_accessible
 A character vector of hex colour codes.
 }
 \description{
-A ten-hex vector that's easier to distinguish for viewers
-with colour-vision deficiencies.
+A ten-hex vector that's easier to distinguish for viewers with colour-vision deficiencies.
 }
