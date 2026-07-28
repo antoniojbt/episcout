@@ -180,22 +180,30 @@ summary_as_date_vector <- function(values) {
 }
 
 summary_parse_datetime_chr <- function(values) {
-  formats <- c(
-    "%Y-%m-%dT%H:%M:%OS%z",
-    "%Y-%m-%dT%H:%M:%OSZ",
-    "%Y-%m-%d %H:%M:%OS",
-    "%Y-%m-%dT%H:%M:%OS"
-  )
+  values <- as.character(values)
   parsed <- as.POSIXct(rep(NA_real_, length(values)), origin = "1970-01-01", tz = "UTC")
-  remaining <- seq_along(values)
-  for (format_value in formats) {
-    if (length(remaining) == 0L) {
-      break
-    }
-    candidate <- suppressWarnings(as.POSIXct(values[remaining], format = format_value, tz = "UTC"))
-    accepted <- !is.na(candidate)
-    parsed[remaining[accepted]] <- candidate[accepted]
-    remaining <- remaining[!accepted]
+  date_pattern <- "[0-9]{4}-[0-9]{2}-[0-9]{2}"
+  time_pattern <- "[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]+)?"
+
+  offset_rows <- grepl(paste0("^", date_pattern, "T", time_pattern, "[+-][0-9]{2}:?[0-9]{2}$"), values)
+  if (any(offset_rows)) {
+    normalized <- sub("([+-][0-9]{2}):([0-9]{2})$", "\\1\\2", values[offset_rows])
+    parsed[offset_rows] <- suppressWarnings(as.POSIXct(normalized, format = "%Y-%m-%dT%H:%M:%OS%z", tz = "UTC"))
+  }
+
+  z_rows <- grepl(paste0("^", date_pattern, "T", time_pattern, "Z$"), values)
+  if (any(z_rows)) {
+    parsed[z_rows] <- suppressWarnings(as.POSIXct(values[z_rows], format = "%Y-%m-%dT%H:%M:%OSZ", tz = "UTC"))
+  }
+
+  local_t_rows <- grepl(paste0("^", date_pattern, "T", time_pattern, "$"), values)
+  if (any(local_t_rows)) {
+    parsed[local_t_rows] <- suppressWarnings(as.POSIXct(values[local_t_rows], format = "%Y-%m-%dT%H:%M:%OS", tz = "UTC"))
+  }
+
+  local_space_rows <- grepl(paste0("^", date_pattern, " ", time_pattern, "$"), values)
+  if (any(local_space_rows)) {
+    parsed[local_space_rows] <- suppressWarnings(as.POSIXct(values[local_space_rows], format = "%Y-%m-%d %H:%M:%OS", tz = "UTC"))
   }
   parsed
 }
