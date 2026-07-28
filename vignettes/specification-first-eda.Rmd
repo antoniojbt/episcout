@@ -72,7 +72,7 @@ spec <- epi_eda_spec(spec_data)
 spec
 ```
 
-The optional `missing_codes` column accepts semicolon-separated sentinel values. These values are counted as missing in the missingness profile and excluded from observed summaries. Categorical summaries report `p` over all rows and `p_observed` over observed non-missing rows.
+The optional `missing_codes` column accepts semicolon-separated sentinel values. These values are counted as missing in the missingness profile and excluded from observed summaries and plots. Categorical summaries report `p` over all rows and `p_observed` over observed non-missing rows.
 
 ## Prepare the workflow before data access
 
@@ -92,6 +92,8 @@ synthetic_results$metadata
 synthetic_results$schema
 head(synthetic_results$missing)
 ```
+
+Schema output reports variable presence in `status` and separately reports whether observed storage is `compatible`, `coercible`, `incompatible` or `not_applicable` in `type_status`, with an explanation in `type_reason`. This check is descriptive: it does not coerce data or stop the workflow for an incompatible type.
 
 The default version 1 `summaries` component retains the original machine-readable numeric and categorical tables for compatibility.
 

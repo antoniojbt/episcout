@@ -14,26 +14,26 @@ test_that("basic summary for a simple vector without NAs", {
   expect_equal(nrow(res), 1L)
 
   # Counts
-  expect_equal(res$n,         4L)
-  expect_equal(res$n_nonNA,   4L)
-  expect_equal(res$NA_count,  0L)
+  expect_equal(res$n, 4L)
+  expect_equal(res$n_nonNA, 4L)
+  expect_equal(res$NA_count, 0L)
   expect_equal(res$NA_percentage, 0)
 
   # Location & dispersion
-  expect_equal(res$sum,       sum(v))
-  expect_equal(res$min,       min(v))
+  expect_equal(res$sum, sum(v))
+  expect_equal(res$min, min(v))
   expect_equal(res$quantile_25, quantile(v, .25, names = FALSE))
-  expect_equal(res$mean,      mean(v))
-  expect_equal(res$median,    median(v))
+  expect_equal(res$mean, mean(v))
+  expect_equal(res$median, median(v))
   expect_equal(res$quantile_75, quantile(v, .75, names = FALSE))
-  expect_equal(res$max,       max(v))
+  expect_equal(res$max, max(v))
 
   # IQR, SD, variance, CV, sem
-  expect_equal(res$IQR,       IQR(v))
-  expect_equal(res$SD,        sd(v))
-  expect_equal(res$variance,  var(v))
-  expect_equal(res$CV,        sd(v) / mean(v))
-  expect_equal(res$sem,       sd(v) / sqrt(length(v)))
+  expect_equal(res$IQR, IQR(v))
+  expect_equal(res$SD, sd(v))
+  expect_equal(res$variance, var(v))
+  expect_equal(res$CV, sd(v) / mean(v))
+  expect_equal(res$sem, sd(v) / sqrt(length(v)))
 
   # Outlier fences & counts (no outliers here)
   q1 <- quantile(v, .25, names = FALSE)
@@ -54,14 +54,47 @@ test_that("NAs are counted and percentages correct", {
   v <- c(NA, 1, 2, NA)
   res <- epi_stats_numeric(v)
 
-  expect_equal(res$n,         4L)
-  expect_equal(res$n_nonNA,   2L)
-  expect_equal(res$NA_count,  2L)
+  expect_equal(res$n, 4L)
+  expect_equal(res$n_nonNA, 2L)
+  expect_equal(res$NA_count, 2L)
   expect_equal(res$NA_percentage, 50)
 })
 
+test_that("na.rm controls whether summaries use a reduced sample", {
+  values <- c(1, 2, 3, NA_real_)
+
+  removed <- epi_stats_numeric(values, na.rm = TRUE)
+  expect_equal(removed$sum, 6)
+  expect_equal(removed$mean, 2)
+  expect_equal(removed$SD, 1)
+
+  retained <- epi_stats_numeric(values, na.rm = FALSE)
+  expect_equal(retained$n, 4L)
+  expect_equal(retained$n_nonNA, 3L)
+  expect_equal(retained$NA_count, 1L)
+  expect_equal(retained$NA_percentage, 25)
+
+  numeric_results <- c(
+    "sum", "min", "quantile_25", "mean", "median", "quantile_75", "max",
+    "IQR", "SD", "CV", "variance", "sem", "skewness", "kurtosis",
+    "Shapiro_Wilk_p_value", "lower_fence", "upper_fence", "outlier_percentage"
+  )
+  integer_results <- c(
+    "n_below_lower", "n_above_upper", "outlier_count"
+  )
+  expect_true(all(vapply(retained[numeric_results], is.double, logical(1))))
+  expect_true(all(vapply(retained[integer_results], is.integer, logical(1))))
+  expect_true(all(is.na(retained[1, c(numeric_results, integer_results)])))
+})
+
+test_that("na.rm must be one non-missing logical value", {
+  expect_error(epi_stats_numeric(1:3, na.rm = 1), "single non-missing logical")
+  expect_error(epi_stats_numeric(1:3, na.rm = c(TRUE, FALSE)), "single non-missing logical")
+  expect_error(epi_stats_numeric(1:3, na.rm = NA), "single non-missing logical")
+})
+
 test_that("outlier detection works", {
-  v <- c(1, 2, 3, 100)  # 100 is a Tukey outlier
+  v <- c(1, 2, 3, 100) # 100 is a Tukey outlier
   res <- epi_stats_numeric(v, coef = 1.5)
 
   # Only one value above the upper fence

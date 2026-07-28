@@ -11,11 +11,13 @@
 #'
 #' @param all.x corresponds to merge() all.x parameter. TRUE by default.
 #'
+#' @param all.y corresponds to merge() all.y parameter. TRUE by default. Set to FALSE with all.x = TRUE for legacy left-join behavior.
+#'
 #' @param ... any further arguments that merge.data.frame or merge.data.table can take.
 #'
 #' @return A data.table in wide format with each sub-dataframe contained as a sub-list
 #'
-#' @note This function helps with spreading and gathering long and wide dataframes. You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as well as similar base functions and other packages such as data.table depending on your problem. See example below in case you have a messier dataframe which doesn't easily yield to existing workflows and functions. Note that merge.data.table is dispatched (as opposed to merge.data.frame). To get all = TRUE, pass all.x = TRUE and all.y = TRUE.
+#' @note This function helps with spreading and gathering long and wide dataframes. You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as well as similar base functions and other packages such as data.table depending on your problem. See example below in case you have a messier dataframe which doesn't easily yield to existing workflows and functions. Note that merge.data.table is dispatched (as opposed to merge.data.frame). Full outer behavior is the default; use `all.x = TRUE, all.y = FALSE` for a left join.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -116,6 +118,7 @@
 epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
                                        id_col = "",
                                        all.x = TRUE,
+                                       all.y = TRUE,
                                        ...) {
   if (!requireNamespace("data.table", quietly = TRUE)) {
     stop(
@@ -159,6 +162,7 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
     df2,
     by = id_col,
     all.x = all.x,
+    all.y = all.y,
     suffixes = c(suffix_1, suffix_2),
     ...
   )
@@ -185,6 +189,7 @@ epi_clean_merge_nested_dfs <- function(nested_list_dfs = NULL,
       df2,
       by = id_col,
       all.x = all.x,
+      all.y = all.y,
       suffixes = c("", suffix_2),
       ...
     )
