@@ -115,7 +115,7 @@ sex,Sex at birth,categorical,covariate,,"Female;Male;Unknown",,,Unknown,TRUE,dem
 death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome indicator
 ```
 
-The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries. The default version 1 summary contract retains the original numeric and categorical tables. Opt in to `summary_version = "v2"` for complete numeric, integer, categorical, binary, text, date and datetime summaries, explicit variable coverage and documented skips.
+The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The default version 1 summary contract retains the original numeric and categorical tables. Opt in to `summary_version = "v2"` for complete numeric, integer, categorical, binary, text, date and datetime summaries, explicit variable coverage and documented skips.
 
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 

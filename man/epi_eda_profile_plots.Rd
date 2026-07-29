@@ -15,5 +15,5 @@ epi_eda_profile_plots(data, spec)
 A named list of ggplot objects, one per specified variable.
 }
 \description{
-Create one basic ggplot object for each variable listed in a specification-first EDA data dictionary. Plot objects are returned without being printed.
+Create one basic ggplot object for each variable listed in a specification-first EDA data dictionary. Standard missing values and specification \code{missing_codes} are excluded before plotting or temporal conversion. Plot objects are returned without being printed.
 }

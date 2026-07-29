@@ -12,8 +12,8 @@ epi_eda_check_schema(data, spec)
 \item{spec}{An EDA specification data frame or CSV path.}
 }
 \value{
-A data frame with one row per expected or unexpected variable.
+A data frame with one row per expected or unexpected variable. The historical \code{status} column reports presence. \code{type_status} is one of \code{compatible}, \code{coercible}, \code{incompatible} or \code{not_applicable}, and \code{type_reason} explains that classification.
 }
 \description{
-Compare expected variables in an EDA specification with variables observed in a data frame.
+Compare expected variables in an EDA specification with variables observed in a data frame. Presence and type compatibility are reported separately; this function does not coerce data or stop on incompatible observed types.
 }

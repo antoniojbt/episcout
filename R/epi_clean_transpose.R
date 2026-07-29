@@ -6,7 +6,7 @@
 #'
 #' @param id_col_num Index to identify the column with IDs
 #'
-#' @return A transposed dataframe with the first column containing the transposed values of the column passed as id_col_num.
+#' @return A transposed data frame whose first column contains the original non-ID column names and whose remaining column names are the values from the column selected by `id_col_num`.
 #'
 #' @author Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
@@ -46,15 +46,28 @@ epi_clean_transpose <- function(df = NULL,
       call. = FALSE
     )
   }
-  # Save original IDs from first column:
+  if (!is.data.frame(df)) {
+    stop("df must be a data frame", call. = FALSE)
+  }
+  if (!is.numeric(id_col_num) || length(id_col_num) != 1L ||
+        is.na(id_col_num) || !is.finite(id_col_num) ||
+        id_col_num != as.integer(id_col_num) ||
+        id_col_num < 1L || id_col_num > ncol(df)) {
+    stop(
+      "id_col_num must be a single valid column index",
+      call. = FALSE
+    )
+  }
+  id_col_num <- as.integer(id_col_num)
+  # Save original IDs from the selected column:
   rows <- as.character(unlist(df[[id_col_num]]))
-  # Save original IDs from first row:
-  cols <- as.character(colnames(df))
-  # Transpose file without first column (containing IDs):
+  # Save original column names other than the selected ID column:
+  cols <- as.character(colnames(df)[-id_col_num])
+  # Transpose file without the selected ID column:
   df_t <- data.table::as.data.table(data.table::transpose(df[, -id_col_num]))
   # Insert original IDs as new colnames in transposed:
   colnames(df_t) <- rows
-  # Insert original IDs as first column into transposed:
-  df_t <- cbind(as.character(cols[-1]), df_t) # Exclude first label
+  # Insert original column names as first column into transposed:
+  df_t <- cbind(V1 = cols, df_t)
   as.data.frame(df_t)
 }

@@ -29,6 +29,9 @@ The proportion of individuals who suffered the event at the given point, printed
 \description{
 It can be used to estimate the case fatality rate.
 }
+\details{
+Both the event count and its denominator are calculated from rows matching \code{analysis_window}. Eligible outcomes must be non-missing binary numeric or logical values. The function fails if the requested columns are absent, no rows match the analysis window, or eligible outcomes are missing or non-binary.
+}
 \examples{
 \dontrun{
 df <- data.frame(
