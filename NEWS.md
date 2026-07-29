@@ -2,6 +2,10 @@
 
 ## Development version
 
+- Corrected event proportions so numerator and denominator use the same requested analysis window, with explicit errors for absent columns, empty eligible populations and missing or non-binary eligible outcomes.
+- Made `epi_stats_numeric(na.rm = FALSE)` preserve factual counts while returning unavailable analytical results instead of silently excluding missing values.
+- Corrected transpose labels for arbitrary identifier-column positions, made repeated-measure spreading safe for zero, nonconsecutive and unbalanced visits, and made nested data-frame joins full outer by default while retaining explicit legacy left joins with `all.y = FALSE`.
+- Excluded specification missing sentinels from EDA plot layers and added descriptive `type_status` and `type_reason` fields to schema output without changing the historical presence fields.
 - Fixed synthetic integer generation for singleton bounds and intervals that contain no integer values.
 - Added opt-in version 2 EDA summaries covering numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable status/skips and six machine-readable output tables; version 1 remains the default for one compatibility release.
 - Aligned active univariate `epi_stats_*` and EDA summaries on shared internal type cores, added typed `epi_stats_summary()` output, and stabilised non-finite numeric, zero-row character/factor and empty temporal behaviour.

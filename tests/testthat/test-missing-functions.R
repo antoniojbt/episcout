@@ -52,6 +52,51 @@ test_that("epi_stats_prop_outcome computes proportion", {
   expect_equal(res, 1)
 })
 
+test_that("epi_stats_prop_outcome aligns events and denominator to the analysis window", {
+  # At T0, IDs 1, 2, and 3 are eligible and only ID 1 has an event.
+  # The event for ID 4 occurs at T1 and must not enter the T0 numerator.
+  df <- data.frame(
+    id = 1:5,
+    outcome = c(1, 0, 0, 1, 0),
+    window = c("T0", "T0", "T0", "T1", "T1")
+  )
+
+  expect_output(
+    res <- epi_stats_prop_outcome(df, "outcome", "window", "T0", round_dig = 4),
+    "Proportion of deaths at T0: 0.3333"
+  )
+  expect_equal(res, 0.3333)
+})
+
+test_that("epi_stats_prop_outcome rejects invalid analysis populations", {
+  valid <- data.frame(outcome = c(1, 0), window = c("T0", "T0"))
+
+  expect_error(
+    epi_stats_prop_outcome(valid, "absent", "window", "T0"),
+    "outcome_var_window.*absent"
+  )
+  expect_error(
+    epi_stats_prop_outcome(valid, "outcome", "absent", "T0"),
+    "pop_at_risk_var.*absent"
+  )
+  expect_error(
+    epi_stats_prop_outcome(valid, "outcome", "window", "T1"),
+    "No eligible rows"
+  )
+
+  missing_outcome <- data.frame(outcome = c(1, NA_real_), window = c("T0", "T0"))
+  expect_error(
+    epi_stats_prop_outcome(missing_outcome, "outcome", "window", "T0"),
+    "missing outcome"
+  )
+
+  invalid_outcome <- data.frame(outcome = c(1, 2), window = c("T0", "T0"))
+  expect_error(
+    epi_stats_prop_outcome(invalid_outcome, "outcome", "window", "T0"),
+    "binary 0/1"
+  )
+})
+
 print("Function being tested: epi_write_df")
 
 test_that("epi_write_df writes file and returns path", {

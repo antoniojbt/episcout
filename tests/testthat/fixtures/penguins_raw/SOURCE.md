@@ -22,7 +22,7 @@ https://doi.org/10.1371/journal.pone.0090081
 
 - `penguins_raw.csv`: pinned data exported from `palmerpenguins::penguins_raw`.
 - `penguins_raw_spec.csv`: manually reviewed EDA data dictionary.
-- `expected_schema.csv`: independently computed schema contract.
+- `expected_schema.csv`: generator-produced regression projection of the historical presence and observed-class fields; it is not independent evidence of type compatibility.
 - `expected_missing.csv`: independently computed missingness contract.
 - `expected_summary_numeric.csv`: independently computed numeric summaries.
 - `expected_summary_categorical.csv`: independently computed categorical summaries.
@@ -36,5 +36,4 @@ Run from the repository root:
 scripts/rscript_env_caller.R data-raw/test-fixtures/make_external_fixtures.R
 ```
 
-The script computes expected outputs with base R and does not call the
-package under test.
+The script computes expected outputs with base R and does not call the package under test. The generated schema classifier mirrors the package's historical classifier, so hand-authored tests provide the independent evidence for type compatibility.

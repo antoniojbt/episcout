@@ -8,6 +8,7 @@ epi_clean_merge_nested_dfs(
   nested_list_dfs = NULL,
   id_col = "",
   all.x = TRUE,
+  all.y = TRUE,
   ...
 )
 }
@@ -17,6 +18,8 @@ epi_clean_merge_nested_dfs(
 \item{id_col}{A string to identify the column to merge by. This is passed to the by parameter in merge(). Requires all dataframes to have the same column name.}
 
 \item{all.x}{corresponds to merge() all.x parameter. TRUE by default.}
+
+\item{all.y}{corresponds to merge() all.y parameter. TRUE by default. Set to FALSE with all.x = TRUE for legacy left-join behavior.}
 
 \item{...}{any further arguments that merge.data.frame or merge.data.table can take.}
 }
@@ -32,7 +35,7 @@ The function performs a full outer join with base R merge(df1, df2, by = id_col,
 }
 }
 \note{
-This function helps with spreading and gathering long and wide dataframes. You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as well as similar base functions and other packages such as data.table depending on your problem. See example below in case you have a messier dataframe which doesn't easily yield to existing workflows and functions. Note that merge.data.table is dispatched (as opposed to merge.data.frame). To get all = TRUE, pass all.x = TRUE and all.y = TRUE.
+This function helps with spreading and gathering long and wide dataframes. You may want to see \code{\link[tidyr]{gather}}, \code{\link[tidyr]{spread}} as well as similar base functions and other packages such as data.table depending on your problem. See example below in case you have a messier dataframe which doesn't easily yield to existing workflows and functions. Note that merge.data.table is dispatched (as opposed to merge.data.frame). Full outer behavior is the default; use \verb{all.x = TRUE, all.y = FALSE} for a left join.
 }
 \examples{
 \dontrun{
