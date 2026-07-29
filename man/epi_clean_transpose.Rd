@@ -12,7 +12,7 @@ epi_clean_transpose(df = NULL, id_col_num = "")
 \item{id_col_num}{Index to identify the column with IDs}
 }
 \value{
-A transposed dataframe with the first column containing the transposed values of the column passed as id_col_num.
+A transposed data frame whose first column contains the original non-ID column names and whose remaining column names are the values from the column selected by \code{id_col_num}.
 }
 \description{
 Transposes a dataframe preserving row and column names. Based on data.table transpose. Assumes there is an id column with unique IDs
