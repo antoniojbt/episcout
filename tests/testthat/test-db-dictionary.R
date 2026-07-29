@@ -12,11 +12,11 @@ if (!methods::isClass("DictionaryMockConnection")) {
   )
 }
 
-methods::setMethod("dbIsValid", "DictionaryMockConnection", function(dbObj, ...) {
+methods::setMethod("dbIsValid", "DictionaryMockConnection", function(dbObj, ...) { # nolint: object_name_linter. DBI generic argument.
   dbObj@state$valid
 })
 
-methods::setMethod("dbGetInfo", "DictionaryMockConnection", function(dbObj, ...) {
+methods::setMethod("dbGetInfo", "DictionaryMockConnection", function(dbObj, ...) { # nolint: object_name_linter. DBI generic argument.
   list(dbms.name = "PostgreSQL")
 })
 
