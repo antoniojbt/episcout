@@ -11,6 +11,7 @@ dependencies:
   - r-covr
   - r-cowplot
   - r-data.table
+  - r-dbi
   - r-devtools
   - r-dofuture
   - r-dplyr
@@ -28,12 +29,14 @@ dependencies:
   - r-mice
   - r-openxlsx
   - r-purrr
+  - r-rpostgres
   - r-rcmdcheck
   - r-remotes
   - r-renv
   - r-reshape2
   - r-rlang
   - r-rmarkdown
+  - r-rsqlite
   - r-roxygen2
   - r-scales
   - r-stringi
