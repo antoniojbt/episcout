@@ -267,13 +267,58 @@ test_that("epi_clean_add_colname_suffix", {
 ######################
 print("Function being tested: epi_clean_spread_repeated")
 
-test_that("epi_clean_spread_repeated", {
-  df_spread <- epi_clean_spread_repeated(df, "var_to_rep", 1)
-  # df_spread
-  expect_output(str(df_spread[1]), "0.586 -0.109 0.606 0.63 -0.284")
-  expect_output(str(df_spread[1]), "1 1 0 0 0 1 0 1 1 0")
-  expect_output(str(df_spread[2]), "0.709 -0.453 -1.818 -0.276 -0.919")
-  expect_output(str(df_spread[2]), "1 3 1 1 4 2 1 2 2 1")
+test_that("epi_clean_spread_repeated preserves difficult visit boundaries", {
+  long <- data.frame(
+    participant = c("A", "A", "B", "B", "C"),
+    visit = c(0L, 3L, 0L, 3L, 3L),
+    score = c(10L, 13L, 20L, 23L, 33L),
+    response = c("yes", "no", "no", "yes", "yes"),
+    stringsAsFactors = FALSE
+  )
+  expected <- list(
+    "0" = data.frame(
+      participant = c("A", "B"),
+      visit.0 = c(0L, 0L),
+      score.0 = c(10L, 20L),
+      response.0 = c("yes", "no"),
+      row.names = c(1L, 3L),
+      stringsAsFactors = FALSE
+    ),
+    "3" = data.frame(
+      participant = c("A", "B", "C"),
+      visit.3 = c(3L, 3L, 3L),
+      score.3 = c(13L, 23L, 33L),
+      response.3 = c("no", "yes", "yes"),
+      row.names = c(2L, 4L, 5L),
+      stringsAsFactors = FALSE
+    )
+  )
+
+  actual <- epi_clean_spread_repeated(long, "visit", 1)
+
+  expect_equal(actual, expected)
+})
+
+test_that("epi_clean_spread_repeated rejects ambiguous visit rows", {
+  missing_visit <- data.frame(
+    participant = c("A", "A"),
+    visit = c(0L, NA_integer_),
+    score = c(10L, 11L)
+  )
+  duplicate_visit <- data.frame(
+    participant = c("A", "A"),
+    visit = c(0L, 0L),
+    score = c(10L, 11L)
+  )
+
+  expect_error(
+    epi_clean_spread_repeated(missing_visit, "visit", 1),
+    "missing visit codes"
+  )
+  expect_error(
+    epi_clean_spread_repeated(duplicate_visit, "visit", 1),
+    "identifier and visit code pair must be unique"
+  )
 })
 ######################
 
@@ -317,6 +362,16 @@ test_that("epi_clean_merge_nested_dfs error for single df", {
   expect_error(epi_clean_merge_nested_dfs(list(df1), "id"))
 })
 
+test_that("epi_clean_merge_nested_dfs rejects missing join columns", {
+  df1 <- data.frame(id = 1:2, val = 1:2)
+  df2 <- data.frame(other_id = 1:2, val = 3:4)
+
+  expect_error(
+    epi_clean_merge_nested_dfs(list(df1, df2), "id"),
+    "missing from y"
+  )
+})
+
 test_that("epi_clean_merge_nested_dfs duplicated list names", {
   df1 <- data.frame(id = 1:2, val = 1:2)
   df2 <- data.frame(id = 1:2, val = 3:4)
@@ -347,30 +402,119 @@ test_that("epi_clean_merge_nested_dfs passes ... arguments", {
   res <- epi_clean_merge_nested_dfs(list(df1, df2), "id", sort = FALSE)
   expect_equal(res$id, c(2, 1))
 })
+
+test_that("epi_clean_merge_nested_dfs defaults to a full outer join", {
+  left <- data.frame(id = c(1L, 2L), left_value = c("a", "b"))
+  right <- data.frame(id = c(2L, 3L), right_value = c(20L, 30L))
+  expected <- data.frame(
+    id = c(1L, 2L, 3L),
+    left_value = c("a", "b", NA_character_),
+    right_value = c(NA_integer_, 20L, 30L)
+  )
+
+  actual <- epi_clean_merge_nested_dfs(list(left, right), "id")
+
+  expect_equal(as.data.frame(actual), expected)
+})
+
+test_that("epi_clean_merge_nested_dfs supports explicit legacy left joins", {
+  left <- data.frame(id = c(1L, 2L), left_value = c("a", "b"))
+  right <- data.frame(id = c(2L, 3L), right_value = c(20L, 30L))
+  expected <- data.frame(
+    id = c(1L, 2L),
+    left_value = c("a", "b"),
+    right_value = c(NA_integer_, 20L)
+  )
+
+  actual <- epi_clean_merge_nested_dfs(
+    list(left, right),
+    "id",
+    all.x = TRUE,
+    all.y = FALSE
+  )
+
+  expect_equal(as.data.frame(actual), expected)
+})
+
+test_that("epi_clean_merge_nested_dfs preserves unmatched IDs across inputs", {
+  first <- data.frame(id = c(1L, 2L), first_value = c("a", "b"))
+  second <- data.frame(id = c(2L, 3L), second_value = c(20L, 30L))
+  third <- data.frame(id = c(3L, 4L), third_value = c(FALSE, TRUE))
+  expected <- data.frame(
+    id = 1:4,
+    first_value = c("a", "b", NA_character_, NA_character_),
+    second_value = c(NA_integer_, 20L, 30L, NA_integer_),
+    third_value = c(NA, NA, FALSE, TRUE)
+  )
+
+  actual <- epi_clean_merge_nested_dfs(
+    list(first, second, third),
+    "id"
+  )
+
+  expect_equal(as.data.frame(actual), expected)
+})
+
+test_that("repeated-measure spread and merge retain unbalanced visits", {
+  long <- data.frame(
+    participant = c("A", "A", "B", "B", "C"),
+    visit = c(0L, 3L, 0L, 3L, 3L),
+    score = c(10L, 13L, 20L, 23L, 33L),
+    response = c("yes", "no", "no", "yes", "yes"),
+    stringsAsFactors = FALSE
+  )
+  expected <- data.frame(
+    participant = c("A", "B", "C"),
+    visit.0 = c(0L, 0L, NA_integer_),
+    score.0 = c(10L, 20L, NA_integer_),
+    response.0 = c("yes", "no", NA_character_),
+    visit.3 = c(3L, 3L, 3L),
+    score.3 = c(13L, 23L, 33L),
+    response.3 = c("no", "yes", "yes"),
+    stringsAsFactors = FALSE
+  )
+
+  visits <- epi_clean_spread_repeated(long, "visit", 1)
+  actual <- epi_clean_merge_nested_dfs(visits, "participant")
+
+  expect_equal(as.data.frame(actual), expected)
+})
 ######################
 
 
 ######################
 print("Function being tested: epi_clean_transpose")
 
-test_that("epi_clean_transpose", {
-  df$id_col <- rownames(df)
-  # df
-  id_col <- 6
-  df_t <- epi_clean_transpose(df, id_col)
-  # class(df_t)
-  # dim(df)
-  # dim(df_t)
-  # df_t
-  # names(df_t)
-  # df_t[, 1] # should contain the original column headers
-  expect_output(str(class(df_t)), "data.frame")
-  expect_output(str(dim(df)), "20 6")
-  expect_output(str(dim(df_t)), "5 21")
-  expect_output(str(names(df_t)), '"V1" "1" "2" "3" "4" "5" "6" "7"')
-  expect_output(str(df_t[, 1]), '"var_to_rep" "x" "y" "z" "id_col"')
-  expect_output(str(epi_head_and_tail(df_t)), 'chr  "1" "Pre" "0.585528817843856" "1"')
-  expect_output(str(epi_head_and_tail(df_t)), 'chr  "2" "Post" "-0.453497173462763" "1" ...')
+test_that("epi_clean_transpose uses the selected ID column for every position", {
+  source <- data.frame(
+    measure_a = c(10L, 20L),
+    subject = c("p1", "p2"),
+    measure_b = c("yes", "no"),
+    stringsAsFactors = FALSE
+  )
+  expected <- data.frame(
+    V1 = c("measure_a", "measure_b"),
+    p1 = c("10", "yes"),
+    p2 = c("20", "no"),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+  id_first <- source[c("subject", "measure_a", "measure_b")]
+  id_middle <- source
+  id_last <- source[c("measure_a", "measure_b", "subject")]
+
+  expect_equal(epi_clean_transpose(id_first, 1), expected)
+  expect_equal(epi_clean_transpose(id_middle, 2), expected)
+  expect_equal(epi_clean_transpose(id_last, 3), expected)
+})
+
+test_that("epi_clean_transpose rejects invalid ID-column selections", {
+  source <- data.frame(subject = c("p1", "p2"), value = c(1L, 2L))
+
+  expect_error(epi_clean_transpose(source), "single valid column index")
+  expect_error(epi_clean_transpose(source, c(1, 2)), "single valid column index")
+  expect_error(epi_clean_transpose(source, 0), "single valid column index")
+  expect_error(epi_clean_transpose(source, 3), "single valid column index")
 })
 ######################
 

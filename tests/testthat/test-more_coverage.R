@@ -75,6 +75,6 @@ test_that("epi_clean_transpose preserves names", {
   df <- data.frame(id = 1:2, a = 3:4)
   df$id_col <- df$id
   tdf <- epi_clean_transpose(df, 3)
-  expect_equal(as.character(tdf[1, 1]), "a")
+  expect_equal(as.character(tdf[, 1]), c("id", "a"))
   expect_equal(colnames(tdf)[2], "1")
 })

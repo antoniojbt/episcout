@@ -1,8 +1,7 @@
 # Regenerate external test fixtures for specification-first EDA.
 #
 # This script is intentionally manual and is not run by package tests. It uses
-# public package datasets as external sources and computes expected outputs with
-# simple base R code only. Do not use the package under test here.
+# public package datasets as external sources and computes expected outputs with simple base R code only. The schema output is a regression projection because its classifier mirrors historical production logic; it is not independent compatibility evidence. Do not use the package under test here.
 
 fixture_source_packages <- c("medicaldata", "palmerpenguins")
 missing_source_packages <- fixture_source_packages[
@@ -19,12 +18,24 @@ if (length(missing_source_packages) > 0) {
 }
 
 fixture_observed_type <- function(x) {
-  if (inherits(x, "POSIXct") || inherits(x, "POSIXlt")) return("datetime")
-  if (inherits(x, "Date")) return("date")
-  if (is.factor(x)) return("categorical")
-  if (is.numeric(x) || is.integer(x)) return("numeric")
-  if (is.character(x)) return("text")
-  if (is.logical(x)) return("binary")
+  if (inherits(x, "POSIXct") || inherits(x, "POSIXlt")) {
+    return("datetime")
+  }
+  if (inherits(x, "Date")) {
+    return("date")
+  }
+  if (is.factor(x)) {
+    return("categorical")
+  }
+  if (is.numeric(x) || is.integer(x)) {
+    return("numeric")
+  }
+  if (is.character(x)) {
+    return("text")
+  }
+  if (is.logical(x)) {
+    return("binary")
+  }
   class(x)[1]
 }
 
@@ -135,12 +146,9 @@ source_lines <- c(
   "## Fixture files",
   "",
   "- `blood_storage.csv`: pinned data exported from `medicaldata::blood_storage`.",
-  "- `blood_storage_spec.csv`: manually reviewed fixture data dictionary for the",
-  "  specification-first EDA workflow.",
-  "- `expected_schema.csv`: independently computed expected schema result for the",
-  "  unmodified fixture data.",
-  "- `expected_missing.csv`: independently computed expected missingness result for",
-  "  the unmodified fixture data.",
+  "- `blood_storage_spec.csv`: manually reviewed fixture data dictionary for the specification-first EDA workflow.",
+  "- `expected_schema.csv`: generator-produced regression projection of the historical presence and observed-class fields; it is not independent evidence of type compatibility.",
+  "- `expected_missing.csv`: independently computed expected missingness result for the unmodified fixture data.",
   "",
   "## Regeneration",
   "",
@@ -150,8 +158,7 @@ source_lines <- c(
   "scripts/rscript_env_caller.R data-raw/test-fixtures/make_external_fixtures.R",
   "```",
   "",
-  "The script computes expected outputs with base R and does not call the",
-  "package under test."
+  "The script computes expected outputs with base R and does not call the package under test. The generated schema classifier mirrors the package's historical classifier, so hand-authored tests provide the independent evidence for type compatibility."
 )
 writeLines(source_lines, file.path(fixture_dir, "SOURCE.md"))
 
@@ -292,7 +299,7 @@ penguins_source_lines <- c(
   "",
   "- `penguins_raw.csv`: pinned data exported from `palmerpenguins::penguins_raw`.",
   "- `penguins_raw_spec.csv`: manually reviewed EDA data dictionary.",
-  "- `expected_schema.csv`: independently computed schema contract.",
+  "- `expected_schema.csv`: generator-produced regression projection of the historical presence and observed-class fields; it is not independent evidence of type compatibility.",
   "- `expected_missing.csv`: independently computed missingness contract.",
   "- `expected_summary_numeric.csv`: independently computed numeric summaries.",
   "- `expected_summary_categorical.csv`: independently computed categorical summaries.",
@@ -306,8 +313,7 @@ penguins_source_lines <- c(
   "scripts/rscript_env_caller.R data-raw/test-fixtures/make_external_fixtures.R",
   "```",
   "",
-  "The script computes expected outputs with base R and does not call the",
-  "package under test."
+  "The script computes expected outputs with base R and does not call the package under test. The generated schema classifier mirrors the package's historical classifier, so hand-authored tests provide the independent evidence for type compatibility."
 )
 writeLines(penguins_source_lines, file.path(penguins_fixture_dir, "SOURCE.md"))
 

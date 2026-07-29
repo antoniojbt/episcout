@@ -19,7 +19,7 @@ a nested list with as many sub-lists as unique values contained in the column pa
 the unique values in rep_col. The ID column passed as id_col_num is included in each sub-list.
 }
 \description{
-Create a single data frame with unique rows (individuals) and repeated observations across columns. A column with the replicate/repeated observation/time-point number for each row must be provided.
+Create a single data frame with unique rows (individuals) and repeated observations across columns. A column with the replicate/repeated observation/time-point number for each row must be provided. Visit codes may be zero or nonconsecutive, but they must not be missing and each identifier/visit pair must be unique.
 }
 \examples{
 \dontrun{

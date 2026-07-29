@@ -95,7 +95,7 @@ test_that("penguins_raw specification has the reviewed contracts", {
   expect_true(all(is.na(spec$missing_codes) | trimws(spec$missing_codes) == ""))
 })
 
-test_that("penguins_raw schema matches its independent expectation", {
+test_that("penguins_raw schema preserves its historical fixture projection", {
   skip_if_penguins_missing()
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
   spec <- epi_eda_spec(spec_path)
@@ -103,7 +103,8 @@ test_that("penguins_raw schema matches its independent expectation", {
 
   observed <- epi_eda_check_schema(data, spec)
 
-  expect_equal(as.data.frame(observed), expected, ignore_attr = TRUE)
+  expect_equal(observed[names(expected)], expected, ignore_attr = TRUE)
+  expect_named(observed, c(names(expected), "type_status", "type_reason"))
 })
 
 test_that("penguins_raw missingness matches its independent expectation", {

@@ -37,9 +37,8 @@
 #'   \item{\code{outlier_percentage}}{Percentage of non-\code{NA} values flagged as outliers.}
 #' }
 #'
-#' @details Missing and non-finite values are excluded from descriptive calculations; infinite values remain included in the historical `n_nonNA` count because they are not `NA`. The Shapiro-Wilk test for normality is only run for finite sample sizes between 4 and 4999 with non-zero variation; otherwise its p-value is reported as \code{NA}. Empty and all-missing inputs return one row with unavailable summaries reported as \code{NA}. For skewness: negative/longer left tail, positive/longer right tail, values above 1 usually means non-normality. For kurtosis consider lower values, broader shape and longer tails (platy ~<3), normal (meso ~3) and slender/no tails (lepto ~>3). Outliers are detected with the Tukey method (above and below 1.5 * IQR) or using the multiplier \code{coef}. Coefficient of variation (\code{CV}) is calculated as \code{SD / mean}. You may pass further arguments (e.g.,
+#' @details When `na.rm = TRUE`, missing and non-finite values are excluded from descriptive calculations; infinite values remain included in the historical `n_nonNA` count because they are not `NA`. When `na.rm = FALSE` and the input contains a missing value, count and missingness fields remain populated while analytical summary, normality and outlier fields are returned as typed `NA` values. The Shapiro-Wilk test for normality is only run for finite sample sizes between 4 and 4999 with non-zero variation; otherwise its p-value is reported as \code{NA}. Empty and all-missing inputs return one row with unavailable summaries reported as \code{NA}. For skewness: negative/longer left tail, positive/longer right tail, values above 1 usually means non-normality. For kurtosis consider lower values, broader shape and longer tails (platy ~<3), normal (meso ~3) and slender/no tails (lepto ~>3). Outliers are detected with the Tukey method (above and below 1.5 * IQR) or using the multiplier \code{coef}. Coefficient of variation (\code{CV}) is calculated as \code{SD / mean}. You may pass further arguments (e.g.,
 #' \code{type}) to the skewness and kurtosis functions from \pkg{e1071}.
-#' na.rm is TRUE by default for all tests.
 #'
 #' @author Antonio J. Berlanga-Taylor
 #'
@@ -55,6 +54,9 @@ epi_stats_numeric <- function(num_vec = NULL,
   if (is.null(num_vec) || !is.numeric(num_vec) || inherits(num_vec, c("Date", "POSIXt"))) {
     stop("num_vec must be a numeric vector.", call. = FALSE)
   }
+  if (!is.logical(na.rm) || length(na.rm) != 1L || is.na(na.rm)) {
+    stop("na.rm must be a single non-missing logical value.", call. = FALSE)
+  }
   if (!requireNamespace("e1071", quietly = TRUE)) {
     stop(
       "Package e1071 needed for this function to work. Please install it.",
@@ -63,7 +65,7 @@ epi_stats_numeric <- function(num_vec = NULL,
   }
 
   core <- summary_numeric_core(num_vec, coef = coef, ...)
-  data.frame(
+  result <- data.frame(
     n = core$n,
     n_nonNA = core$n_observed, # nolint: object_name_linter
     NA_count = core$n_missing,
@@ -92,4 +94,17 @@ epi_stats_numeric <- function(num_vec = NULL,
     row.names = NULL,
     check.names = FALSE
   )
+
+  if (!na.rm && anyNA(num_vec)) {
+    numeric_results <- c(
+      "sum", "min", "quantile_25", "mean", "median", "quantile_75", "max",
+      "IQR", "SD", "CV", "variance", "sem", "skewness", "kurtosis",
+      "Shapiro_Wilk_p_value", "lower_fence", "upper_fence", "outlier_percentage"
+    )
+    integer_results <- c("n_below_lower", "n_above_upper", "outlier_count")
+    result[numeric_results] <- lapply(numeric_results, function(name) NA_real_)
+    result[integer_results] <- lapply(integer_results, function(name) NA_integer_)
+  }
+
+  result
 }

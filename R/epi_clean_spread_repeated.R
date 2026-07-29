@@ -1,6 +1,6 @@
 #' @title Spread repeated observations
 #'
-#' @description Create a single data frame with unique rows (individuals) and repeated observations across columns. A column with the replicate/repeated observation/time-point number for each row must be provided.
+#' @description Create a single data frame with unique rows (individuals) and repeated observations across columns. A column with the replicate/repeated observation/time-point number for each row must be provided. Visit codes may be zero or nonconsecutive, but they must not be missing and each identifier/visit pair must be unique.
 #'
 #' @param df A dataframe in long format
 #'
@@ -38,15 +38,51 @@
 epi_clean_spread_repeated <- function(df = NULL,
                                       rep_col = "",
                                       id_col_num = 1) {
-  reps <- unique(df[[rep_col]])
-  output <- vector(mode = "list") # , length = length(reps))
-  for (i in reps) {
+  if (!is.data.frame(df)) {
+    stop("df must be a data frame", call. = FALSE)
+  }
+  if (length(rep_col) != 1L || is.na(rep_col) ||
+        !(is.character(rep_col) || is.numeric(rep_col)) ||
+        (is.character(rep_col) && !rep_col %in% names(df)) ||
+        (is.numeric(rep_col) &&
+           (!is.finite(rep_col) || rep_col != as.integer(rep_col) ||
+              rep_col < 1L || rep_col > ncol(df)))) {
+    stop("rep_col must identify a single existing column", call. = FALSE)
+  }
+  if (!is.numeric(id_col_num) || length(id_col_num) != 1L ||
+        is.na(id_col_num) || !is.finite(id_col_num) ||
+        id_col_num != as.integer(id_col_num) ||
+        id_col_num < 1L || id_col_num > ncol(df)) {
+    stop(
+      "id_col_num must be a single valid column index",
+      call. = FALSE
+    )
+  }
+  id_col_num <- as.integer(id_col_num)
+  rep_values <- df[[rep_col]]
+  if (any(is.na(rep_values))) {
+    stop("rep_col must not contain missing visit codes", call. = FALSE)
+  }
+  id_values <- df[[id_col_num]]
+  duplicate_pairs <- duplicated(data.frame(id_values, rep_values))
+  if (any(duplicate_pairs)) {
+    stop(
+      "Each identifier and visit code pair must be unique",
+      call. = FALSE
+    )
+  }
+  reps <- unique(rep_values)
+  output <- vector(mode = "list", length = length(reps))
+  names(output) <- as.character(reps)
+  for (i in seq_along(reps)) {
+    rep_value <- reps[[i]]
+    rep_label <- as.character(rep_value)
     # Create sets with distinct observations, use rep_num_col to filter rows:
-    rep_df <- df[which(df[[rep_col]] == i), ]
+    rep_df <- df[which(rep_values == rep_value), ]
     # Sanity check, should return an empty tibble:
     # print(get_all_dups(rep_df, id_col, 1))
     # Change col names to baseline, time_1, time_2, etc.:
-    suffix <- sprintf(".%s", i)
+    suffix <- sprintf(".%s", rep_label)
     new_colnames <- epi_clean_add_colname_suffix(rep_df, id_col_num, suffix)
     names(rep_df)[-id_col_num] <- new_colnames
     output[[i]] <- rep_df
