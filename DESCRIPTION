@@ -17,6 +17,7 @@ Imports:
     utils,
     stats,
     grDevices,
+    DBI,
     openssl,
     magrittr,
     rlang (>= 0.1.2),
@@ -29,6 +30,8 @@ Imports:
     stringr,
     foreach
 Suggests:
+    RPostgres,
+    RSQLite,
     data.table,
     compare,
     stringi,
