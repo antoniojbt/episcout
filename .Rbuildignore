@@ -26,6 +26,7 @@
 ^THANKS.rst$
 ^\.github$
 ^AGENTS\.MD$
+^checklists$
 ^fishers_results\.txt$
 ^spec_driven_EDA_plan$
 ^environment\.yml$
