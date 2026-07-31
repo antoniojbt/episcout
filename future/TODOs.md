@@ -36,18 +36,17 @@
 
 - [ ] full git scrub
 - [ ] update 'future/': specs are not marked clearly if done or not, when done move to a 'done' dir; update this TODOs file. Same for 'reviews/'.
-- [ ] Update spec 10 based on new agents*md and checklists files.
-- [ ] See two codex threads:
-  - 1-Review applicable agent checklists
-  - 3-episcout release readiness
-  - 2- done already (spec 010 plan) 
+- [ ] See two md files with plans/instructions from prior codex threads, saved in `future/scratch`:
+  - [ ] 1-Review applicable agent checklists
+  - [ ] 3-episcout release readiness
+  - [x] 2- done already (spec 010 plan)
+- [ ] Update spec 10 based on new agents*md and checklists files.  
 - [ ] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
 - [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
 - [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
 - [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
 - [ ] agent truth review with specific instructions pack
     - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
-    <!-- - [ ]  -->
 - [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
 - [ ] Carry out changes needed from human review
 
