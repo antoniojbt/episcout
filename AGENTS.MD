@@ -1,242 +1,172 @@
 # AGENTS.md
 
-This file defines conventions and instructions to guide OpenAI Codex and other agents in contributing to this R package. It standardises code writing, formatting, documentation, testing, and pull request workflows.
+This file defines conventions for contributing to `episcout`, an R package for cleaning, exploring and visualising epidemiological data. Apply these instructions to code, tests, documentation, package checks and repository operations.
 
-It should be respected by automated agents at all times, particularly when:
+## Core approach
 
-* Writing new functions (must include roxygen2 and tests)
-* Refactoring existing code (preserve naming and indentation)
-* Editing documentation (run `devtools::document()`)
-* Opening a PR (follow title/description/branch rules)
-* Running checks (use scripts provided above)
-* Debugging, identifying errors and making improvements
+- Prefer the smallest coherent change that satisfies a demonstrated requirement. Do not add dependencies, abstractions, services, databases or orchestration for hypothetical future use.
+- Inspect the relevant functions, callers, tests, documentation and configuration before editing.
+- Identify the cause of a defect rather than repairing only its visible symptom.
+- Never conceal changed behaviour inside a cleanup or style refactor.
+- Preserve unrelated user work and review material changes before handoff.
+- Ask only when unresolved ambiguity could materially change behaviour, scientific meaning, safety, compatibility or architecture. Otherwise choose the simplest reversible option and state consequential assumptions.
+- Do not hard-wrap prose. Keep each prose paragraph and standalone prose comment on one line while preserving intentional line breaks in lists, tables, code examples and other structured content.
 
-Do not overcomplicate and over-engineer. Prefer the simpler solution. Make it easy for a human to review, supervise and monitor work. Do not bloat file content or create numerous files when one would suffice. e.g. use one `TODOs.md`, not a dir with `now.md`, `next.md`, `later.md`.
+## Instruction and checklist routing
 
-When fixing code, identify the cause; do not simply fix the symptom.
+Use the checklists in `checklists/` as routed below. They support self-review and do not make a review independent.
 
-Never hide behaviour behind 'clean up' when refactoring.
+- Apply `checklists/software-verification.md` to every code, script, pipeline or package-interface change.
+- Apply `checklists/truth-and-semantics.md` when code or documentation interprets data, missingness, domain rules, statistical meaning or consequential requirements.
+- Apply `checklists/analysis-and-statistics.md` to analytical functions, metrics, tables, models, derived data and analytical conclusions.
+- Apply `checklists/figures.md` to plots, charts and report graphics.
+- Apply `checklists/copy-edit.md` to README, NEWS, vignettes, roxygen documentation, captions and other user-facing prose.
+- Apply `checklists/render-and-release.md` to rendered vignettes, HTML reports, package tarballs and release artifacts.
+- Use a written plan for multi-component changes, migrations, uncertain architecture or operations that may fail partway. State the observable outcome, scope, affected interfaces, implementation order, validation and recovery.
+- Consult authoritative primary or official sources when implementing statistical or epidemiological methods or making scientific claims. Distinguish sourced facts from inference and state unresolved uncertainty.
 
-When writing tests, never mirror the implementation. Always test against the intended behaviour. If this is unclear, undocumented or may be wrong, always stop and report.
+For ordinary work, report the applicable checks and material exceptions at handoff. Save a separate review record only for high-stakes, unusually consequential or explicitly audited work.
 
-Do not hard-wrap prose anywhere in the repository. Keep each prose paragraph and standalone prose comment on a single line, while preserving required or intentional line breaks in lists, tables, code examples, and other structured content.
+## Project structure
 
----
+| Path | Purpose |
+| --- | --- |
+| `R/` | R package source and roxygen documentation |
+| `man/` | Generated Rd documentation; do not edit directly |
+| `tests/testthat/` | Unit, integration, fixture and snapshot tests |
+| `tests/figs/` | Figure comparison artifacts |
+| `vignettes/` | Authored tutorials and worked examples |
+| `inst/` | Files installed with the package, including project and report templates |
+| `data-raw/` | Development sources and scripts for package or test data |
+| `scripts/` | Repository development and verification entry points |
+| `.github/workflows/` | GitHub Actions checks and coverage workflows |
+| `future/` | Planning, specifications, references and scratch material; not current package behaviour unless implemented elsewhere |
+| `archive/` and `legacy/` | Historical material; do not treat as current implementation or interfaces |
 
-## 📁 Project Structure
+Before adding or changing a helper command, inspect `scripts/`, `.github/workflows/`, `README.md` and this file. Do not add a script when an existing entry point already performs the task. Use names that describe the project action and are not confusable with system commands.
 
-| Folder             | Purpose                                          |
-| ------------------ | ------------------------------------------------ |
-| `/R/`              | R function scripts                               |
-| `/man/`            | Auto-generated documentation from roxygen2       |
-| `/tests/testthat/` | Unit tests (testthat framework)                  |
-| `/vignettes/`      | Tutorials and worked examples (built with knitr) |
-| `/data/`           | Data objects for examples (`.rda`, `.rds`)       |
-| `/inst/`           | Miscellaneous files (e.g. extdata, configs)      |
-| `/docs/`           | Site output (e.g., pkgdown)                      |
+## R environment and canonical commands
 
----
-
-## R Environment
-
-Use the repo-local R wrapper for all R commands:
+Use the repository wrapper for R commands:
 
 ```bash
 scripts/rscript_env_caller.R -e "R.home(); .libPaths()"
 ```
 
-The wrapper resolves to the project mamba environment by default:
+The wrapper uses the project mamba environment by default. Set `EPISCOUT_RSCRIPT` to use another verified R binary; do not use bare `Rscript` without confirming its environment.
 
-```text
-~/apps/miniforge3/envs/episcout/bin/Rscript
-```
+Set a real CRAN mirror in direct `devtools` commands rather than leaving `repos` as `@CRAN@`.
 
-Do not use bare `Rscript` unless you have verified it resolves to the `episcout` mamba environment. To use a different R binary, set `EPISCOUT_RSCRIPT`; see `scripts/rscript_env_caller.R`.
-
-For `devtools` checks, set a real CRAN mirror inside the R expression. Do not leave `repos` as the placeholder `@CRAN@`, because package checks may spend a long time probing package repositories.
+Run the repository entry points instead of duplicating their command sequences:
 
 ```bash
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
-```
-
-## Repo Script Discovery and Naming
-
-Before adding or changing helper commands, inspect existing project entry points:
-
-```text
-scripts/
-Makefile
-.github/workflows/
-AGENTS.MD
-```
-
-Do not add a new helper script if an existing script already covers the task. If an existing helper has an unclear or misleading name, propose a rename or targeted cleanup instead of adding another wrapper.
-
-Script names must describe the project action, not merely mirror a system binary. Avoid names that are visually or semantically confusable with common commands, such as:
-
-```text
-rscript
-python
-R
-test
-check
-```
-
-Prefer explicit project or task names such as:
-
-```text
-scripts/rscript_env_caller.R
+# Documentation, lint, tests and local package check
 scripts/check-local.sh
+
+# Source build and R CMD check --as-cran
 scripts/check-cran.sh
-scripts/render-report.sh
 ```
 
-Before adding a new script, confirm:
-
-1. No existing script already does the job.
-2. The name is unambiguous in chat, docs, logs and CI.
-3. The script follows the repo's existing shell/R conventions.
-
-
-## Coding Conventions
-
-* Use `snake_case` for object and function names.
-
-* Use **2-space indentation**, no tabs.
-
-* Include roxygen2 documentation for every exported function.
-
-* Function structure:
-
-  ```r
-  #' Title of the function
-  #'
-  #' Description of what it does.
-  #'
-  #' @param arg1 Description of arg1
-  #' @return Description of return value
-  #' @export
-  my_function <- function(arg1) {
-    # main logic
-  }
-  ```
-
-* Use `styler::style_file()` on changed files and package-loaded `lintr::lint_package()` to enforce style. Reserve a full `styler::style_pkg()` rewrite for an explicitly scoped style-only task. The package retains `%>%` to preserve its current R compatibility floor, and line-length linting remains disabled because prose must not be hard-wrapped.
-
-* Avoid `<<-`, `assign()`, and hidden state unless strictly necessary.
-
----
-
-## Testing Protocols
-
-All new functions must include unit tests in `/tests/testthat/`. Run tests locally before committing:
+Run focused tests first when practical, for example:
 
 ```bash
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda_schema', reporter = 'summary')"
 ```
 
-Use `covr` to monitor test coverage:
+Use coverage to identify untested changed behaviour, not as a substitute for meaningful assertions:
 
 ```bash
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::report()"
 ```
 
-Ensure test coverage does not decrease for existing functions.
+## Coding conventions
 
----
+- Use `snake_case` for new objects and functions. Preserve released argument names and other public interfaces unless a breaking change is authorised.
+- Use 2-space indentation and no tabs.
+- Add roxygen2 documentation for every exported function.
+- Use `styler::style_file()` on changed R files and package-loaded `lintr::lint_package()` for linting. Reserve `styler::style_pkg()` for an explicitly scoped style-only change.
+- Retain `%>%` to preserve the current R compatibility floor. Line-length linting remains disabled because prose is not hard-wrapped.
+- Avoid `<<-`, `assign()` and hidden interactive state unless strictly necessary.
+- Keep paths and changing parameters explicit, keep side effects at boundaries and validate inputs before processing.
+- Prefer base R or dependencies already declared in `DESCRIPTION`. Add every required dependency to the appropriate `Imports` or `Suggests` field and explain why the existing implementation is insufficient.
+- Keep outputs deterministic where practical. Control randomness explicitly and test filesystem writes in temporary directories.
 
-## Documentation & Build Instructions
+Determine interface maturity from releases, known external consumers, documentation, tests, repository callers and Git history. Preserve released or externally consumed contracts unless a breaking change is authorised. For experimental or unconsumed code, prefer a clean current interface and update its callers, tests and documentation together.
 
-Always update documentation and verify build integrity before PRs.
+## Scientific and data correctness
 
-```bash
-# Regenerate documentation
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"
+Passing tests and successful execution do not establish that analytical behaviour is correct. Treat existing code, tests, fixtures, snapshots, schemas, documentation and previous outputs as evidence of prior behaviour rather than independent authority.
 
-# Build the package tarball
-R CMD build . --no-resave-data --compact-vignettes=gs+qpdf
+- Establish intended behaviour from an authoritative source, explicit domain rule or independently justified expectation before preserving or changing consequential logic.
+- Make filters, exclusions, joins, recodes, grouping units, aggregation rules, units and denominators explicit.
+- Validate required columns, input types and ranges, key uniqueness and non-empty inputs where they affect results.
+- Avoid silent consequential coercion. Make conversions and their failure behaviour explicit.
+- Preserve source missingness by default. Never silently convert blanks, `NA`, unknown, censored, suppressed or not-applicable values into `No`, `False`, zero or another observed value.
+- Define missingness propagation for recodes, composites and grouped summaries. In particular, do not allow all-missing inputs to become zero solely because `na.rm = TRUE` was used.
+- Make important row counts, duplicates, unmatched keys, dropped records and missing-to-observed or observed-to-missing transitions inspectable.
+- Report numerators and denominators when percentages or proportions could otherwise be ambiguous.
+- Set seeds when randomness affects results. Synthetic data are for workflow preparation and testing unless a documented requirement establishes another use.
+- Keep confidential or restricted data out of source control, fixtures, examples, logs and public outputs. Use neutral reusable examples rather than personal names, institutions, local paths or project-specific identifiers, except where package metadata legitimately requires maintainer information.
 
-# Run CRAN-like checks
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
-```
+## Testing
 
-Optional: rebuild vignettes manually
+- Test user-visible behaviour, validation failures, important boundaries and observed regressions.
+- Define important expected values independently of the production path under test. Never regenerate a fixture with the same implementation and present agreement as validation.
+- Do not mirror implementation details in tests. Test intended behaviour and stop when that behaviour is unclear, undocumented or potentially incorrect.
+- Use small fixtures with explicit provenance and independently justified expectations.
+- Do not weaken a valid requirement or regression test merely to make an implementation pass. Report the discrepancy before changing the requirement.
+- Run targeted checks first and then the broader relevant suite.
+- Add tests for new exported functions and for material behavioural changes. Investigate unexplained coverage regressions rather than enforcing an unmeasured blanket percentage target.
+- Keep compatibility guards, duplicated checks and generated fixtures only when they protect a demonstrated contract, data integrity, safety or an observed regression.
 
-```bash
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::build_vignettes()"
-```
+## Documentation and generated files
 
----
+- Edit roxygen comments in `R/` and regenerate `man/` with `devtools::document()`; do not edit generated Rd files directly.
+- Keep README, NEWS, vignettes, examples, schemas and commands consistent with observed package behaviour.
+- Write documentation for users and maintainers, not as a narrative of agent activity or incidental machine-specific details.
+- Match the established British English spelling and package terminology.
+- Inspect rendered output when changing vignettes, HTML reports, plot snapshots or other user-facing generated artifacts.
+- Do not hand-edit `NAMESPACE` when roxygen owns the relevant declaration.
 
-## Package Website
+## Reviews
 
-There is no package website
+- Treat code, implementation and pull-request review as read-only unless the user also requests changes.
+- Inspect changed material with relevant callers, configuration, tests and documentation.
+- Prioritise correctness, data integrity, reproducibility, privacy, security, compatibility and tests for changed behaviour.
+- List actionable findings first, ordered by severity, with a location, impact and the smallest practical fix.
+- Distinguish confirmed defects from risks, questions and optional suggestions. Do not block on personal style preferences or request a broad rewrite when a local fix is adequate.
+- If there are no findings, say so and identify residual risks or checks that were not run.
+- State whether the review was independent of the implementation.
 
----
+## Git and GitHub
 
-## Pull Request Guidelines
+- The current origin is a public GitHub repository; recheck its visibility when publication or disclosure decisions depend on it. Treat ignored data, outputs, secrets and agent state as private by default.
+- Do not force-add ignored files without explicit authorisation and a disclosure review.
+- Inspect `git status` and relevant diffs before editing, staging, committing and handing off. Preserve unrelated changes.
+- Before committing, inspect `git diff --staged` and use a focused commit with a short imperative subject.
+- Run relevant checks before committing or opening a pull request.
+- Do not publish credentials, personal or restricted data, or exploitable details in commits, issues or pull requests.
 
-### Branch Naming
+## Pull requests
 
-* `feature/<desc>` for new features
-* `bugfix/<desc>` for bug fixes
-* `refactor/<desc>` for internal refactoring
+Use branch names `feature/<desc>`, `bugfix/<desc>` or `refactor/<desc>` as appropriate. Format PR titles as `[Type] Summary of change`.
 
-### PR Title Format
+A PR description should state:
 
-```
-[Type] Summary of change
-```
+1. What changed and why.
+2. Tests and checks run.
+3. Backward-compatibility impact.
+4. Material coverage change, if measured.
+5. Unresolved limitations or failures, explicitly stating when none remain.
 
-Examples:
+Before requesting review, run `scripts/check-local.sh`. Run `scripts/check-cran.sh` for release-oriented changes or when CRAN behaviour is in scope.
 
-* `[Fix] Handle NA inputs in calculate_rate()`
-* `[Feature] Add export_to_parquet() utility`
+## GitHub Actions
 
-### PR Description Template
+The repository workflows run R package checks, linting and Codecov coverage. There is no package website deployment workflow.
 
-1. **What was changed** and why
-2. **Tests added** (brief description or file names)
-3. **Backward compatibility** (e.g., no breaking changes)
-4. **Code coverage change** (if any)
-
----
-
-## Pre-Merge Checklist
-
-Run all checks **before requesting a review**:
-
-```bash
-scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); covr::report()"
-```
-
-All of the above must pass before merging.
-
----
-
-## Dependency Management
-
-* All dependencies must be declared in `DESCRIPTION` (`Imports` or `Suggests`)
-* Avoid suggesting base R functions or commonly installed packages
-* CI uses `remotes::install_deps(dependencies = TRUE)`
-
----
-
-## GitHub Actions CI (if enabled)
-
-The repo uses GitHub Actions to:
-
-* Install dependencies
-* Run `R CMD check`
-* Generate code coverage via Codecov
-* Deploy `pkgdown` site
-
-If modifying `.github/workflows/`, test using:
+When changing a workflow, inspect its actual job name before invoking `act`. The package-check job is currently:
 
 ```bash
-act -j check  # if act is installed for local testing
+act -j R-CMD-check
 ```
-
----

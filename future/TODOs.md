@@ -9,6 +9,7 @@
 - For the activated spec, record baseline package test/check status before package-code changes.
 - Keep implementation work scoped to one numbered spec at a time.
 - Review fixture anti-circularity guardrails before adding new expected outputs.
+- Move completed tasks to the 'Done' section, in reverse chronological order.
 
 - Use this template and place the task under the appropriate priority heading:
 
@@ -34,6 +35,13 @@
 ### Priority 1
 
 - [ ] full git scrub
+- [ ] update 'future/': specs are not marked clearly if done or not, when done move to a 'done' dir; update this TODOs file. Same for 'reviews/'.
+- [ ] Update spec 10 based on new agents*md and checklists files.
+- [ ] See two codex threads:
+  - 1-Review applicable agent checklists
+  - 3-episcout release readiness
+  - 2- done already (spec 010 plan) 
+- [ ] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
 - [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
 - [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
 - [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
@@ -54,7 +62,6 @@
 
 ### Priority 3
 
-- [ ] Review adoption after one compatibility release and decide when EDA summary version 2 should become the default; retain explicit version 1 until that decision is implemented in a numbered migration spec.
 - [ ] check codecov percentage decrease
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.

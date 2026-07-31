@@ -1,0 +1,48 @@
+id: "010"
+slug: "canonical-eda-summary-contract"
+status: draft
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: refactor/canonical-eda-summary-contract
+created: 2026-07-30
+updated: 2026-07-30
+
+related_files:
+  - R/eda_summaries.R
+  - R/summary_cores.R
+  - R/epi_stats_summary.R
+  - R/run_eda.R
+  - R/eda_report.R
+  - tests/testthat/test-summary-cores.R
+  - tests/testthat/test-epi_stats_numeric.R
+  - tests/testthat/test-eda-summaries-v2.R
+  - tests/testthat/test-eda-summaries.R
+  - tests/testthat/test-eda_summaries-fixtures.R
+  - tests/testthat/test-run_eda-fixtures.R
+  - tests/testthat/test-eda_report.R
+  - tests/testthat/test-db-dictionary.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - inst/report-template/eda.qmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-summaries|run_eda|eda_report|db-dictionary', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+notes:
+  - Replace the unreleased EDA v1/v2 interface with one canonical typed contract.
+  - Do not retain a legacy adapter; external compatibility is not required.
+  - Establish analytical expectations independently before changing production code.
+  - Keep implementation and release operations separate; this specification creates no tag or release.
