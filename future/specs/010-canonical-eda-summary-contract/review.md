@@ -73,12 +73,12 @@ Implementation and self-review were completed on 2026-08-02.
 - Focused contract, workflow, report, dictionary, shared-core, numeric and fixture tests passed.
 - The complete test suite passed with the two known environment skips (installed-package parallel plotting and disabled visual snapshots).
 - `scripts/check-local.sh` completed with zero errors, zero warnings and the single inherited hidden-file NOTE fixed by PR #178.
-- `scripts/check-cran.sh` completed all code, example, test and vignette checks. Its final status was one environment error, one warning and four notes: `pdflatex` is unavailable, HTML Tidy is unavailable, CRAN incoming treats this as a new submission and receives `403` for two existing Stack Overflow links, and the two inherited `.gitkeep` files remain until PR #178 is merged. None originates in the canonical-summary implementation.
+- After installing TinyTeX, the required Courier metrics and `makeindex`, plus HTML Tidy in the local `episcout` environment, `scripts/check-cran.sh` completed with zero errors, zero warnings and two notes. Both PDF and HTML manual checks pass. The remaining notes are the existing CRAN-incoming diagnostics (new-submission status and two Stack Overflow `403` responses) and the two inherited `.gitkeep` files removed by PR #178; neither originates in the canonical-summary implementation.
 - `git diff --check` passed.
 
 ## Closeout Notes
 
-- This remains an active draft until the release-scrub dependency in PR #178 lands and the release-oriented check is repeated in an environment with the required document tooling.
+- This remains an active draft until the release-scrub dependency in PR #178 lands and the release-oriented check is repeated against the combined changes. The local document toolchain is now complete.
 - Codecov integration and the separately discovered historical Codecov credential concern are explicitly deferred by the repository owner for later review. No Codecov configuration is added or changed here.
 - This specification intentionally changes the released two-table return shape; the owner authorised the compatibility break and no legacy adapter remains.
 - No tag or release was created.
