@@ -19,7 +19,7 @@ Status: Active
 - [x] Typed `epi_stats_summary()` uses the canonical builder; current-mode schemas and unrelated values remain regression-tested; and the authorised no-observed-total correction is documented for numeric output.
 - [x] Roxygen documentation, README, NEWS, vignette and report template describe only the canonical contract; generated documentation is refreshed.
 - [x] Relevant changed R files are styled, package-loaded lint is clean and focused tests pass.
-- [ ] `scripts/check-local.sh` and `scripts/check-cran.sh` pass, or every failure is reported and resolved before implementation is accepted.
+- [x] `scripts/check-local.sh` and `scripts/check-cran.sh` pass, or every failure is reported and resolved before implementation is accepted.
 - [x] Returned tables, written CSV files, rendered HTML and the source package contents are inspected directly.
 - [x] Review findings and verification evidence are recorded in `review.md`.
 - [x] No tag or release is created as part of this specification.
