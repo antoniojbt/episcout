@@ -29,6 +29,7 @@ epi_eda_create_project <- function(path, overwrite = FALSE) {
     full.names = FALSE,
     include.dirs = FALSE
   )
+  template_directories <- file.path(path, c("data", "outputs"))
 
   destination_files <- file.path(path, template_files)
   existing_directories <- destination_files[dir.exists(destination_files)]
@@ -49,10 +50,30 @@ epi_eda_create_project <- function(path, overwrite = FALSE) {
     )
   }
 
+  directory_collisions <- template_directories[
+    file.exists(template_directories) & !dir.exists(template_directories)
+  ]
+  if (length(directory_collisions) > 0) {
+    stop(
+      "Destination paths exist as files and cannot be used as directories: ",
+      paste(directory_collisions, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
   if (!dir.exists(path)) {
     created <- dir.create(path, recursive = TRUE, showWarnings = FALSE)
     if (!created) {
       stop("Could not create project directory.", call. = FALSE)
+    }
+  }
+
+  for (destination_dir in template_directories) {
+    if (!dir.exists(destination_dir)) {
+      created <- dir.create(destination_dir, recursive = TRUE, showWarnings = FALSE)
+      if (!created) {
+        stop("Could not create project template directory.", call. = FALSE)
+      }
     }
   }
 

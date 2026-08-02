@@ -43,6 +43,7 @@ dependencies:
   - r-stringr
   - r-styler
   - r-survival
+  - r-targets
   - r-testthat
   - r-tibble
   - r-tidyr
