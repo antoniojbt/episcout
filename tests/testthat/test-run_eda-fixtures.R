@@ -74,6 +74,10 @@ test_that("epi_eda_run writes workflow outputs to a temporary output directory",
   expect_true(file.exists(file.path(output_dir, "missing.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_numeric.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
+  expect_true(file.exists(file.path(output_dir, "summary_variables.csv")))
+  expect_true(file.exists(file.path(output_dir, "summary_text.csv")))
+  expect_true(file.exists(file.path(output_dir, "summary_temporal.csv")))
+  expect_true(file.exists(file.path(output_dir, "summary_skipped.csv")))
   expect_equal(
     names(utils::read.csv(file.path(output_dir, "schema.csv"), check.names = FALSE)),
     names(observed$schema)

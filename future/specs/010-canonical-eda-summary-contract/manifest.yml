@@ -1,11 +1,11 @@
 id: "010"
 slug: "canonical-eda-summary-contract"
-status: draft
+status: active
 owner: Antonio Berlanga-Taylor
 base_branch: master
 working_branch: refactor/canonical-eda-summary-contract
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-08-02
 
 related_files:
   - R/eda_summaries.R

@@ -83,7 +83,7 @@ summary_numeric_core <- function(values, missing_codes = character(), coef = 1.5
     n_observed = as.integer(sum(!missing)),
     n_infinite = as.integer(sum(infinite)),
     n_finite = as.integer(n_finite),
-    sum = if (n_finite > 0L) sum(finite) else 0,
+    sum = if (n_finite > 0L) sum(finite) else NA_real_,
     min = if (n_finite > 0L) min(finite) else NA_real_,
     q1 = q1,
     mean = mean_value,
@@ -112,9 +112,8 @@ summary_numeric_core <- function(values, missing_codes = character(), coef = 1.5
 summary_categorical_core <- function(values, missing_codes = character(), declared_levels = NULL) {
   missing <- summary_missing_mask(values, missing_codes)
   observed <- as.character(values[!missing])
-  factor_levels <- if (is.factor(values)) levels(values) else character()
-  has_declared <- !is.null(declared_levels) || length(factor_levels) > 0L
-  declared <- if (!is.null(declared_levels)) as.character(declared_levels) else factor_levels
+  has_declared <- !is.null(declared_levels)
+  declared <- if (has_declared) as.character(declared_levels) else character()
   declared <- unique(declared[!is.na(declared) & nzchar(declared)])
   unexpected <- sort(setdiff(unique(observed), declared))
   levels_out <- if (has_declared) c(declared, unexpected) else sort(unique(observed))

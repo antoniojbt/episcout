@@ -25,7 +25,7 @@ test_that("constant and missing numeric inputs keep typed unavailable statistics
   expect_true(is.na(constant$kurtosis))
   expect_true(is.na(constant$Shapiro_Wilk_p_value))
   expect_equal(missing$n_nonNA, 0L)
-  expect_equal(missing$sum, 0)
+  expect_true(is.na(missing$sum))
   expect_true(is.na(missing$mean))
 })
 
