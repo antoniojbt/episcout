@@ -115,7 +115,7 @@ sex,Sex at birth,categorical,covariate,,"Female;Male;Unknown",,,Unknown,TRUE,dem
 death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome indicator
 ```
 
-The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The default version 1 summary contract retains the original numeric and categorical tables. Opt in to `summary_version = "v2"` for complete numeric, integer, categorical, binary, text, date and datetime summaries, explicit variable coverage and documented skips.
+The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The canonical summary contract covers numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable coverage and documented skips.
 
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 
@@ -145,12 +145,11 @@ dir.create("outputs", showWarnings = FALSE)
 results <- epi_eda_run(
   data = data,
   spec = spec,
-  output_dir = "outputs",
-  summary_version = "v2"
+  output_dir = "outputs"
 )
 ```
 
-Version 2 writes `summary_variables.csv`, `summary_numeric.csv`, `summary_categorical.csv`, `summary_text.csv`, `summary_temporal.csv` and `summary_skipped.csv`. The active lower-level statistics path uses the same univariate calculation cores; `epi_stats_summary(data, output = "typed")` returns the corresponding typed components without requiring an EDA specification.
+The workflow writes `summary_variables.csv`, `summary_numeric.csv`, `summary_categorical.csv`, `summary_text.csv`, `summary_temporal.csv` and `summary_skipped.csv`. The `variables` table accounts for every specification row, including unavailable counts and reasons for absent or incompatible variables. Numeric summaries distinguish observed infinities from finite analytical values, categorical summaries expose total-row and observed-value denominators, and temporal summaries state their range units. The active lower-level statistics path uses the same univariate calculation cores; `epi_stats_summary(data, output = "typed")` returns the corresponding typed components without requiring an EDA specification.
 
 Render the optional HTML report when `rmarkdown` is installed:
 

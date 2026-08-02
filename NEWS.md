@@ -7,8 +7,8 @@
 - Corrected transpose labels for arbitrary identifier-column positions, made repeated-measure spreading safe for zero, nonconsecutive and unbalanced visits, and made nested data-frame joins full outer by default while retaining explicit legacy left joins with `all.y = FALSE`.
 - Excluded specification missing sentinels from EDA plot layers and added descriptive `type_status` and `type_reason` fields to schema output without changing the historical presence fields.
 - Fixed synthetic integer generation for singleton bounds and intervals that contain no integer values.
-- Added opt-in version 2 EDA summaries covering numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable status/skips and six machine-readable output tables; version 1 remains the default for one compatibility release.
-- Aligned active univariate `epi_stats_*` and EDA summaries on shared internal type cores, added typed `epi_stats_summary()` output, and stabilised non-finite numeric, zero-row character/factor and empty temporal behaviour.
+- Replaced the overlapping EDA summary interfaces with one canonical six-component contract covering numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable status, skipped reasons and machine-readable output tables. The unreleased summary selector and legacy two-table adapter were removed.
+- Aligned active univariate `epi_stats_*` and EDA summaries on shared internal type cores, added typed `epi_stats_summary()` output, made absent-variable counts unavailable rather than inferred, ignored undeclared factor metadata, and made all-missing or non-finite numeric totals unavailable instead of zero.
 
 ## 0.2.0
 

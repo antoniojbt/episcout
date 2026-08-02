@@ -4,18 +4,16 @@
 \alias{epi_eda_profile_summaries}
 \title{Profile summaries using an EDA specification}
 \usage{
-epi_eda_profile_summaries(data, spec, summary_version = c("v1", "v2"))
+epi_eda_profile_summaries(data, spec)
 }
 \arguments{
 \item{data}{A data frame containing observed data.}
 
 \item{spec}{An EDA specification data frame or CSV path.}
-
-\item{summary_version}{Summary contract to return. \code{"v1"} preserves the original numeric and categorical tables and remains the default for one compatibility release. \code{"v2"} returns complete typed summary components.}
 }
 \value{
-With \code{summary_version = "v1"}, a named list containing \code{numeric} and \code{categorical} data frames. With \code{summary_version = "v2"}, a named list containing \code{variables}, \code{numeric}, \code{categorical}, \code{text}, \code{temporal} and \code{skipped} data frames.
+A named list containing \code{variables}, \code{numeric}, \code{categorical}, \code{text}, \code{temporal} and \code{skipped} data frames. The \code{variables} table records every specification row and its summary status; the remaining tables contain type-specific results or explicit skipped reasons.
 }
 \description{
-Produce machine-readable descriptive summaries for variables listed in a specification-first EDA data dictionary. Standard \code{NA} values and configured \code{missing_codes} are excluded from observed summaries.
+Produce one canonical, machine-readable descriptive summary for every variable listed in a specification-first EDA data dictionary. Standard \code{NA} values and configured \code{missing_codes} are excluded from observed summaries.
 }

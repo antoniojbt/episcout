@@ -95,27 +95,21 @@ head(synthetic_results$missing)
 
 Schema output reports variable presence in `status` and separately reports whether observed storage is `compatible`, `coercible`, `incompatible` or `not_applicable` in `type_status`, with an explanation in `type_reason`. This check is descriptive: it does not coerce data or stop the workflow for an incompatible type.
 
-The default version 1 `summaries` component retains the original machine-readable numeric and categorical tables for compatibility.
+The `summaries` component uses one canonical contract with `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped` tables. The variables table accounts for every specification row, including missing or incompatible variables.
 
 ```{r}
+names(synthetic_results$summaries)
+synthetic_results$summaries$variables
 synthetic_results$summaries$numeric
 synthetic_results$summaries$categorical
 ```
 
-Use version 2 when you need complete typed coverage, variable status and explicit skips. It returns `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped` and writes the corresponding six CSV files when `output_dir` is supplied.
+Numeric summaries exclude infinities from finite analytical values while recording them in variable coverage. Categorical summaries retain declared zero-count levels, append unexpected observed values and expose both total-row and observed-value denominators. Temporal summaries use days for dates and seconds for datetimes.
 
 ```{r}
-typed_results <- epi_eda_run(
-  data = NULL,
-  spec = spec,
-  synthetic = TRUE,
-  n = 100,
-  seed = 1,
-  summary_version = "v2"
-)
-
-names(typed_results$summaries)
-typed_results$summaries$variables
+synthetic_results$summaries$text
+synthetic_results$summaries$temporal
+synthetic_results$summaries$skipped
 ```
 
 Plots are returned as ggplot objects without being printed by the workflow.

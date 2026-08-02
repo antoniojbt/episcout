@@ -322,6 +322,23 @@ test_that("dictionary specifications use reviewed catalogue values", {
   expect_equal(spec$missing_codes, c("", "B", ""))
   expect_equal(spec$group, c("identifiers", "design", "measurements"))
 
+  data <- data.frame(
+    subject_code = c("S1", "S2"),
+    group_code = c("A", "B"),
+    score = c(10, 20),
+    stringsAsFactors = FALSE
+  )
+  summaries <- epi_eda_profile_summaries(data, spec)
+  group_summary <- summaries$categorical[summaries$categorical$name == "group_code", ]
+
+  expect_equal(summaries$variables$name, spec$name)
+  expect_equal(summaries$variables$required, spec$required)
+  expect_equal(summaries$variables$n_missing, c(0L, 1L, 0L))
+  expect_equal(group_summary$level, c("A", "B"))
+  expect_equal(group_summary$n, c(1L, 0L))
+  expect_equal(group_summary$p_total, c(1 / 2, 0))
+  expect_equal(group_summary$p_observed, c(1, 0))
+
   catalogues$display_order[[2]] <- catalogues$display_order[[1]]
   expect_error(
     epi_eda_dictionary_validate(dictionary, catalogues),

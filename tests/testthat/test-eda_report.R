@@ -96,7 +96,7 @@ test_that("epi_eda_render_report writes machine-readable workflow outputs", {
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
 })
 
-test_that("epi_eda_render_report renders complete v2 summary sections", {
+test_that("epi_eda_render_report renders complete canonical summary sections", {
   data <- data.frame(
     value = c(1, 2),
     note = c("x", " "),
@@ -109,14 +109,13 @@ test_that("epi_eda_render_report renders complete v2 summary sections", {
     type = c("numeric", "text", "date"),
     role = c("covariate", "metadata", "covariate")
   )
-  output_dir <- tempfile("eda-report-v2-")
+  output_dir <- tempfile("eda-report-canonical-")
   dir.create(output_dir)
 
   report_path <- epi_eda_render_report(
     data = data,
     spec = spec,
-    output_dir = output_dir,
-    summary_version = "v2"
+    output_dir = output_dir
   )
   report_text <- read_report_text(report_path)
 
@@ -124,6 +123,11 @@ test_that("epi_eda_render_report renders complete v2 summary sections", {
   expect_match(report_text, "Numeric Summaries")
   expect_match(report_text, "Text Summaries")
   expect_match(report_text, "Temporal Summaries")
+  expect_match(report_text, "Skipped Summaries")
+  expect_match(report_text, "No skipped rows")
+  expect_match(report_text, "finite observed values")
+  expect_match(report_text, "p_total")
+  expect_match(report_text, "range_unit")
   expect_true(file.exists(file.path(output_dir, "summary_variables.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_skipped.csv")))
 })
