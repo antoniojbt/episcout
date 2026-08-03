@@ -146,6 +146,19 @@ prepared$data
 
 Character numeric parsing is not implicit, categorical levels come from the reviewed specification, and local character datetimes require a reviewed `timezone`. Empty or whitespace-only sentinels cannot be represented by the current semicolon-delimited `missing_codes` format. The preparation core is in memory and does not write row-level data. It does not identify personal information or anonymise data; pseudonymisation remains a separate controlled step.
 
+Summarize a prepared cohort overall and by one reviewed categorical or binary variable, then create a traceable long-form Table 1:
+
+``` r
+stratified <- epi_eda_profile_stratified(prepared$data, spec, strata = "study_group")
+stratified$groups
+stratified$numeric
+
+table1 <- epi_eda_table1(stratified)
+table1
+```
+
+Declared empty groups and levels remain visible, unexpected and missing strata are flagged, and numeric percentages retain their denominators in the calculation result. If missing strata are excluded, Overall describes only the included rows and metadata accounts for the omission. Table 1 contains no p-values and performs no automatic small-cell suppression; it is not disclosure-controlled and must be reviewed before sharing.
+
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 
 ``` r

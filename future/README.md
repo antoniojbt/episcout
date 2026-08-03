@@ -69,5 +69,6 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 - `010-canonical-eda-summary-contract`
 - `012-data-frame-eda-spec-scaffold`
 - `013-specification-guided-data-preparation`
+- `014-stratified-descriptive-summaries`
 
 Completed specs stay under `future/specs/` so existing review and changelog links remain stable.
