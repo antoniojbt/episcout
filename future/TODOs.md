@@ -80,7 +80,7 @@
   - [ ] 3-episcout release readiness
   - [x] 2- done already (spec 010 plan)
 - [x] Update spec 10 based on new agents*md and checklists files.
-- [ ] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
+- [x] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
 - [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
 - [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
 - [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
@@ -91,7 +91,7 @@
 
 ### Priority 2
 
-- [ ] Add functions to create a data dictionary when real data already exists but does not have a dictionary.
+- [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
 - [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
       rewriting, identifier removal, output validation and read-only raw-data
