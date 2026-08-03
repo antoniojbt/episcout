@@ -126,27 +126,47 @@ test_that("penguins_raw summaries match their independent expectations", {
   expected_categorical <- read.csv(expected_categorical_path, check.names = FALSE, stringsAsFactors = FALSE)
 
   observed <- epi_eda_profile_summaries(data, spec)
+  numeric_audit <- observed$variables[match(observed$numeric$name, observed$variables$name), ]
+  observed_numeric <- data.frame(
+    name = observed$numeric$name,
+    n = numeric_audit$n,
+    n_missing = numeric_audit$n_missing,
+    mean = observed$numeric$mean,
+    sd = observed$numeric$sd,
+    median = observed$numeric$median,
+    min = observed$numeric$min,
+    max = observed$numeric$max,
+    stringsAsFactors = FALSE
+  )
+  observed_categorical <- data.frame(
+    name = observed$categorical$name,
+    level = observed$categorical$level,
+    n = observed$categorical$n,
+    p = observed$categorical$p_total,
+    p_observed = observed$categorical$p_observed,
+    stringsAsFactors = FALSE
+  )
 
   expect_equal(
-    as.data.frame(observed$numeric),
+    observed_numeric,
     expected_numeric,
     tolerance = 1e-12,
     ignore_attr = TRUE
   )
   expect_equal(
-    as.data.frame(observed$categorical),
+    observed_categorical,
     expected_categorical,
     tolerance = 1e-12,
     ignore_attr = TRUE
   )
 })
 
-test_that("penguins_raw v2 summaries cover every specified variable", {
+test_that("penguins_raw canonical summaries cover every specified variable", {
   skip_if_penguins_missing()
   data <- read.csv(data_path, check.names = FALSE, stringsAsFactors = FALSE)
   spec <- epi_eda_spec(spec_path)
 
-  observed <- epi_eda_profile_summaries(data, spec, summary_version = "v2")
+  observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(observed$variables$name, spec$name)
   expect_true(all(observed$variables$status == "summarised"))

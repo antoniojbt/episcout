@@ -79,7 +79,7 @@
   - [ ] 1-Review applicable agent checklists
   - [ ] 3-episcout release readiness
   - [x] 2- done already (spec 010 plan)
-- [ ] Update spec 10 based on new agents*md and checklists files.  
+- [x] Update spec 10 based on new agents*md and checklists files.
 - [ ] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
 - [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
 - [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.

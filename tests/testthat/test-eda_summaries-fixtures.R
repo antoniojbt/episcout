@@ -7,16 +7,20 @@ fixture_dir <- file.path("fixtures", "blood_storage")
 data_path <- file.path(fixture_dir, "blood_storage.csv")
 spec_path <- file.path(fixture_dir, "blood_storage_spec.csv")
 
-test_that("epi_eda_profile_summaries returns numeric and categorical summary components", {
+test_that("epi_eda_profile_summaries returns all canonical summary components", {
   data <- read.csv(data_path, check.names = FALSE)
   spec <- epi_eda_spec(spec_path)
 
   observed <- epi_eda_profile_summaries(data, spec)
 
   expect_type(observed, "list")
-  expect_named(observed, c("numeric", "categorical"))
+  expect_named(observed, c("variables", "numeric", "categorical", "text", "temporal", "skipped"))
+  expect_s3_class(observed$variables, "data.frame")
   expect_s3_class(observed$numeric, "data.frame")
   expect_s3_class(observed$categorical, "data.frame")
+  expect_s3_class(observed$text, "data.frame")
+  expect_s3_class(observed$temporal, "data.frame")
+  expect_s3_class(observed$skipped, "data.frame")
 })
 
 test_that("epi_eda_profile_summaries numeric output matches hand-computed values", {
@@ -35,8 +39,6 @@ test_that("epi_eda_profile_summaries numeric output matches hand-computed values
   )
   expected <- data.frame(
     name = c("age", "all_missing"),
-    n = c(4L, 4L),
-    n_missing = c(2L, 4L),
     mean = c(15, NA_real_),
     sd = c(sqrt(50), NA_real_),
     median = c(15, NA_real_),
@@ -48,7 +50,7 @@ test_that("epi_eda_profile_summaries numeric output matches hand-computed values
   observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(
-    as.data.frame(observed$numeric),
+    as.data.frame(observed$numeric[c("name", "mean", "sd", "median", "min", "max")]),
     expected,
     tolerance = 1e-12,
     ignore_attr = TRUE
@@ -73,8 +75,10 @@ test_that("epi_eda_profile_summaries categorical output documents denominators",
     name = c("status", "status", "status"),
     level = c("A", "B", "C"),
     n = c(2L, 1L, 0L),
-    p = c(2 / 5, 1 / 5, 0),
+    p_total = c(2 / 5, 1 / 5, 0),
     p_observed = c(2 / 3, 1 / 3, 0),
+    is_declared = c(TRUE, TRUE, TRUE),
+    is_unexpected = c(FALSE, FALSE, FALSE),
     stringsAsFactors = FALSE
   )
 
@@ -88,11 +92,11 @@ test_that("epi_eda_profile_summaries categorical output documents denominators",
   )
 })
 
-test_that("blood storage v2 summaries cover every specified variable", {
+test_that("blood storage canonical summaries cover every specified variable", {
   data <- read.csv(data_path, check.names = FALSE)
   spec <- epi_eda_spec(spec_path)
 
-  observed <- epi_eda_profile_summaries(data, spec, summary_version = "v2")
+  observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(observed$variables$name, spec$name)
   expect_true(all(observed$variables$status == "summarised"))

@@ -9,8 +9,6 @@
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
 #' @param quiet Logical; passed to [rmarkdown::render()] to control render output.
-#' @param summary_version Summary contract passed to [epi_eda_run()]. `"v1"` remains the compatibility default and `"v2"` renders complete typed summary sections.
-#'
 #' @return A single character string containing the rendered HTML report path.
 #'
 #' @export
@@ -20,10 +18,8 @@ epi_eda_render_report <- function(data,
                                   synthetic = FALSE,
                                   n = 100,
                                   seed = NULL,
-                                  quiet = TRUE,
-                                  summary_version = c("v1", "v2")) {
+                                  quiet = TRUE) {
   validate_run_eda_output_dir(output_dir)
-  summary_version <- match.arg(summary_version)
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop("The rmarkdown package is required for epi_eda_render_report().", call. = FALSE)
@@ -45,8 +41,7 @@ epi_eda_render_report <- function(data,
     output_dir = output_dir,
     synthetic = synthetic,
     n = n,
-    seed = seed,
-    summary_version = summary_version
+    seed = seed
   )
 
   render_input <- file.path(tempdir(), "episcout-eda-report.qmd")
