@@ -91,6 +91,7 @@
 
 ### Priority 2
 
+- [x] Implement spec `013-specification-guided-data-preparation` for issue #182: audit and apply a reviewed EDA specification through a deterministic, value-free and all-or-nothing preparation boundary.
 - [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
 - [ ] Add a follow-up pseudonymisation spec for PII identification, dataset

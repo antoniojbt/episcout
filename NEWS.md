@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Added `epi_eda_prepare()` for privacy-conscious audit and all-or-nothing application of reviewed missing-sentinel, type, categorical-level and strict temporal preparation rules, with stable machine-readable audits and before/after schemas.
 - Added `epi_eda_spec_scaffold()` to create a privacy-conscious, human-review EDA specification draft from an existing data frame using storage classes and aggregate evidence without enumerating observed candidate values.
 - Corrected event proportions so numerator and denominator use the same requested analysis window, with explicit errors for absent columns, empty eligible populations and missing or non-binary eligible outcomes.
 - Made `epi_stats_numeric(na.rm = FALSE)` preserve factual counts while returning unavailable analytical results instead of silently excluding missing values.
