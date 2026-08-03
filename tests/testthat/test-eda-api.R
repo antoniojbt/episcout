@@ -31,6 +31,7 @@ test_that("EDA workflow exports use the epi_eda prefix", {
     "epi_eda_spec_scaffold",
     "epi_eda_validate_spec",
     "epi_eda_prepare",
+    "epi_eda_intake_run",
     "epi_eda_profile_stratified",
     "epi_eda_table1",
     "epi_eda_check_schema",
@@ -69,9 +70,11 @@ test_that("README and EDA vignette document the epi_eda workflow", {
   skip_if(is.null(vignette), "specification-first-eda vignette not available.")
 
   expect_match(readme, "epi_eda_run")
+  expect_match(readme, "epi_eda_intake_run")
   expect_match(readme, "epi_eda_render_report")
   expect_match(readme, "specification-first exploratory data\\s+analysis workflows")
   expect_match(vignette, "epi_eda_spec")
   expect_match(vignette, "epi_eda_run")
+  expect_match(vignette, "epi_eda_intake_run")
   expect_match(vignette, "epi_eda_render_report")
 })

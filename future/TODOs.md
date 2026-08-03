@@ -91,6 +91,7 @@
 
 ### Priority 2
 
+- [x] Implement spec `015-data-intake-to-report-workflow` for issue #184: compose review-gated intake, conservative audit/apply preparation, canonical and optional stratified summaries, a privacy-conscious artifact manifest and a report view without writing row-level data.
 - [x] Implement spec `014-stratified-descriptive-summaries` for issue #183: add canonical grouped summaries and a traceable, non-inferential Table 1 presentation.
 - [x] Implement spec `013-specification-guided-data-preparation` for issue #182: audit and apply a reviewed EDA specification through a deterministic, value-free and all-or-nothing preparation boundary.
 - [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
