@@ -1,0 +1,47 @@
+id: "015"
+slug: "data-intake-to-report-workflow"
+status: completed
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: feature/data-intake-to-report-workflow
+created: 2026-08-03
+updated: 2026-08-03
+related_issues:
+  - 184
+dependencies:
+  - 010-canonical-eda-summary-contract
+  - 012-data-frame-eda-spec-scaffold
+  - 013-specification-guided-data-preparation
+  - 014-stratified-descriptive-summaries
+related_files:
+  - R/eda_intake.R
+  - R/eda_summaries.R
+  - R/eda_stratified.R
+  - tests/testthat/test-eda-intake.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - man/epi_eda_intake_run.Rd
+  - NAMESPACE
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+review_required: true
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-intake|eda-spec|eda-prepare|eda-summaries|eda-stratified|eda-table1', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+notes:
+  - Compose existing public component contracts; do not add inference, coercion or statistical formulae.
+  - V1 accepts an in-memory data frame and at most one categorical or binary stratifier.
+  - Expected review gates return a stable run object; malformed top-level arguments and internal invariant failures remain errors.
+  - Write no row-level data, raw text examples, observed identifier values, bridge tables, secrets or automatically inferred sensitive absolute source paths.
+  - A non-empty overwrite target must match its prior manifest-created files and checksums exactly; refuse unowned, missing, modified or special entries before staging.
+  - Build a complete sibling staging bundle, then publish by target-to-backup and staging-to-target directory renames with restoration where possible.
+  - Base-R escaped HTML reads saved CSV artifacts and makes incomplete and disclosure states visible without a template/report dependency.
+  - No network access, Codecov credential, new workflow framework, tag or release is in scope.

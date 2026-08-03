@@ -268,6 +268,51 @@ empty_eda_skipped <- function() {
   canonical_skipped_row(character(), character(), character(), character())
 }
 
+eda_summary_exclusions <- function(data, spec) {
+  role <- trimws(tolower(as.character(spec$role)))
+  identifiers <- spec$name[role %in% c("id", "identifier")]
+  stats::setNames(
+    rep("Variable was skipped by the explicit identifier-role policy.", length(identifiers)),
+    identifiers
+  )
+}
+
+eda_apply_summary_exclusions <- function(canonical, data, spec, exclusions) {
+  excluded <- intersect(names(exclusions), spec$name)
+  if (length(excluded) == 0L) {
+    return(canonical)
+  }
+  hit <- canonical$variables$name %in% excluded
+  canonical$variables$status[hit] <- "skipped"
+  canonical$variables$reason[hit] <- unname(exclusions[canonical$variables$name[hit]])
+  for (component in c("numeric", "categorical", "text", "temporal")) {
+    canonical[[component]] <- canonical[[component]][
+      !canonical[[component]]$name %in% excluded, ,
+      drop = FALSE
+    ]
+  }
+  canonical$skipped <- canonical$skipped[
+    !canonical$skipped$name %in% excluded, ,
+    drop = FALSE
+  ]
+  for (name in excluded) {
+    observed_class <- if (name %in% names(data)) {
+      paste(class(data[[name]]), collapse = "/")
+    } else {
+      NA_character_
+    }
+    canonical$skipped <- rbind(
+      canonical$skipped,
+      canonical_skipped_row(
+        name, spec$type[match(name, spec$name)], observed_class,
+        unname(exclusions[[name]])
+      )
+    )
+  }
+  row.names(canonical$skipped) <- NULL
+  canonical
+}
+
 eda_spec_levels <- function(levels_value) {
   if (length(levels_value) == 0L || is.na(levels_value[[1]])) {
     return(character())
