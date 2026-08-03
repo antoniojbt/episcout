@@ -2,6 +2,7 @@
 ^archive/
 ^future$
 ^future/
+^outputs$
 ^codecov\.yml$
 ^cran-comments\.md$
 ^\.travis\.yml$
