@@ -25,6 +25,10 @@ bundle_text <- function(path) {
   }, character(1)), collapse = "\n")
 }
 
+intake_internal <- function(name) {
+  getFromNamespace(name, "episcout")
+}
+
 test_that("public intake interface and return contract are fixed", {
   expect_named(
     formals(epi_eda_intake_run),
@@ -257,7 +261,7 @@ test_that("completion reconciliation detects missing components and changed Over
   missing_component$numeric <- missing_component$numeric[0, , drop = FALSE]
 
   expect_match(
-    episcout:::intake_reconcile_canonical(
+    intake_internal("intake_reconcile_canonical")(
       missing_component, observed$missing, profile_data, fixture$spec
     ),
     "component membership"
@@ -269,7 +273,7 @@ test_that("completion reconciliation detects missing components and changed Over
     duplicated_component$numeric[1, , drop = FALSE]
   )
   expect_match(
-    episcout:::intake_reconcile_canonical(
+    intake_internal("intake_reconcile_canonical")(
       duplicated_component, observed$missing, profile_data, fixture$spec
     ),
     "component membership"
@@ -280,7 +284,7 @@ test_that("completion reconciliation detects missing components and changed Over
     changed_overall$numeric$name == "value"
   changed_overall$numeric$mean[overall] <- 999
   expect_match(
-    episcout:::intake_reconcile_stratified(
+    intake_internal("intake_reconcile_stratified")(
       observed$summary, changed_overall, fixture$data
     ),
     "numeric summaries do not agree"
@@ -292,7 +296,7 @@ test_that("completion reconciliation detects missing components and changed Over
     changed_missing$categorical$is_missing_level
   changed_missing$categorical$n[missing_row] <- 999L
   expect_match(
-    episcout:::intake_reconcile_stratified(
+    intake_internal("intake_reconcile_stratified")(
       observed$summary, changed_missing, fixture$data
     ),
     "categorical counts or proportions"
@@ -303,7 +307,7 @@ test_that("completion reconciliation detects missing components and changed Over
     changed_group$numeric$name == "value"
   changed_group$numeric$n[arm_a_value] <- 999L
   expect_match(
-    episcout:::intake_reconcile_stratified(
+    intake_internal("intake_reconcile_stratified")(
       observed$summary, changed_group, fixture$data
     ),
     "denominators"
@@ -315,7 +319,7 @@ test_that("completion reconciliation detects missing components and changed Over
     drop = FALSE
   ]
   expect_match(
-    episcout:::intake_reconcile_stratified(
+    intake_internal("intake_reconcile_stratified")(
       observed$summary, missing_group_numeric, fixture$data
     ),
     "component membership"
@@ -328,7 +332,7 @@ test_that("completion reconciliation detects missing components and changed Over
       drop = FALSE
     ]
   expect_match(
-    episcout:::intake_reconcile_stratified(
+    intake_internal("intake_reconcile_stratified")(
       observed$summary, missing_group_categorical, fixture$data
     ),
     "component membership"
