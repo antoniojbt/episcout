@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Added `epi_eda_intake_run()` as a stage-gated new-dataset workflow that creates a review-required specification scaffold, audits or applies reviewed preparation, writes reconciled canonical and optional stratified summaries, and renders a portable aggregate-only HTML bundle with a fixed manifest and safe owned-file collision handling.
 - Added specification-aware grouped descriptive summaries and a separate traceable long-form Table 1 renderer, preserving declared empty groups/levels, explicit denominators, missing/unexpected strata, canonical Overall semantics and aggregate-only text diagnostics without p-values or implicit disclosure control.
 - Added `epi_eda_prepare()` for privacy-conscious audit and all-or-nothing application of reviewed missing-sentinel, type, categorical-level and strict temporal preparation rules, with stable machine-readable audits and before/after schemas.
 - Added `epi_eda_spec_scaffold()` to create a privacy-conscious, human-review EDA specification draft from an existing data frame using storage classes and aggregate evidence without enumerating observed candidate values.

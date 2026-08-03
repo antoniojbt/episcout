@@ -66,7 +66,7 @@ CRAN does not require `renv`; it requires a source tarball from `R CMD build` th
 There are two main ways to use episcout:
 
 * Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
-* Use the specification-first EDA workflow: `epi_eda_spec()`, `epi_eda_prepare()`, `epi_eda_generate_synthetic_data()`, `epi_eda_run()` and `epi_eda_render_report()`.
+* Use the review-gated new-dataset workflow through `epi_eda_intake_run()`, or compose the lower-level specification-first functions directly.
 
 ### Helper functions
 
@@ -158,6 +158,38 @@ table1
 ```
 
 Declared empty groups and levels remain visible, unexpected and missing strata are flagged, and numeric percentages retain their denominators in the calculation result. If missing strata are excluded, Overall describes only the included rows and metadata accounts for the omission. Table 1 contains no p-values and performs no automatic small-cell suppression; it is not disclosure-controlled and must be reviewed before sharing.
+
+For a guided new-dataset run, let the workflow create the first scaffold and stop for review:
+
+``` r
+intake_dir <- tempfile("episcout-intake-")
+first_run <- epi_eda_intake_run(received_data, output_dir = intake_dir)
+first_run$status
+first_run$manifest
+```
+
+Edit `spec_scaffold.csv` outside the run, explicitly review every field and set each `review_status` to `reviewed`. Then audit the reviewed specification before applying it:
+
+``` r
+reviewed_spec <- epi_eda_spec("reviewed_spec.csv")
+
+audit_run <- epi_eda_intake_run(
+  received_data,
+  reviewed_spec,
+  output_dir = tempfile("episcout-audit-"),
+  prepare = "audit"
+)
+
+final_run <- epi_eda_intake_run(
+  received_data,
+  reviewed_spec,
+  output_dir = tempfile("episcout-report-"),
+  prepare = "apply",
+  strata = "study_group"
+)
+```
+
+Expected gates return `review_required`, `blocked` or `audit_complete`; a reconciled analysis returns `complete`. The manifest distinguishes files that were and were not created. The workflow writes specification metadata, audits and aggregate summaries, never raw or prepared rows. Explicit `id`/`identifier` roles are excluded from returned and exported profiles, but variable names, supplied specification metadata and small groups may still be sensitive. The bundle is not de-identified or disclosure-controlled, and pseudonymisation remains a separate explicit workflow.
 
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 
