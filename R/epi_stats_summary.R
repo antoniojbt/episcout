@@ -26,8 +26,7 @@ epi_stats_summary <- function(df = NULL,
                               codes = NULL,
                               class_type = "chr_fct", # 'int_num'
                               action = "exclude", # 'codes_only'
-                              output = c("current", "typed")
-) {
+                              output = c("current", "typed")) {
   output <- match.arg(output)
   df <- tibble::as_tibble(df)
   if (output == "typed") {
@@ -55,7 +54,7 @@ epi_stats_summary <- function(df = NULL,
       levels = unname(levels),
       stringsAsFactors = FALSE
     )
-    return(profile_summaries_v2(as.data.frame(df), spec, global_missing_codes = codes))
+    return(build_typed_summaries(as.data.frame(df), spec, global_missing_codes = codes))
   }
   # Determine which group of columns to use:
   if (class_type == "chr_fct") {

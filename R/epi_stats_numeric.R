@@ -14,7 +14,7 @@
 #'   \item{\code{n_nonNA}}{Number of non-\code{NA} observations.}
 #'   \item{\code{NA_count}}{Count of \code{NA} values.}
 #'   \item{\code{NA_percentage}}{Percentage of values that are \code{NA}; \code{NA} for zero-length inputs.}
-#'   \item{\code{sum}}{Sum of values.}
+#'   \item{\code{sum}}{Sum of finite observed values; \code{NA} when no finite values are observed.}
 #'   \item{\code{min}}{Minimum value.}
 #'   \item{\code{quantile_25}}{25th percentile (\code{Q1}).}
 #'   \item{\code{mean}}{Arithmetic mean.}

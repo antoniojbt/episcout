@@ -29,7 +29,8 @@ epi_stats_fct_table <- function(df, vars_list = NULL) {
   }
 
   purrr::imap_dfr(fct_df, function(col, nm) {
-    core <- summary_categorical_core(col)
+    declared_levels <- if (is.factor(col)) levels(col) else NULL
+    core <- summary_categorical_core(col, declared_levels = declared_levels)
     observed_missing <- sum(is.na(col))
     result <- tibble::tibble(
       variable = rep(nm, nrow(core)),

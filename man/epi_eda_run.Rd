@@ -10,8 +10,7 @@ epi_eda_run(
   output_dir = NULL,
   synthetic = FALSE,
   n = 100,
-  seed = NULL,
-  summary_version = c("v1", "v2")
+  seed = NULL
 )
 }
 \arguments{
@@ -26,8 +25,6 @@ epi_eda_run(
 \item{n}{Number of synthetic rows to generate when \code{synthetic = TRUE}.}
 
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
-
-\item{summary_version}{Summary contract passed to \code{\link[=epi_eda_profile_summaries]{epi_eda_profile_summaries()}}. \code{"v1"} remains the compatibility default; \code{"v2"} writes all six typed summary tables.}
 }
 \value{
 A named list with \code{metadata}, \code{schema}, \code{missing}, \code{summaries} and \code{plots} components.

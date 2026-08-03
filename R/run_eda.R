@@ -8,8 +8,6 @@
 #' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec` before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
-#' @param summary_version Summary contract passed to [epi_eda_profile_summaries()]. `"v1"` remains the compatibility default; `"v2"` writes all six typed summary tables.
-#'
 #' @return A named list with `metadata`, `schema`, `missing`, `summaries` and `plots` components.
 #'
 #' @export
@@ -18,10 +16,8 @@ epi_eda_run <- function(data,
                         output_dir = NULL,
                         synthetic = FALSE,
                         n = 100,
-                        seed = NULL,
-                        summary_version = c("v1", "v2")) {
+                        seed = NULL) {
   synthetic <- validate_run_eda_synthetic(synthetic)
-  summary_version <- match.arg(summary_version)
   spec <- epi_eda_spec(spec)
 
   if (synthetic) {
@@ -34,12 +30,12 @@ epi_eda_run <- function(data,
     validate_run_eda_output_dir(output_dir)
   }
 
-  plot_spec <- if (summary_version == "v2") spec[spec$name %in% names(data), , drop = FALSE] else spec
+  plot_spec <- spec[spec$name %in% names(data), , drop = FALSE]
   results <- list(
     metadata = run_eda_metadata(data, spec, synthetic = synthetic),
     schema = epi_eda_check_schema(data, spec),
     missing = epi_eda_profile_missing(data, spec),
-    summaries = epi_eda_profile_summaries(data, spec, summary_version = summary_version),
+    summaries = epi_eda_profile_summaries(data, spec),
     plots = epi_eda_profile_plots(data, plot_spec)
   )
 

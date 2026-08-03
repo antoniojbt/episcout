@@ -46,7 +46,7 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- None currently.
+- `010-canonical-eda-summary-contract`
 
 ### Ready Next
 
