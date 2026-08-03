@@ -106,6 +106,22 @@ desc_stats
 
 ### Specification-first EDA quickstart
 
+If data arrive before a dictionary, create a conservative draft from the in-memory data frame:
+
+``` r
+received_data <- data.frame(
+  age = c(42, 57, 61, NA),
+  study_group = c("A", "B", "A", "B"),
+  stringsAsFactors = FALSE
+)
+
+draft_spec <- epi_eda_spec_scaffold(received_data)
+draft_spec[, c("name", "type", "candidate_type", "n_missing", "review_status")]
+write.csv(draft_spec, "data_dictionary_draft.csv", row.names = FALSE, na = "")
+```
+
+The draft records storage classes, missing counts, cardinality and conservative type candidates without including observed values as examples or candidate levels. It deliberately leaves roles, units, missing sentinels, validation bounds and requiredness unset. Review those fields, categorical declarations, privacy classification and factor metadata before loading the edited file with `epi_eda_spec()` or sharing it. Database inventory users should continue to use `epi_eda_dictionary_scaffold()`.
+
 Start from a data dictionary with at least these columns:
 
 ``` csv

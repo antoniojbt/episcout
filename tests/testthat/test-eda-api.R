@@ -28,6 +28,7 @@ test_that("EDA workflow exports use the epi_eda prefix", {
   exports <- getNamespaceExports("episcout")
   expected <- c(
     "epi_eda_spec",
+    "epi_eda_spec_scaffold",
     "epi_eda_validate_spec",
     "epi_eda_check_schema",
     "epi_eda_profile_missing",

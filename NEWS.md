@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Added `epi_eda_spec_scaffold()` to create a privacy-conscious, human-review EDA specification draft from an existing data frame using storage classes and aggregate evidence without enumerating observed candidate values.
 - Corrected event proportions so numerator and denominator use the same requested analysis window, with explicit errors for absent columns, empty eligible populations and missing or non-binary eligible outcomes.
 - Made `epi_stats_numeric(na.rm = FALSE)` preserve factual counts while returning unavailable analytical results instead of silently excluding missing values.
 - Corrected transpose labels for arbitrary identifier-column positions, made repeated-measure spreading safe for zero, nonconsecutive and unbalanced visits, and made nested data-frame joins full outer by default while retaining explicit legacy left joins with `all.y = FALSE`.

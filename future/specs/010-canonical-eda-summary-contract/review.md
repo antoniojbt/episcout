@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `010-canonical-eda-summary-contract`  
-Status: Active
+Status: Completed
 
 ## Planning Findings
 
@@ -78,7 +78,7 @@ Implementation and self-review were completed on 2026-08-02.
 
 ## Closeout Notes
 
-- This remains an active draft until the release-scrub dependency in PR #178 lands and the release-oriented check is repeated against the combined changes. The local document toolchain is now complete.
+- PRs #178 and #179 were merged on 2026-08-03. `scripts/check-local.sh` was repeated from the combined `upstream/master` tip at `9d9e8c2` and passed with zero errors, zero warnings and zero notes; the two known environment test skips remained unchanged and test-generated snapshot/documentation drift was restored after inspection.
 - Codecov integration and the separately discovered historical Codecov credential concern are explicitly deferred by the repository owner for later review. No Codecov configuration is added or changed here.
 - This specification intentionally changes the released two-table return shape; the owner authorised the compatibility break and no legacy adapter remains.
 - No tag or release was created.
