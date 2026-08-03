@@ -2,6 +2,7 @@
 
 ## 2026-08-03
 
+- Completed spec `013-specification-guided-data-preparation`: added value-free audit and all-or-nothing apply modes, reviewed-scaffold gating, typed sentinel replacement, strict type/level/temporal preparation, explicit extra-variable policies, before/after schema reconciliation and canonical EDA integration. Independent reviews resolved modern and historical timezone ambiguity, fractional and arbitrary-offset timestamp handling, integer sentinel masking and audit completeness. Focused/full checks passed; the CRAN-oriented check retained only the external incoming URL/vignette NOTE.
 - Completed spec `012-data-frame-eda-spec-scaffold`: added the review-required `epi_eda_spec_scaffold()` contract, conservative storage and candidate classification, privacy-safe aggregate evidence, all-or-nothing structural validation, exact scaffold CSV round-tripping, independently authored edge tests, a data-first vignette workflow and generated documentation. Focused tests and `scripts/check-local.sh` passed; `scripts/check-cran.sh` completed with only the external CRAN-index/URL incoming NOTE.
 - Completed spec `010-canonical-eda-summary-contract` after PRs #178 and #179 merged. Repeated `scripts/check-local.sh` from the combined default-branch tip with zero errors, warnings or notes, retained the two known environment skips, restored check-generated documentation and snapshot drift, and created no tag or release.
 

@@ -129,6 +129,11 @@ eda_type_compatibility <- function(values, expected_type, declared_levels, missi
     if (is.logical(values)) {
       return(eda_type_result("compatible", "Observed logical storage is compatible with binary."))
     }
+    if (is.factor(values) && length(declared_levels) == 2L &&
+          identical(levels(values), declared_levels) &&
+          all(as.character(observed) %in% declared_levels)) {
+      return(eda_type_result("compatible", "Observed factor storage exactly matches the two declared binary levels."))
+    }
     if (length(declared_levels) == 2L && is.atomic(values) && !inherits(values, c("Date", "POSIXt")) && all(as.character(observed) %in% declared_levels)) {
       return(eda_type_result("coercible", "All observed values match the two declared binary levels."))
     }

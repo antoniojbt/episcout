@@ -65,19 +65,37 @@ reviewed_spec <- epi_eda_spec(draft_path)
 reviewed_spec$role <- c("covariate", "exposure")
 reviewed_spec$required <- c(TRUE, TRUE)
 reviewed_spec$type[reviewed_spec$name == "study_group"] <- "categorical"
-reviewed_spec$levels[reviewed_spec$name == "study_group"] <- "A;B"
+reviewed_spec$levels[reviewed_spec$name == "study_group"] <- "A"
 reviewed_spec$description <- c(
   "Age recorded in the received dataset.",
   "Reviewed study grouping."
 )
+reviewed_spec$review_status <- "reviewed"
 reviewed_spec <- epi_eda_spec(reviewed_spec)
 
-received_results <- epi_eda_run(received_data, reviewed_spec)
+assessment <- epi_eda_prepare(received_data, reviewed_spec, mode = "audit")
+assessment$audit[assessment$audit$status == "blocking", ]
+```
+
+The audit counts an unexpected grouping observation without including its value. Review of the source and dictionary confirms that both groups are valid, so the declaration—not the observation—is corrected before apply.
+
+```{r}
+reviewed_spec$levels[reviewed_spec$name == "study_group"] <- "A;B"
+reviewed_spec <- epi_eda_spec(reviewed_spec)
+
+prepared <- epi_eda_prepare(received_data, reviewed_spec, mode = "apply")
+prepared$metadata
+prepared$schema_before
+prepared$schema_after
+
+received_results <- epi_eda_run(prepared$data, reviewed_spec)
 names(received_results$summaries)
 received_results$summaries$variables
 ```
 
-Factor levels are storage metadata and can themselves contain sensitive codes, so inspect the draft before saving or sharing it. Factor metadata that cannot round-trip through the package's semicolon-delimited format is refused rather than silently changed. Database inventory workflows use `epi_eda_dictionary_scaffold()` instead.
+Audit is assessment; apply is a separate all-or-nothing mutation of a returned copy. Missing sentinels are reviewed missingness declarations, whereas unexpected values require source or level review and are never silently converted to missing. Observed `min` and `max` evidence is not a validation range and preparation does not clamp values. Factor levels are storage metadata and can themselves contain sensitive codes, so inspect the draft before saving or sharing it. Factor metadata that cannot round-trip through the package's semicolon-delimited format is refused rather than silently changed. The same v1 encoding cannot declare empty, whitespace-only or semicolon-containing missing sentinels. Database inventory workflows use `epi_eda_dictionary_scaffold()` instead.
+
+Preparation neither identifies personal information nor anonymises data. `epi_sec_pseudonym()` creates a controlled bridge table but does not by itself rewrite or anonymise a dataset; privacy handling remains a separate reviewed workflow before shareable outputs.
 
 ## Create a specification
 
@@ -173,8 +191,11 @@ real_data <- data.frame(
   stringsAsFactors = FALSE
 )
 
+real_preparation <- epi_eda_prepare(real_data, spec, mode = "apply")
+stopifnot(real_preparation$metadata$overall_status == "prepared")
+
 real_results <- epi_eda_run(
-  data = real_data,
+  data = real_preparation$data,
   spec = spec
 )
 
