@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `010-canonical-eda-summary-contract`  
-Status: Active
+Status: Completed
 
 - [x] The brief, SDD and TDD received human approval through the owner's 2026-08-02 instruction to select and implement the next planned work autonomously.
 - [x] Focused and full baseline package results are recorded before package-code changes.

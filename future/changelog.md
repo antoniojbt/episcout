@@ -1,5 +1,10 @@
 # Future Workspace Changelog
 
+## 2026-08-03
+
+- Completed spec `012-data-frame-eda-spec-scaffold`: added the review-required `epi_eda_spec_scaffold()` contract, conservative storage and candidate classification, privacy-safe aggregate evidence, all-or-nothing structural validation, exact scaffold CSV round-tripping, independently authored edge tests, a data-first vignette workflow and generated documentation. Focused tests and `scripts/check-local.sh` passed; `scripts/check-cran.sh` completed with only the external CRAN-index/URL incoming NOTE.
+- Completed spec `010-canonical-eda-summary-contract` after PRs #178 and #179 merged. Repeated `scripts/check-local.sh` from the combined default-branch tip with zero errors, warnings or notes, retained the two known environment skips, restored check-generated documentation and snapshot drift, and created no tag or release.
+
 ## 2026-07-25
 
 - Completed spec `009-repository-lint-style-cleanup`: reduced the package-loaded lint baseline from 163 findings to zero through a targeted 33-file cleanup, preserved the `%>%` compatibility policy and historical public contracts with narrow documented exceptions, removed dynamic `eval()` from current-mode `epi_stats_summary()`, added failing local and CI lint gates, aligned contributor guidance, passed focused and full tests with the two known skips, and completed package check with only the accepted `.gitkeep` NOTE.

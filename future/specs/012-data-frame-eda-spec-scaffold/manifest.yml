@@ -1,0 +1,45 @@
+id: "012"
+slug: "data-frame-eda-spec-scaffold"
+status: completed
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: agent/eda-spec-scaffold
+created: 2026-08-03
+updated: 2026-08-03
+
+related_files:
+  - R/eda_spec_scaffold.R
+  - R/eda_spec.R
+  - R/summary_cores.R
+  - tests/testthat/test-eda-spec-scaffold.R
+  - tests/testthat/test-eda_spec-fixtures.R
+  - tests/testthat/test-eda-summaries.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - man/epi_eda_spec_scaffold.Rd
+  - NAMESPACE
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-spec-scaffold|eda_spec|eda-summaries', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); lintr::lint_package()"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+notes:
+  - Create a human-review draft from an existing in-memory data frame without reading, writing or mutating data.
+  - Initial types follow supported storage; value-based findings remain review candidates.
+  - Never enumerate observed character or integer values in candidate levels, reasons or errors.
+  - Refuse unsupported storage and semicolon or boundary-whitespace-unsafe declared factor levels before returning a partial scaffold.
+  - Keep database dictionary, typed summary, preparation, stratification and orchestration changes outside this spec.
+  - Add no dependency, tag or release.

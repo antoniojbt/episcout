@@ -46,7 +46,7 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- `010-canonical-eda-summary-contract`
+- None currently.
 
 ### Ready Next
 
@@ -66,5 +66,7 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 - `007-eda-stats-alignment-review`
 - `008-univariate-stats-eda-alignment`
 - `009-repository-lint-style-cleanup`
+- `010-canonical-eda-summary-contract`
+- `012-data-frame-eda-spec-scaffold`
 
 Completed specs stay under `future/specs/` so existing review and changelog links remain stable.
