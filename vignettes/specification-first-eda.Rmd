@@ -203,6 +203,29 @@ real_results$metadata
 real_results$missing
 ```
 
+## Describe the cohort by a reviewed group
+
+Calculation remains separate from presentation. The stratified result uses the same canonical summary cores for Overall and every group, while retaining declared zero-count groups and levels.
+
+```{r}
+stratified <- epi_eda_profile_stratified(
+  real_preparation$data,
+  spec,
+  strata = "sex"
+)
+
+stratified$groups
+stratified$numeric
+stratified$categorical
+
+table1 <- epi_eda_table1(stratified)
+table1
+```
+
+Ordinary categorical percentages use observed non-missing values; explicit missing rows use all rows in the group. `groups` and `metadata` identify missing and unexpected strata and account for omitted missing-stratum rows when `include_missing_stratum = FALSE`. Overall is calculated directly from the included population rather than from rounded group displays. Quantiles, finite-value rules and temporal units are inherited from the canonical EDA contract.
+
+The Table 1 is a long-form plain data frame with no p-values. It does not suppress small cells and is not disclosure-controlled. Review categorical metadata and disclosure risk before sharing; text output contains aggregate length/cardinality diagnostics rather than observed examples.
+
 ## Write outputs and render a report
 
 `epi_eda_run()` writes CSV outputs when `output_dir` is supplied. The directory must already exist.

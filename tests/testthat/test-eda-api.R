@@ -31,6 +31,8 @@ test_that("EDA workflow exports use the epi_eda prefix", {
     "epi_eda_spec_scaffold",
     "epi_eda_validate_spec",
     "epi_eda_prepare",
+    "epi_eda_profile_stratified",
+    "epi_eda_table1",
     "epi_eda_check_schema",
     "epi_eda_profile_missing",
     "epi_eda_profile_summaries",
