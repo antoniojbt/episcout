@@ -9,11 +9,31 @@
 #' @export
 epi_eda_spec <- function(path_or_data) {
   if (is.character(path_or_data) && length(path_or_data) == 1) {
-    spec <- utils::read.csv(
+    header <- utils::read.csv(
       path_or_data,
+      nrows = 0L,
       check.names = FALSE,
       stringsAsFactors = FALSE
     )
+    if (is_eda_scaffold_spec(header)) {
+      spec <- utils::read.csv(
+        path_or_data,
+        check.names = FALSE,
+        stringsAsFactors = FALSE,
+        colClasses = "character",
+        na.strings = character()
+      )
+      if ("required" %in% names(spec)) {
+        serialized_missing <- trimws(tolower(spec$required)) == "na"
+        spec$required[serialized_missing] <- NA_character_
+      }
+    } else {
+      spec <- utils::read.csv(
+        path_or_data,
+        check.names = FALSE,
+        stringsAsFactors = FALSE
+      )
+    }
   } else if (is.data.frame(path_or_data)) {
     spec <- as.data.frame(path_or_data, stringsAsFactors = FALSE)
   } else {
@@ -84,8 +104,61 @@ epi_eda_validate_spec <- function(spec) {
     spec$required <- parse_eda_spec_logical(spec$required)
   }
 
+  if (is_eda_scaffold_spec(spec)) {
+    for (name in eda_scaffold_count_cols()) {
+      spec[[name]] <- parse_eda_spec_integer(spec[[name]], name)
+    }
+    validate_eda_scaffold_counts(spec)
+  }
+
   validate_eda_spec_ranges(spec)
   spec
+}
+
+parse_eda_spec_integer <- function(x, name) {
+  values <- suppressWarnings(as.numeric(x))
+  invalid <- !is.na(x) & trimws(as.character(x)) != "" &
+    (
+      is.na(values) | !is.finite(values) | values != floor(values) |
+        values < 0 | values > .Machine$integer.max
+    )
+  if (any(invalid)) {
+    stop("Invalid ", name, " value in EDA specification.", call. = FALSE)
+  }
+  as.integer(values)
+}
+
+eda_scaffold_count_cols <- function() {
+  c("n", "n_missing", "n_observed", "n_unique")
+}
+
+eda_scaffold_evidence_cols <- function() {
+  c(
+    "observed_class",
+    eda_scaffold_count_cols(),
+    "candidate_type",
+    "candidate_levels",
+    "review_status",
+    "review_reason"
+  )
+}
+
+is_eda_scaffold_spec <- function(spec) {
+  all(eda_scaffold_evidence_cols() %in% names(spec))
+}
+
+validate_eda_scaffold_counts <- function(spec) {
+  counts <- spec[eda_scaffold_count_cols()]
+  if (anyNA(counts)) {
+    stop("EDA scaffold count fields must be complete.", call. = FALSE)
+  }
+  if (any(spec$n_missing + spec$n_observed != spec$n)) {
+    stop("EDA scaffold missing and observed counts must reconcile with n.", call. = FALSE)
+  }
+  if (any(spec$n_unique > spec$n_observed)) {
+    stop("EDA scaffold unique counts must not exceed observed counts.", call. = FALSE)
+  }
+  invisible(TRUE)
 }
 
 parse_eda_spec_logical <- function(x) {
