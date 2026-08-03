@@ -1,0 +1,49 @@
+id: "013"
+slug: "specification-guided-data-preparation"
+status: completed
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: feature/specification-guided-data-preparation
+created: 2026-08-03
+updated: 2026-08-03
+
+related_files:
+  - R/eda_prepare.R
+  - R/eda_schema.R
+  - R/eda_spec.R
+  - R/summary_cores.R
+  - tests/testthat/test-eda-prepare.R
+  - tests/testthat/test-eda_schema-fixtures.R
+  - tests/testthat/test-eda_spec-fixtures.R
+  - tests/testthat/test-eda-summaries.R
+  - tests/testthat/test-run_eda-fixtures.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - man/epi_eda_prepare.Rd
+  - NAMESPACE
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-prepare|eda_schema|eda_spec|eda-summaries|run_eda', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); lintr::lint_package()"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+notes:
+  - Keep audit mode non-mutating with original data and no schema_after.
+  - Resolve the full plan before any apply-mode mutation and return no partial transformation.
+  - Treat missing requiredness as optional/unasserted and block character numeric parsing.
+  - Require explicit reviewed timezone metadata for local ISO datetimes and normalise offset/Z input to UTC.
+  - Append unexpected levels deterministically while warning that prepared data diverge from the unchanged specification.
+  - Keep audits and errors free of observed values and reserve .dataset.-prefixed names for dataset audit rows.
+  - Add no file output, dependency, tag or release.

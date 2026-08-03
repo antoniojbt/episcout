@@ -66,7 +66,7 @@ CRAN does not require `renv`; it requires a source tarball from `R CMD build` th
 There are two main ways to use episcout:
 
 * Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
-* Use the specification-first EDA workflow: `epi_eda_spec()`, `epi_eda_generate_synthetic_data()`, `epi_eda_run()` and `epi_eda_render_report()`.
+* Use the specification-first EDA workflow: `epi_eda_spec()`, `epi_eda_prepare()`, `epi_eda_generate_synthetic_data()`, `epi_eda_run()` and `epi_eda_render_report()`.
 
 ### Helper functions
 
@@ -133,6 +133,19 @@ death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome in
 
 The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The canonical summary contract covers numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable coverage and documented skips.
 
+After reviewing the dictionary, inspect the preparation plan before changing the received data. Apply is all-or-nothing: a missing required variable, unsafe conversion or unexpected level returns the original data and a complete blocking audit.
+
+``` r
+assessment <- epi_eda_prepare(data, spec, mode = "audit")
+assessment$audit
+
+prepared <- epi_eda_prepare(data, spec, mode = "apply")
+prepared$metadata
+prepared$data
+```
+
+Character numeric parsing is not implicit, categorical levels come from the reviewed specification, and local character datetimes require a reviewed `timezone`. Empty or whitespace-only sentinels cannot be represented by the current semicolon-delimited `missing_codes` format. The preparation core is in memory and does not write row-level data. It does not identify personal information or anonymise data; pseudonymisation remains a separate controlled step.
+
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 
 ``` r
@@ -158,8 +171,11 @@ When real data are available, keep the same specification and change only the da
 data <- read.csv("data/input.csv", stringsAsFactors = FALSE)
 dir.create("outputs", showWarnings = FALSE)
 
+prepared <- epi_eda_prepare(data, spec, mode = "apply")
+stopifnot(prepared$metadata$overall_status == "prepared")
+
 results <- epi_eda_run(
-  data = data,
+  data = prepared$data,
   spec = spec,
   output_dir = "outputs"
 )
