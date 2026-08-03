@@ -217,10 +217,7 @@ stratified_level_universes <- function(data, spec, exclusions) {
 }
 
 stratified_exclusions <- function(data, spec) {
-  reasons <- stats::setNames(character(), character())
-  role <- trimws(tolower(as.character(spec$role)))
-  identifiers <- spec$name[role %in% c("id", "identifier")]
-  reasons[identifiers] <- "Variable was skipped by the explicit identifier-role policy."
+  reasons <- eda_summary_exclusions(data, spec)
   schema <- epi_eda_check_schema(data, spec)
   incompatible <- schema$name[schema$expected_present & schema$observed_present & schema$type_status == "incompatible"]
   reasons[incompatible] <- "Observed storage is incompatible; run epi_eda_prepare() before stratified summaries."
@@ -240,22 +237,9 @@ stratified_exclusions <- function(data, spec) {
 
 stratified_summarise_group <- function(data, spec, group, universes, exclusions, extras) {
   canonical <- build_typed_summaries(data, spec)
-  excluded <- intersect(names(exclusions), spec$name)
-  if (length(excluded) > 0L) {
-    hit <- canonical$variables$name %in% excluded
-    canonical$variables$status[hit] <- "skipped"
-    canonical$variables$reason[hit] <- unname(exclusions[canonical$variables$name[hit]])
-    for (component in c("numeric", "categorical", "text", "temporal")) {
-      canonical[[component]] <- canonical[[component]][!canonical[[component]]$name %in% excluded, , drop = FALSE]
-    }
-    canonical$skipped <- canonical$skipped[!canonical$skipped$name %in% excluded, , drop = FALSE]
-    for (name in excluded) {
-      observed_class <- if (name %in% names(data)) paste(class(data[[name]]), collapse = "/") else NA_character_
-      canonical$skipped <- rbind(canonical$skipped, canonical_skipped_row(
-        name, spec$type[match(name, spec$name)], observed_class, unname(exclusions[[name]])
-      ))
-    }
-  }
+  canonical <- eda_apply_summary_exclusions(
+    canonical, data, spec, exclusions
+  )
   for (name in extras) {
     canonical$skipped <- rbind(canonical$skipped, canonical_skipped_row(
       name, NA_character_, paste(class(data[[name]]), collapse = "/"),

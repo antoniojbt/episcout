@@ -97,6 +97,88 @@ Audit is assessment; apply is a separate all-or-nothing mutation of a returned c
 
 Preparation neither identifies personal information nor anonymises data. `epi_sec_pseudonym()` creates a controlled bridge table but does not by itself rewrite or anonymise a dataset; privacy handling remains a separate reviewed workflow before shareable outputs.
 
+## Use the stage-gated new-dataset workflow
+
+`epi_eda_intake_run()` connects the review, audit, preparation and descriptive stages without treating a generated scaffold as approval. Its first call writes a scaffold and review guide, then returns before schema or analytical work.
+
+```{r}
+first_dir <- tempfile("episcout-first-intake-")
+first_run <- epi_eda_intake_run(
+  received_data,
+  output_dir = first_dir,
+  render = FALSE
+)
+
+first_run$status
+first_run$stage
+first_run$manifest[first_run$manifest$status == "created", c("path", "sensitivity")]
+```
+
+The analyst edits the scaffold outside the run. This example deliberately declares only one observed group so the second call demonstrates a value-free blocker; the message identifies the affected variable and policy but does not copy the unexpected value.
+
+```{r}
+intake_spec <- epi_eda_spec(file.path(first_dir, "spec_scaffold.csv"))
+intake_spec$role <- c("covariate", "exposure")
+intake_spec$required <- TRUE
+intake_spec$type[intake_spec$name == "study_group"] <- "categorical"
+intake_spec$levels[intake_spec$name == "study_group"] <- "A"
+intake_spec$review_status <- "reviewed"
+
+blocked_dir <- tempfile("episcout-blocked-audit-")
+blocked_run <- epi_eda_intake_run(
+  received_data,
+  intake_spec,
+  output_dir = blocked_dir,
+  prepare = "audit",
+  render = FALSE
+)
+
+blocked_run$status
+blocked_run$messages[, c("stage", "severity", "subject", "recommended_action")]
+```
+
+After confirming the second group with the source documentation, the analyst corrects the specification and repeats the audit. Audit mode never claims to have transformed data.
+
+```{r}
+intake_spec$levels[intake_spec$name == "study_group"] <- "A;B"
+
+audit_dir <- tempfile("episcout-complete-audit-")
+audit_run <- epi_eda_intake_run(
+  received_data,
+  intake_spec,
+  output_dir = audit_dir,
+  prepare = "audit",
+  render = FALSE
+)
+
+audit_run$status
+audit_run$preparation_audit
+```
+
+The final call explicitly applies the approved character-to-factor preparation in memory, calculates the canonical six-component profile, calculates the optional grouped profile and Table 1, and renders `report.html` from the saved CSV components. It never writes the prepared rows.
+
+```{r}
+final_dir <- tempfile("episcout-complete-intake-")
+final_run <- epi_eda_intake_run(
+  received_data,
+  intake_spec,
+  output_dir = final_dir,
+  prepare = "apply",
+  strata = "study_group"
+)
+
+final_run$status
+final_run$stage
+names(final_run$summary)
+final_run$stratified$groups
+final_run$table1
+list.files(final_dir)
+```
+
+Statuses are `review_required`, `blocked`, `audit_complete` or `complete`; `stage` records the last completed data-processing stage even when an optional report fails. Reuse an existing non-empty run directory only with `overwrite = TRUE`; overwrite is accepted only for a prior valid intake bundle with no unowned entries, and only registered workflow files are replaced. Relative manifest/report links remain valid if the whole bundle moves.
+
+Explicit roles `id` and `identifier` are policy-skipped from analytical missingness and typed profiles, so observed values read from those data columns do not enter analytical components, CSV summaries or the report. This is not automatic PII detection. Caller-supplied specification fields, variable names, category/group labels and small aggregate cells may remain sensitive and are retained as review-required metadata, so every bundle requires disclosure review. No bridge table, row-level input or prepared data is written, and the report is not evidence of de-identification or publication safety.
+
 ## Create a specification
 
 The specification is usually stored as `metadata/data_dictionary.csv`. It must include `name`, `label`, `type` and `role`.
