@@ -1,0 +1,30 @@
+id: "014"
+slug: "stratified-descriptive-summaries"
+status: completed
+owner: Antonio Berlanga-Taylor
+base_branch: master
+working_branch: feature/comprehensive-descriptive-statistics
+created: 2026-08-03
+updated: 2026-08-03
+related_files:
+  - R/eda_stratified.R
+  - R/eda_table1.R
+  - R/eda_summaries.R
+  - tests/testthat/test-eda-stratified.R
+  - tests/testthat/test-eda-table1.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+review_required: true
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-stratified|eda-table1|eda-summaries|eda-prepare', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+notes:
+  - Reuse canonical typed summary calculations; do not copy statistical formulas.
+  - V1 strata is exactly one character column name.
+  - Overall describes the included analysis population so counts always reconcile.
+  - Calculation remains long-form and numeric; Table 1 is a pure long-form presentation.
+  - No p-values, disclosure control, file output, new dependency, tag or release.
