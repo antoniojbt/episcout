@@ -15,19 +15,22 @@ future/
 ├── prompts/
 ├── references/
 ├── reviews/
+│   └── done/
 ├── specs/
+│   └── done/
 └── scratch/
 ```
 
 ## Workflow
 
 1. Add candidate work to `TODOs.md`.
-2. Promote active work to a numbered directory under `specs/`.
+2. Promote active work to a numbered directory under `specs/`; only draft and active specs remain there.
 3. Fill in `brief.md`, `sdd.md`, `tdd.md`, `acceptance.md` and `manifest.yml` before implementation.
 4. Implement executable tests under `tests/testthat/`.
 5. Implement package code under `R/`, `inst/` or other package directories.
 6. Record review notes in the spec `review.md`.
 7. Update acceptance status and `changelog.md`.
+8. Move an accepted completed spec to `specs/done/`, and move a completed cross-spec review to `reviews/done/`.
 
 ## R Command Policy
 
@@ -58,18 +61,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-- `001-phase-1-helper-stabilization`
-- `002-penguins-raw-fixture`
-- `004-senior-review-followups`
-- `005-pseudonymisation-bridge`
-- `006-synthetic-integer-generation`
-- `007-eda-stats-alignment-review`
-- `008-univariate-stats-eda-alignment`
-- `009-repository-lint-style-cleanup`
-- `010-canonical-eda-summary-contract`
-- `012-data-frame-eda-spec-scaffold`
-- `013-specification-guided-data-preparation`
-- `014-stratified-descriptive-summaries`
-- `015-data-intake-to-report-workflow`
-
-Completed specs stay under `future/specs/` so existing review and changelog links remain stable.
+Completed specs are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

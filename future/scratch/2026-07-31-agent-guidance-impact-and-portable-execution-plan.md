@@ -20,8 +20,8 @@ Read these sources in order before changing package code:
 1. `AGENTS.MD` for repository-wide contribution, correctness, testing, documentation and Git rules.
 2. `checklists/README.md` and the routed checklist files applicable to the task.
 3. `future/README.md`, `future/TODOs.md` and `future/decisions.md` for the active planning workflow and existing decisions.
-4. Every document under `future/specs/010-canonical-eda-summary-contract/` when working on spec 010.
-5. `future/reviews/robots_output_truth_review/20260729_final/truth_review_report.md`, `truth_review_catalog.csv`, `truth_review_repair_plan.md` and `categorical_presentations_review.md` as review evidence, subject to the staleness warnings below.
+4. Every document under `future/specs/done/010-canonical-eda-summary-contract/` when working on spec 010.
+5. `future/reviews/done/robots_output_truth_review/20260729_final/truth_review_report.md`, `truth_review_catalog.csv`, `truth_review_repair_plan.md` and `categorical_presentations_review.md` as review evidence, subject to the staleness warnings below.
 6. Current source, tests, generated documentation and Git history as evidence of the implementation and released interface.
 
 Direct user instructions and newly approved decisions take precedence over this handoff. Existing code, tests, fixtures, snapshots and previous outputs establish prior behaviour but are not independent proof of analytical correctness.
@@ -52,7 +52,7 @@ Spec 010 is aligned with the new instructions because it replaces two overlappin
 
 ### Required checklist mapping
 
-Record the following evidence in `future/specs/010-canonical-eda-summary-contract/review.md` during implementation:
+Record the following evidence in `future/specs/done/010-canonical-eda-summary-contract/review.md` during implementation:
 
 | Checklist | Application to spec 010 | Evidence required |
 | --- | --- | --- |

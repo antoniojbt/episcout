@@ -29,7 +29,7 @@ Success will be observed when each approved catalogue ID below has a discriminat
 - `TR-009`: declared-level counts and both denominators are independently anchored for the tested v1 cases.
 - `TR-010`: v1 hides undeclared observed categories while retaining them in denominators, and the intended presentation has not been separately approved.
 
-The labels `v1` and `v2` are not treated in this plan as an upgrade sequence. Spec 008 deliberately defined v1 as the historical compact numeric/categorical contract and v2 as a separate opt-in typed six-component contract (`future/specs/008-univariate-stats-eda-alignment/brief.md:13-18`, `future/specs/008-univariate-stats-eda-alignment/sdd.md:12-19`). Their purposes, names, defaults and long-term coexistence require a dedicated review before categorical presentation changes are implemented.
+The labels `v1` and `v2` are not treated in this plan as an upgrade sequence. Spec 008 deliberately defined v1 as the historical compact numeric/categorical contract and v2 as a separate opt-in typed six-component contract (`future/specs/done/008-univariate-stats-eda-alignment/brief.md:13-18`, `future/specs/done/008-univariate-stats-eda-alignment/sdd.md:12-19`). Their purposes, names, defaults and long-term coexistence require a dedicated review before categorical presentation changes are implemented.
 
 ### Later independent-validation work packages
 

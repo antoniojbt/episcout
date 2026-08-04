@@ -6,7 +6,7 @@ Owner: TBD
 
 ## Problem
 
-The senior package review in `future/reviews/2026-06-15-senior-r-package-review.md` identified focused maintenance risks before the development branch can be treated as stable:
+The senior package review in `future/reviews/done/2026-06-15-senior-r-package-review.md` identified focused maintenance risks before the development branch can be treated as stable:
 
 - EDA missingness ignores data-dictionary `missing_codes`.
 - EDA summary tests duplicate implementation logic.

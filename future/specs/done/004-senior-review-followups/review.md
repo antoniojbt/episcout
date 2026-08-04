@@ -5,7 +5,7 @@ Status: Implemented
 
 ## Pre-implementation Review
 
-- Source review: `future/reviews/2026-06-15-senior-r-package-review.md`
+- Source review: `future/reviews/done/2026-06-15-senior-r-package-review.md`
 - Tidy-eval public API cleanup is intentionally deferred for a separate compatibility decision.
 
 ## Post-implementation Review

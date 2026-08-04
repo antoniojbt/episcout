@@ -28,13 +28,54 @@
 - For simple tasks only use e.g. `- [ ] xxx`
 - Keep README and `NEWS.md` aligned with user-facing workflow changes.
 - Move completed items to `changelog.md`.
-- Check this `TODOs.md` file and `future/specs/` specs are aligned.
+- Check this `TODOs.md` file and active specs under `future/specs/` are aligned.
+- Keep only draft and active specs under `future/specs/`; move accepted completed specs to `future/specs/done/`.
+- Keep only open cross-spec reviews directly under `future/reviews/`; move completed reviews to `future/reviews/done/`.
 
 ## Task list
 
 ### Priority 1
 
 - [ ] full git scrub
+
+- [ ] See two md files with plans/instructions from prior codex threads, saved in `future/scratch`:
+  - [ ] 1-Review applicable agent checklists
+  - [ ] 3-episcout release readiness
+  - [x] 2- done already (spec 010 plan)
+- [x] Update spec 10 based on new agents*md and checklists files.
+- [x] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
+- [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
+- [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
+- [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
+- [ ] agent truth review with specific instructions pack
+    - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
+- [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
+- [ ] Carry out changes needed from human review
+
+### Priority 2
+
+- [x] Implement spec `015-data-intake-to-report-workflow` for issue #184: compose review-gated intake, conservative audit/apply preparation, canonical and optional stratified summaries, a privacy-conscious artifact manifest and a report view without writing row-level data.
+- [x] Implement spec `014-stratified-descriptive-summaries` for issue #183: add canonical grouped summaries and a traceable, non-inferential Table 1 presentation.
+- [x] Implement spec `013-specification-guided-data-preparation` for issue #182: audit and apply a reviewed EDA specification through a deterministic, value-free and all-or-nothing preparation boundary.
+- [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
+- [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
+- [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
+      rewriting, identifier removal, output validation and read-only raw-data
+      files. Secure bridge-table v1 was completed in spec 005.
+- [ ] add functions to load, connect, etc data into db. 
+
+### Priority 3
+
+- [ ] check codecov percentage decrease
+- [ ] Consider visual-regression strategy for EDA plots only after plot
+      contracts are stable.
+- [ ] Add biomedical EDA extensions as separate numbered specs.
+- [ ] Revisit spec `003-large-data-backend-strategy` only after a concrete
+      workload and performance target are defined.
+
+
+## Later
+
 - [ ] Remediate the historical Codecov upload-token disclosure:
     - Problem: A redacted all-history secret scan found a token-shaped Codecov credential in the deleted `codecov.yml`. Commit `b22f919904317f2d3f27584412ccec02464c7d1c` is an affected historical landmark; commit `13815543bc81f5a16ad40f7c3426cfe40f36738e` removed the plaintext configuration and `78dcd5d53a8b2fa9916b93df4bef5258732b4236` later deleted the file. Deleting the current file did not remove the value from Git history. Never copy the credential into this task, an issue, a PR, chat, terminal output or a remediation report.
     - Goal: Make the historical credential unusable, verify that coverage upload still works securely, assess its exposure, and make an explicit owner-approved decision about whether destructive history rewriting is warranted.
@@ -74,38 +115,3 @@
     - Candidate files: `future/TODOs.md`, a future `future/specs/011-codecov-credential-history-remediation/`, `.github/workflows/test-coverage.yaml`, GitHub Actions secrets/settings and Codecov repository/account settings. Historical `codecov.yml` is evidence, not a file to restore.
     - Risks: Exposing the value while investigating it; rotating the wrong global token and breaking other repositories; accepting tokenless uploads without understanding protected-branch integrity; invalidating coverage unexpectedly; rewriting signed commits/tags and PR diffs; losing collaborator work; leaving cached/forked copies; or recontaminating cleaned history from an old clone.
     - Suggested spec ID: `011-codecov-credential-history-remediation` if history rewriting or workflow/security-policy changes are chosen. Rotation and verification should happen before that spec because containment must not wait for planning.
-- [ ] update 'future/': specs are not marked clearly if done or not, when done move to a 'done' dir; update this TODOs file. Same for 'reviews/'.
-- [ ] See two md files with plans/instructions from prior codex threads, saved in `future/scratch`:
-  - [ ] 1-Review applicable agent checklists
-  - [ ] 3-episcout release readiness
-  - [x] 2- done already (spec 010 plan)
-- [x] Update spec 10 based on new agents*md and checklists files.
-- [x] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
-- [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
-- [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
-- [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
-- [ ] agent truth review with specific instructions pack
-    - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
-- [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
-- [ ] Carry out changes needed from human review
-
-### Priority 2
-
-- [x] Implement spec `015-data-intake-to-report-workflow` for issue #184: compose review-gated intake, conservative audit/apply preparation, canonical and optional stratified summaries, a privacy-conscious artifact manifest and a report view without writing row-level data.
-- [x] Implement spec `014-stratified-descriptive-summaries` for issue #183: add canonical grouped summaries and a traceable, non-inferential Table 1 presentation.
-- [x] Implement spec `013-specification-guided-data-preparation` for issue #182: audit and apply a reviewed EDA specification through a deterministic, value-free and all-or-nothing preparation boundary.
-- [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
-- [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
-      rewriting, identifier removal, output validation and read-only raw-data
-      files. Secure bridge-table v1 was completed in spec 005.
-- [ ] add functions to load, connect, etc data into db. 
-
-### Priority 3
-
-- [ ] check codecov percentage decrease
-- [ ] Consider visual-regression strategy for EDA plots only after plot
-      contracts are stable.
-- [ ] Add biomedical EDA extensions as separate numbered specs.
-- [ ] Revisit spec `003-large-data-backend-strategy` only after a concrete
-      workload and performance target are defined.
