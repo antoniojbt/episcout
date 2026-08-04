@@ -1,5 +1,10 @@
 # Future Workspace Changelog
 
+## 2026-08-04
+
+- Separated active and completed planning material by moving completed specifications to `future/specs/done/` and completed cross-spec reviews to `future/reviews/done/`, with internal references updated to the new paths.
+- Reconciled `TODOs.md` so active priorities contain no completed checkboxes, moved completed work into reverse-chronological dated entries under `Done`, and made start/end, status-change and periodic long-running-work updates explicit.
+
 ## 2026-08-03
 
 - Completed spec `015-data-intake-to-report-workflow` for issue #184: added review-gated scaffold/audit/apply orchestration, reconciled canonical and optional stratified summaries, a fixed privacy-classified artifact manifest, transactional owned-bundle replacement and escaped aggregate-only HTML without row-level output. Independent review resolved rooted-path, regular-file, component-membership and subgroup-denominator gaps; focused tests and lint passed, and the full local check completed with 0 errors/warnings/notes. The final CRAN-oriented check retained the inherited incoming URL/vignette NOTE and added an external current-time verification NOTE; the immediately preceding run had only the inherited NOTE. No Codecov credential, tag or release was used.

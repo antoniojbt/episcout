@@ -29,7 +29,7 @@ future/
 4. Implement executable tests under `tests/testthat/`.
 5. Implement package code under `R/`, `inst/` or other package directories.
 6. Record review notes in the spec `review.md`.
-7. Update acceptance status and `changelog.md`.
+7. Reconcile `TODOs.md`, acceptance status and `changelog.md` whenever work changes status; also check them at the start and end of each `future/` change and periodically during long-running work.
 8. Move an accepted completed spec to `specs/done/`, and move a completed cross-spec review to `reviews/done/`.
 
 ## R Command Policy

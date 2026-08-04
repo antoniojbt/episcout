@@ -9,7 +9,8 @@
 - For the activated spec, record baseline package test/check status before package-code changes.
 - Keep implementation work scoped to one numbered spec at a time.
 - Review fixture anti-circularity guardrails before adding new expected outputs.
-- Move completed tasks to the 'Done' section, in reverse chronological order.
+- Reconcile this file at the start and end of every change that affects `future/`, and at periodic checkpoints during long-running or multi-step work.
+- Whenever a task, spec or review changes status, update this file in the same change. Keep active priority sections free of completed checkboxes and move completed tasks immediately to the 'Done' section in reverse chronological order under a completion-date heading.
 
 - Use this template and place the task under the appropriate priority heading:
 
@@ -27,7 +28,7 @@
 
 - For simple tasks only use e.g. `- [ ] xxx`
 - Keep README and `NEWS.md` aligned with user-facing workflow changes.
-- Move completed items to `changelog.md`.
+- Record material completed work in `changelog.md` as well as retaining a concise entry under 'Done' here.
 - Check this `TODOs.md` file and active specs under `future/specs/` are aligned.
 - Keep only draft and active specs under `future/specs/`; move accepted completed specs to `future/specs/done/`.
 - Keep only open cross-spec reviews directly under `future/reviews/`; move completed reviews to `future/reviews/done/`.
@@ -38,15 +39,9 @@
 
 - [ ] full git scrub
 
-- [ ] See two md files with plans/instructions from prior codex threads, saved in `future/scratch`:
+- [ ] Review the two remaining plans/instructions from prior Codex threads saved in `future/scratch`:
   - [ ] 1-Review applicable agent checklists
   - [ ] 3-episcout release readiness
-  - [x] 2- done already (spec 010 plan)
-- [x] Update spec 10 based on new agents*md and checklists files.
-- [x] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
-- [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review`; create spec 008 only after that human approval.
-- [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
-- [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
 - [ ] agent truth review with specific instructions pack
     - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
 - [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
@@ -54,10 +49,6 @@
 
 ### Priority 2
 
-- [x] Implement spec `015-data-intake-to-report-workflow` for issue #184: compose review-gated intake, conservative audit/apply preparation, canonical and optional stratified summaries, a privacy-conscious artifact manifest and a report view without writing row-level data.
-- [x] Implement spec `014-stratified-descriptive-summaries` for issue #183: add canonical grouped summaries and a traceable, non-inferential Table 1 presentation.
-- [x] Implement spec `013-specification-guided-data-preparation` for issue #182: audit and apply a reviewed EDA specification through a deterministic, value-free and all-or-nothing preparation boundary.
-- [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
 - [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
       rewriting, identifier removal, output validation and read-only raw-data
@@ -115,3 +106,29 @@
     - Candidate files: `future/TODOs.md`, a future `future/specs/011-codecov-credential-history-remediation/`, `.github/workflows/test-coverage.yaml`, GitHub Actions secrets/settings and Codecov repository/account settings. Historical `codecov.yml` is evidence, not a file to restore.
     - Risks: Exposing the value while investigating it; rotating the wrong global token and breaking other repositories; accepting tokenless uploads without understanding protected-branch integrity; invalidating coverage unexpectedly; rewriting signed commits/tags and PR diffs; losing collaborator work; leaving cached/forked copies; or recontaminating cleaned history from an old clone.
     - Suggested spec ID: `011-codecov-credential-history-remediation` if history rewriting or workflow/security-policy changes are chosen. Rotation and verification should happen before that spec because containment must not wait for planning.
+
+
+## Done
+
+### 2026-08-04
+
+- [x] Separate active and completed specifications and reviews into `done/` directories, repair their references, and make TODO reconciliation part of every future-work change.
+
+### 2026-08-03
+
+- [x] Implement spec `015-data-intake-to-report-workflow` for issue #184: compose review-gated intake, conservative audit/apply preparation, canonical and optional stratified summaries, a privacy-conscious artifact manifest and a report view without writing row-level data.
+- [x] Implement spec `014-stratified-descriptive-summaries` for issue #183: add canonical grouped summaries and a traceable, non-inferential Table 1 presentation.
+- [x] Implement spec `013-specification-guided-data-preparation` for issue #182: audit and apply a reviewed EDA specification through a deterministic, value-free and all-or-nothing preparation boundary.
+- [x] Implement spec `012-data-frame-eda-spec-scaffold` for issue #181: create a conservative, review-required EDA specification scaffold from an existing data frame without exposing observed values.
+- [x] Implement spec `010-canonical-eda-summary-contract`: replace the unreleased EDA v1/v2 interface with one authoritative typed summary contract, with no legacy adapter and no release or tag operation in scope.
+
+### 2026-07-31
+
+- [x] Update spec 010 based on the revised agent guidance and checklists.
+- [x] Review the saved spec 010 plan from the prior Codex thread.
+
+### 2026-07-25
+
+- [x] Implement spec `009-repository-lint-style-cleanup`: remove the 163 genuine loaded-package lint findings and enforce the corrected lint policy locally and in CI.
+- [x] Implement spec `008-univariate-stats-eda-alignment`: shared univariate statistics cores, compatible public adapters and opt-in complete EDA v2 summaries.
+- [x] Review and accept the target contracts and ordered implementation recommendations from completed spec `007-eda-stats-alignment-review` before creating spec 008.
