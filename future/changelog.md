@@ -28,7 +28,7 @@
     updated regeneration commands to use the repo-local R wrapper.
   - Targeted tests and the full package suite passed; `devtools::check()` passed
     with the existing `.gitkeep` NOTE.
-- Kept completed specs under `future/specs/` so existing references remain stable instead of introducing a separate `future/done/` tree.
+- Completed specs were initially kept under `future/specs/`; they now live under `future/specs/done/` so active and completed work are visibly distinct.
 - Triaged deferred PR review notes and completed spec `006-synthetic-integer-generation`.
   - Corrected singleton integer sampling and rejected bounds containing no
     integer values.
@@ -52,7 +52,7 @@
 - Standardised future R check commands to set an explicit CRAN mirror (`https://cloud.r-project.org`) before `devtools` checks.
 - Completed a thorough code review using `future/prompts/senior-r-package-review.md`.
   - Wrote the review to
-    `future/reviews/2026-06-15-senior-r-package-review.md`.
+    `future/reviews/done/2026-06-15-senior-r-package-review.md`.
   - Corrected the confirmed `epi_stats_numeric()` kurtosis documentation issue.
   - Planned follow-up work as `004-senior-review-followups` candidate.
 - Completed spec `004-senior-review-followups`.

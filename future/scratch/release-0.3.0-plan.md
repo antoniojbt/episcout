@@ -158,7 +158,7 @@ Perform the scrub as a read-only audit first. Propose and review remediation bef
 
 ## Phase 2: Finalise and implement spec 010
 
-1. Update `future/specs/010-canonical-eda-summary-contract/` to apply the current `AGENTS.md` and the routed checklists, especially software verification, truth and semantics, analysis and statistics, copy-edit, and render and release.
+1. Update `future/specs/done/010-canonical-eda-summary-contract/` to apply the current `AGENTS.md` and the routed checklists, especially software verification, truth and semantics, analysis and statistics, copy-edit, and render and release.
 2. Reconfirm the observable contract, independently justified analytical expectations, compatibility decision, affected callers, report behaviour and acceptance checks.
 3. Obtain human approval of the revised brief, SDD and TDD before implementation.
 4. Implement on `refactor/canonical-eda-summary-contract` without version bumps, tags or release operations.

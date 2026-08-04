@@ -6,7 +6,7 @@ This review treats public `summary_version = "v1"` and `summary_version = "v2"` 
 
 ## Why the presentations exist
 
-Spec 008 intentionally retained `v1` as the exact historical two-component EDA output and added `v2` as an opt-in six-component typed output; changing the default was explicitly outside that work (`future/specs/008-univariate-stats-eda-alignment/brief.md:13-18`, `future/specs/008-univariate-stats-eda-alignment/sdd.md:12-19`). The completed implementation likewise records the default transition as a later compatibility decision (`future/specs/008-univariate-stats-eda-alignment/review.md:14-18`, `future/specs/008-univariate-stats-eda-alignment/review.md:25-27`). The current labels therefore encode API history, not a quality ordering.
+Spec 008 intentionally retained `v1` as the exact historical two-component EDA output and added `v2` as an opt-in six-component typed output; changing the default was explicitly outside that work (`future/specs/done/008-univariate-stats-eda-alignment/brief.md:13-18`, `future/specs/done/008-univariate-stats-eda-alignment/sdd.md:12-19`). The completed implementation likewise records the default transition as a later compatibility decision (`future/specs/done/008-univariate-stats-eda-alignment/review.md:14-18`, `future/specs/done/008-univariate-stats-eda-alignment/review.md:25-27`). The current labels therefore encode API history, not a quality ordering.
 
 For this review, `compact` means the current `v1` presentation and `typed` means the current `v2` presentation. These are working descriptions only; accepting them here would not itself add aliases or rename `summary_version`.
 
@@ -43,13 +43,13 @@ Use declared levels `A;B;C`, missing sentinel `UNK`, and source values `A, B, D,
 
 The categorical rows sum to five observations, missingness sums to two rows, and together they reconcile to seven source rows. With no declared levels, all four observed labels `A`, `B`, `D` and literal `"NA"` must be present. With all values missing and declared levels present, `A`, `B` and `C` remain as zero-count rows with `p_total = 0` and `p_observed = NA`. With a zero-row source and declared levels present, the same declared rows remain, both proportions are `NA`, and the source-row count is zero. With a zero-row source and no declared levels, the categorical table is a typed zero-row table.
 
-The literal string `"NA"` is an ordinary observed label unless it is explicitly declared as a missing sentinel. This follows the prior edge policy (`future/specs/008-univariate-stats-eda-alignment/sdd.md:31-38`) and is included here because it distinguishes semantic missingness from text equality.
+The literal string `"NA"` is an ordinary observed label unless it is explicitly declared as a missing sentinel. This follows the prior edge policy (`future/specs/done/008-univariate-stats-eda-alignment/sdd.md:31-38`) and is included here because it distinguishes semantic missingness from text equality.
 
 ## Findings
 
 ### 1. Neither presentation is globally superior
 
-The compact presentation is smaller and maintains exact existing report and CSV schemas; the typed presentation covers more declared types and carries audit fields. Those are different product purposes. The repository provides evidence for both contracts but no product decision that the typed contract should replace the compact one (`future/specs/008-univariate-stats-eda-alignment/sdd.md:10-19`, `future/specs/008-univariate-stats-eda-alignment/sdd.md:44-46`). Treating `v2` as a general improvement would therefore exceed the approved design.
+The compact presentation is smaller and maintains exact existing report and CSV schemas; the typed presentation covers more declared types and carries audit fields. Those are different product purposes. The repository provides evidence for both contracts but no product decision that the typed contract should replace the compact one (`future/specs/done/008-univariate-stats-eda-alignment/sdd.md:10-19`, `future/specs/done/008-univariate-stats-eda-alignment/sdd.md:44-46`). Treating `v2` as a general improvement would therefore exceed the approved design.
 
 ### 2. Both presentations use the same categorical calculation core
 
@@ -69,7 +69,7 @@ The compact fixture independently anchors declared counts and both denominators 
 
 ### 6. Current documentation implies a migration that was never approved
 
-The public documentation and release notes say compact `v1` remains the default “for one compatibility release” (`R/eda_summaries.R:5-9`, `NEWS.md:11`). That phrase implies an intended default change, whereas the governing spec says the transition remains a later compatibility decision (`future/specs/008-univariate-stats-eda-alignment/review.md:25-27`). Documentation should describe the two purposes neutrally unless and until a migration is separately approved.
+The public documentation and release notes say compact `v1` remains the default “for one compatibility release” (`R/eda_summaries.R:5-9`, `NEWS.md:11`). That phrase implies an intended default change, whereas the governing spec says the transition remains a later compatibility decision (`future/specs/done/008-univariate-stats-eda-alignment/review.md:25-27`). Documentation should describe the two purposes neutrally unless and until a migration is separately approved.
 
 ## Proposed answers and justification
 
@@ -89,7 +89,7 @@ This is a compromise, not full machine-readable reconciliation within compact ou
 
 ### Leave typed categorical rows unchanged
 
-Proposed answer: preserve the typed categorical representation of declared and unexpected levels, its flags and both denominators. Justification: it already represents the truth matrix without silent loss and matches the design that unexpected observed levels are appended and identified (`future/specs/008-univariate-stats-eda-alignment/sdd.md:31-38`). The repair required here is stronger independent testing, not a categorical calculation redesign.
+Proposed answer: preserve the typed categorical representation of declared and unexpected levels, its flags and both denominators. Justification: it already represents the truth matrix without silent loss and matches the design that unexpected observed levels are appended and identified (`future/specs/done/008-univariate-stats-eda-alignment/sdd.md:31-38`). The repair required here is stronger independent testing, not a categorical calculation redesign.
 
 ### Keep the existing denominator definitions
 
