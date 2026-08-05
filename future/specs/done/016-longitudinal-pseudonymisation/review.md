@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `016-longitudinal-pseudonymisation`
-Status: Active
+Status: Implemented
 
 ## Planning Findings
 
@@ -79,4 +79,4 @@ The CI coverage workflow was extended with the same neutral PostgreSQL 17 servic
 
 ## Closeout Notes
 
-Implementation and primary verification are complete on `feature/longitudinal-pseudonymisation` and published for owner review in draft PR #189, `[Feature] Add longitudinal pseudonymisation workflow`. The specification remains active until that review is accepted. No release or tag was created, and episcout did not create schemas, grant roles, manage backups or configure server logging.
+Implementation and primary verification were completed on `feature/longitudinal-pseudonymisation`. The owner accepted the work by merging PR #189, `[Feature] Add longitudinal pseudonymisation workflow`, into `master` on 2026-08-04, and the completed specification was moved to `future/specs/done/`. No release or tag was created, and episcout did not create schemas, grant roles, manage backups or configure server logging.

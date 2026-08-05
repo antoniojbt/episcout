@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `010-canonical-eda-summary-contract`  
-Status: Active
+Status: Completed
 Owner: Antonio Berlanga-Taylor  
 
 ## Problem

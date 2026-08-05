@@ -1,6 +1,6 @@
 id: "016"
 slug: "longitudinal-pseudonymisation"
-status: active
+status: implemented
 owner: repository-owner
 base_branch: master
 working_branch: feature/longitudinal-pseudonymisation

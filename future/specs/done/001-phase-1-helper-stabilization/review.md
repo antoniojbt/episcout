@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `001-phase-1-helper-stabilization`  
-Status: Implemented; review required
+Status: Implemented
 
 ## Review Focus
 

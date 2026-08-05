@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready for design and implementation in the `episcout` repository. This plan is independent of Vive Feliz. Vive Feliz supplies a representative large-data workload and a later performance check, but no project-specific names, schemas, credentials, dictionaries, fixtures, or output conventions belong in `episcout`.
+Ready to be incorporated into draft spec `003-large-data-backend-strategy`. Package implementation is not authorised until that specification is revised, reviewed and activated. This plan is independent of Vive Feliz. Vive Feliz supplies a representative large-data workload and a later performance check, but no project-specific names, schemas, credentials, dictionaries, fixtures, or output conventions belong in `episcout`.
 
 ## Purpose
 

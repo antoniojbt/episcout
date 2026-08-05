@@ -34,4 +34,5 @@
 ^scripts$
 ^build$
 ^legacy$
+^PROJECT_MAP\.md$
 # .Rbuildignore

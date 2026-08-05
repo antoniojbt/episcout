@@ -34,6 +34,8 @@ install_github("AntonioJBT/episcout")
 
 ## Development
 
+See the [project map](PROJECT_MAP.md) for the package architecture, implemented workflows, source/test/documentation locations and planning lifecycle.
+
 Use the repository development environment so local checks run with the same R tooling in Positron, Codex and shell sessions. Create it once with:
 
 ``` bash
