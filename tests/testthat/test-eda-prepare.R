@@ -212,6 +212,31 @@ test_that("strict temporal parsing requires reviewed local timezone and rejects 
     format(unusual_offset$data$when, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
     "2024-01-01T10:59:00Z"
   )
+  negative_offset <- epi_eda_prepare(
+    data.frame(when = "2024-01-01T12:00:00-05:30"), spec,
+    mode = "apply"
+  )
+  expect_identical(
+    format(negative_offset$data$when, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    "2024-01-01T17:30:00Z"
+  )
+
+  utc_spec <- spec
+  utc_spec$timezone <- "UTC"
+  utc_local <- epi_eda_prepare(
+    data.frame(when = "2024-01-01 12:00:00.25"), utc_spec,
+    mode = "apply"
+  )
+  expect_identical(utc_local$metadata$overall_status, "prepared")
+  expect_equal(as.numeric(utc_local$data$when), 1704110400.25, tolerance = 1e-6)
+
+  mixed <- epi_eda_prepare(
+    data.frame(when = c("2024-01-15T12:30:00", "2024-01-15T17:30:00Z")),
+    spec,
+    mode = "apply"
+  )
+  expect_identical(mixed$metadata$overall_status, "prepared")
+  expect_identical(as.numeric(mixed$data$when), rep(1705339800, 2))
 
   nonexistent <- data.frame(when = "2024-03-10T02:30:00")
   ambiguous <- data.frame(when = "2024-11-03T01:30:00")
@@ -224,12 +249,59 @@ test_that("strict temporal parsing requires reviewed local timezone and rejects 
     epi_eda_prepare(historical_ambiguity, historical_spec, mode = "apply")$metadata$overall_status,
     "blocked"
   )
+  historical_unique <- epi_eda_prepare(
+    data.frame(when = "1969-09-29T12:30:00"), historical_spec,
+    mode = "apply"
+  )
+  expect_identical(historical_unique$metadata$overall_status, "prepared")
+  expect_identical(attr(historical_unique$data$when, "tzone"), "UTC")
+  expect_identical(as.numeric(historical_unique$data$when), -8116200)
+  historical_gap <- epi_eda_prepare(
+    data.frame(when = "1993-08-21T12:30:00"), historical_spec,
+    mode = "apply"
+  )
+  expect_identical(historical_gap$metadata$overall_status, "blocked")
+
+  under_utc <- withr::with_envvar(
+    c(TZ = "UTC"),
+    epi_eda_prepare(data.frame(when = "1969-09-29T12:30:00"), historical_spec, mode = "apply")
+  )
+  under_auckland <- withr::with_envvar(
+    c(TZ = "Pacific/Auckland"),
+    epi_eda_prepare(data.frame(when = "1969-09-29T12:30:00"), historical_spec, mode = "apply")
+  )
+  expect_identical(under_utc$metadata$overall_status, under_auckland$metadata$overall_status)
+  expect_identical(as.numeric(under_utc$data$when), as.numeric(under_auckland$data$when))
+
   leap_second <- data.frame(when = "2024-01-01T12:00:60Z")
   expect_identical(epi_eda_prepare(leap_second, spec, mode = "apply")$metadata$overall_status, "blocked")
   spec$timezone <- "Not/A-Timezone"
   expect_identical(epi_eda_prepare(local, spec, mode = "apply")$metadata$overall_status, "blocked")
   spec$timezone <- " America/New_York "
   expect_identical(epi_eda_prepare(local, spec, mode = "apply")$metadata$overall_status, "blocked")
+})
+
+test_that("temporal blockers remain actionable and value-free", {
+  observed_value <- "1969-09-30T12:30:00"
+  spec <- preparation_spec("when", "datetime", timezone = "Pacific/Kwajalein")
+  result <- expect_no_warning(
+    epi_eda_prepare(data.frame(when = observed_value), spec, mode = "apply")
+  )
+  type_row <- audit_row(result, "when", "type")
+  rendered <- paste(capture.output(str(list(result$audit, result$metadata))), collapse = " ")
+
+  expect_identical(result$metadata$overall_status, "blocked")
+  expect_identical(type_row$n_invalid, 1L)
+  expect_match(type_row$reason, "explicit Z or numeric offset", fixed = TRUE)
+  expect_false(grepl(observed_value, rendered, fixed = TRUE))
+
+  invalid_value <- "2024-02-30T12:30:00"
+  invalid <- expect_no_warning(
+    epi_eda_prepare(data.frame(when = invalid_value), spec, mode = "apply")
+  )
+  invalid_rendered <- paste(capture.output(str(list(invalid$audit, invalid$metadata))), collapse = " ")
+  expect_identical(invalid$metadata$overall_status, "blocked")
+  expect_false(grepl(invalid_value, invalid_rendered, fixed = TRUE))
 })
 
 test_that("zero rows, unsupported columns and invalid names are handled safely", {

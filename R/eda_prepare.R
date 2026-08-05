@@ -23,9 +23,11 @@
 #' @details Character numeric parsing is deliberately unsupported because no
 #' locale or decimal-mark contract is present. Character dates and datetimes
 #' use strict ISO forms. Offset or `Z` datetimes are normalised to UTC; local
-#' datetimes require a valid reviewed `timezone` field and ambiguous or
-#' nonexistent daylight-saving wall times block preparation. Optional `min`
-#' and `max` fields are descriptive metadata, not recoding rules.
+#' datetimes require a valid reviewed `timezone` field supported by `clock`'s
+#' packaged IANA timezone database. Ambiguous, nonexistent, unsupported or
+#' otherwise unclassifiable local wall times block preparation without exposing
+#' observed values. Optional `min` and `max` fields are descriptive metadata,
+#' not recoding rules.
 #'
 #' The semicolon-delimited v1 `missing_codes` format cannot represent empty,
 #' whitespace-only, or semicolon-containing sentinels. No files are written.
@@ -564,22 +566,35 @@ prepare_datetime_plan <- function(values, timezone) {
     invalid[offset_rows] <- invalid[offset_rows] | is.na(parsed)
   }
   if (any(shape$local)) {
-    valid_timezone <- nzchar(timezone) && (timezone == "UTC" || timezone %in% OlsonNames())
+    valid_timezone <- prepare_timezone_supported(timezone)
     if (!valid_timezone) {
       invalid[shape$local] <- TRUE
     } else {
-      local_valid <- vapply(values[shape$local], prepare_local_datetime_valid, logical(1), timezone)
-      invalid[shape$local] <- !local_valid
+      parsed <- prepare_parse_local_dt(values[shape$local], timezone)
+      invalid[shape$local] <- invalid[shape$local] | is.na(parsed)
     }
   }
   n_invalid <- as.integer(sum(invalid))
   list(
     n_invalid = n_invalid,
     reason = if (n_invalid > 0L) {
-      "Character storage contains invalid, unzoned, ambiguous or nonexistent strict ISO datetimes."
+      paste(
+        "Character storage contains invalid, unzoned, ambiguous, nonexistent or unsupported strict ISO datetimes;",
+        "provide an explicit Z or numeric offset or correct the reviewed IANA timezone."
+      )
     } else {
       "Strict ISO datetime text will be converted and normalised to UTC."
     }
+  )
+}
+
+prepare_timezone_supported <- function(timezone) {
+  if (!nzchar(timezone)) {
+    return(FALSE)
+  }
+  tryCatch(
+    timezone %in% clock::tzdb_names(),
+    error = function(...) FALSE
   )
 }
 
@@ -643,31 +658,39 @@ prepare_datetime_shapes <- function(values) {
   )
 }
 
-prepare_local_datetime_valid <- function(value, timezone) {
-  normalized <- value
-  substr(normalized, 11L, 11L) <- "T"
-  pseudo <- suppressWarnings(as.POSIXct(
-    strptime(normalized, format = "%Y-%m-%dT%H:%M:%OS", tz = "UTC"),
-    tz = "UTC"
-  ))
-  if (is.na(pseudo)) {
-    return(FALSE)
+prepare_parse_local_dt <- function(values, timezone) {
+  values <- as.character(values)
+  out <- as.POSIXct(rep(NA_real_, length(values)), origin = "1970-01-01", tz = "UTC")
+  if (length(values) == 0L) {
+    return(out)
   }
-  sample_seconds <- floor(as.numeric(pseudo)) + seq(-4 * 86400, 4 * 86400, by = 3600)
-  samples <- as.POSIXct(sample_seconds, origin = "1970-01-01", tz = "UTC")
-  local_samples <- format(samples, "%Y-%m-%dT%H:%M:%S", tz = timezone)
-  local_pseudo <- suppressWarnings(as.POSIXct(
-    strptime(local_samples, format = "%Y-%m-%dT%H:%M:%S", tz = "UTC"),
-    tz = "UTC"
-  ))
-  offsets <- unique(round(as.numeric(local_pseudo) - sample_seconds))
-  offsets <- offsets[is.finite(offsets)]
-  candidates <- as.POSIXct(
-    as.numeric(pseudo) - offsets,
-    origin = "1970-01-01", tz = "UTC"
+  normalized <- values
+  substr(normalized, 11L, 11L) <- "T"
+  suffix <- ifelse(nchar(normalized) > 19L, substr(normalized, 20L, nchar(normalized)), "")
+  fractions <- suppressWarnings(as.numeric(paste0("0", suffix)))
+  tryCatch(
+    {
+      naive <- suppressWarnings(clock::naive_time_parse(
+        substr(normalized, 1L, 19L),
+        format = "%Y-%m-%dT%H:%M:%S",
+        precision = "second"
+      ))
+      info <- clock::naive_time_info(naive, zone = timezone)
+      unique <- !is.na(info$type) & info$type == "unique" & !is.na(fractions)
+      if (any(unique)) {
+        converted <- clock::as_date_time(
+          naive[unique],
+          zone = timezone,
+          nonexistent = "NA",
+          ambiguous = "NA"
+        )
+        out[unique] <- as.numeric(converted) + fractions[unique]
+      }
+      attr(out, "tzone") <- "UTC"
+      out
+    },
+    error = function(...) out
   )
-  rendered <- format(candidates, "%Y-%m-%dT%H:%M:%S", tz = timezone)
-  sum(rendered == substr(normalized, 1L, 19L)) == 1L
 }
 
 prepare_parse_datetime <- function(values, timezone) {
@@ -681,12 +704,7 @@ prepare_parse_datetime <- function(values, timezone) {
   out[offset_rows] <- prepare_parse_offset_dt(values[offset_rows])
   local_rows <- !missing & shape$local
   if (any(local_rows)) {
-    normalized <- values[local_rows]
-    substr(normalized, 11L, 11L) <- "T"
-    out[local_rows] <- as.POSIXct(
-      strptime(normalized, format = "%Y-%m-%dT%H:%M:%OS", tz = timezone),
-      tz = timezone
-    )
+    out[local_rows] <- prepare_parse_local_dt(values[local_rows], timezone)
   }
   attr(out, "tzone") <- "UTC"
   out
