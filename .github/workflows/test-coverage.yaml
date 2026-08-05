@@ -15,6 +15,25 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      EPISCOUT_TEST_POSTGRES: 1
+      PGHOST: 127.0.0.1
+      PGPORT: 5432
+      PGDATABASE: synthetic_records
+      PGUSER: postgres
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: synthetic_records
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d synthetic_records"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@v7
@@ -25,7 +44,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::covr, any::xml2
+          extra-packages: any::covr, any::xml2, any::RPostgres
           needs: coverage
 
       - name: Test coverage
