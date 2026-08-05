@@ -15,11 +15,11 @@ epi_stats_summary(
 \arguments{
 \item{df}{Data frame}
 
-\item{codes}{Specify codes to summarise or exclude as string. Default is NULL.}
+\item{codes}{Character vector of values to count or exclude. With typed output, these values are treated as global sentinel-missing codes.}
 
-\item{class_type}{Class of variables to summarise, 'chr_fct' or 'int_num'. Default is character and factor.}
+\item{class_type}{Current-output variable class: \code{"chr_fct"} or \code{"int_num"}. Leave the default when requesting typed output.}
 
-\item{action}{Values to summarise, 'codes_only' or 'exclude'. Default is 'exclude'.}
+\item{action}{Current-output handling of \code{codes}: \code{"codes_only"} or \code{"exclude"}. Typed output requires \code{"exclude"}.}
 
 \item{output}{Output contract. \code{"current"} preserves the existing class/action-specific tibble. \code{"typed"} returns complete typed summary components for every supported column and treats \code{codes} as global sentinel-missing values.}
 }
@@ -27,157 +27,52 @@ epi_stats_summary(
 With \code{output = "current"}, a tibble using the historical mode-specific schema. With \code{output = "typed"}, a list containing \code{variables}, \code{numeric}, \code{categorical}, \code{text}, \code{temporal} and \code{skipped} data frames.
 }
 \description{
-epi_stats_summary() provides summary descriptive statistics for columns belonging to either character and factor (class_type = 'chr_fct') or integer and numeric (class_type = 'int_num') while discarding values provided (codes). This is useful if data frame has contingency codes. Columns are ordered according to order in contingency codes option. Rows are then ordered in decreasing order according to column provided.
+Summarise character/factor or integer/numeric columns while counting or excluding reviewed code values. Set \code{output = "typed"} to return the canonical six-component descriptive contract for every supported column.
 }
 \note{
-Desgined with data frames that require pre-processing and likely have contingency and database codes. Action 'exclude' excludes the string values provided from the summary. Useful to quickly assess what a data.frame contains, types of values in each column and summary statistics if excluding codes.
+The current output is a historical convenience interface for data frames containing contingency or database codes. Prefer typed output for complete variable coverage and explicit missingness semantics.
 }
 \examples{
-#####
-# Load libraries needed:
-library(episcout)
-library(dplyr)
-library(purrr)
-library(e1071)
-library(tibble)
-library(tidyr)
-#####
+# Shared examples for the three summary-table helpers.
 
-#####
-# Generate a data frame:
-n <- 1000
-df <- data.frame(
-  var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c("Pre", "Post"), n / 2),
-  x = rnorm(n),
-  y = rbinom(n, 1, 0.50),
-  z = rpois(n, 2)
+set.seed(20260805)
+example_data <- data.frame(
+  visit = rep(c("baseline", "follow_up"), 4),
+  group = rep(c("A", "B"), each = 4),
+  score = c(10, 12, 14, 13, 9, 11, 15, 16),
+  outcome = factor(c(0, 0, 1, 0, 0, 1, 1, 1))
 )
 
-# Explore first and last rows for first columns:
-epi_head_and_tail(df)
-
-# Add character/factor columns:
-col_chr <- data.frame(
-  "chr1" = rep(c("A", "B"), length.out = 1000),
-  "chr2" = rep(c("C", "D"), length.out = 1000)
-)
-dim(col_chr)
-df_cont_chr <- tibble::as.tibble(cbind(df, col_chr))
-epi_head_and_tail(df_cont_chr)
-epi_head_and_tail(df_cont_chr, last_cols = TRUE)
-
-# Check variable types are what you expect:
-epi_clean_count_classes(df_cont_chr)
-str(df_cont_chr)
-dim(df_cont_chr)
-# var_id, y and z can be treated as factors or characters.
-summary(as.factor(df_cont_chr$y))
-summary(as.factor(df_cont_chr$z))
-# Here we'll only transform y though:
-df_cont_chr$y <- as.factor(df_cont_chr$y)
-epi_clean_count_classes(df_cont_chr)
-str(df_cont_chr)
-
-# Designate some values as codes to be counted separately:
-codes <- c("Pre", "A", "C", "1", "3")
-#####
-
-#####
-# Count when codes are present, pass these as character or factor, specify
-#  action is to count codes only:
-stat_sum1 <- epi_stats_summary(
-  df = df_cont_chr,
-  codes = codes,
-  class_type = "chr_fct",
-  action = "codes_only"
-)
-class(stat_sum1)
-stat_sum1
-#####
-
-#####
-# Add total for percentage calculation and order column to tidy up results:
-perc_n <- nrow(df_cont_chr)
-order_by <- "percent"
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum1,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-# Format them if needed:
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 2)
-#####
-
-#####
-# Count integer or numeric codes:
-stat_sum2 <- epi_stats_summary(df_cont_chr,
-  codes = codes,
-  class_type = "int_num",
-  action = "codes_only"
-)
-stat_sum2
-# Tidy and format them:
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum2,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 2, skip = c(2, 3))
-#####
-
-#####
-# Get summary stats excluding contingency codes for character and factor columns:
-stat_sum3 <- epi_stats_summary(df_cont_chr,
-  codes = codes,
+# Summarise the character and factor columns after excluding a reviewed code.
+categorical_summary <- epi_stats_summary(
+  example_data,
+  codes = "follow_up",
   class_type = "chr_fct",
   action = "exclude"
 )
-stat_sum3
-# Tidy and format:
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum3,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 1)
-#####
+categorical_summary
 
-#####
-# Get summary stats for numeric/integer columns
-# while excluding certain codes/values:
-stat_sum4 <- epi_stats_summary(
-  df = df_cont_chr,
-  codes = codes,
-  class_type = "int_num",
-  action = "exclude"
-)
-class(stat_sum4)
-stat_sum4
-# Numeric data summary doesn't need tidying but could be formatted:
-epi_stats_format(stat_sum4, digits = 2)
-#####
-
-#####
-# If there are no codes to return the result is an empty data.frame (tibble):
-codes <- c("Per", "X", "55")
-stat_sum_zero <- epi_stats_summary(df_cont_chr,
-  codes = codes,
+# Convert counts to a display table; retain unformatted values for calculations.
+code_counts <- epi_stats_summary(
+  example_data,
+  codes = c("baseline", "A", "0"),
   class_type = "chr_fct",
   action = "codes_only"
 )
-stat_sum_zero
-#####
+tidy_counts <- epi_stats_tidy(
+  code_counts,
+  perc_n = nrow(example_data)
+)
+epi_stats_format(tidy_counts, digits = 1)
+
+# The typed contract profiles every supported column with explicit coverage.
+typed_summary <- epi_stats_summary(example_data, output = "typed")
+names(typed_summary)
+typed_summary$variables
 }
 \seealso{
 \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_tidy}}, \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_numeric}}.
 }
 \author{
-Antonio J Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
+Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 }

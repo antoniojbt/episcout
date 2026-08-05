@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 
 > **Privacy boundary:** Pseudonymised data remain restricted personal data. They are not anonymous, automatically disclosure-controlled or automatically safe to share. Keep the identity registry and output behind reviewed access controls.
 
+This vignette is the detailed governance and recovery guide. For a runnable learning example using a neutral longitudinal CSV and uniquely named disposable schemas, open the installed `examples/db-to-report/walkthrough.R` script and run it section by section.
+
 ## 1. What this workflow does and when to use it
 
 Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same stable pseudonymous token over time. A reviewed dictionary decides which columns may enter output, a value-free linkage specification declares exact identity semantics, and a restricted registry preserves token stability across runs.

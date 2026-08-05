@@ -1,0 +1,12 @@
+source_person_id,sex,cohort_group,baseline_age,visit_number,visit_date,systolic_bp,outcome,symptom_text,site
+PX001,Female,Intervention,45,1,2025-01-10,118,0,None,North
+PX001,Female,Intervention,45,2,2025-04-11,116,0,Mild fatigue,North
+PX001,Female,Intervention,45,3,2025-07-10,114,0,None,North
+PX002,Male,Comparator,52,1,2025-01-12,132,0,Headache,South
+PX002,Male,Comparator,52,2,2025-04-14,136,1,Headache,South
+PX002,Male,Comparator,52,2,2025-04-14,136,1,Headache,South
+PX003,Not recorded,Intervention,61,1,2025-01-15,145,0,Not recorded,Central
+PX003,Not recorded,Intervention,61,2,2025-04-16,,0,Not recorded,Central
+PX004,Female,Comparator,38,1,2025-01-18,109,0,None,North
+PX004,Female,Comparator,38,2,2025-04-20,111,0,None,North
+PX005,Male,Intervention,67,1,2025-01-22,151,1,Dizziness,South
