@@ -1,13 +1,53 @@
 # Acceptance
 
 Spec ID: `003-large-data-backend-strategy`
-Status: Draft; revision required before activation
+Status: Active
 
-- [ ] The revised brief, SDD, TDD, acceptance contract and manifest receive review before package-code changes.
-- [ ] Existing data-frame/tibble interfaces and canonical results remain the baseline.
-- [ ] PostgreSQL is the only first backend and dependency placement is explicit.
-- [ ] Every specification type, missingness rule, statistical definition and identifier-QA result has a precise PostgreSQL parity contract.
-- [ ] Plot-data preparation, shared rendering, bounded collection and high-cardinality display policy are explicit.
-- [ ] The owned output bundle reuses staged writes and manifest-validated replacement and contains no source rows or sensitive connection material.
-- [ ] Independent fixtures, privacy checks, live PostgreSQL checks and external performance evidence are defined before implementation.
-- [ ] Arrow, DuckDB, data.table, generic DBI dispatch and all other stated exclusions remain outside the first implementation.
+## Planning And Activation
+
+- [x] `future/TODOs.md` and active specs were reconciled before revision; spec 003 was the repository's ready-next Priority 1 task.
+- [x] The PostgreSQL design input was incorporated without importing representative project data, schemas, dictionaries, credentials, terminology or output conventions.
+- [x] Brief, SDD, TDD, acceptance, manifest and planning review define a coherent PostgreSQL-first design before package-code changes.
+- [x] PostgreSQL 17+ and RPostgres are the only database backend/driver in scope; Arrow, DuckDB, data.table, SQLite, dbplyr and generic DBI dispatch remain excluded.
+- [x] Existing profiler arguments, data-frame dispatch, six canonical components and output ordering remain the compatibility baseline.
+- [x] Source, type, missingness, statistical, identifier-QA, plot-data, transaction, privacy, bundle, performance and failure contracts are explicit and independently testable.
+- [x] Every success measure maps to planned validation and evidence; no blocking design question remains.
+- [x] Applicable repository checklists and owner-review stop conditions are recorded.
+- [x] Baseline package lint, tests, local check and CRAN-style check are recorded before package-code changes, with inherited/environment failures preserved rather than waived.
+
+## Implementation Contract
+
+- [ ] `epi_eda_postgres_source()` accepts exactly one safely identified supported PostgreSQL relation through a live caller-owned connection and exposes no connection details.
+- [ ] The four existing profilers dispatch on data frame or explicit PostgreSQL source without accepting arbitrary DBI/lazy objects or changing data-frame result schemas.
+- [ ] Every supported technical type and incompatibility follows the reviewed mapping; no implicit source preparation or timestamp-without-time-zone interpretation occurs.
+- [ ] Standard/sentinel missingness, NaN, infinities, denominators and all-missing/zero-row states preserve canonical semantics.
+- [ ] Numeric/integer calculations reproduce type-7, e1071 type-3, Shapiro and outlier contracts with exact discrete results and predeclared floating tolerances.
+- [ ] Categorical/binary results contain complete declared/unexpected frequencies and both denominators; display-only leading-level collapse never changes canonical output.
+- [ ] Text and temporal results remain aggregate-only and reproduce R character/UTC/epoch semantics without raw text or session-timezone inference.
+- [ ] Explicit identifier roles are policy-skipped from ordinary summaries/plots and receive only the fixed aggregate QA fields.
+- [ ] Direct calls and the orchestrator own stable repeatable-read, read-only snapshots, reject caller transactions, clean up results and leave connections usable.
+- [ ] Client execution is sequential and every non-categorical fetch is bounded by the fixed query-kind contract; no full-row collection occurs.
+- [ ] Shared compact plot data reconcile to summaries and shared renderers produce deterministic, inspected SVGs without raw identifier/text values.
+- [ ] The database run returns the fixed object and publishes the exact aggregate-only owned bundle through tested staging/manifest/restore rules.
+- [ ] No database mutation, temporary relation, server setting, schema/index/grant management, pseudonymisation, suppression, approximation, sampling or alternate statistics are introduced.
+
+## Evidence And Verification
+
+- [ ] Neutral fixtures cover every supported type and material edge case; expected values have independent provenance and anti-circularity guards.
+- [ ] Unit and mandatory disposable PostgreSQL integration tests cover parity, quoting/binding, snapshot consistency, read-only behaviour, lifecycle cleanup, privacy and filesystem recovery.
+- [ ] Existing data-frame, intake, dictionary, plotting and PostgreSQL security suites pass without weakened expectations.
+- [ ] Returned/file/log/condition/plot canaries and a repository-content audit establish the stated client-artifact privacy boundary and its caller-authored specification exception.
+- [ ] Plot compact data are reconciled before the exact delivered SVGs are rendered and visually inspected.
+- [ ] The external custodian records three protocol-compliant representative runs; median end-to-end time is at most 300 seconds and data-locality limits hold.
+- [ ] The separate data-frame limitation is evidenced without exporting restricted rows or making an unsupported comparative speed claim.
+- [ ] README, NEWS, roxygen and the specification-first vignette agree with observed behaviour and retain disclosure, server-logging and unsupported-type limitations.
+- [ ] Package-loaded lint, focused/full tests, live PostgreSQL tests, `scripts/check-local.sh`, `scripts/check-cran.sh` and `git diff --check` pass or every inherited/external limitation is recorded.
+- [ ] Software-verification, truth/semantics, analysis/statistics, figures and copy-edit checklists are completed with evidence in `review.md`.
+- [ ] Independent statistical-parity, PostgreSQL/read-only/privacy and bundle/plot/documentation reviews find no unresolved blocker.
+- [ ] `future/TODOs.md`, `future/README.md`, `future/changelog.md`, manifest, acceptance and review are reconciled at checkpoints and closeout.
+
+## Publication Boundary
+
+- [ ] The focused implementation is committed and pushed on the reviewed feature branch and its PR records behaviour, tests, compatibility, external benchmark evidence, privacy limitations and unresolved issues.
+- [ ] Owner acceptance is recorded before the completed spec moves to `future/specs/done/`.
+- [ ] No release, tag, representative workload publication, credential operation or unrelated repository change is performed under this spec.

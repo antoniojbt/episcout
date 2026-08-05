@@ -2,7 +2,7 @@
 
 ## Status
 
-Ready to be incorporated into draft spec `003-large-data-backend-strategy`. Package implementation is not authorised until that specification is revised, reviewed and activated. This plan is independent of Vive Feliz. Vive Feliz supplies a representative large-data workload and a later performance check, but no project-specific names, schemas, credentials, dictionaries, fixtures, or output conventions belong in `episcout`.
+Incorporated into active spec `003-large-data-backend-strategy` on 2026-08-04. This file remains a design input, while the active brief, SDD, TDD, acceptance contract, manifest and review are implementation authority. This plan is independent of Vive Feliz. Vive Feliz supplies a representative large-data workload and a later performance check, but no project-specific names, schemas, credentials, dictionaries, fixtures, or output conventions belong in `episcout`.
 
 ## Purpose
 
@@ -10,7 +10,7 @@ Add PostgreSQL as the first database backend for specification-driven EDA while 
 
 ## Required design
 
-Activate and update `future/specs/003-large-data-backend-strategy` before changing package code. Narrow its first implementation to PostgreSQL; keep Arrow, DuckDB, data.table, and generic DBI support outside this version.
+Follow active `future/specs/003-large-data-backend-strategy` before changing package code. Its reviewed first implementation is PostgreSQL-only; Arrow, DuckDB, data.table, and generic DBI support remain outside this version.
 
 The established public EDA functions remain the analytical interface:
 
