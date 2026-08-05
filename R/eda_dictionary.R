@@ -212,13 +212,13 @@ epi_eda_dictionary_spec <- function(dictionary, table, catalogues = NULL) {
 
 #' Profile approved PostgreSQL catalogue columns
 #'
-#' Return value counts only for active dictionary rows explicitly marked with `profile_catalogue = TRUE`. Direct identifiers, quasi-identifiers, unclassified fields and columns exceeding `max_levels` are rejected before value counts are returned.
+#' Return value counts only for active dictionary rows explicitly marked with `profile_catalogue = TRUE`. Direct identifiers, quasi-identifiers, unclassified fields and columns exceeding `max_levels` are rejected before value counts are returned. The distinct-level limit counts non-missing values; a profiled column containing PostgreSQL `NULL` also returns one `source_value = NA` row with its count.
 #'
 #' @param con An open DBI connection created with RPostgres.
 #' @param dictionary A validated extended dictionary.
 #' @param max_levels Maximum distinct non-missing values allowed for each profiled column.
 #'
-#' @return A data frame containing source keys, `source_value` and `n`.
+#' @return A data frame containing source keys, `source_value` and `n`. `source_value` is `NA` for the optional PostgreSQL `NULL` count row.
 #'
 #' @export
 epi_db_catalogue_profile <- function(con, dictionary, max_levels = 50) {

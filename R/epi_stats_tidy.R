@@ -1,23 +1,22 @@
-#' @title Tidy up a data.frame with summary values
+#' @title Tidy a count summary
 #'
-#' @description epi_stats_tidy() cleans up the output from epi_stats_summary() and epi_stats_numeric(). Values are rounded to digits (default is 2). format(x, nsmall = digits) is used to ensure xx.00 are printed. Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric column is assumed to be the preferred option. 'decreasing' is passed to order.
+#' @description Convert the historical count output from [epi_stats_summary()] to a wide table, add row totals and percentages, and order rows by a selected numeric column.
 #'
-#' @param sum_df Data.frame with summary to clean up.
-#' @param order_by Column to order results by. Default is 'percent'.
-#' @param perc_n Number of rows from original dataframe to calculate percentage. Must be passed manually.
-#' @param digits = 2,
-#' @param decreasing Sort values by decreasing order. Default is TRUE.
+#' @param sum_df Historical count summary returned by [epi_stats_summary()].
+#' @param order_by Column used to order results. Default is `"percent"`.
+#' @param perc_n Explicit denominator used to calculate percentages.
+#' @param digits Retained historical argument; the current implementation does not format or round values. Use [epi_stats_format()] for display formatting.
+#' @param decreasing Whether to sort `order_by` in decreasing order.
 #'
-#' @return Returns a dataframe as a tibble with values ordered and spread. Adds row sums and percentage.
+#' @return A wide tibble with `row_sums` and `percent` columns, ordered by `order_by`.
 #'
-#' @note Note that format() will likely change the class type.
-# Assumes that the first column is 'id'
+#' @note The first output column is treated as the row identifier when calculating row totals. `perc_n` must match the intended denominator; the function does not infer the analysis population.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
 #' @seealso \code{\link{epi_stats_summary}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_numeric}}.
 #'
-#' @example vignettes/summary_funcs_examples.R
+#' @example inst/examples/summary-functions.R
 #'
 #' @export
 #'

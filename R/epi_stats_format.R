@@ -1,22 +1,19 @@
-#' @title Format a dataframe with numerical or integer columns
+#' @title Format numeric columns for display
 #'
-#' @description epi_stats_format() formats columns so that digits appear even if they are x.00. Useful for saving a table with descriptive statistics. A data frame with an id column is expected. Check if column is numeric or integer, other types are not formatted. Pass a vector of column number to skip if needed. Values are rounded to the option passed to 'digits' digits = 2 by default
-# format(x, nsmall = digits) is used to ensure xx.00 are printed
-# This may not produce the right results for very large or small numbers
-# Also note that format() will change the class type to factor or character
+#' @description Round and format numeric or integer columns with a fixed minimum number of decimal places. Formatting converts changed columns to character, so use the returned data frame for display rather than further calculation.
 #'
-#' @param df Data.frame with summary to clean up.
-#' @param skip Columns to skip, pass as a string. Default is NULL.
-#' @param digits Number of digits to print. Default is 2.
-#' @param ... Any other parameter that can be passed to round().
+#' @param df Data frame containing columns to format.
+#' @param skip Optional numeric column positions to leave unchanged.
+#' @param digits Number of decimal places to display.
+#' @param ... Additional arguments passed to [format()].
 #'
-#' @return A data.frame with formatted and rounded values.
+#' @return A data frame in which formatted numeric columns are character vectors.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
 #' @seealso \code{\link{epi_stats_summary}}, \code{\link{epi_stats_tidy}}, \code{\link{epi_clean_cond_numeric}}, \code{\link[base]{format}}, \code{\link[base]{round}}.
 #'
-#' @example vignettes/summary_funcs_examples.R
+#' @example inst/examples/summary-functions.R
 #'
 #' @export
 #'

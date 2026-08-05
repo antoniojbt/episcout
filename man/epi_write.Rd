@@ -51,5 +51,5 @@ epi_write(some_dataframe, "some_dataframe.tsv")
 \code{\link[data.table]{fwrite}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }
