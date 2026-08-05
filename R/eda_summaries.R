@@ -2,18 +2,29 @@
 #'
 #' Produce one canonical, machine-readable descriptive summary for every variable listed in a specification-first EDA data dictionary. Standard `NA` values and configured `missing_codes` are excluded from observed summaries.
 #'
-#' @param data A data frame containing observed data.
+#' @param data A data frame or an [epi_eda_postgres_source()] containing
+#'   observed data.
 #' @param spec An EDA specification data frame or CSV path.
 #'
 #' @return A named list containing `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped` data frames. The `variables` table records every specification row and its summary status; the remaining tables contain type-specific results or explicit skipped reasons.
 #'
 #' @export
 epi_eda_profile_summaries <- function(data, spec) {
+  if (inherits(data, "epi_eda_postgres_source")) {
+    spec <- epi_eda_spec(spec)
+    return(eda_postgres_transaction(
+      data,
+      eda_postgres_summaries_inside(data, spec)
+    ))
+  }
   if (!is.data.frame(data)) {
-    stop("EDA data must be a data frame.", call. = FALSE)
+    stop("EDA data must be a data frame or an epi_eda_postgres_source.", call. = FALSE)
   }
   spec <- epi_eda_spec(spec)
-  build_typed_summaries(data, spec)
+  canonical <- build_typed_summaries(data, spec)
+  eda_apply_summary_exclusions(
+    canonical, data, spec, eda_summary_exclusions(data, spec)
+  )
 }
 
 build_typed_summaries <- function(data, spec, global_missing_codes = NULL) {

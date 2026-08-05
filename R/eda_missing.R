@@ -2,15 +2,22 @@
 #'
 #' Count standard missing values and configured missing codes for variables listed in an EDA specification.
 #'
-#' @param data A data frame to profile.
+#' @param data A data frame or an [epi_eda_postgres_source()] to profile.
 #' @param spec An EDA specification data frame or CSV path.
 #'
 #' @return A data frame with variable names, row counts, missing counts and missing proportions.
 #'
 #' @export
 epi_eda_profile_missing <- function(data, spec) {
+  if (inherits(data, "epi_eda_postgres_source")) {
+    spec <- epi_eda_spec(spec)
+    return(eda_postgres_transaction(
+      data,
+      eda_postgres_missing_inside(data, spec)
+    ))
+  }
   if (!is.data.frame(data)) {
-    stop("Data must be a data frame.", call. = FALSE)
+    stop("Data must be a data frame or an epi_eda_postgres_source.", call. = FALSE)
   }
 
   spec <- epi_eda_spec(spec)

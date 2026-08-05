@@ -7,7 +7,7 @@
 epi_eda_check_schema(data, spec)
 }
 \arguments{
-\item{data}{A data frame to check.}
+\item{data}{A data frame or an \code{\link[=epi_eda_postgres_source]{epi_eda_postgres_source()}} to check.}
 
 \item{spec}{An EDA specification data frame or CSV path.}
 }

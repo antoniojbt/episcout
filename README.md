@@ -12,6 +12,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
 * **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
+* **PostgreSQL-backed EDA** - `epi_eda_postgres_source()` and the existing profilers run aggregate-only specification-first EDA against PostgreSQL 17 relations, while `epi_eda_db_run()` publishes a manifest-owned bundle.
 * **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
 * **Utilities** - `epi_utils_*` helpers cover tasks like parallel processing and logging.
 
@@ -234,6 +235,46 @@ results <- epi_eda_run(
 
 The workflow writes `summary_variables.csv`, `summary_numeric.csv`, `summary_categorical.csv`, `summary_text.csv`, `summary_temporal.csv` and `summary_skipped.csv`. The `variables` table accounts for every specification row, including unavailable counts and reasons for absent or incompatible variables. Numeric summaries distinguish observed infinities from finite analytical values, categorical summaries expose total-row and observed-value denominators, and temporal summaries state their range units. The active lower-level statistics path uses the same univariate calculation cores; `epi_stats_summary(data, output = "typed")` returns the corresponding typed components without requiring an EDA specification.
 
+Numeric, text and temporal plots use compact 30-bin aggregate data. Text plots show Unicode character lengths rather than raw strings. Variables whose reviewed role is `id` or `identifier` retain aggregate missingness, are skipped from typed summaries and have named `NULL` plot entries.
+
+### PostgreSQL-backed specification-first EDA
+
+PostgreSQL 17 or later can execute the same schema, missingness, six-component summary and compact-plot contract against one safely identified table or view. Create the connection separately with RPostgres, keep it open and idle, and pass schema and relation names as separate identifiers. Arbitrary SQL, dotted relation names, generic DBI connections and caller-managed transactions are not accepted.
+
+``` r
+con <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  host = Sys.getenv("PGHOST"),
+  dbname = Sys.getenv("PGDATABASE"),
+  user = Sys.getenv("PGUSER")
+)
+
+source <- epi_eda_postgres_source(
+  con,
+  schema = "eda_fixture",
+  relation = "observations"
+)
+
+schema_profile <- epi_eda_check_schema(source, spec)
+missing_profile <- epi_eda_profile_missing(source, spec)
+summary_profile <- epi_eda_profile_summaries(source, spec)
+plot_profile <- epi_eda_profile_plots(source, spec)
+
+bundle <- epi_eda_db_run(
+  source,
+  spec,
+  output_dir = "postgres-eda-bundle",
+  plots = TRUE,
+  max_plot_levels = 20L
+)
+
+DBI::dbDisconnect(con)
+```
+
+Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db_run()` uses one such snapshot for all database reads, ends it before rendering or filesystem publication, and writes only registered aggregate artifacts through a sibling staging directory. Overwrite requires an exact unchanged prior database-EDA manifest plus matching source identity, specification fingerprint and plot options.
+
+The bundle is aggregate-only, not anonymous or disclosure-controlled. Complete categorical frequencies, identifier QA, plots, variable and relation names, declared levels and missing sentinels may be sensitive. The normalized caller-authored specification is deliberately written for review, so its declared values are not covered by the raw-observation exclusion. Review every artifact before sharing. episcout does not control PostgreSQL, RPostgres, administrator, backup or server logging. Unsupported storage, especially `timestamp without time zone`, requires a caller-reviewed view cast; episcout does not infer local-time or DST meaning.
+
 Render the optional HTML report when `rmarkdown` is installed:
 
 ``` r
@@ -250,7 +291,7 @@ To create a starter project scaffold:
 epi_eda_create_project("my-eda-project")
 ```
 
-Current EDA workflow limits: the synthetic data generator is for pipeline preparation and testing only, generated synthetic data are not suitable for inference or disclosure control, and the workflow does not yet include Arrow, DuckDB or data.table large-data backends. Correlation, contingency and epidemiological outcome statistics remain separate from univariate EDA summaries.
+Current EDA workflow limits: the synthetic data generator is for pipeline preparation and testing only, generated synthetic data are not suitable for inference or disclosure control, and PostgreSQL is the only server-backed EDA source. Arrow, DuckDB, data.table, SQLite, generic DBI and arbitrary lazy-query backends are not supported. Correlation, contingency and epidemiological outcome statistics remain separate from univariate EDA summaries.
 
 ## Contribute
 

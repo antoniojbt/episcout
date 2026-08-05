@@ -169,9 +169,12 @@ test_that("penguins_raw canonical summaries cover every specified variable", {
   observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(observed$variables$name, spec$name)
-  expect_true(all(observed$variables$status == "summarised"))
-  expect_equal(nrow(observed$skipped), 0L)
-  expect_setequal(observed$text$name, c("Individual ID", "Comments"))
+  identifier <- spec$role %in% c("id", "identifier")
+  expect_true(all(observed$variables$status[!identifier] == "summarised"))
+  expect_true(all(observed$variables$status[identifier] == "skipped"))
+  expect_equal(nrow(observed$skipped), 2L)
+  expect_setequal(observed$skipped$name, c("Sample Number", "Individual ID"))
+  expect_equal(observed$text$name, "Comments")
   expect_equal(observed$temporal$name, "Date Egg")
   expect_equal(observed$temporal$min, "2007-11-09")
   expect_equal(observed$temporal$max, "2009-12-01")
@@ -188,8 +191,8 @@ test_that("penguins_raw plot inventory proves specification-based dispatch", {
   observed <- data.frame(
     name = unname(names(plots)),
     type = spec$type,
-    layer_geom = vapply(plots, function(plot) class(plot$layers[[1]]$geom)[1], character(1)),
-    layer_stat = vapply(plots, function(plot) class(plot$layers[[1]]$stat)[1], character(1)),
+    layer_geom = vapply(plots, function(plot) if (is.null(plot)) NA_character_ else class(plot$layers[[1]]$geom)[1], character(1)),
+    layer_stat = vapply(plots, function(plot) if (is.null(plot)) NA_character_ else class(plot$layers[[1]]$stat)[1], character(1)),
     stringsAsFactors = FALSE
   )
   row.names(observed) <- NULL

@@ -177,7 +177,7 @@ list.files(final_dir)
 
 Statuses are `review_required`, `blocked`, `audit_complete` or `complete`; `stage` records the last completed data-processing stage even when an optional report fails. Reuse an existing non-empty run directory only with `overwrite = TRUE`; overwrite is accepted only for a prior valid intake bundle with no unowned entries, and only registered workflow files are replaced. Relative manifest/report links remain valid if the whole bundle moves.
 
-Explicit roles `id` and `identifier` are policy-skipped from analytical missingness and typed profiles, so observed values read from those data columns do not enter analytical components, CSV summaries or the report. This is not automatic PII detection. Caller-supplied specification fields, variable names, category/group labels and small aggregate cells may remain sensitive and are retained as review-required metadata, so every bundle requires disclosure review. No bridge table, row-level input or prepared data is written, and the report is not evidence of de-identification or publication safety.
+Explicit roles `id` and `identifier` retain aggregate missingness but are policy-skipped from typed profiles and value-bearing plots, so observed identifier values do not enter analytical components, CSV summaries or the report. This is not automatic PII detection. Caller-supplied specification fields, variable names, category/group labels and small aggregate cells may remain sensitive and are retained as review-required metadata, so every bundle requires disclosure review. No bridge table, row-level input or prepared data is written, and the report is not evidence of de-identification or publication safety.
 
 ## Create a specification
 
@@ -254,11 +254,49 @@ synthetic_results$summaries$temporal
 synthetic_results$summaries$skipped
 ```
 
-Plots are returned as ggplot objects without being printed by the workflow.
+Plots are returned as ggplot objects without being printed by the workflow. Numeric, text and temporal plots are built from compact 30-bin tables; text uses Unicode character lengths and never raw strings. Explicit identifier roles have named `NULL` entries.
 
 ```{r, fig.width = 5, fig.height = 3}
 synthetic_results$plots$age
 ```
+
+## Run aggregate-only EDA in PostgreSQL
+
+PostgreSQL 17 or later is the supported server-backed EDA source. The caller creates and owns an RPostgres connection, then identifies one ordinary table, partitioned table, view, materialized view or foreign table with separate schema and relation names. Arbitrary SQL, dotted names, temporary objects, generic DBI connections and connections already inside a transaction are rejected.
+
+```{r eval = FALSE}
+con <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  host = Sys.getenv("PGHOST"),
+  dbname = Sys.getenv("PGDATABASE"),
+  user = Sys.getenv("PGUSER")
+)
+
+source <- epi_eda_postgres_source(
+  con,
+  schema = "eda_fixture",
+  relation = "observations"
+)
+
+epi_eda_check_schema(source, spec)
+epi_eda_profile_missing(source, spec)
+epi_eda_profile_summaries(source, spec)
+epi_eda_profile_plots(source, spec)
+
+db_results <- epi_eda_db_run(
+  source,
+  spec,
+  output_dir = "postgres-eda-bundle",
+  plots = TRUE,
+  max_plot_levels = 20L
+)
+
+DBI::dbDisconnect(con)
+```
+
+Each direct profiler owns one read-only repeatable-read transaction. The complete database run uses one stable snapshot for catalogue revalidation, schema, missingness, canonical summaries, aggregate identifier QA and compact plot data. It ends the transaction before SVG rendering and staged filesystem publication. `timestamp without time zone` is incompatible because storage does not establish an instant or DST policy; expose a caller-reviewed `timestamp with time zone` cast in a view instead of relying on the session timezone.
+
+The manifest-owned bundle contains the reviewed specification, relation identity, complete categorical frequencies, small aggregates, identifier QA, plot inventory, query timings without values or SQL, and optional SVGs. It contains no full rows, previews, raw text, observed identifier values, credentials, connection attributes or query parameters. This boundary is not de-identification: declared levels and missing sentinels in the caller-authored specification, names, categories, small cells and plots may be sensitive. Review the complete bundle before sharing, and apply PostgreSQL, driver, administrator, logging, backup and disclosure controls outside episcout.
 
 ## Replace synthetic data with real data
 

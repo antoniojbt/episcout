@@ -2,15 +2,22 @@
 #'
 #' Compare expected variables in an EDA specification with variables observed in a data frame. Presence and type compatibility are reported separately; this function does not coerce data or stop on incompatible observed types.
 #'
-#' @param data A data frame to check.
+#' @param data A data frame or an [epi_eda_postgres_source()] to check.
 #' @param spec An EDA specification data frame or CSV path.
 #'
 #' @return A data frame with one row per expected or unexpected variable. The historical `status` column reports presence. `type_status` is one of `compatible`, `coercible`, `incompatible` or `not_applicable`, and `type_reason` explains that classification.
 #'
 #' @export
 epi_eda_check_schema <- function(data, spec) {
+  if (inherits(data, "epi_eda_postgres_source")) {
+    spec <- epi_eda_spec(spec)
+    return(eda_postgres_transaction(
+      data,
+      eda_postgres_schema_inside(data, spec)
+    ))
+  }
   if (!is.data.frame(data)) {
-    stop("Data must be a data frame.", call. = FALSE)
+    stop("Data must be a data frame or an epi_eda_postgres_source.", call. = FALSE)
   }
 
   spec <- epi_eda_spec(spec)
