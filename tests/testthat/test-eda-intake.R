@@ -220,7 +220,7 @@ test_that("canonical outputs policy-skip explicit identifier values", {
   )
   expect_false("participant_id" %in% exported_numeric$name)
   expect_true("participant_id" %in% exported_skipped$name)
-  expect_true(is.na(observed$missing$n_missing[observed$missing$name == "participant_id"]))
+  expect_equal(observed$missing$n_missing[observed$missing$name == "participant_id"], 0L)
   contents <- bundle_text(output_dir)
   expect_false(grepl("900001", contents, fixed = TRUE))
   expect_false(grepl("PRIVATE_TEXT_A", contents, fixed = TRUE))
@@ -747,11 +747,12 @@ test_that("zero-row inputs retain stable summary schemas", {
       observed$summary$variables$name != "participant_id"
     ] == 0L
   ))
-  expect_true(is.na(
+  expect_equal(
     observed$summary$variables$n[
       observed$summary$variables$name == "participant_id"
-    ]
-  ))
+    ],
+    0L
+  )
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
   expect_named(
     utils::read.csv(file.path(output_dir, "summary_numeric.csv"), check.names = FALSE),

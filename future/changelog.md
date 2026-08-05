@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-05
+
+- Implemented the active PostgreSQL-backed EDA contract on `feature/postgresql-eda-backend`: added a redacted validated relation source, explicit RPostgres/PostgreSQL 17 type and transaction boundaries, aggregate-only canonical profiles and identifier QA, compact shared plot rendering, checked staged bundle publication, neutral unit/live fixtures, PostgreSQL CI coverage and user documentation. Local PostgreSQL 17 evidence covers type-7 edges, e1071 type-3 shape statistics, sentinels, infinities/NaN, Unicode text, temporal values, identifiers, relation kinds, catalogue drift, stable concurrent snapshots, lifecycle cleanup, bundle ownership/recovery refusal and SVG leakage. The active spec is not complete: the external representative three-run benchmark, required independent reviews and owner acceptance remain pending, and no release or tag is authorised.
+
 ## 2026-08-04
 
 - Added `future/scratch/repo-specific-spec-design-guidance-draft.md` so potentially useful specification-design practices from the hidden environment-level `ds-pipeline-designer` skill are visible and reviewable inside the repository. The draft adapts only repository-compatible contract, validation, provenance and activation-gate ideas; explicitly excludes Python defaults, foreign artifact names, scaffolding and generic architecture; and has no authority until the owner reviews and incorporates selected text into an authoritative repository file.
