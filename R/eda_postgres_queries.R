@@ -8,22 +8,20 @@ eda_db_fetch <- function(con,
                          name = NA_character_) {
   started <- proc.time()[["elapsed"]]
   result <- NULL
-  observed <- tryCatch(
-    {
-      result <- DBI::dbSendQuery(con, statement)
-      if (length(params) > 0L) {
-        DBI::dbBind(result, params)
-      }
-      value <- DBI::dbFetch(result, n = -1L)
-      if (is.finite(limit) && nrow(value) > limit) {
-        stop("fetch limit exceeded", call. = FALSE)
-      }
-      as.data.frame(value, stringsAsFactors = FALSE)
-    },
-    error = function(error) error
-  )
-  if (!is.null(result) && DBI::dbIsValid(result)) {
-    DBI::dbClearResult(result)
+  conditioned <- eda_db_observe_conditions({
+    result <- DBI::dbSendQuery(con, statement)
+    if (length(params) > 0L) {
+      DBI::dbBind(result, params)
+    }
+    value <- DBI::dbFetch(result, n = -1L)
+    if (is.finite(limit) && nrow(value) > limit) {
+      stop("fetch limit exceeded", call. = FALSE)
+    }
+    as.data.frame(value, stringsAsFactors = FALSE)
+  })
+  observed <- conditioned$value
+  if (!eda_db_cleanup_result(result)) {
+    observed <- simpleError("result cleanup failed")
   }
   elapsed <- proc.time()[["elapsed"]] - started
   status <- if (inherits(observed, "error")) "error" else "complete"
@@ -32,6 +30,7 @@ eda_db_fetch <- function(con,
     timing_env, query_kind, variable_index, name, elapsed, rows,
     if (is.finite(limit)) as.integer(limit) else NA_integer_, status
   )
+  eda_db_signal_conditions(conditioned, "query")
   if (inherits(observed, "error")) {
     stop("PostgreSQL EDA query failed at ", query_kind, "; review restricted database logs.", call. = FALSE)
   }
@@ -41,25 +40,88 @@ eda_db_fetch <- function(con,
 eda_db_statement <- function(con, statement, query_kind, timing_env = NULL) {
   started <- proc.time()[["elapsed"]]
   result <- NULL
-  observed <- tryCatch(
-    {
-      result <- DBI::dbSendStatement(con, statement)
-      DBI::dbGetRowsAffected(result)
-    },
-    error = function(error) error
-  )
-  if (!is.null(result) && DBI::dbIsValid(result)) {
-    DBI::dbClearResult(result)
+  conditioned <- eda_db_observe_conditions({
+    result <- DBI::dbSendStatement(con, statement)
+    DBI::dbGetRowsAffected(result)
+  })
+  observed <- conditioned$value
+  if (!eda_db_cleanup_result(result)) {
+    observed <- simpleError("result cleanup failed")
   }
   elapsed <- proc.time()[["elapsed"]] - started
   eda_db_record_timing(
     timing_env, query_kind, NA_integer_, NA_character_, elapsed, 0L, 0L,
     if (inherits(observed, "error")) "error" else "complete"
   )
+  eda_db_signal_conditions(conditioned, "transaction setup")
   if (inherits(observed, "error")) {
     stop("PostgreSQL EDA transaction setup failed; review restricted database logs.", call. = FALSE)
   }
   invisible(observed)
+}
+
+eda_db_clear_result <- function(result) {
+  DBI::dbClearResult(result)
+}
+
+eda_db_observe_conditions <- function(action) {
+  conditions <- new.env(parent = emptyenv())
+  conditions$message <- FALSE
+  conditions$warning <- FALSE
+  value <- tryCatch(
+    withCallingHandlers(
+      force(action),
+      message = function(condition) {
+        conditions$message <- TRUE
+        tryInvokeRestart("muffleMessage")
+      },
+      warning = function(condition) {
+        conditions$warning <- TRUE
+        tryInvokeRestart("muffleWarning")
+      }
+    ),
+    error = function(error) error
+  )
+  list(
+    value = value,
+    message = conditions$message,
+    warning = conditions$warning
+  )
+}
+
+eda_db_signal_conditions <- function(observed, context) {
+  if (isTRUE(observed$message)) {
+    message(
+      "PostgreSQL EDA ", context,
+      " emitted a database message; details are available in restricted database logs."
+    )
+  }
+  if (isTRUE(observed$warning)) {
+    warning(
+      "PostgreSQL EDA ", context,
+      " emitted a database warning; details are available in restricted database logs.",
+      call. = FALSE
+    )
+  }
+  invisible(NULL)
+}
+
+eda_db_cleanup_result <- function(result) {
+  if (is.null(result)) {
+    return(TRUE)
+  }
+  valid_observed <- eda_db_observe_conditions(DBI::dbIsValid(result))
+  valid <- if (inherits(valid_observed$value, "error")) NA else valid_observed$value
+  eda_db_signal_conditions(valid_observed, "result cleanup")
+  if (isFALSE(valid)) {
+    return(TRUE)
+  }
+  if (!isTRUE(valid)) {
+    return(FALSE)
+  }
+  clear_observed <- eda_db_observe_conditions(eda_db_clear_result(result))
+  eda_db_signal_conditions(clear_observed, "result cleanup")
+  !inherits(clear_observed$value, "error")
 }
 
 eda_db_record_timing <- function(timing_env,

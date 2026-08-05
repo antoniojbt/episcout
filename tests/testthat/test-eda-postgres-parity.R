@@ -28,10 +28,10 @@ postgres_eda_fixture <- function(con) {
     "INSERT INTO ", table_sql, " VALUES ",
     "('x', 1, 1, 'A', true, 'alpha', DATE '2024-01-01', TIMESTAMPTZ '2024-01-01 00:00:00Z', TIMESTAMP '2024-01-01 00:00:00'),",
     "('x', 2, 2, 'B', false, '', DATE '2024-01-03', TIMESTAMPTZ '2024-01-02 00:00:00Z', TIMESTAMP '2024-01-02 00:00:00'),",
-    "('y', 999, 3, 'A', true, '  ', NULL, NULL, NULL),",
-    "(NULL, 'NaN', 4, 'Z', false, U&'\\00E9', DATE '2024-01-05', TIMESTAMPTZ '2024-01-03 00:00:00+02', TIMESTAMP '2024-01-03 00:00:00'),",
-    "('z', 'Infinity', 5, 'MISSING', true, 'SECRET_CANARY', DATE '2024-01-07', TIMESTAMPTZ '2024-01-04 00:00:00Z', TIMESTAMP '2024-01-04 00:00:00'),",
-    "('z', NULL, 6, NULL, NULL, NULL, DATE '2024-01-09', TIMESTAMPTZ '2024-01-05 00:00:00Z', TIMESTAMP '2024-01-05 00:00:00')"
+    "('y', 999, 2, 'A', true, '  ', NULL, NULL, NULL),",
+    "(NULL, 'NaN', 3, 'Z', false, U&'\\00E9', DATE '2024-01-05', TIMESTAMPTZ '2024-01-03 00:00:00+02', TIMESTAMP '2024-01-03 00:00:00'),",
+    "('z', 'Infinity', 9, 'MISSING', true, 'SECRET_CANARY', DATE '2024-01-07', TIMESTAMPTZ '2024-01-04 00:00:00Z', TIMESTAMP '2024-01-04 00:00:00'),",
+    "('z', NULL, 11, NULL, NULL, NULL, DATE '2024-01-09', TIMESTAMPTZ '2024-01-05 00:00:00Z', TIMESTAMP '2024-01-05 00:00:00')"
   ))
   spec <- data.frame(
     name = c("participant_id", "measurement", "whole_number", "treatment", "flag", "note", "specimen_date", "specimen_time", "local_time"),
@@ -44,6 +44,27 @@ postgres_eda_fixture <- function(con) {
     stringsAsFactors = FALSE
   )
   list(schema = schema, relation = "odd table", spec = spec)
+}
+
+expect_numeric_contract <- function(observed, expected) {
+  integer_fields <- c(
+    "n_finite", "n_below_lower", "n_above_upper", "outlier_count"
+  )
+  expect_identical(
+    as.integer(observed[1, integer_fields, drop = TRUE]),
+    as.integer(expected[integer_fields])
+  )
+  numeric_fields <- setdiff(names(expected), integer_fields)
+  for (field in numeric_fields) {
+    expected_value <- expected[[field]]
+    observed_value <- observed[[field]][[1]]
+    if (is.na(expected_value)) {
+      expect_true(is.na(observed_value), info = field)
+    } else {
+      tolerance <- 1e-10 * max(1, abs(expected_value))
+      expect_lte(abs(observed_value - expected_value), tolerance)
+    }
+  }
 }
 
 test_that("live PostgreSQL profiles reproduce independently stated aggregate expectations", {
@@ -64,18 +85,103 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   schema <- epi_eda_check_schema(source, fixture$spec)
   plots <- epi_eda_profile_plots(source, fixture$spec)
 
-  expect_equal(missing$n_missing[missing$name == "measurement"], 3L)
+  expect_identical(missing$name, fixture$spec$name)
+  expect_identical(missing$n, rep(6L, 9L))
+  expect_identical(
+    missing$n_missing,
+    c(1L, 3L, 0L, 2L, 1L, 2L, 2L, 1L, 1L)
+  )
+  expect_equal(missing$p_missing, missing$n_missing / 6, tolerance = 1e-12)
   numeric <- summaries$numeric[summaries$numeric$name == "measurement", ]
-  expect_equal(numeric$n_finite, 2L)
-  expect_equal(numeric$sum, 3)
-  expect_equal(numeric[c("q1", "median", "q3")], data.frame(q1 = 1.25, median = 1.5, q3 = 1.75), tolerance = 1e-12)
+  expect_numeric_contract(numeric, c(
+    n_finite = 2, sum = 3, min = 1, q1 = 1.25, mean = 1.5,
+    median = 1.5, q3 = 1.75, max = 2, iqr = 0.5,
+    sd = 0.707106781186548, variance = 0.5, sem = 0.5,
+    cv = 0.471404520791032, skewness = NA, kurtosis = NA,
+    shapiro_p = NA, lower_fence = 0.5, upper_fence = 2.5,
+    n_below_lower = 0, n_above_upper = 0, outlier_count = 0,
+    outlier_percentage = 0
+  ))
   whole <- summaries$numeric[summaries$numeric$name == "whole_number", ]
-  expect_equal(whole$skewness, e1071::skewness(1:6), tolerance = 1e-12)
-  expect_equal(whole$kurtosis, e1071::kurtosis(1:6), tolerance = 1e-12)
+  expect_numeric_contract(whole, c(
+    n_finite = 6, sum = 28, min = 1, q1 = 2,
+    mean = 4.66666666666667, median = 2.5, q3 = 7.5, max = 11,
+    iqr = 5.5, sd = 4.22689799577263, variance = 17.8666666666667,
+    sem = 1.7256238807393, cv = 0.905763856236992,
+    skewness = 0.537503736374889, kurtosis = -1.82467327541398,
+    shapiro_p = 0.0658661619960693, lower_fence = -6.25,
+    upper_fence = 15.75, n_below_lower = 0, n_above_upper = 0,
+    outlier_count = 0, outlier_percentage = 0
+  ))
+  asymmetric <- c(1, 2, 2, 3, 9, 11)
+  expect_equal(whole$skewness, e1071::skewness(asymmetric, type = 3), tolerance = 1e-12)
+  expect_equal(whole$kurtosis, e1071::kurtosis(asymmetric, type = 3), tolerance = 1e-12)
+  expect_false(isTRUE(all.equal(
+    e1071::skewness(asymmetric, type = 3),
+    e1071::skewness(asymmetric, type = 1)
+  )))
   expect_equal(summaries$categorical$n[summaries$categorical$name == "treatment"], c(2L, 1L, 0L, 1L))
   expect_equal(summaries$categorical$level[summaries$categorical$name == "treatment"], c("A", "B", "C", "Z"))
+  treatment <- summaries$categorical[summaries$categorical$name == "treatment", ]
+  expect_equal(treatment$p_total, c(2, 1, 0, 1) / 6, tolerance = 1e-12)
+  expect_equal(treatment$p_observed, c(2, 1, 0, 1) / 4, tolerance = 1e-12)
+  expect_identical(treatment$is_declared, c(TRUE, TRUE, TRUE, FALSE))
+  expect_identical(treatment$is_unexpected, c(FALSE, FALSE, FALSE, TRUE))
+  flag <- summaries$categorical[summaries$categorical$name == "flag", ]
+  expect_identical(flag$level, c("FALSE", "TRUE"))
+  expect_identical(flag$n, c(2L, 3L))
+  expect_equal(flag$p_total, c(2, 3) / 6, tolerance = 1e-12)
+  expect_equal(flag$p_observed, c(2, 3) / 5, tolerance = 1e-12)
+  expect_identical(flag$is_declared, c(TRUE, TRUE))
+  expect_identical(flag$is_unexpected, c(FALSE, FALSE))
   text <- summaries$text[summaries$text$name == "note", ]
-  expect_equal(text[c("n_missing", "n_observed", "n_unique", "n_empty", "n_whitespace", "min_length", "max_length")], data.frame(n_missing = 2L, n_observed = 4L, n_unique = 4L, n_empty = 1L, n_whitespace = 1L, min_length = 0L, max_length = 5L))
+  expect_identical(text, data.frame(
+    name = "note", n = 6L, n_missing = 2L, n_observed = 4L,
+    n_unique = 4L, n_empty = 1L, n_whitespace = 1L,
+    min_length = 0L, max_length = 5L, stringsAsFactors = FALSE
+  ))
+  expect_identical(summaries$temporal, data.frame(
+    name = c("specimen_date", "specimen_time"),
+    source_class = c("Date", "POSIXct/POSIXt"),
+    timezone = c(NA_character_, "UTC"),
+    n = c(6L, 6L), n_missing = c(2L, 1L),
+    n_observed = c(4L, 5L), n_unique = c(4L, 5L),
+    min = c("2024-01-01", "2024-01-01T00:00:00Z"),
+    q1 = c("2024-01-04", "2024-01-02T00:00:00Z"),
+    median = c("2024-01-06", "2024-01-02T22:00:00Z"),
+    q3 = c("2024-01-07", "2024-01-04T00:00:00Z"),
+    max = c("2024-01-09", "2024-01-05T00:00:00Z"),
+    range_value = c(8, 345600),
+    range_unit = c("days", "seconds"),
+    stringsAsFactors = FALSE
+  ))
+  identifier_reason <- "Variable was skipped by the explicit identifier-role policy."
+  local_time_reason <- paste(
+    "PostgreSQL timestamp without time zone has no reviewed instant or DST meaning;",
+    "use a reviewed view cast to timestamp with time zone."
+  )
+  expect_identical(summaries$variables, data.frame(
+    name = fixture$spec$name,
+    label = fixture$spec$label,
+    type = fixture$spec$type,
+    role = fixture$spec$role,
+    required = rep(TRUE, 9L),
+    n = rep(6L, 9L),
+    n_missing = c(1L, 3L, 0L, 2L, 1L, 2L, 2L, 1L, 1L),
+    n_observed = c(5L, 3L, 6L, 4L, 5L, 4L, 4L, 5L, 5L),
+    n_unique = c(3L, 3L, 5L, 3L, 2L, 4L, 4L, 5L, 5L),
+    n_infinite = c(0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
+    status = c("skipped", rep("summarised", 7L), "skipped"),
+    reason = c(identifier_reason, rep(NA_character_, 7L), local_time_reason),
+    stringsAsFactors = FALSE
+  ))
+  expect_identical(summaries$skipped, data.frame(
+    name = c("participant_id", "local_time"),
+    type = c("text", "datetime"),
+    observed_class = c("text", "timestamp without time zone"),
+    reason = c(identifier_reason, local_time_reason),
+    stringsAsFactors = FALSE
+  ))
   expect_identical(summaries$variables$status[summaries$variables$name == "participant_id"], "skipped")
   expect_false("participant_id" %in% summaries$text$name)
   expect_identical(schema$type_status[schema$name == "local_time"], "incompatible")
@@ -321,4 +427,27 @@ test_that("repeatable-read wrapper holds one snapshot and cleans up failures", {
   )
   expect_false(getFromNamespace("eda_pg_is_transacting", "episcout")(con))
   expect_equal(DBI::dbGetQuery(con, "SELECT 1 AS usable")$usable, 1L)
+})
+
+test_that("live PostgreSQL notices are disclosed without server text", {
+  con <- postgres_eda_connection()
+  on.exit(if (DBI::dbIsValid(con)) DBI::dbDisconnect(con), add = TRUE)
+  statement <- getFromNamespace("eda_db_statement", "episcout")
+  observed_messages <- character()
+
+  withCallingHandlers(
+    statement(
+      con,
+      "DO $block$ BEGIN RAISE NOTICE 'NOTICE_CANARY'; END $block$",
+      query_kind = "transaction_setup"
+    ),
+    message = function(condition) {
+      observed_messages <<- c(observed_messages, conditionMessage(condition))
+      invokeRestart("muffleMessage")
+    }
+  )
+
+  expect_length(observed_messages, 1L)
+  expect_match(observed_messages, "database message", fixed = TRUE)
+  expect_false(any(grepl("CANARY", observed_messages, fixed = TRUE)))
 })

@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Added a deterministic PostgreSQL EDA scalability gate covering one million rows, complete SVG bundle publication and bounded client collection, and strengthened database condition handling so native server notices and warnings are re-signalled with fixed value-free text.
 - Fixed PostgreSQL pseudonymisation apply so session advisory locks are released exactly once when transaction-scoped protection takes over, eliminating successful-run lock-ownership warnings while preserving timeout and rollback cleanup.
 - Added a runnable database-to-report walkthrough with a neutral longitudinal CSV fixture. The commented R script demonstrates duplicate review, PostgreSQL inventory and dictionaries, stable pseudonymisation, aggregate-only database EDA, plots, Table 1 and HTML report output without embedding credentials.
 - Added PostgreSQL 17-backed specification-first EDA through `epi_eda_postgres_source()` and `epi_eda_db_run()`, with read-only repeatable-read snapshots, aggregate-only canonical profiling, explicit identifier QA, bounded compact plot data, redacted source display, deterministic SVG paths and manifest-owned staged bundle publication. Ordinary data-frame interfaces and the six summary components remain unchanged; text plots now show character lengths and explicit identifier roles produce no value-bearing summary or plot.
