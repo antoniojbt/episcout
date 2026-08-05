@@ -1,9 +1,9 @@
 id: "003"
 slug: "large-data-backend-strategy"
-status: active
+status: completed
 owner: Antonio Berlanga-Taylor
 base_branch: master
-working_branch: feature/postgresql-eda-acceptance
+working_branch: feature/postgresql-eda-acceptance-closeout
 created: 2026-06-15
 updated: 2026-08-05
 
