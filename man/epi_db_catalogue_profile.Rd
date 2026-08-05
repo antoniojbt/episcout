@@ -14,8 +14,8 @@ epi_db_catalogue_profile(con, dictionary, max_levels = 50)
 \item{max_levels}{Maximum distinct non-missing values allowed for each profiled column.}
 }
 \value{
-A data frame containing source keys, \code{source_value} and \code{n}.
+A data frame containing source keys, \code{source_value} and \code{n}. \code{source_value} is \code{NA} for the optional PostgreSQL \code{NULL} count row.
 }
 \description{
-Return value counts only for active dictionary rows explicitly marked with \code{profile_catalogue = TRUE}. Direct identifiers, quasi-identifiers, unclassified fields and columns exceeding \code{max_levels} are rejected before value counts are returned.
+Return value counts only for active dictionary rows explicitly marked with \code{profile_catalogue = TRUE}. Direct identifiers, quasi-identifiers, unclassified fields and columns exceeding \code{max_levels} are rejected before value counts are returned. The distinct-level limit counts non-missing values; a profiled column containing PostgreSQL \code{NULL} also returns one \code{source_value = NA} row with its count.
 }

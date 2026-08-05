@@ -1,22 +1,22 @@
 #' @title Get summary statistics from a data frame with multiple columns
 #'
-#' @description epi_stats_summary() provides summary descriptive statistics for columns belonging to either character and factor (class_type = 'chr_fct') or integer and numeric (class_type = 'int_num') while discarding values provided (codes). This is useful if data frame has contingency codes. Columns are ordered according to order in contingency codes option. Rows are then ordered in decreasing order according to column provided.
+#' @description Summarise character/factor or integer/numeric columns while counting or excluding reviewed code values. Set `output = "typed"` to return the canonical six-component descriptive contract for every supported column.
 #'
 #' @param df Data frame
-#' @param codes Specify codes to summarise or exclude as string. Default is NULL.
-#' @param class_type Class of variables to summarise, 'chr_fct' or 'int_num'. Default is character and factor.
-#' @param action Values to summarise, 'codes_only' or 'exclude'. Default is 'exclude'.
+#' @param codes Character vector of values to count or exclude. With typed output, these values are treated as global sentinel-missing codes.
+#' @param class_type Current-output variable class: `"chr_fct"` or `"int_num"`. Leave the default when requesting typed output.
+#' @param action Current-output handling of `codes`: `"codes_only"` or `"exclude"`. Typed output requires `"exclude"`.
 #' @param output Output contract. `"current"` preserves the existing class/action-specific tibble. `"typed"` returns complete typed summary components for every supported column and treats `codes` as global sentinel-missing values.
 #'
 #' @return With `output = "current"`, a tibble using the historical mode-specific schema. With `output = "typed"`, a list containing `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped` data frames.
 #'
-#' @note Desgined with data frames that require pre-processing and likely have contingency and database codes. Action 'exclude' excludes the string values provided from the summary. Useful to quickly assess what a data.frame contains, types of values in each column and summary statistics if excluding codes.
+#' @note The current output is a historical convenience interface for data frames containing contingency or database codes. Prefer typed output for complete variable coverage and explicit missingness semantics.
 #'
 #' @author Antonio J Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
 #'
 #' @seealso \code{\link{epi_stats_numeric}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_tidy}}, \code{\link{epi_clean_cond_chr_fct}}, \code{\link{epi_clean_cond_numeric}}.
 #'
-#' @example vignettes/summary_funcs_examples.R
+#' @example inst/examples/summary-functions.R
 #'
 #' @export
 #'

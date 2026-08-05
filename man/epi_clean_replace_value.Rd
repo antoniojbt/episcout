@@ -55,5 +55,5 @@ df_factor$date_col
 \code{\link{epi_clean_add_rep_num}}, \code{\link{epi_clean_add_colname_suffix}}, \code{\link[stringr]{str_detect}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

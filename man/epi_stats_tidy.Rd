@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_stats_tidy.R
 \name{epi_stats_tidy}
 \alias{epi_stats_tidy}
-\title{Tidy up a data.frame with summary values}
+\title{Tidy a count summary}
 \usage{
 epi_stats_tidy(
   sum_df = NULL,
@@ -13,167 +13,62 @@ epi_stats_tidy(
 )
 }
 \arguments{
-\item{sum_df}{Data.frame with summary to clean up.}
+\item{sum_df}{Historical count summary returned by \code{\link[=epi_stats_summary]{epi_stats_summary()}}.}
 
-\item{order_by}{Column to order results by. Default is 'percent'.}
+\item{order_by}{Column used to order results. Default is \code{"percent"}.}
 
-\item{perc_n}{Number of rows from original dataframe to calculate percentage. Must be passed manually.}
+\item{perc_n}{Explicit denominator used to calculate percentages.}
 
-\item{digits}{= 2,}
+\item{digits}{Retained historical argument; the current implementation does not format or round values. Use \code{\link[=epi_stats_format]{epi_stats_format()}} for display formatting.}
 
-\item{decreasing}{Sort values by decreasing order. Default is TRUE.}
+\item{decreasing}{Whether to sort \code{order_by} in decreasing order.}
 }
 \value{
-Returns a dataframe as a tibble with values ordered and spread. Adds row sums and percentage.
+A wide tibble with \code{row_sums} and \code{percent} columns, ordered by \code{order_by}.
 }
 \description{
-epi_stats_tidy() cleans up the output from epi_stats_summary() and epi_stats_numeric(). Values are rounded to digits (default is 2). format(x, nsmall = digits) is used to ensure xx.00 are printed. Ordering uses as.numeric(as.character(x)) as 'percent' or other numeric column is assumed to be the preferred option. 'decreasing' is passed to order.
+Convert the historical count output from \code{\link[=epi_stats_summary]{epi_stats_summary()}} to a wide table, add row totals and percentages, and order rows by a selected numeric column.
 }
 \note{
-Note that format() will likely change the class type.
+The first output column is treated as the row identifier when calculating row totals. \code{perc_n} must match the intended denominator; the function does not infer the analysis population.
 }
 \examples{
-#####
-# Load libraries needed:
-library(episcout)
-library(dplyr)
-library(purrr)
-library(e1071)
-library(tibble)
-library(tidyr)
-#####
+# Shared examples for the three summary-table helpers.
 
-#####
-# Generate a data frame:
-n <- 1000
-df <- data.frame(
-  var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c("Pre", "Post"), n / 2),
-  x = rnorm(n),
-  y = rbinom(n, 1, 0.50),
-  z = rpois(n, 2)
+set.seed(20260805)
+example_data <- data.frame(
+  visit = rep(c("baseline", "follow_up"), 4),
+  group = rep(c("A", "B"), each = 4),
+  score = c(10, 12, 14, 13, 9, 11, 15, 16),
+  outcome = factor(c(0, 0, 1, 0, 0, 1, 1, 1))
 )
 
-# Explore first and last rows for first columns:
-epi_head_and_tail(df)
-
-# Add character/factor columns:
-col_chr <- data.frame(
-  "chr1" = rep(c("A", "B"), length.out = 1000),
-  "chr2" = rep(c("C", "D"), length.out = 1000)
-)
-dim(col_chr)
-df_cont_chr <- tibble::as.tibble(cbind(df, col_chr))
-epi_head_and_tail(df_cont_chr)
-epi_head_and_tail(df_cont_chr, last_cols = TRUE)
-
-# Check variable types are what you expect:
-epi_clean_count_classes(df_cont_chr)
-str(df_cont_chr)
-dim(df_cont_chr)
-# var_id, y and z can be treated as factors or characters.
-summary(as.factor(df_cont_chr$y))
-summary(as.factor(df_cont_chr$z))
-# Here we'll only transform y though:
-df_cont_chr$y <- as.factor(df_cont_chr$y)
-epi_clean_count_classes(df_cont_chr)
-str(df_cont_chr)
-
-# Designate some values as codes to be counted separately:
-codes <- c("Pre", "A", "C", "1", "3")
-#####
-
-#####
-# Count when codes are present, pass these as character or factor, specify
-#  action is to count codes only:
-stat_sum1 <- epi_stats_summary(
-  df = df_cont_chr,
-  codes = codes,
-  class_type = "chr_fct",
-  action = "codes_only"
-)
-class(stat_sum1)
-stat_sum1
-#####
-
-#####
-# Add total for percentage calculation and order column to tidy up results:
-perc_n <- nrow(df_cont_chr)
-order_by <- "percent"
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum1,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-# Format them if needed:
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 2)
-#####
-
-#####
-# Count integer or numeric codes:
-stat_sum2 <- epi_stats_summary(df_cont_chr,
-  codes = codes,
-  class_type = "int_num",
-  action = "codes_only"
-)
-stat_sum2
-# Tidy and format them:
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum2,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 2, skip = c(2, 3))
-#####
-
-#####
-# Get summary stats excluding contingency codes for character and factor columns:
-stat_sum3 <- epi_stats_summary(df_cont_chr,
-  codes = codes,
+# Summarise the character and factor columns after excluding a reviewed code.
+categorical_summary <- epi_stats_summary(
+  example_data,
+  codes = "follow_up",
   class_type = "chr_fct",
   action = "exclude"
 )
-stat_sum3
-# Tidy and format:
-stat_sum_tidy <- epi_stats_tidy(
-  sum_df = stat_sum3,
-  order_by = order_by,
-  perc_n = perc_n
-)
-stat_sum_tidy
-epi_stats_format(stat_sum_tidy, digits = 0)
-epi_stats_format(stat_sum_tidy, digits = 1)
-#####
+categorical_summary
 
-#####
-# Get summary stats for numeric/integer columns
-# while excluding certain codes/values:
-stat_sum4 <- epi_stats_summary(
-  df = df_cont_chr,
-  codes = codes,
-  class_type = "int_num",
-  action = "exclude"
-)
-class(stat_sum4)
-stat_sum4
-# Numeric data summary doesn't need tidying but could be formatted:
-epi_stats_format(stat_sum4, digits = 2)
-#####
-
-#####
-# If there are no codes to return the result is an empty data.frame (tibble):
-codes <- c("Per", "X", "55")
-stat_sum_zero <- epi_stats_summary(df_cont_chr,
-  codes = codes,
+# Convert counts to a display table; retain unformatted values for calculations.
+code_counts <- epi_stats_summary(
+  example_data,
+  codes = c("baseline", "A", "0"),
   class_type = "chr_fct",
   action = "codes_only"
 )
-stat_sum_zero
-#####
+tidy_counts <- epi_stats_tidy(
+  code_counts,
+  perc_n = nrow(example_data)
+)
+epi_stats_format(tidy_counts, digits = 1)
+
+# The typed contract profiles every supported column with explicit coverage.
+typed_summary <- epi_stats_summary(example_data, output = "typed")
+names(typed_summary)
+typed_summary$variables
 }
 \seealso{
 \code{\link{epi_stats_summary}}, \code{\link{epi_stats_format}}, \code{\link{epi_stats_numeric}}.
