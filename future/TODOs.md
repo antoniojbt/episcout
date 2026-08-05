@@ -37,17 +37,19 @@
 
 ### Priority 1
 
-- [ ] Revise and activate draft spec `003-large-data-backend-strategy` using `future/scratch/episcout_postgresql_backend_plan.md`:
-    - Narrow the first backend to PostgreSQL while preserving the established data-frame and canonical EDA contracts.
-    - Turn the external representative workload and five-minute threshold into explicit, reviewable acceptance evidence without adding project-specific data, schemas or terminology to this repository.
-    - Complete and review the brief, SDD, TDD, acceptance contract and manifest before changing package code.
-    - Keep Arrow, DuckDB, data.table, generic DBI dispatch and database mutation outside the first implementation.
+- [ ] Implement active spec `003-large-data-backend-strategy` on its reviewed PostgreSQL-first TDD contract:
+    - Use the recorded baseline lint, tests, local check and CRAN-style check to distinguish inherited/environment findings from implementation regressions.
+    - Preserve the established data-frame interfaces and six-component canonical summary contract.
+    - Keep full rows, raw text, observed identifiers, credentials, SQL and connection details out of client artifacts.
+    - Complete neutral parity, live PostgreSQL, read-only/snapshot, bundle/privacy and rendered-plot evidence before the external three-run median threshold is assessed.
+    - Stop for owner review before approximation, sampling, multi-connection execution, database mutation, generic DBI dispatch or any canonical schema change.
 
 - [ ] full git scrub
 
-- [ ] Review the two remaining plans/instructions from prior Codex threads saved in `future/scratch`:
+- [ ] Review the three remaining plans/instructions saved in `future/scratch`:
     - [ ] Review `future/scratch/2026-07-31-agent-guidance-impact-and-portable-execution-plan.md`, including the applicable agent checklists.
     - [ ] Review `future/scratch/release-0.3.0-plan.md` for release readiness.
+    - [ ] Review `future/scratch/repo-specific-spec-design-guidance-draft.md`; decide which repository-compatible practices, if any, should become authoritative and whether environment-level skills should require explicit owner opt-in.
 - [ ] agent truth review with specific instructions pack
     - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
 - [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
@@ -113,6 +115,8 @@
 
 ### 2026-08-04
 
+- [x] Extract the useful repository-compatible parts of the hidden environment-level `ds-pipeline-designer` skill into a visible, explicitly non-active scratch draft for later owner review, while excluding its Python defaults, foreign artifacts and scaffolding workflow.
+- [x] Revise and activate spec `003-large-data-backend-strategy` as the PostgreSQL-first large-data EDA handoff, with explicit source/type/statistical/snapshot/privacy/bundle contracts, neutral parity evidence and a redacted three-run external benchmark protocol.
 - [x] Accept and merge spec `016-longitudinal-pseudonymisation` through PR #189, reconcile its final status records and move the specification to `future/specs/done/`.
 - [x] Separate active and completed specifications and reviews into `done/` directories, repair their references, and make TODO reconciliation part of every future-work change.
 
