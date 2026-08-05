@@ -63,4 +63,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-Completed specs, including accepted spec `016-longitudinal-pseudonymisation`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+Completed specs, including accepted specs `016-longitudinal-pseudonymisation` and `017-deterministic-local-time-ambiguity`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
