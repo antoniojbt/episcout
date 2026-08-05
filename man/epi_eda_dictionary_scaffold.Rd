@@ -15,3 +15,9 @@ A data frame with one row per source column.
 \description{
 Convert an \code{\link[=epi_db_inventory]{epi_db_inventory()}} result into a deterministic dictionary scaffold. Technical database types are mapped to the existing episcout EDA types, while semantic fields remain explicitly unreviewed.
 }
+\details{
+The scaffold is metadata only and deliberately leaves privacy and analytic decisions unreviewed. For restricted related PostgreSQL tables, review the dictionary before creating value-free linkage metadata with \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}. See \code{vignette("longitudinal-pseudonymisation")}; exporting identifiable database rows is not required.
+}
+\seealso{
+\code{\link[=epi_db_inventory]{epi_db_inventory()}}, \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
+}

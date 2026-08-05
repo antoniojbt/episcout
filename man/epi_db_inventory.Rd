@@ -26,3 +26,9 @@ An \code{epi_db_inventory} list with \code{tables}, \code{columns} and \code{con
 \description{
 Read table, column and constraint metadata from a PostgreSQL schema without reading row values. Optional row counts are disabled by default because exact counts may be expensive.
 }
+\details{
+Inventory reads database metadata only unless \code{row_counts = "exact"}, which executes aggregate row counts. It never reads identifier values. For restricted longitudinal sources, use the inventory to create and review an \code{\link[=epi_eda_dictionary_scaffold]{epi_eda_dictionary_scaffold()}}, then follow \code{vignette("longitudinal-pseudonymisation")}; do not export identifiable rows merely to prepare linkage metadata.
+}
+\seealso{
+\code{\link[=epi_eda_dictionary_scaffold]{epi_eda_dictionary_scaffold()}}, \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
+}

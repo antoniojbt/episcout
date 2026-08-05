@@ -10,14 +10,17 @@
 #'
 #' @return A tibble with columns `participant_id` and `token_id`.
 #'
-#' @details Tokens are generated from cryptographic random bytes using `openssl::rand_bytes()`. The function does not accept a seed and does not provide deterministic output.
+#' @details Tokens are generated from cryptographic random bytes using `openssl::rand_bytes()`. The function does not accept a seed and does not provide deterministic output. This single-vector helper does not maintain stable tokens across later calls or rewrite related tables. For stable, reviewed linkage across PostgreSQL tables, start with [epi_sec_linkage_scaffold()] and follow `vignette("longitudinal-pseudonymisation")`.
 #'
 #' The bridge table remains re-identifying information. Store it separately from pseudonymised analysis datasets and protect it with appropriate access controls. Pseudonymisation reduces risk but does not by itself anonymise a dataset.
 #'
 #' @examples
-#' participant_ids <- sprintf("study_%04d", 1:10)
-#' bridge <- epi_sec_pseudonym(participant_ids, prefix = "MXSTUDY")
+#' participant_ids <- sprintf("entity_%04d", 1:10)
+#' bridge <- epi_sec_pseudonym(participant_ids)
 #' head(bridge)
+#'
+#' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_identity_registry_init()], [epi_sec_pseudonymise_db()]
+#' @family longitudinal pseudonymisation
 #'
 #' @importFrom openssl rand_bytes
 #' @export
@@ -84,17 +87,7 @@ epi_sec_pseudonym <- function(participant_id,
     }
   }
 
-  n_bytes <- as.integer(n_bytes)
-  n <- length(participant_id)
-  random_bytes <- openssl::rand_bytes(n * n_bytes)
-  random_hex <- format(random_bytes)
-  token_hex <- apply(
-    matrix(random_hex, nrow = n, ncol = n_bytes, byrow = TRUE),
-    1,
-    paste0,
-    collapse = ""
-  )
-  token_id <- paste0(prefix, "_", token_hex)
+  token_id <- sec_generate_tokens(length(participant_id), as.integer(n_bytes), prefix)
 
   if (anyDuplicated(token_id)) {
     stop("Duplicate token generated. Re-run with more bytes.", call. = FALSE)
@@ -110,4 +103,25 @@ epi_sec_pseudonym <- function(participant_id,
   }
 
   bridge
+}
+
+sec_generate_tokens <- function(n, n_bytes, prefix, max_attempts = 5L) {
+  if (n == 0L) {
+    return(character())
+  }
+  for (attempt in seq_len(max_attempts)) {
+    random_bytes <- openssl::rand_bytes(n * n_bytes)
+    random_hex <- format(random_bytes)
+    token_hex <- apply(
+      matrix(random_hex, nrow = n, ncol = n_bytes, byrow = TRUE),
+      1,
+      paste0,
+      collapse = ""
+    )
+    token_id <- paste0(prefix, "_", token_hex)
+    if (!anyDuplicated(token_id)) {
+      return(token_id)
+    }
+  }
+  stop("Unique pseudonym tokens could not be generated safely.", call. = FALSE)
 }

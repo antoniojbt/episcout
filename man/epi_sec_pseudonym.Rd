@@ -30,13 +30,23 @@ A tibble with columns \code{participant_id} and \code{token_id}.
 Generate random, non-derivable token identifiers for participant pseudonymisation. The returned bridge table maps each original participant identifier to a cryptographically random token.
 }
 \details{
-Tokens are generated from cryptographic random bytes using \code{openssl::rand_bytes()}. The function does not accept a seed and does not provide deterministic output.
+Tokens are generated from cryptographic random bytes using \code{openssl::rand_bytes()}. The function does not accept a seed and does not provide deterministic output. This single-vector helper does not maintain stable tokens across later calls or rewrite related tables. For stable, reviewed linkage across PostgreSQL tables, start with \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}} and follow \code{vignette("longitudinal-pseudonymisation")}.
 
 The bridge table remains re-identifying information. Store it separately from pseudonymised analysis datasets and protect it with appropriate access controls. Pseudonymisation reduces risk but does not by itself anonymise a dataset.
 }
 \examples{
-participant_ids <- sprintf("study_\%04d", 1:10)
-bridge <- epi_sec_pseudonym(participant_ids, prefix = "MXSTUDY")
+participant_ids <- sprintf("entity_\%04d", 1:10)
+bridge <- epi_sec_pseudonym(participant_ids)
 head(bridge)
 
 }
+\seealso{
+\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
+
+Other longitudinal pseudonymisation:
+\code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
+\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}},
+\code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}},
+\code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
+}
+\concept{longitudinal pseudonymisation}
