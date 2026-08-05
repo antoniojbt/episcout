@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Made local datetime preparation deterministic across supported platforms by classifying and converting wall times with `clock`'s packaged IANA timezone data. Ambiguous, nonexistent and unsupported local times block with value-free guidance; this raises the minimum supported R version to 4.0.
 - Added a generic, audit-first PostgreSQL longitudinal pseudonymisation workflow with value-free linkage metadata, a stable restricted identity registry, exact reviewed crosswalks, explicit longitudinal duplicate handling, atomic output writes and a dedicated first-time-user guide. Pseudonymised outputs remain restricted personal data and are not anonymous or automatically disclosure-controlled.
 - Added `epi_eda_intake_run()` as a stage-gated new-dataset workflow that creates a review-required specification scaffold, audits or applies reviewed preparation, writes reconciled canonical and optional stratified summaries, and renders a portable aggregate-only HTML bundle with a fixed manifest and safe owned-file collision handling.
 - Added specification-aware grouped descriptive summaries and a separate traceable long-form Table 1 renderer, preserving declared empty groups/levels, explicit denominators, missing/unexpected strata, canonical Overall semantics and aggregate-only text diagnostics without p-values or implicit disclosure control.

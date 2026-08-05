@@ -113,6 +113,7 @@
 
 ### 2026-08-04
 
+- [x] Complete spec `017-deterministic-local-time-ambiguity` for issues #190 and #81: replace host timezone sampling with `clock`'s bundled IANA engine, preserve offset-bearing behaviour and value-free blocking, and record GitHub macOS/Ubuntu confirmation as a pull-request check because publication was not authorised.
 - [x] Accept and merge spec `016-longitudinal-pseudonymisation` through PR #189, reconcile its final status records and move the specification to `future/specs/done/`.
 - [x] Separate active and completed specifications and reviews into `done/` directories, repair their references, and make TODO reconciliation part of every future-work change.
 

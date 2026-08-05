@@ -43,9 +43,11 @@ after-schema.
 Character numeric parsing is deliberately unsupported because no
 locale or decimal-mark contract is present. Character dates and datetimes
 use strict ISO forms. Offset or \code{Z} datetimes are normalised to UTC; local
-datetimes require a valid reviewed \code{timezone} field and ambiguous or
-nonexistent daylight-saving wall times block preparation. Optional \code{min}
-and \code{max} fields are descriptive metadata, not recoding rules.
+datetimes require a valid reviewed \code{timezone} field supported by \code{clock}'s
+packaged IANA timezone database. Ambiguous, nonexistent, unsupported or
+otherwise unclassifiable local wall times block preparation without exposing
+observed values. Optional \code{min} and \code{max} fields are descriptive metadata,
+not recoding rules.
 
 The semicolon-delimited v1 \code{missing_codes} format cannot represent empty,
 whitespace-only, or semicolon-containing sentinels. No files are written.
