@@ -1,17 +1,45 @@
 id: "003"
 slug: "large-data-backend-strategy"
-status: draft
-owner: TBD
+status: active
+owner: Antonio Berlanga-Taylor
 base_branch: master
-working_branch: TBD
+working_branch: feature/postgresql-eda-backend
 created: 2026-06-15
 updated: 2026-08-04
 
+dependencies:
+  - 010-canonical-eda-summary-contract
+  - 015-data-intake-to-report-workflow
+  - 016-longitudinal-pseudonymisation
+
 related_files:
-  - README.md
   - PROJECT_MAP.md
   - future/scratch/episcout_postgresql_backend_plan.md
-  - future/specs/003-large-data-backend-strategy/
+  - R/db_inventory.R
+  - R/eda_dictionary.R
+  - R/eda_schema.R
+  - R/eda_missing.R
+  - R/eda_summaries.R
+  - R/summary_cores.R
+  - R/eda_plots.R
+  - R/eda_intake.R
+  - R/eda_postgres_source.R
+  - R/eda_postgres_queries.R
+  - R/eda_db_run.R
+  - tests/testthat/test-eda-postgres-source.R
+  - tests/testthat/test-eda-postgres-parity.R
+  - tests/testthat/test-eda-postgres-run.R
+  - tests/testthat/test-eda-postgres-privacy.R
+  - tests/testthat/test-eda-plots-fixtures.R
+  - tests/testthat/fixtures/postgres_eda/
+  - .github/workflows/r-cmd-check.yml
+  - .github/workflows/test-coverage.yaml
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - DESCRIPTION
+  - man/
+  - NAMESPACE
 
 documents:
   brief: brief.md
@@ -22,12 +50,36 @@ documents:
 
 review_required: true
 
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/analysis-and-statistics.md
+  - checklists/figures.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
 check_commands:
-  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
-  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::check(manual = FALSE)"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|eda-summaries|eda-missing|eda-schema|eda-plots|eda-intake|db-dictionary', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|security-postgres', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+baseline:
+  commit: 87d40dce5a793355d509d58f2a0a595b7e691966
+  branch: detached_HEAD
+  runtime: "R 4.5.3; DBI 1.3.0; RPostgres 1.4.10"
+  lint: clean
+  tests: "one inherited macOS DST failure; four expected skips"
+  check_local: "1626 passed, six skipped, one one-core warning; inherited DST failure plus sandbox PSOCK socket error; one check error and two environment/worktree notes"
+  check_cran: "1626 passed, six skipped, one one-core warning; same two failures; one check error and four inherited/external/environment notes"
 
 notes:
-  - Design-only first.
-  - PostgreSQL is the first backend; Arrow, DuckDB, data.table and generic DBI support remain out of scope.
-  - The representative workload and proposed threshold are now available as external design inputs, but the spec remains draft until its contracts are revised and reviewed.
-  - Do not change package code until this specification is activated.
+  - Design is active; implementation must begin with recorded baseline evidence and failing contract tests.
+  - PostgreSQL 17+ through RPostgres is the only server backend in scope; ordinary data-frame contracts remain authoritative.
+  - Run one caller-owned connection sequentially inside an episcout-owned repeatable-read, read-only transaction; no database writes or multi-connection execution.
+  - Full row collection, raw text/identifier output, SQL/parameter logging, approximation, sampling and implicit timestamp-without-time-zone interpretation are prohibited.
+  - Canonical categorical frequencies are complete and can be sensitive; aggregate artifacts require disclosure review and are not de-identified.
+  - Representative performance evidence remains external and redacted; the default end-to-end median threshold is 300 seconds across three measured runs.
+  - No release, tag, project-specific material, credential operation or server administration is authorised.
