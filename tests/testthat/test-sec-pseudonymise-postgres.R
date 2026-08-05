@@ -74,7 +74,7 @@ pg_capture_conditions <- function(expr) {
 test_that("session lock cleanup retains only unlock errors", {
   attempts <- character()
   failed <- with_mocked_bindings(
-    episcout:::sec_release_session_locks(NULL, c("released", "error", "not_owned")),
+    sec_release_session_locks(NULL, c("released", "error", "not_owned")),
     dbGetQuery = function(con, statement, params) {
       attempts <<- c(attempts, params[[1]])
       if (identical(params[[1]], "error")) stop("simulated unlock error")
