@@ -204,10 +204,30 @@ eda_postgres_fingerprint <- function(value) {
   as.character(openssl::sha256(raw))
 }
 
+eda_db_begin <- function(con) {
+  DBI::dbBegin(con)
+}
+
+eda_db_commit <- function(con) {
+  DBI::dbCommit(con)
+}
+
+eda_db_lifecycle_call <- function(action, failure_message) {
+  observed <- eda_db_observe_conditions(force(action))
+  eda_db_signal_conditions(observed, "transaction lifecycle")
+  if (inherits(observed$value, "error")) {
+    stop(failure_message, call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 eda_postgres_transaction <- function(source, code, timing_env = NULL) {
   eda_validate_postgres_source(source, require_idle = TRUE, timing_env = timing_env)
   con <- source$con
-  DBI::dbBegin(con)
+  eda_db_lifecycle_call(
+    eda_db_begin(con),
+    "PostgreSQL EDA transaction could not begin; review restricted database logs."
+  )
   finished <- FALSE
   on.exit(
     {
@@ -225,7 +245,10 @@ eda_postgres_transaction <- function(source, code, timing_env = NULL) {
   )
   eda_validate_postgres_source(source, require_idle = FALSE, timing_env = timing_env)
   value <- force(code)
-  DBI::dbCommit(con)
+  eda_db_lifecycle_call(
+    eda_db_commit(con),
+    "PostgreSQL EDA transaction could not commit safely; review restricted database logs."
+  )
   finished <- TRUE
   value
 }

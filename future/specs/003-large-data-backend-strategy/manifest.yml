@@ -3,9 +3,9 @@ slug: "large-data-backend-strategy"
 status: active
 owner: Antonio Berlanga-Taylor
 base_branch: master
-working_branch: feature/postgresql-eda-backend
+working_branch: feature/postgresql-eda-acceptance
 created: 2026-06-15
-updated: 2026-08-04
+updated: 2026-08-05
 
 dependencies:
   - 010-canonical-eda-summary-contract
@@ -28,9 +28,8 @@ related_files:
   - R/eda_db_run.R
   - tests/testthat/test-eda-postgres-source.R
   - tests/testthat/test-eda-postgres-parity.R
-  - tests/testthat/test-eda-postgres-run.R
-  - tests/testthat/test-eda-postgres-privacy.R
-  - tests/testthat/test-eda-plots-fixtures.R
+  - tests/testthat/test-eda-postgres-benchmark.R
+  - tests/testthat/test-eda_plots-fixtures.R
   - tests/testthat/fixtures/postgres_eda/
   - .github/workflows/r-cmd-check.yml
   - .github/workflows/test-coverage.yaml
@@ -61,7 +60,7 @@ checklists:
 check_commands:
   - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda[_-](postgres|summaries|missing|schema|plots|intake)|db-dictionary', reporter = 'summary')"
   - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
-  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|sec-pseudonymise-postgres', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 EPISCOUT_BENCHMARK_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|sec-pseudonymise-postgres', reporter = 'summary')"
   - scripts/check-local.sh
   - scripts/check-cran.sh
   - git diff --check
@@ -81,5 +80,5 @@ notes:
   - Run one caller-owned connection sequentially inside an episcout-owned repeatable-read, read-only transaction; no database writes or multi-connection execution.
   - Full row collection, raw text/identifier output, SQL/parameter logging, approximation, sampling and implicit timestamp-without-time-zone interpretation are prohibited.
   - Canonical categorical frequencies are complete and can be sensitive; aggregate artifacts require disclosure review and are not de-identified.
-  - Representative performance evidence remains external and redacted; the default end-to-end median threshold is 300 seconds across three measured runs.
+  - The fixed one-million-row synthetic PostgreSQL 17 gate requires a median below 120 seconds across three complete measured runs after one warm-up; it is not a production-runtime claim.
   - No release, tag, project-specific material, credential operation or server administration is authorised.

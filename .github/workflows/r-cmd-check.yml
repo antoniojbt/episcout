@@ -105,6 +105,7 @@ jobs:
     name: PostgreSQL integration
     env:
       EPISCOUT_TEST_POSTGRES: 1
+      EPISCOUT_BENCHMARK_POSTGRES: 1
       PGHOST: 127.0.0.1
       PGPORT: 5432
       PGDATABASE: synthetic_records

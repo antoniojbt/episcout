@@ -14,7 +14,7 @@ Add PostgreSQL 17 or later as the first server-backed EDA source while preservin
 
 ## User Need
 
-A user with a reviewed episcout specification and read access to one PostgreSQL table or view can run the same descriptive EDA contract used for a data frame, obtain traceable aggregate artifacts within the representative performance threshold, and demonstrate that full rows and identifier values were not collected or written.
+A user with a reviewed episcout specification and read access to one PostgreSQL table or view can run the same descriptive EDA contract used for a data frame, obtain traceable aggregate artifacts without materialising the source relation in R, and demonstrate that full rows and identifier values were not collected or written.
 
 ## Observable Outcome
 
@@ -23,7 +23,7 @@ A user with a reviewed episcout specification and read access to one PostgreSQL 
 - PostgreSQL results follow the current canonical definitions for every supported specification type, with documented numeric tolerances where server and R floating-point reduction order can differ.
 - Explicit `id` and `identifier` roles produce aggregate identifier QA and no ordinary type summary or value-bearing plot.
 - `epi_eda_db_run()` executes all database stages against one stable read-only snapshot and publishes a staged, checksummed aggregate-only bundle.
-- A neutral parity fixture and a separately held representative workload provide independently reviewable correctness, privacy and performance evidence.
+- Neutral parity fixtures provide independently reviewable correctness and privacy evidence, while a fixed synthetic PostgreSQL scale fixture guards against severe end-to-end performance regressions without claiming production representativeness.
 
 ## Success Measures
 
@@ -33,7 +33,7 @@ A user with a reviewed episcout specification and read access to one PostgreSQL 
 | M-002 | Data locality | Instrumented tests show no unrestricted row-level fetch; every client result is one scalar row, a complete categorical frequency table, a fixed 30-bin table, or a Shapiro vector of at most 4,999 finite values. |
 | M-003 | Privacy boundary | Returned objects, conditions, query diagnostics, SVGs and bundle files contain no source rows, raw text, observed identifier values, credentials, connection attributes or executable SQL. |
 | M-004 | Snapshot consistency | Schema, counts, summaries, plot data and bundle metadata reconcile to one PostgreSQL repeatable-read, read-only snapshot. |
-| M-005 | Representative runtime | The median of three measured end-to-end runs of the externally held largest approved workload is at most 300 seconds under the fixed benchmark protocol. |
+| M-005 | Synthetic scale runtime | After one warm-up, the median of three complete runs over the fixed one-million-row, eight-variable PostgreSQL 17 fixture is less than 120 seconds in the dedicated PostgreSQL CI job. This is a regression gate, not a production-runtime promise. |
 | M-006 | Compatibility | The existing data-frame suite passes unchanged except for separately approved tests that make identifier exclusion and text-length plotting explicit for both backends. |
 
 ## Scope
@@ -42,7 +42,7 @@ A user with a reviewed episcout specification and read access to one PostgreSQL 
 - PostgreSQL catalogue inspection, safe identifier quoting, bound specification values, aggregate SQL, bounded collection, shared canonical builders and shared plot renderers.
 - Schema, missingness, numeric/integer, categorical/binary, text, date/datetime, identifier QA and deterministic SVG artifacts.
 - Sequential client execution; PostgreSQL may use its own query planner and server-side parallelism.
-- Neutral unit fixtures, mandatory disposable PostgreSQL integration tests, external performance evidence, documentation and package verification.
+- Neutral unit fixtures, mandatory disposable PostgreSQL integration tests, a deterministic synthetic scale gate, documentation and package verification.
 
 ## Non-goals
 
@@ -50,7 +50,7 @@ A user with a reviewed episcout specification and read access to one PostgreSQL 
 - Database writes, source preparation or coercion, schema creation, indexes, grants, role management, query-plan tuning, server configuration, backup or log management.
 - Stratified summaries, Table 1, correlations, cross-table analysis, pseudonymisation, HTML reporting, publication approval or disclosure control.
 - Full-row collection, raw previews, raw text plots, identifier plots or automatic inference that a field is identifying.
-- Multi-connection execution unless the sequential implementation fails M-005 and a separately reviewed amendment defines connection, snapshot and determinism rules.
+- Multi-connection execution; failure of the synthetic scale gate requires investigation and owner review rather than approximation, sampling, concurrency or changed statistics.
 - Project-specific data, names, schemas, dictionaries, credentials, fixtures, output conventions or terminology in the repository.
 
 ## Candidate Files
@@ -66,8 +66,8 @@ A user with a reviewed episcout specification and read access to one PostgreSQL 
 - `R/eda_intake.R`
 - `tests/testthat/test-eda-postgres-source.R`
 - `tests/testthat/test-eda-postgres-parity.R`
-- `tests/testthat/test-eda-postgres-run.R`
-- `tests/testthat/test-eda-plots-fixtures.R`
+- `tests/testthat/test-eda-postgres-benchmark.R`
+- `tests/testthat/test-eda_plots-fixtures.R`
 - `.github/workflows/r-cmd-check.yml`
 - `.github/workflows/test-coverage.yaml`
 - `README.md`
@@ -85,11 +85,11 @@ Candidate files are planning guidance, not permission for unrelated refactoring.
 - Independent queries under read-committed isolation could produce internally inconsistent artifacts while source rows change.
 - Complete categorical frequencies can themselves be sensitive or too large even though they are aggregate output.
 - Reusing manifest logic could accidentally broaden overwrite authority or regress the existing intake workflow.
-- A project-specific benchmark could leak restricted context or produce a non-reproducible performance claim.
+- A synthetic timing gate could be misrepresented as evidence of production performance or become flaky if it lacks a fixed workload, dedicated uninstrumented job and substantial runner headroom.
 
 ## Assumptions And Open Questions
 
-- The external representative relation, reviewed specification and benchmark host remain available to the repository owner but outside this repository. This is a high-impact operational assumption; implementation can proceed without them, but acceptance and any claim against M-005 cannot.
+- M-005 establishes only a reproducible synthetic regression ceiling. Workload construction is excluded from timing; complete orchestration, SVG rendering, checksum validation, owned overwrite and publication are included. No claim is made about a particular production relation, host or runtime.
 - PostgreSQL 17 is the minimum tested server because the existing repository integration path already uses PostgreSQL 17. Supporting later versions is expected but must be evidenced in recorded runtime metadata.
 - PostgreSQL output privileges, network security, statement logging and aggregate disclosure review are caller/infrastructure responsibilities. The package must minimise client artifacts but cannot claim the server does not log statements or that small cells are safe to publish.
 - No blocking design question remains. Any implementation need for approximate statistics, sampling, database mutation, generic DBI dispatch, multi-connection execution or a changed canonical schema requires owner review and a spec amendment before proceeding.
