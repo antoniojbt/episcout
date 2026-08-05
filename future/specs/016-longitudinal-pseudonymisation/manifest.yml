@@ -1,0 +1,72 @@
+id: "016"
+slug: "longitudinal-pseudonymisation"
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: feature/longitudinal-pseudonymisation
+created: 2026-08-04
+updated: 2026-08-04
+
+dependencies:
+  - 005-pseudonymisation-bridge
+  - 012-data-frame-eda-spec-scaffold
+  - 013-specification-guided-data-preparation
+
+related_files:
+  - R/epi_sec_pseudonym.R
+  - R/epi_sec_linkage.R
+  - R/epi_sec_registry.R
+  - R/epi_sec_pseudonymise_db.R
+  - tests/testthat/test-epi_sec_pseudonym.R
+  - tests/testthat/test-sec-linkage.R
+  - tests/testthat/test-sec-pseudonymise-postgres.R
+  - vignettes/longitudinal-pseudonymisation.Rmd
+  - vignettes/introduction_episcout.Rmd
+  - vignettes/specification-first-eda.Rmd
+  - README.md
+  - NEWS.md
+  - DESCRIPTION
+  - .github/workflows/r-cmd-check.yml
+  - .github/workflows/test-coverage.yaml
+  - man/
+  - NAMESPACE
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/analysis-and-statistics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'security|linkage|postgres|dictionary|eda-schema', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'security-postgres', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+baseline:
+  lint: clean
+  tests: "1573 passed; one existing macOS DST ambiguity failure at tests/testthat/test-eda-prepare.R:223"
+  check_local: "failed from the same existing DST ambiguity test"
+  check_cran: "same existing failure plus inherited notes for new-submission status, vignette index, HTTP 403 URLs and HTML tidy output"
+
+notes:
+  - PostgreSQL through RPostgres is the only persistent backend in scope.
+  - Exactly one selected table may enrol entities, but repeated entity rows remain valid.
+  - Portable specifications contain crosswalk metadata only; identifier values remain in a restricted PostgreSQL relation.
+  - Default results, conditions, manifests and persisted audits are value-free; explicit sensitive issues are memory-only, marked and redacted by ordinary print/structure methods, while deliberate extraction remains the caller's responsibility.
+  - Pseudonymised data remain restricted personal data and are not anonymous or automatically disclosure-controlled.
+  - Use only neutral synthetic examples, runtime-generated opaque identifiers and validated disposable-schema cleanup targets.
+  - Independent bounded reviews cover PostgreSQL integrity/concurrency, identifier leakage and documentation usability.
+  - Do not create schemas, grant roles, manage backups/logging, create a release or create a tag.

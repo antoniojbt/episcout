@@ -9,6 +9,9 @@
 #'
 #' @return An `epi_db_inventory` list with `tables`, `columns` and `constraints` data frames.
 #'
+#' @details Inventory reads database metadata only unless `row_counts = "exact"`, which executes aggregate row counts. It never reads identifier values. For restricted longitudinal sources, use the inventory to create and review an [epi_eda_dictionary_scaffold()], then follow `vignette("longitudinal-pseudonymisation")`; do not export identifiable rows merely to prepare linkage metadata.
+#'
+#' @seealso [epi_eda_dictionary_scaffold()], [epi_sec_linkage_scaffold()], [epi_sec_pseudonymise_db()]
 #' @export
 epi_db_inventory <- function(con,
                              schema,

@@ -12,6 +12,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
 * **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
+* **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
 * **Utilities** - `epi_utils_*` helpers cover tasks like parallel processing and logging.
 
 ## Installation
@@ -67,6 +68,9 @@ There are two main ways to use episcout:
 
 * Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
 * Use the review-gated new-dataset workflow through `epi_eda_intake_run()`, or compose the lower-level specification-first functions directly.
+* For related restricted PostgreSQL tables, follow the [audit-first longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd) to create value-free linkage metadata, initialise a stable registry and inspect blockers before any write.
+
+Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled. The guide explains database-administrator prerequisites, duplicate handling, recovery and the reviewed handoff into EDA.
 
 ### Helper functions
 

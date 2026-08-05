@@ -46,6 +46,9 @@ dictionary_curated_columns <- function() {
 #'
 #' @return A data frame with one row per source column.
 #'
+#' @details The scaffold is metadata only and deliberately leaves privacy and analytic decisions unreviewed. For restricted related PostgreSQL tables, review the dictionary before creating value-free linkage metadata with [epi_sec_linkage_scaffold()]. See `vignette("longitudinal-pseudonymisation")`; exporting identifiable database rows is not required.
+#'
+#' @seealso [epi_db_inventory()], [epi_sec_linkage_scaffold()], [epi_sec_pseudonymise_db()]
 #' @export
 epi_eda_dictionary_scaffold <- function(inventory) {
   validate_inventory_object(inventory)
@@ -129,10 +132,13 @@ epi_eda_dictionary_refresh <- function(dictionary, inventory) {
 #' Validate the reusable multi-table dictionary contract and, when supplied, its normalised catalogue definitions.
 #'
 #' @param dictionary A data frame returned by [epi_eda_dictionary_scaffold()] or [epi_eda_dictionary_refresh()].
-#' @param catalogues Optional data frame of normalised catalogue values.
+#' @param catalogues Optional data frame of normalised catalogue values with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing`, `provenance` and `validation_status`.
 #'
 #' @return The validated dictionary, invisibly.
 #'
+#' @details Validation checks the dictionary and catalogue contract; it does not approve linkage, inspect source values, identify personal information or establish disclosure safety. The PostgreSQL pseudonymisation workflow applies additional confirmed privacy and drift gates described in `vignette("longitudinal-pseudonymisation")`.
+#'
+#' @seealso [epi_eda_dictionary_scaffold()], [epi_sec_linkage_scaffold()], [epi_sec_pseudonymise_db()]
 #' @export
 epi_eda_dictionary_validate <- function(dictionary, catalogues = NULL) {
   validate_dictionary_shape(dictionary)
@@ -151,10 +157,13 @@ epi_eda_dictionary_validate <- function(dictionary, catalogues = NULL) {
 #'
 #' @param dictionary A validated extended dictionary.
 #' @param table A table name or a `schema.table` qualified name.
-#' @param catalogues Optional normalised catalogue data frame.
+#' @param catalogues Optional normalised catalogue data frame with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing`, `provenance` and `validation_status`.
 #'
 #' @return A validated episcout EDA specification data frame.
 #'
+#' @details A pseudonymisation result's `output_dictionary` and `output_catalogues` can be passed here after the restricted output has been reviewed. The generated token is analytically restricted; this handoff does not make the data anonymous or disclosure-safe.
+#'
+#' @seealso [epi_sec_pseudonymise_db()], [epi_eda_dictionary_validate()]
 #' @export
 epi_eda_dictionary_spec <- function(dictionary, table, catalogues = NULL) {
   epi_eda_dictionary_validate(dictionary, catalogues)

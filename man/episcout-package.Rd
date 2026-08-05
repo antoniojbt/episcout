@@ -4,9 +4,17 @@
 \name{episcout-package}
 \alias{episcout}
 \alias{episcout-package}
-\title{episcout: Quickly Clean, Explore and Visualise Large Epidemiological Datasets}
+\title{episcout: cleaning, exploration and reviewed data workflows}
 \description{
-Facilitates cleaning, exploring and visualising large-ish epidemiological datasets (hundreds of thousands to millions of observations with tens to hundreds of variables). Provides helper functions for preprocessing and descriptive work, plus specification-first exploratory data analysis workflows for epidemiological datasets. Assumes you're happy with tidyverse and the basics of data.table.
+Helpers for cleaning, exploring and visualising data, including specification-first EDA and an audit-first PostgreSQL workflow for stable longitudinal pseudonymisation.
+}
+\details{
+Start with \code{vignette("introduction_episcout")} for package helpers, \code{vignette("specification-first-eda")} for reviewed EDA, or \code{vignette("longitudinal-pseudonymisation")} for one stable pseudonymous identity across related PostgreSQL tables. The longitudinal guide covers database prerequisites, value-free linkage metadata, read-only audits, blockers, apply, recovery and EDA handoff.
+
+Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled.
+}
+\seealso{
+\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_intake_run]{epi_eda_intake_run()}}
 }
 \author{
 \strong{Maintainer}: Antonio Berlanga-Taylor \email{antoniojberlanga@gmail.com}

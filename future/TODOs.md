@@ -37,6 +37,14 @@
 
 ### Priority 1
 
+- [ ] Review and accept the completed implementation of active spec `016-longitudinal-pseudonymisation` on `feature/longitudinal-pseudonymisation`:
+    - Add reviewed, value-free linkage scaffolding and specification metadata for multi-table PostgreSQL sources.
+    - Add a restricted stable identity registry and exact text/integral/UUID linkage with database-resident confirmed crosswalks.
+    - Add read-only audit and atomic repeatable-read apply modes with deterministic locks, safe destination replacement, longitudinal record-key/duplicate reconciliation and redacted results.
+    - Add comprehensive synthetic unit/live PostgreSQL tests, a mandatory pinned-PostgreSQL CI job and a friendly discoverable canonical guide.
+    - Preserve `epi_sec_pseudonym()` behaviour; make no anonymity/disclosure-control claim and include no project-specific fixture, example, message or documentation material.
+    - Implementation, independent reviews and primary verification are complete; the spec remains active until the draft pull request is accepted.
+
 - [ ] full git scrub
 
 - [ ] Review the two remaining plans/instructions from prior Codex threads saved in `future/scratch`:
@@ -50,10 +58,7 @@
 ### Priority 2
 
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] Add a follow-up pseudonymisation spec for PII identification, dataset
-      rewriting, identifier removal, output validation and read-only raw-data
-      files. Secure bridge-table v1 was completed in spec 005.
-- [ ] add functions to load, connect, etc data into db. 
+- [ ] add functions to load, connect, etc data into db.
 
 ### Priority 3
 
