@@ -27,6 +27,7 @@ related_files:
   - NEWS.md
   - DESCRIPTION
   - .github/workflows/r-cmd-check.yml
+  - .github/workflows/test-coverage.yaml
   - man/
   - NAMESPACE
 
