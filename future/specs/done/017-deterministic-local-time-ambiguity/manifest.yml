@@ -1,0 +1,55 @@
+id: "017"
+slug: "deterministic-local-time-ambiguity"
+status: completed
+owner: repository-owner
+base_branch: master
+working_branch: bugfix/deterministic-local-time-ambiguity
+created: 2026-08-04
+updated: 2026-08-04
+
+dependencies:
+  - 013-specification-guided-data-preparation
+
+issues:
+  - 190
+  - 81
+
+related_files:
+  - R/eda_prepare.R
+  - tests/testthat/test-eda-prepare.R
+  - DESCRIPTION
+  - NEWS.md
+  - man/epi_eda_prepare.Rd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-prepare', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+baseline:
+  tests: "1573 passed; one inherited macOS historical local-time ambiguity failure"
+  direct_probe: "R 4.5.3 aarch64 macOS classified the 1969 Kwajalein fixture as valid through host sampling"
+  local_environment: "Focused test loading initially blocked by missing imported DBI package"
+
+notes:
+  - IANA timezone data, not host conversion behaviour, define expected transition semantics.
+  - Observed datetime values must not appear in audit rows, warnings or errors.
+  - The owner explicitly accepted R 4.0 as the new minimum for clock-based historical support.
+  - Draft spec 003 remains inactive and outside this implementation.
