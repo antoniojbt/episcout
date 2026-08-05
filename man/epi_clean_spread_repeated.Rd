@@ -42,5 +42,5 @@ df_spread
 \code{\link{epi_clean_add_colname_suffix}}, \code{\link{epi_clean_merge_nested_dfs}}, \code{\link{epi_clean_transpose}}
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

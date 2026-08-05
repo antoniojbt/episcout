@@ -50,6 +50,8 @@ Do not export identifiable PostgreSQL rows merely to use this file-based EDA sca
 
 Pseudonymised outputs still require restricted access and disclosure review. They are not anonymous or automatically disclosure-controlled.
 
+For a runnable synthetic example that connects database inventory, longitudinal pseudonymisation, PostgreSQL-backed EDA and this HTML reporting workflow, see the installed `examples/db-to-report/walkthrough.R` script.
+
 ## Optional targets workflow
 
 If `targets` is installed, run:

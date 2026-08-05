@@ -24,7 +24,9 @@ cat("This vignette needs ggplot2 to run the plotting step. Install ggplot2 to ru
 
 Specification-first EDA starts with a data dictionary rather than with ad hoc analysis code. The same specification can be used while data access is pending, then reused with real data once they arrive.
 
-The MVP workflow is designed to:
+For an executable end-to-end example that also covers duplicate review, longitudinal PostgreSQL pseudonymisation and the handoff into this workflow, open the installed `examples/db-to-report/walkthrough.R` script and run it section by section.
+
+The specification-first workflow is designed to:
 
 - validate expected variables;
 - generate simple synthetic data for pipeline preparation;

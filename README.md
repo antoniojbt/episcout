@@ -27,10 +27,10 @@ install.packages("episcout")
 --->
 
 Install from GitHub:
+
 ``` r
 install.packages("devtools")
-library(devtools)
-install_github("AntonioJBT/episcout")
+devtools::install_github("AntonioJBT/episcout")
 ```
 
 ## Development
@@ -67,11 +67,13 @@ CRAN does not require `renv`; it requires a source tarball from `R CMD build` th
 
 ## Getting Started
 
-There are two main ways to use episcout:
+There are three main ways to use episcout:
 
 * Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
 * Use the review-gated new-dataset workflow through `epi_eda_intake_run()`, or compose the lower-level specification-first functions directly.
 * For related restricted PostgreSQL tables, follow the [audit-first longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd) to create value-free linkage metadata, initialise a stable registry and inspect blockers before any write.
+
+For a complete runnable learning path, use the [database-to-report walkthrough](inst/examples/db-to-report/README.md). Its commented R script starts with a duplicated synthetic longitudinal CSV, creates disposable PostgreSQL relations, pseudonymises them, runs database-backed EDA and finishes with plots, a Table 1 and an HTML report.
 
 Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled. The guide explains database-administrator prerequisites, duplicate handling, recovery and the reviewed handoff into EDA.
 
@@ -140,9 +142,12 @@ death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome in
 
 The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The canonical summary contract covers numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable coverage and documented skips.
 
-After reviewing the dictionary, inspect the preparation plan before changing the received data. Apply is all-or-nothing: a missing required variable, unsafe conversion or unexpected level returns the original data and a complete blocking audit.
+After saving and reviewing the dictionary, load it with its matching data and inspect the preparation plan before changing anything. Apply is all-or-nothing: a missing required variable, unsafe conversion or unexpected level returns the original data and a complete blocking audit.
 
 ``` r
+spec <- epi_eda_spec("metadata/data_dictionary.csv")
+data <- read.csv("data/input.csv", stringsAsFactors = FALSE)
+
 assessment <- epi_eda_prepare(data, spec, mode = "audit")
 assessment$audit
 
@@ -153,10 +158,10 @@ prepared$data
 
 Character numeric parsing is not implicit, categorical levels come from the reviewed specification, and local character datetimes require a reviewed `timezone`. Empty or whitespace-only sentinels cannot be represented by the current semicolon-delimited `missing_codes` format. The preparation core is in memory and does not write row-level data. It does not identify personal information or anonymise data; pseudonymisation remains a separate controlled step.
 
-Summarize a prepared cohort overall and by one reviewed categorical or binary variable, then create a traceable long-form Table 1:
+Summarise a prepared cohort overall and by one reviewed categorical or binary variable, then create a traceable long-form Table 1:
 
 ``` r
-stratified <- epi_eda_profile_stratified(prepared$data, spec, strata = "study_group")
+stratified <- epi_eda_profile_stratified(prepared$data, spec, strata = "sex")
 stratified$groups
 stratified$numeric
 
@@ -275,11 +280,11 @@ Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db
 
 The bundle is aggregate-only, not anonymous or disclosure-controlled. Complete categorical frequencies, identifier QA, plots, variable and relation names, declared levels and missing sentinels may be sensitive. The normalized caller-authored specification is deliberately written for review, so its declared values are not covered by the raw-observation exclusion. Review every artifact before sharing. episcout does not control PostgreSQL, RPostgres, administrator, backup or server logging. Unsupported storage, especially `timestamp without time zone`, requires a caller-reviewed view cast; episcout does not infer local-time or DST meaning.
 
-Render the optional HTML report when `rmarkdown` is installed:
+The aggregate PostgreSQL bundle is the end of the server-backed workflow. `epi_eda_render_report()` currently accepts an in-memory data frame, not a PostgreSQL source or aggregate bundle. Render its optional HTML report only for an approved in-memory dataset when `rmarkdown` and Pandoc are installed:
 
 ``` r
 epi_eda_render_report(
-  data = data,
+  data = prepared$data,
   spec = spec,
   output_dir = "outputs"
 )

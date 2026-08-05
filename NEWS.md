@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Added a runnable database-to-report walkthrough with a neutral longitudinal CSV fixture. The commented R script demonstrates duplicate review, PostgreSQL inventory and dictionaries, stable pseudonymisation, aggregate-only database EDA, plots, Table 1 and HTML report output without embedding credentials.
 - Added PostgreSQL 17-backed specification-first EDA through `epi_eda_postgres_source()` and `epi_eda_db_run()`, with read-only repeatable-read snapshots, aggregate-only canonical profiling, explicit identifier QA, bounded compact plot data, redacted source display, deterministic SVG paths and manifest-owned staged bundle publication. Ordinary data-frame interfaces and the six summary components remain unchanged; text plots now show character lengths and explicit identifier roles produce no value-bearing summary or plot.
 - Made local datetime preparation deterministic across supported platforms by classifying and converting wall times with `clock`'s packaged IANA timezone data. Ambiguous, nonexistent and unsupported local times block with value-free guidance; this raises the minimum supported R version to 4.0.
 - Added a generic, audit-first PostgreSQL longitudinal pseudonymisation workflow with value-free linkage metadata, a stable restricted identity registry, exact reviewed crosswalks, explicit longitudinal duplicate handling, atomic output writes and a dedicated first-time-user guide. Pseudonymised outputs remain restricted personal data and are not anonymous or automatically disclosure-controlled.

@@ -12,6 +12,7 @@ This map identifies the current `episcout` implementation, its user-facing entry
 | PostgreSQL-backed specification-first EDA | `epi_eda_postgres_source()`, the four direct EDA profilers, `epi_eda_db_run()` | `R/eda_postgres_source.R`, `R/eda_postgres_queries.R`, `R/eda_db_run.R`, shared EDA modules | `tests/testthat/test-eda-postgres-*.R` plus data-frame EDA regressions | `README.md`, `vignettes/specification-first-eda.Rmd`, function help |
 | PostgreSQL inventory and dictionaries | `epi_db_inventory()`, `epi_eda_dictionary_scaffold()`, `epi_eda_dictionary_validate()` | `R/db_inventory.R`, `R/eda_dictionary.R` | Database inventory and dictionary tests under `tests/testthat/` | Function help and both workflow vignettes |
 | Longitudinal PostgreSQL pseudonymisation | `epi_sec_linkage_scaffold()`, `epi_sec_linkage_spec()`, `epi_sec_identity_registry_init()`, `epi_sec_pseudonymise_db()` | `R/epi_sec_linkage.R`, `R/epi_sec_registry.R`, `R/epi_sec_pseudonymise_db.R` | `tests/testthat/test-sec-linkage.R`, `tests/testthat/test-sec-pseudonymise-postgres.R` | `vignettes/longitudinal-pseudonymisation.Rmd` |
+| Synthetic database-to-report walkthrough | Inventory, dictionary, duplicate, pseudonymisation, PostgreSQL EDA, Table 1 and report entry points | Installed script and fixtures under `inst/examples/db-to-report/` | Component PostgreSQL and report tests listed above; complete script verified manually | `inst/examples/db-to-report/README.md`, `inst/examples/db-to-report/walkthrough.R` |
 | Starter EDA project | `epi_eda_create_project()` | `R/use_episcout_project.R`, `inst/project-template/` | `tests/testthat/test-project-template.R` | `inst/project-template/README.md` |
 | Lower-level cleaning, statistics, plotting and utilities | `epi_clean_*`, `epi_stats_*`, `epi_plot_*`, `epi_utils_*` | Prefix-matched files under `R/` | Prefix-matched tests under `tests/testthat/` | `README.md`, generated help under `man/` |
 
@@ -24,7 +25,7 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 | `R/` | Package source and roxygen documentation; this is the source of truth for generated help. |
 | `tests/testthat/` | Unit, integration, fixture and regression tests. Live PostgreSQL tests are gated by `EPISCOUT_TEST_POSTGRES=1`. |
 | `vignettes/` | Canonical worked guides for specification-first EDA and longitudinal pseudonymisation. |
-| `inst/` | Installed project and report templates. |
+| `inst/` | Installed project and report templates plus runnable worked examples. |
 | `man/` and `NAMESPACE` | Roxygen-generated package interfaces; do not edit them directly. |
 | `data-raw/` | Development scripts and provenance for package or test data. |
 | `scripts/` | Canonical local and CRAN-oriented verification entry points. |

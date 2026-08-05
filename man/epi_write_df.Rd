@@ -13,20 +13,20 @@ epi_write_df(df, results_subdir, file_n, suffix)
 
 \item{file_n}{A character string specifying the base name of the file (without the suffix).}
 
-\item{suffix}{A character string specifying the file extension (e.g., "txt", "csv").}
+\item{suffix}{A character string specifying the filename extension. Use \code{"tsv"} for the default tab-separated output.}
 }
 \value{
 The full file path of the saved file. Prints a message indicating the file's location.
 }
 \description{
-This function constructs a file path using a specified subdirectory, file name, and suffix, then writes a data frame to that file. It is designed for flexibility in saving results with standardized naming conventions.
+This function constructs a file path using a specified subdirectory, file name and suffix, then calls \code{\link[=epi_write]{epi_write()}}. The suffix changes only the filename; output remains tab-separated unless \code{epi_write()} is called directly with another \code{sep} value.
 }
 \examples{
 \dontrun{
 # Example usage
 results_subdir <- "output"
 file_n <- "desc_dates"
-suffix <- "txt"
+suffix <- "tsv"
 epi_write_df(sum_dates_df, results_subdir, file_n, suffix)
 }
 
