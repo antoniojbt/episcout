@@ -24,9 +24,9 @@ https://doi.org/10.1371/journal.pone.0090081
 - `penguins_raw_spec.csv`: manually reviewed EDA data dictionary.
 - `expected_schema.csv`: generator-produced regression projection of the historical presence and observed-class fields; it is not independent evidence of type compatibility.
 - `expected_missing.csv`: independently computed missingness contract.
-- `expected_summary_numeric.csv`: independently computed numeric summaries.
+- `expected_summary_numeric.csv`: independently computed numeric summaries for non-identifier roles; the reviewed `Sample Number` identifier is intentionally excluded by policy.
 - `expected_summary_categorical.csv`: independently computed categorical summaries.
-- `expected_plot_inventory.csv`: independently defined non-visual plot dispatch.
+- `expected_plot_inventory.csv`: independently defined non-visual compact-plot dispatch, including named no-plot rows for both reviewed identifiers.
 
 ## Regeneration
 

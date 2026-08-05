@@ -9,6 +9,7 @@ This map identifies the current `episcout` implementation, its user-facing entry
 | Review-gated data intake and EDA | `epi_eda_intake_run()`, `epi_eda_spec_scaffold()`, `epi_eda_prepare()` | `R/eda_intake.R`, `R/eda_spec_scaffold.R`, `R/eda_prepare.R` | `tests/testthat/test-eda-intake.R`, `tests/testthat/test-eda-spec-scaffold.R`, `tests/testthat/test-eda-prepare.R` | `README.md`, `vignettes/specification-first-eda.Rmd` |
 | Canonical descriptive summaries and Table 1 | `epi_eda_profile_summaries()`, `epi_eda_profile_stratified()`, `epi_eda_table1()`, `epi_stats_summary()` | `R/eda_summaries.R`, `R/eda_stratified.R`, `R/eda_table1.R`, `R/summary_cores.R` | Corresponding `tests/testthat/test-eda-*` and `test-stats-*` files | `README.md`, `vignettes/specification-first-eda.Rmd` |
 | Specification-first plots and reports | `epi_eda_profile_plots()`, `epi_eda_render_report()`, `epi_eda_run()` | `R/eda_plots.R`, `R/eda_report.R`, `R/run_eda.R`, `inst/report-template/` | Plot, report and workflow tests under `tests/testthat/` | `vignettes/specification-first-eda.Rmd` |
+| PostgreSQL-backed specification-first EDA | `epi_eda_postgres_source()`, the four direct EDA profilers, `epi_eda_db_run()` | `R/eda_postgres_source.R`, `R/eda_postgres_queries.R`, `R/eda_db_run.R`, shared EDA modules | `tests/testthat/test-eda-postgres-*.R` plus data-frame EDA regressions | `README.md`, `vignettes/specification-first-eda.Rmd`, function help |
 | PostgreSQL inventory and dictionaries | `epi_db_inventory()`, `epi_eda_dictionary_scaffold()`, `epi_eda_dictionary_validate()` | `R/db_inventory.R`, `R/eda_dictionary.R` | Database inventory and dictionary tests under `tests/testthat/` | Function help and both workflow vignettes |
 | Longitudinal PostgreSQL pseudonymisation | `epi_sec_linkage_scaffold()`, `epi_sec_linkage_spec()`, `epi_sec_identity_registry_init()`, `epi_sec_pseudonymise_db()` | `R/epi_sec_linkage.R`, `R/epi_sec_registry.R`, `R/epi_sec_pseudonymise_db.R` | `tests/testthat/test-sec-linkage.R`, `tests/testthat/test-sec-pseudonymise-postgres.R` | `vignettes/longitudinal-pseudonymisation.Rmd` |
 | Starter EDA project | `epi_eda_create_project()` | `R/use_episcout_project.R`, `inst/project-template/` | `tests/testthat/test-project-template.R` | `inst/project-template/README.md` |
@@ -34,9 +35,8 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 
 ## Planning Status
 
-- No numbered specification is currently active.
+- Spec `003-large-data-backend-strategy` remains active while its implemented PostgreSQL EDA contract awaits the external representative benchmark, independent reviews and owner acceptance.
 - Completed spec records `001`, `002`, `004`–`010` and `012`–`016` are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
-- Draft spec `003-large-data-backend-strategy` is ready next for a PostgreSQL-first design revision. Its current input is `future/scratch/episcout_postgresql_backend_plan.md`; neither file authorises package-code changes until the revised spec is reviewed and activated.
 - `future/TODOs.md` is the only task backlog. `future/README.md` defines the specification lifecycle, and `future/changelog.md` records material planning and implementation outcomes.
 
 ## Verification Entry Points

@@ -62,14 +62,12 @@ test_that("epi_eda_profile_plots excludes numeric and categorical sentinels from
 
   plots <- epi_eda_profile_plots(data, spec)
   missing <- epi_eda_profile_missing(data, spec)
-  numeric_layer <- ggplot2::ggplot_build(plots$measurement)$data[[1]]
-  categorical_layer <- ggplot2::ggplot_build(plots$treatment)$data[[1]]
-
   expect_equal(missing$n_missing, c(2L, 2L))
-  expect_equal(sum(numeric_layer$count), 3)
-  expect_lt(max(numeric_layer$x[numeric_layer$count > 0]), 10)
-  expect_equal(sort(categorical_layer$count), c(1, 2))
-  expect_equal(sum(categorical_layer$count), 3)
+  expect_equal(sum(plots$measurement$data$count), 3)
+  expect_lt(max(plots$measurement$data$midpoint[plots$measurement$data$count > 0]), 10)
+  expect_equal(sort(plots$treatment$data$count), c(1, 2))
+  expect_equal(sum(plots$treatment$data$count), 3)
+  expect_false(any(c("UNK", "999") %in% unlist(lapply(plots, names))))
 })
 
 test_that("epi_eda_profile_plots masks temporal sentinels before conversion", {
@@ -91,14 +89,13 @@ test_that("epi_eda_profile_plots masks temporal sentinels before conversion", {
 
   plots <- epi_eda_profile_plots(data, spec)
   missing <- epi_eda_profile_missing(data, spec)
-  date_layer <- ggplot2::ggplot_build(plots$specimen_date)$data[[1]]
-  datetime_layer <- ggplot2::ggplot_build(plots$specimen_time)$data[[1]]
-
   expect_equal(missing$n_missing, c(2L, 2L))
-  expect_equal(sum(date_layer$count), 2)
-  expect_equal(sum(datetime_layer$count), 2)
-  expect_equal(length(plots$specimen_date$data$value), 2)
-  expect_equal(length(plots$specimen_time$data$value), 2)
+  expect_equal(sum(plots$specimen_date$data$count), 2)
+  expect_equal(sum(plots$specimen_time$data$count), 2)
+  expect_equal(nrow(plots$specimen_date$data), 30L)
+  expect_equal(nrow(plots$specimen_time$data), 30L)
+  expect_false("value" %in% names(plots$specimen_date$data))
+  expect_false("value" %in% names(plots$specimen_time$data))
 })
 
 test_that("epi_eda_profile_plots rejects invalid non-missing temporal values", {
@@ -140,15 +137,13 @@ test_that("epi_eda_profile_plots preserves ISO-8601 timezone offsets", {
   )
 
   plot <- epi_eda_profile_plots(data, spec)$specimen_time
-  instants_utc <- format(plot$data$value, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
-
+  expect_equal(sum(plot$data$count), 4L)
   expect_identical(
-    instants_utc,
-    c(
-      "2024-01-01T17:30:00Z",
-      "2024-01-01T18:00:00Z",
-      "2024-01-01T19:00:00Z",
-      "2024-01-01T20:00:00Z"
-    )
+    format(as.POSIXct(min(plot$data$lower), origin = "1970-01-01", tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    "2024-01-01T17:30:00Z"
+  )
+  expect_identical(
+    format(as.POSIXct(max(plot$data$upper), origin = "1970-01-01", tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    "2024-01-01T20:00:00Z"
   )
 })

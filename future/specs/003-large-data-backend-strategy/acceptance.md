@@ -17,34 +17,34 @@ Status: Active
 
 ## Implementation Contract
 
-- [ ] `epi_eda_postgres_source()` accepts exactly one safely identified supported PostgreSQL relation through a live caller-owned connection and exposes no connection details.
-- [ ] The four existing profilers dispatch on data frame or explicit PostgreSQL source without accepting arbitrary DBI/lazy objects or changing data-frame result schemas.
-- [ ] Every supported technical type and incompatibility follows the reviewed mapping; no implicit source preparation or timestamp-without-time-zone interpretation occurs.
-- [ ] Standard/sentinel missingness, NaN, infinities, denominators and all-missing/zero-row states preserve canonical semantics.
-- [ ] Numeric/integer calculations reproduce type-7, e1071 type-3, Shapiro and outlier contracts with exact discrete results and predeclared floating tolerances.
-- [ ] Categorical/binary results contain complete declared/unexpected frequencies and both denominators; display-only leading-level collapse never changes canonical output.
-- [ ] Text and temporal results remain aggregate-only and reproduce R character/UTC/epoch semantics without raw text or session-timezone inference.
-- [ ] Explicit identifier roles are policy-skipped from ordinary summaries/plots and receive only the fixed aggregate QA fields.
-- [ ] Direct calls and the orchestrator own stable repeatable-read, read-only snapshots, reject caller transactions, clean up results and leave connections usable.
-- [ ] Client execution is sequential and every non-categorical fetch is bounded by the fixed query-kind contract; no full-row collection occurs.
-- [ ] Shared compact plot data reconcile to summaries and shared renderers produce deterministic, inspected SVGs without raw identifier/text values.
-- [ ] The database run returns the fixed object and publishes the exact aggregate-only owned bundle through tested staging/manifest/restore rules.
-- [ ] No database mutation, temporary relation, server setting, schema/index/grant management, pseudonymisation, suppression, approximation, sampling or alternate statistics are introduced.
+- [x] `epi_eda_postgres_source()` accepts exactly one safely identified supported PostgreSQL relation through a live caller-owned connection and exposes no connection details.
+- [x] The four existing profilers dispatch on data frame or explicit PostgreSQL source without accepting arbitrary DBI/lazy objects or changing data-frame result schemas.
+- [x] Every supported technical type and incompatibility follows the reviewed mapping; no implicit source preparation or timestamp-without-time-zone interpretation occurs.
+- [x] Standard/sentinel missingness, NaN, infinities, denominators and all-missing/zero-row states preserve canonical semantics.
+- [x] Numeric/integer calculations reproduce type-7, e1071 type-3, Shapiro and outlier contracts with exact discrete results and predeclared floating tolerances.
+- [x] Categorical/binary results contain complete declared/unexpected frequencies and both denominators; display-only leading-level collapse never changes canonical output.
+- [x] Text and temporal results remain aggregate-only and reproduce R character/UTC/epoch semantics without raw text or session-timezone inference.
+- [x] Explicit identifier roles are policy-skipped from ordinary summaries/plots and receive only the fixed aggregate QA fields.
+- [x] Direct calls and the orchestrator own stable repeatable-read, read-only snapshots, reject caller transactions, clean up results and leave connections usable.
+- [x] Client execution is sequential and every non-categorical fetch is bounded by the fixed query-kind contract; no full-row collection occurs.
+- [x] Shared compact plot data reconcile to summaries and shared renderers produce deterministic, inspected SVGs without raw identifier/text values.
+- [x] The database run returns the fixed object and publishes the exact aggregate-only owned bundle through tested staging/manifest/restore rules.
+- [x] No database mutation, temporary relation, server setting, schema/index/grant management, pseudonymisation, suppression, approximation, sampling or alternate statistics are introduced.
 
 ## Evidence And Verification
 
-- [ ] Neutral fixtures cover every supported type and material edge case; expected values have independent provenance and anti-circularity guards.
-- [ ] Unit and mandatory disposable PostgreSQL integration tests cover parity, quoting/binding, snapshot consistency, read-only behaviour, lifecycle cleanup, privacy and filesystem recovery.
-- [ ] Existing data-frame, intake, dictionary, plotting and PostgreSQL security suites pass without weakened expectations.
-- [ ] Returned/file/log/condition/plot canaries and a repository-content audit establish the stated client-artifact privacy boundary and its caller-authored specification exception.
-- [ ] Plot compact data are reconciled before the exact delivered SVGs are rendered and visually inspected.
+- [x] Neutral fixtures cover every supported type and material edge case; expected values have independent provenance and anti-circularity guards.
+- [x] Unit and mandatory disposable PostgreSQL integration tests cover parity, quoting/binding, snapshot consistency, read-only behaviour, lifecycle cleanup, privacy and filesystem recovery.
+- [x] Existing data-frame, intake, dictionary, plotting and PostgreSQL security suites pass without weakened expectations.
+- [x] Returned/file/log/condition/plot canaries and a repository-content audit establish the stated client-artifact privacy boundary and its caller-authored specification exception.
+- [x] Plot compact data are reconciled before the exact delivered SVGs are rendered and visually inspected.
 - [ ] The external custodian records three protocol-compliant representative runs; median end-to-end time is at most 300 seconds and data-locality limits hold.
 - [ ] The separate data-frame limitation is evidenced without exporting restricted rows or making an unsupported comparative speed claim.
-- [ ] README, NEWS, roxygen and the specification-first vignette agree with observed behaviour and retain disclosure, server-logging and unsupported-type limitations.
-- [ ] Package-loaded lint, focused/full tests, live PostgreSQL tests, `scripts/check-local.sh`, `scripts/check-cran.sh` and `git diff --check` pass or every inherited/external limitation is recorded.
-- [ ] Software-verification, truth/semantics, analysis/statistics, figures and copy-edit checklists are completed with evidence in `review.md`.
+- [x] README, NEWS, roxygen and the specification-first vignette agree with observed behaviour and retain disclosure, server-logging and unsupported-type limitations.
+- [x] Package-loaded lint, focused/full tests, live PostgreSQL tests, `scripts/check-local.sh`, `scripts/check-cran.sh` and `git diff --check` pass or every inherited/external limitation is recorded.
+- [x] Software-verification, truth/semantics, analysis/statistics, figures and copy-edit checklists are completed with evidence in `review.md`.
 - [ ] Independent statistical-parity, PostgreSQL/read-only/privacy and bundle/plot/documentation reviews find no unresolved blocker.
-- [ ] `future/TODOs.md`, `future/README.md`, `future/changelog.md`, manifest, acceptance and review are reconciled at checkpoints and closeout.
+- [x] `future/TODOs.md`, `future/README.md`, `future/changelog.md`, manifest, acceptance and review are reconciled at checkpoints and closeout.
 
 ## Publication Boundary
 

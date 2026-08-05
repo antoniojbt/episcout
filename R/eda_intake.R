@@ -218,14 +218,11 @@ epi_eda_intake_run <- function(data,
 
   analysis_frame <- as.data.frame(analysis_data, stringsAsFactors = FALSE)
   exclusions <- eda_summary_exclusions(analysis_frame, parsed_spec)
-  profile_data <- analysis_frame[
-    , !names(analysis_frame) %in% names(exclusions), drop = FALSE
-  ]
-  missing <- epi_eda_profile_missing(profile_data, parsed_spec)
+  missing <- epi_eda_profile_missing(analysis_frame, parsed_spec)
   result$missing <- missing
   intake_write_csv(state, "missing", missing)
   summaries <- tryCatch(
-    epi_eda_profile_summaries(profile_data, parsed_spec),
+    epi_eda_profile_summaries(analysis_frame, parsed_spec),
     error = identity
   )
   if (inherits(summaries, "error")) {
@@ -241,7 +238,7 @@ epi_eda_intake_run <- function(data,
     summaries, analysis_frame, parsed_spec, exclusions
   )
   reconciliation <- intake_reconcile_canonical(
-    summaries, missing, profile_data, parsed_spec
+    summaries, missing, analysis_frame, parsed_spec
   )
   if (!is.null(reconciliation)) {
     messages <- intake_add_message(

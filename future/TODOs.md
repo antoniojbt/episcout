@@ -38,10 +38,11 @@
 ### Priority 1
 
 - [ ] Implement active spec `003-large-data-backend-strategy` on its reviewed PostgreSQL-first TDD contract:
-    - Use the recorded baseline lint, tests, local check and CRAN-style check to distinguish inherited/environment findings from implementation regressions.
-    - Preserve the established data-frame interfaces and six-component canonical summary contract.
-    - Keep full rows, raw text, observed identifiers, credentials, SQL and connection details out of client artifacts.
-    - Complete neutral parity, live PostgreSQL, read-only/snapshot, bundle/privacy and rendered-plot evidence before the external three-run median threshold is assessed.
+    - [x] Use the recorded baseline lint and focused tests to distinguish inherited/environment findings from implementation regressions; final local and CRAN-style checks are recorded in the active spec review.
+    - [x] Preserve the established data-frame interfaces and six-component canonical summary contract.
+    - [x] Keep full rows, raw text, observed identifiers, credentials, SQL and connection details out of client artifacts, subject to final audit and independent review.
+    - [x] Complete neutral parity, local PostgreSQL 17, read-only/snapshot, bundle/privacy and rendered-plot evidence.
+    - [ ] Record the external three-run representative median threshold and required independent reviews; these acceptance dependencies are unavailable in the implementation environment.
     - Stop for owner review before approximation, sampling, multi-connection execution, database mutation, generic DBI dispatch or any canonical schema change.
 
 - [ ] full git scrub
