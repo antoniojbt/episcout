@@ -51,11 +51,11 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- `003-large-data-backend-strategy` is active as a PostgreSQL-first extension of the existing specification-first EDA interfaces and canonical contracts. Package implementation, the fixed local synthetic performance evidence and three independent reviews are recorded; dedicated pull-request CI and owner acceptance remain pending.
+- None currently.
 
 ### Ready Next
 
-- None currently; complete or deliberately stop active spec `003-large-data-backend-strategy` before activating another numbered implementation spec.
+- Issue #196 is ready for design as spec `018` after the spec-003 closeout branch merges. Its selected direction is explicit `epi_eda_render_report()` dispatch from a completed database run or verified bundle into a separate self-contained report folder without modifying the manifest-owned source bundle.
 
 ### Draft
 
@@ -63,4 +63,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-Completed specs, including accepted specs `016-longitudinal-pseudonymisation` and `017-deterministic-local-time-ambiguity`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+Completed specs, including accepted spec `003-large-data-backend-strategy`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

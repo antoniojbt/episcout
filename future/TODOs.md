@@ -37,13 +37,15 @@
 
 ### Priority 1
 
-- [ ] Implement active spec `003-large-data-backend-strategy` on its reviewed PostgreSQL-first TDD contract:
-    - [x] Use the recorded baseline lint and focused tests to distinguish inherited/environment findings from implementation regressions; final local and CRAN-style checks are recorded in the active spec review.
-    - [x] Preserve the established data-frame interfaces and six-component canonical summary contract.
-    - [x] Keep full rows, raw text, observed identifiers, credentials, SQL and connection details out of client artifacts, subject to final audit and independent review.
-    - [x] Complete neutral parity, local PostgreSQL 17, read-only/snapshot, bundle/privacy and rendered-plot evidence.
-    - [ ] Obtain the dedicated pull-request CI result and owner acceptance before moving the spec to `done/`.
-    - Stop for owner review before approximation, sampling, multi-connection execution, database mutation, generic DBI dispatch or any canonical schema change.
+- [ ] Plan issue #196 as spec `018-database-eda-report-rendering` after the spec-003 closeout branch merges:
+    - Problem: `epi_eda_render_report()` cannot yet consume a completed PostgreSQL EDA run or its verified aggregate bundle.
+    - Goal: Define explicit dispatch from a completed database run or verified bundle directory to a separate self-contained report folder while leaving the manifest-owned source bundle unchanged.
+    - User need: Create a portable human-readable report from completed aggregate-only database EDA without reconstructing a data frame or mutating accepted evidence.
+    - Proposed scope: A reviewed spec covering dispatch, bundle verification, report ownership, self-contained rendering, disclosure labels, compatibility, tests and failure recovery.
+    - Out of scope: Source-row collection, source-bundle mutation, automatic disclosure control, new database queries, release work or unrelated report redesign.
+    - Candidate files: `future/specs/018-database-eda-report-rendering/`, `R/eda_report.R`, `R/eda_db_run.R`, report templates, focused tests, README and NEWS.
+    - Risks: Ambiguous ownership, stale or tampered bundle input, accidental row-level disclosure, overwrite collisions, divergent data-frame/report contracts and non-portable assets.
+    - Suggested spec ID: `018-database-eda-report-rendering`.
 
 - [ ] full git scrub
 
@@ -116,6 +118,7 @@
 
 ### 2026-08-05
 
+- [x] Complete spec `003-large-data-backend-strategy` and issue #194 through PR #201: replace the production-performance claim with a fixed synthetic PostgreSQL 17 gate, resolve three independent reviews, pass all local and GitHub checks, record owner acceptance and move the spec to `future/specs/done/` without releasing or tagging.
 - [x] Fix issue #195 so PostgreSQL pseudonymisation apply releases each acquired session advisory lock exactly once during transaction-lock promotion, retains failed releases for exit cleanup, and verifies warning-free success, partial timeout cleanup and forced rollback without changing the public contract.
 
 ### 2026-08-04

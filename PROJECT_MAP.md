@@ -36,8 +36,8 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 
 ## Planning Status
 
-- Spec `003-large-data-backend-strategy` remains active while its implemented PostgreSQL EDA contract awaits the external representative benchmark, independent reviews and owner acceptance.
-- Completed spec records `001`, `002`, `004`–`010` and `012`–`016` are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
+- No numbered specification is active. Issue #196 is the ready-next design task and will become spec `018` after the spec-003 closeout merges.
+- Completed spec records `001`–`010` except reserved `011`, and `012`–`017`, are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
 - `future/TODOs.md` is the only task backlog. `future/README.md` defines the specification lifecycle, and `future/changelog.md` records material planning and implementation outcomes.
 
 ## Verification Entry Points

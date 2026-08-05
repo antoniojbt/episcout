@@ -135,7 +135,7 @@ The planning probe used PostgreSQL 17 with the same fixed fixture shape and comp
 - Package-loaded `lintr::lint_package()` reported no findings, the GitHub Actions workflow parsed as valid YAML, and `git diff --check` passed.
 - `scripts/check-local.sh` completed with 0 errors, 0 warnings and one environment NOTE because current time could not be verified. Check-generated Rd and disabled-vdiffr snapshot drift were restored.
 - `scripts/check-cran.sh` completed with 0 errors, 0 warnings and three inherited/external environment NOTEs: incoming new-submission/vignette-index and Stack Overflow 403 findings, unavailable current-time verification, and an outdated local HTML Tidy executable. Tests, examples, vignettes, PDF manual and package loading all passed.
-- Dedicated pull-request PostgreSQL CI remains required to set the final synthetic-gate checkbox. The threshold is not weakened automatically if that job fails.
+- PR #201 passed its dedicated PostgreSQL integration job, including the fixed synthetic gate, plus macOS/Ubuntu package checks, coverage, Codecov patch/project, CodeQL and CodeFactor. The threshold was not weakened.
 
 ## Open Questions
 
@@ -143,4 +143,4 @@ None blocking the amended acceptance work. Stop for owner review under any SDD s
 
 ## Closeout Notes
 
-The executable implementation and local verification are complete, including the fixed three-run synthetic gate and independent statistical, PostgreSQL/privacy and bundle/documentation reviews with no unresolved blockers. This is not completed-spec status: dedicated pull-request CI and owner acceptance remain pending. The spec stays active and no release or tag is authorised.
+The executable implementation, fixed synthetic gate, independent statistical/PostgreSQL/privacy/bundle reviews and all PR #201 checks completed without unresolved blocker. The repository owner merged PR #201 on 2026-08-05, closing issue #194 and recording acceptance. The spec is completed and moved to `future/specs/done/`; no release or tag was created.
