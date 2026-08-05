@@ -7,13 +7,19 @@
 epi_eda_profile_plots(data, spec)
 }
 \arguments{
-\item{data}{A data frame containing observed data.}
+\item{data}{A data frame or an \code{\link[=epi_eda_postgres_source]{epi_eda_postgres_source()}} containing
+observed data.}
 
 \item{spec}{An EDA specification data frame or CSV path.}
 }
 \value{
-A named list of ggplot objects, one per specified variable.
+A named list containing one ggplot object or identifier-policy
+\code{NULL} per specification row, in specification order.
 }
 \description{
-Create one basic ggplot object for each variable listed in a specification-first EDA data dictionary. Standard missing values and specification \code{missing_codes} are excluded before plotting or temporal conversion. Plot objects are returned without being printed.
+Create one compact aggregate plot for each variable listed in a
+specification-first EDA data dictionary. Numeric and temporal values use
+fixed 30-bin distributions, categorical values use complete frequencies,
+and text uses character lengths rather than observed strings. Explicit
+identifier roles return named \code{NULL} elements.
 }

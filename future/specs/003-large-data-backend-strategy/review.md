@@ -65,6 +65,30 @@ These results are baseline evidence, not permission to weaken the DST, multicore
 7. Complete documentation, live PostgreSQL verification, external benchmark/data-frame limitation evidence and independent bounded reviews.
 8. Reconcile TODO/changelog/spec records before commit, PR and owner acceptance.
 
+## Implementation Evidence — 2026-08-05
+
+Implementation was completed on `feature/postgresql-eda-backend` from the synchronised `master` tip. The active specification remains in place because the external workload benchmark, the three independent reviews and owner acceptance are not available in this environment.
+
+- The exported source and run interfaces, explicit profiler dispatch, PostgreSQL catalogue/type boundary, checked aggregate query boundary, repeatable-read/read-only transactions, identifier QA, compact plot data, shared renderers and owned staged bundle are implemented in `R/eda_postgres_source.R`, `R/eda_postgres_queries.R`, `R/eda_db_run.R` and the existing EDA modules.
+- Neutral tests cover the complete reviewed storage matrix, enums, zero-row schemas, standard and sentinel missingness, NaN/infinities, type-7 edges for sample sizes 1 through 12, e1071 type-3 shape statistics, Unicode text, dates/timestamps, identifier policy, unusual quoted relation names, all five supported relation kinds, catalogue drift, active-transaction rejection, stable concurrent snapshots, query cleanup, fetch limits, overwrite ownership and checksum refusal.
+- The disposable live run used PostgreSQL 17.10, R 4.5.3, DBI 1.3.0 and the locally provisioned RPostgres 1.4.8 package. The pull-request PostgreSQL job remains the mandatory clean-environment run and installs its R dependencies independently.
+- `devtools::test(filter = "eda-postgres|sec-pseudonymise-postgres", reporter = "summary")` passed the new EDA integration expectations and all 119 existing PostgreSQL security expectations.
+- Package-loaded `lintr::lint_package()` completed with no findings. The complete `devtools::test(reporter = "summary")` suite passed with only the expected environment-gated PostgreSQL/visual skips.
+- `scripts/check-local.sh` completed with 0 errors, 0 warnings and 0 notes. `scripts/check-cran.sh` completed with 0 errors, 0 warnings and one inherited/external NOTE covering new-submission metadata, the absent prebuilt vignette index and two Stack Overflow URL 403 responses.
+- `vignettes/specification-first-eda.Rmd` rendered successfully after loading the working package. Representative exact delivered SVGs for numeric histograms, aggregate quantile boxes, categorical collapse, text lengths and temporal bins were converted only for inspection and visually checked for labels, counts and privacy.
+- The repository/client-artifact canary audit found only deliberately authored test canaries and environment-variable reads. Bundle and SVG assertions exclude raw text observations, identifiers, SQL, connection attributes and credentials; the reviewed specification exception remains documented.
+
+## Checklist Evidence
+
+| Checklist | Implementation evidence | Status |
+| --- | --- | --- |
+| Software verification | Fixed formals/classes/order, explicit dispatch, lifecycle/fetch spies, live transaction cleanup, manifest ownership and regression suites. | Self-review complete |
+| Truth and semantics | Specification authority, technical/type incompatibilities, typed sentinels, identifier policy, UTC boundary and privacy limitations are explicit in code, tests and documentation. | Self-review complete |
+| Analysis and statistics | Independent type-7/e1071 expectations, exact count conversion, finite partitions, fences/outliers, Shapiro bounds and zero-row reconciliation pass locally and live. | Self-review complete |
+| Figures | Compact data reconcile before rendering; text uses lengths; identifiers are `NULL`; representative delivered SVGs were visually inspected. | Self-review complete |
+| Copy edit | README, NEWS, roxygen help, vignette, project map and future records agree on supported behaviour and limitations. | Self-review complete |
+| Render and release | Help/vignette generation, source build, local/CRAN checks and delivered SVG inspection completed; no release or tag was created. | Self-review complete |
+
 ## Required Independent Reviews
 
 - Statistical parity and anti-circularity: canonical definitions, type-7 evidence, shape formulae, tolerances, denominators and fixture provenance.
@@ -100,4 +124,4 @@ None blocking activation. Stop for owner review under any SDD stop condition, or
 
 ## Closeout Notes
 
-Not implemented. Activation authorises the TDD-first package work described here; it does not establish performance, statistical parity, privacy, package-check success or owner acceptance.
+The executable implementation and local verification are complete, including live PostgreSQL 17 statistical, snapshot, privacy and bundle evidence. Pull-request CI is an additional publication gate, not a substitute for the unresolved acceptance dependencies. This is not completed-spec status: the external representative benchmark, three required independent reviews and owner acceptance remain pending. The spec stays active and no release or tag is authorised.

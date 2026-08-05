@@ -148,9 +148,9 @@ The main parity fixture is deliberately small enough to inspect row by row. Larg
 Run focused tests before broad checks. Use the repository wrapper and the existing PostgreSQL integration environment; never use a real restricted schema for tests.
 
 ```bash
-scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|eda-summaries|eda-missing|eda-schema|eda-plots|eda-intake|db-dictionary', reporter = 'summary')"
+scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda[_-](postgres|summaries|missing|schema|plots|intake)|db-dictionary', reporter = 'summary')"
 scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
-EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|security-postgres', reporter = 'summary')"
+EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres|sec-pseudonymise-postgres', reporter = 'summary')"
 scripts/check-local.sh
 scripts/check-cran.sh
 git diff --check

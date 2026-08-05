@@ -7,7 +7,7 @@
 epi_eda_profile_missing(data, spec)
 }
 \arguments{
-\item{data}{A data frame to profile.}
+\item{data}{A data frame or an \code{\link[=epi_eda_postgres_source]{epi_eda_postgres_source()}} to profile.}
 
 \item{spec}{An EDA specification data frame or CSV path.}
 }

@@ -51,7 +51,7 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- `003-large-data-backend-strategy` is active as a PostgreSQL-first extension of the existing specification-first EDA interfaces and canonical contracts. Implementation must begin with the recorded pre-code baseline and failing contract tests.
+- `003-large-data-backend-strategy` is active as a PostgreSQL-first extension of the existing specification-first EDA interfaces and canonical contracts. Package implementation and neutral local PostgreSQL verification are recorded; the external representative benchmark, required independent reviews and owner acceptance remain pending.
 
 ### Ready Next
 

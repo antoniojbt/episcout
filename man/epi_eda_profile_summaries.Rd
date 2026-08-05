@@ -7,7 +7,8 @@
 epi_eda_profile_summaries(data, spec)
 }
 \arguments{
-\item{data}{A data frame containing observed data.}
+\item{data}{A data frame or an \code{\link[=epi_eda_postgres_source]{epi_eda_postgres_source()}} containing
+observed data.}
 
 \item{spec}{An EDA specification data frame or CSV path.}
 }
