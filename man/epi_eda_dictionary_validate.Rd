@@ -9,11 +9,17 @@ epi_eda_dictionary_validate(dictionary, catalogues = NULL)
 \arguments{
 \item{dictionary}{A data frame returned by \code{\link[=epi_eda_dictionary_scaffold]{epi_eda_dictionary_scaffold()}} or \code{\link[=epi_eda_dictionary_refresh]{epi_eda_dictionary_refresh()}}.}
 
-\item{catalogues}{Optional data frame of normalised catalogue values.}
+\item{catalogues}{Optional data frame of normalised catalogue values with \code{catalog_name}, \code{source_value}, \code{label}, \code{display_order}, \code{is_missing}, \code{provenance} and \code{validation_status}.}
 }
 \value{
 The validated dictionary, invisibly.
 }
 \description{
 Validate the reusable multi-table dictionary contract and, when supplied, its normalised catalogue definitions.
+}
+\details{
+Validation checks the dictionary and catalogue contract; it does not approve linkage, inspect source values, identify personal information or establish disclosure safety. The PostgreSQL pseudonymisation workflow applies additional confirmed privacy and drift gates described in \code{vignette("longitudinal-pseudonymisation")}.
+}
+\seealso{
+\code{\link[=epi_eda_dictionary_scaffold]{epi_eda_dictionary_scaffold()}}, \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
 }

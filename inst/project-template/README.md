@@ -44,6 +44,12 @@ epi_eda_render_report(
 
 Synthetic data are for pipeline preparation and testing only. They are not for inference or disclosure control.
 
+## Sensitive database sources
+
+Do not export identifiable PostgreSQL rows merely to use this file-based EDA scaffold. When related restricted database tables need stable pseudonyms, follow `vignette("longitudinal-pseudonymisation", package = "episcout")`. That workflow builds value-free linkage metadata from a reviewed database dictionary, audits before writing, and keeps source identifiers in PostgreSQL by default.
+
+Pseudonymised outputs still require restricted access and disclosure review. They are not anonymous or automatically disclosure-controlled.
+
 ## Optional targets workflow
 
 If `targets` is installed, run:

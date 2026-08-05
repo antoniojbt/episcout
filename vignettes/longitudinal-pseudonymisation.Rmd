@@ -1,0 +1,405 @@
+---
+title: "Longitudinal PostgreSQL pseudonymisation"
+author: "episcout contributors"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Longitudinal PostgreSQL pseudonymisation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+> **Privacy boundary:** Pseudonymised data remain restricted personal data. They are not anonymous, automatically disclosure-controlled or automatically safe to share. Keep the identity registry and output behind reviewed access controls.
+
+## 1. What this workflow does and when to use it
+
+Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same stable pseudonymous token over time. A reviewed dictionary decides which columns may enter output, a value-free linkage specification declares exact identity semantics, and a restricted registry preserves token stability across runs.
+
+The workflow performs exact matching only. It does not trim or case-fold text identifiers, infer identity from similar records, detect personal information, perform fuzzy linkage, aggregate conflicting observations or make data anonymous. PostgreSQL through RPostgres is the supported persistent backend.
+
+Supported identity columns are PostgreSQL `text` or `varchar`, integral types and `uuid`. Fixed-width character identifiers and nondeterministic collations are rejected because they cannot guarantee this contract. Text matching distinguishes case, leading zeros and every nonblank whitespace byte; UUID matching follows PostgreSQL UUID identity rather than lexical formatting.
+
+Use `epi_sec_pseudonym()` instead when you need a one-off in-memory bridge for one unique vector and do not need stable tokens across later calls or related tables.
+
+## 2. Database administrator prerequisites
+
+Ask the database administrator to prepare and review these conditions before R work begins:
+
+- `source_data`, `identity_registry` and `analysis_data` are distinct, existing schemas.
+- Source relations and any crosswalk are ordinary PostgreSQL tables, not views or materialised views.
+- The working role can read declared sources, create and own ordinary tables in `analysis_data`, and initialise the registry only when authorised.
+- `PUBLIC` cannot create objects in the restricted registry or output schemas and has no access to restricted tables.
+- Named-role grants, storage encryption, backups, restore tests, retention and database logging have been reviewed outside episcout.
+- The connection is not already inside a caller-managed transaction when apply begins.
+
+episcout does not create schemas, grant application roles, manage backups or configure PostgreSQL, driver, administrator or server logging. Obtain `con` through your organisation's approved connection process; this guide deliberately contains no credential or connection-string example.
+
+```{r inspect-connection, eval = FALSE}
+# `con` is an already-open, approved RPostgres connection.
+DBI::dbIsValid(con)
+```
+
+## 3. Neutral synthetic example
+
+The example uses three neutral relations:
+
+- `source_data.entities`: enrolment-authoritative entity metadata.
+- `source_data.events`: repeated event rows.
+- `source_data.measurements`: repeated measurement rows.
+
+Each table has exactly one declared identity column. The tables may repeat the same identity; repeated identities are valid longitudinal records and are separate from duplicate-row decisions. The example refers only to synthetic structures. No observed identifiers or record-key values are copied into this guide or portable linkage metadata.
+
+For a fresh disposable learning database whose three schemas were prepared as described above, the following unevaluated setup creates the neutral example tables and runtime-generated opaque identifiers. Do not run it against an existing or production schema.
+
+```{r create-synthetic-tables, eval = FALSE}
+DBI::dbExecute(con, "CREATE TABLE source_data.entities (entity_id text NOT NULL, entity_kind text NOT NULL)")
+DBI::dbExecute(con, "CREATE TABLE source_data.events (entity_id text NOT NULL, event_sequence integer NOT NULL, event_value numeric)")
+DBI::dbExecute(con, "CREATE TABLE source_data.measurements (entity_id text NOT NULL, measurement_sequence integer NOT NULL, measurement_value numeric)")
+
+opaque_ids <- paste0("synthetic_", vapply(seq_len(2), function(index) {
+  paste(sprintf("%02x", as.integer(openssl::rand_bytes(12))), collapse = "")
+}, character(1)))
+
+DBI::dbAppendTable(con, DBI::Id(schema = "source_data", table = "entities"), data.frame(
+  entity_id = opaque_ids,
+  entity_kind = c("kind_a", "kind_b")
+))
+DBI::dbAppendTable(con, DBI::Id(schema = "source_data", table = "events"), data.frame(
+  entity_id = c(opaque_ids[[1]], opaque_ids[[1]], opaque_ids[[2]]),
+  event_sequence = c(1L, 2L, 1L),
+  event_value = c(10, 20, 30)
+))
+DBI::dbAppendTable(con, DBI::Id(schema = "source_data", table = "measurements"), data.frame(
+  entity_id = c(opaque_ids[[1]], opaque_ids[[2]]),
+  measurement_sequence = c(1L, 1L),
+  measurement_value = c(100, 200)
+))
+rm(opaque_ids)
+```
+
+```{r inspect-source-metadata, eval = FALSE}
+inventory <- epi_db_inventory(
+  con,
+  schema = "source_data",
+  tables = c("entities", "events", "measurements"),
+  row_counts = "none"
+)
+
+inventory$tables
+inventory$columns
+inventory$constraints
+```
+
+`row_counts = "none"` is the metadata-only default. Use estimated or exact aggregate counts only when their cost and disclosure implications have been reviewed.
+
+## 4. Inventory and dictionary review
+
+Create a conservative dictionary draft from the inventory, then review every active source column. The final dictionary must completely cover each selected table, have current drift status and confirmed validation status, and use a reviewed privacy/action pair.
+
+```{r dictionary-review, eval = FALSE}
+dictionary <- epi_eda_dictionary_scaffold(inventory)
+
+id_rows <- dictionary$source_column == "entity_id"
+dictionary$privacy_class[id_rows] <- "direct_identifier"
+dictionary$analytic_action[id_rows] <- "bridge"
+dictionary$privacy_class[!id_rows] <- "non_sensitive"
+dictionary$analytic_action[!id_rows] <- "retain"
+dictionary$provenance <- "reviewed_synthetic_metadata"
+dictionary$validation_status <- "confirmed"
+
+epi_eda_dictionary_validate(dictionary, catalogues = NULL)
+```
+
+This mechanical assignment is appropriate only for the explicitly synthetic columns created above. For real restricted sources, a qualified reviewer must decide every label, type, role, privacy class, analytic action, provenance, catalogue reference and validation status. Do not leave `review` or `derive`, and do not copy this synthetic classification without reviewing the actual data contract.
+
+The pseudonymisation gate excludes every `bridge` and `drop` column. It retains only confirmed `retain` and `retain_restricted` columns. It blocks unclassified, unreviewed, pending, added, modified, unsupported `derive` or incomplete dictionary rows. A valid dictionary is a reviewed contract, not automatic detection of personal information.
+
+## 5. Linkage scaffold and confirmed specification
+
+Create the value-free draft without reading source rows. The scaffold may propose an ID column only when the dictionary has exactly one direct-identifier/bridge candidate for that table. It deliberately leaves namespace, enrolment authority, row grain, provenance and review status unfinished.
+
+```{r linkage-scaffold, eval = FALSE}
+draft <- epi_sec_linkage_scaffold(
+  dictionary,
+  tables = data.frame(
+    source_schema = rep("source_data", 3),
+    source_table = c("entities", "events", "measurements"),
+    stringsAsFactors = FALSE
+  )
+)
+
+draft
+```
+
+Complete every consequential field through human review. This example uses one exact identity namespace across all three tables, allows only `entities` to enrol unseen identities and gives each output a neutral destination name. `one_row_per_entity = TRUE` is a separate reviewed row-grain declaration; it is not implied by `can_enrol = TRUE`.
+
+```{r linkage-specification, eval = FALSE}
+tables <- draft$tables
+tables$identity_namespace <- "entity_id"
+tables$can_enrol <- tables$source_table == "entities"
+tables$one_row_per_entity <- tables$source_table == "entities"
+tables$destination_table <- tables$source_table
+tables$provenance <- "reviewed_metadata"
+tables$validation_status <- "confirmed"
+
+record_keys <- data.frame(
+  source_schema = c("source_data", "source_data"),
+  source_table = c("events", "measurements"),
+  key_column = c("event_sequence", "measurement_sequence"),
+  key_order = c(1L, 1L),
+  stringsAsFactors = FALSE
+)
+
+linkage <- epi_sec_linkage_spec(
+  tables = tables,
+  record_keys = record_keys
+)
+
+linkage
+```
+
+The generated token is implicitly prepended to each declared record key. Do not also declare record-key columns for a table marked `one_row_per_entity = TRUE`. A table may deliberately have neither rule, but its audit can then identify exact projected duplicates only and will warn that conflicting repeated observations cannot be distinguished.
+
+## 6. Optional restricted database-resident crosswalk
+
+Use a crosswalk when reviewed aliases need exact resolution. This includes reconciliation between different namespaces and reviewed deduplication aliases within the enrolment namespace. Crosswalk values stay in a caller-controlled restricted ordinary PostgreSQL table; the portable specification contains relation and column names only.
+
+For example, if `events` uses the reviewed namespace `event_entity_id`, change that table's namespace in `tables` and describe the restricted relation as follows. Do not place alias or canonical values in the R data frame.
+
+```{r crosswalk-metadata, eval = FALSE}
+tables$identity_namespace[tables$source_table == "events"] <- "event_entity_id"
+
+crosswalks <- data.frame(
+  crosswalk_schema = "source_data",
+  crosswalk_table = "entity_crosswalk",
+  alias_namespace = "event_entity_id",
+  alias_id_column = "alias_id",
+  canonical_namespace = "entity_id",
+  canonical_id_column = "canonical_id",
+  provenance = "reviewed_crosswalk_metadata",
+  validation_status = "confirmed",
+  stringsAsFactors = FALSE
+)
+
+linkage <- epi_sec_linkage_spec(
+  tables = tables,
+  record_keys = record_keys,
+  crosswalks = crosswalks
+)
+```
+
+Many confirmed aliases may resolve to one entity. Conflicting mappings, chains or cycles, missing canonical targets and unmatched dependent identities block. Unused crosswalk rows are reported by count only. episcout never infers that similar identifiers or records belong to the same entity.
+
+## 7. Registry audit and initialisation
+
+Start with the default read-only registry audit. It reports whether initialisation is required and never creates a table.
+
+```{r registry-audit, eval = FALSE}
+registry_audit <- epi_sec_identity_registry_init(
+  con,
+  registry_schema = "identity_registry"
+)
+
+registry_audit
+```
+
+After the database administrator has reviewed the schema and the audit's next action, explicitly initialise it. The defaults use prefix `E` and 24 random bytes. Those immutable settings define one deliberately authorised linkage domain; reuse the registry only for sources approved to share that domain.
+
+```{r registry-apply, eval = FALSE}
+registry_apply <- epi_sec_identity_registry_init(
+  con,
+  registry_schema = "identity_registry",
+  token_prefix = "E",
+  n_bytes = 24,
+  mode = "apply"
+)
+
+registry_apply
+```
+
+Apply creates or validates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` transactionally. The alias table remains re-identifying plaintext. Do not edit registry rows manually; an incomplete registry, incompatible version or changed token setting requires an administrator-approved recovery decision.
+
+## 8. Audit before any data write
+
+Run pseudonymisation in its default `mode = "audit"`. This checks schemas, inventory and drift, dictionary gates, destinations, exact identity resolution, crosswalk consistency, record keys, projected duplicates and row reconciliation without enrolling identities or creating output.
+
+```{r workflow-audit, eval = FALSE}
+audit <- epi_sec_pseudonymise_db(
+  con,
+  dictionary = dictionary,
+  linkage = linkage,
+  registry_schema = "identity_registry",
+  output_schema = "analysis_data"
+)
+
+audit
+audit$issues
+audit$table_audit
+audit$duplicate_audit
+audit$manifest
+```
+
+The ordinary issue table has stable columns `issue_code`, `severity`, `stage`, `source_schema`, `source_table`, `source_column`, `n_affected`, `message`, `recommended_action` and `sensitive`. Severity is `warning` or `blocking`; a blocking row produces `status = "blocked"`. The table reports reviewed metadata and aggregate counts, not observed identifier or record-key values.
+
+Leave `sensitive_issues = FALSE` unless identifier-bearing diagnostics have been explicitly authorised. If enabled, the separately marked memory-only component becomes your responsibility: do not print, log, persist or place it in a report.
+
+## 9. Interpret statuses and resolve blockers
+
+The result status has one of three meanings:
+
+| Status | Writes | Meaning | Next action |
+|---|---:|---|---|
+| `audit_complete` | No | The current read-only snapshot passed. | Review the aggregate audits and consider a separate apply call. |
+| `blocked` | No | A reviewed governance or data requirement was not met. | Follow every `recommended_action`, correct the source or metadata under review, then audit again. |
+| `complete` | Yes | One apply transaction committed. | Review output, counts, access and disclosure risk before analysis. |
+
+An audit-complete result is not permission for episcout to write automatically and cannot guarantee that a later database snapshot is unchanged. Apply repeats all checks. Malformed arguments, unsupported types, caller-managed transactions, incompatible objects and unsafe infrastructure state are errors rather than ordinary blockers.
+
+Common blockers include missing or blank identifiers, unmatched dependent identities, conflicting or missing crosswalk targets, missing record-key values, conflicting payloads under one key, an existing destination or a lock timeout. Unconfirmed linkage metadata are rejected earlier as a specification-validation error. Ordinary blocker messages are value-free and include an exact next action.
+
+## 10. Apply, verify output and confirm stable tokens
+
+After the audit and access review pass, make apply explicit. Defaults retain exact projected duplicates and refuse existing destinations.
+
+```{r workflow-apply, eval = FALSE}
+applied <- epi_sec_pseudonymise_db(
+  con,
+  dictionary = dictionary,
+  linkage = linkage,
+  registry_schema = "identity_registry",
+  output_schema = "analysis_data",
+  mode = "apply",
+  exact_duplicates = "report",
+  existing = "error"
+)
+
+applied
+applied$table_audit
+applied$manifest
+```
+
+Confirm each table's `n_input`, `n_output` and `n_exact_removed` counts reconcile, and compare `duplicate_audit$n_exact_excess` with the chosen report/drop action. The `n_invalid_id`, `n_unmatched` and `n_missing_key` columns must be zero on a completed run. Inspect the destination schema's ownership and grants with the database administrator. Do not print tokens merely to verify the workflow.
+
+To confirm stability, create a second confirmed linkage specification with new destination names, audit it, apply it, then compare token sets inside PostgreSQL and return only an aggregate Boolean. Stable tokens are guaranteed only within the same registry domain.
+
+```{r stable-token-rerun, eval = FALSE}
+repeat_tables <- linkage$tables
+repeat_tables$destination_table <- paste0(repeat_tables$destination_table, "_repeat")
+repeat_linkage <- epi_sec_linkage_spec(
+  repeat_tables,
+  record_keys = linkage$record_keys,
+  crosswalks = linkage$crosswalks
+)
+
+repeat_audit <- epi_sec_pseudonymise_db(
+  con, dictionary, repeat_linkage,
+  registry_schema = "identity_registry",
+  output_schema = "analysis_data"
+)
+
+repeat_apply <- epi_sec_pseudonymise_db(
+  con, dictionary, repeat_linkage,
+  registry_schema = "identity_registry",
+  output_schema = "analysis_data",
+  mode = "apply"
+)
+
+DBI::dbGetQuery(con, "
+  SELECT NOT EXISTS (
+    (SELECT entity_token FROM analysis_data.entities
+     EXCEPT
+     SELECT entity_token FROM analysis_data.entities_repeat)
+    UNION ALL
+    (SELECT entity_token FROM analysis_data.entities_repeat
+     EXCEPT
+     SELECT entity_token FROM analysis_data.entities)
+  ) AS stable_token_set
+")
+```
+
+## 11. Duplicate behaviour
+
+Identity reuse and record duplication are different questions. Repeated identity values are valid in every table.
+
+| Reviewed row rule | Observed rows | `exact_duplicates = "report"` | `exact_duplicates = "drop"` |
+|---|---|---|---|
+| `one_row_per_entity = TRUE` | Same token, different retained payload | Block: conflicting record key | Block: conflicting record key |
+| Declared key `(token, key columns)` | Same key, different retained payload | Block: no winner is selected | Block: no winner is selected |
+| Any rule | Entire final projection is equal using PostgreSQL null-safe equality | Count and retain every row | Count and remove only redundant projected copies |
+| No declared key | Different repeated observations | Not classified as a conflict; warning explains the limitation | Not classified as a conflict; warning explains the limitation |
+
+Record-key components must be retained, non-missing and equality-comparable. The workflow never averages, prioritises, aggregates or overwrites conflicting observations.
+
+## 12. Hand the output dictionary to EDA
+
+The result describes the actual pseudonymised destinations. The generated token is marked as an analytically restricted ID, and only catalogue definitions still referenced by retained columns are returned.
+
+```{r eda-handoff, eval = FALSE}
+events_spec <- epi_eda_dictionary_spec(
+  applied$output_dictionary,
+  table = "analysis_data.events",
+  catalogues = applied$output_catalogues
+)
+
+events_spec
+```
+
+Review the restricted output dictionary before EDA. Quasi-identifiers, sensitive fields, category labels and small aggregate cells may still permit disclosure. EDA does not turn pseudonymised data into anonymous or publication-safe data.
+
+## 13. Replacement, rollback, concurrency and recovery
+
+Apply owns one repeatable-read transaction and repeats preflight checks inside it. Registry changes, output changes and aggregate run metadata commit together; any failure rolls them all back. Transaction-scoped advisory locks are acquired in deterministic order and bounded by `lock_timeout`, which defaults to 30 seconds.
+
+Do not wrap apply in your own transaction. After a blocker or sanitised apply failure, confirm `writes = FALSE`, review the issue table and database state, correct the problem, then start again with audit.
+
+`existing = "replace"` is an explicit destructive choice limited to the exact declared destination ordinary tables owned by the current role. It never uses `CASCADE`; views, foreign-owned objects and blocking dependencies stop safely. Prefer a new destination name when history must be retained, and coordinate replacement and recovery with the database administrator.
+
+```{r deliberate-replacement, eval = FALSE}
+replacement_audit <- epi_sec_pseudonymise_db(
+  con, dictionary, linkage,
+  registry_schema = "identity_registry",
+  output_schema = "analysis_data",
+  existing = "replace"
+)
+
+# Apply only after reviewing the audit and confirming replacement authority.
+replacement_apply <- epi_sec_pseudonymise_db(
+  con, dictionary, linkage,
+  registry_schema = "identity_registry",
+  output_schema = "analysis_data",
+  mode = "apply",
+  existing = "replace"
+)
+```
+
+## 14. Privacy, access, backup, logging and disclosure limits
+
+The registry is deliberately re-identifying because it stores exact source identifiers and token mappings. Restrict it more tightly than ordinary analysis output. Pseudonymised output also remains personal data because identity may be recoverable through the registry, retained fields or external information.
+
+episcout keeps source identifiers and record-key values inside PostgreSQL by default, returns value-free ordinary audits and never writes the optional sensitive diagnostics. This package boundary does not control database queries recorded by PostgreSQL, RPostgres or infrastructure tooling; administrator access; storage snapshots; backups; replicas; monitoring; console history; or anything a caller deliberately prints or saves.
+
+Before analysis or sharing, review least-privilege grants, retention, backup and restore controls, logging, permitted linkage purpose, quasi-identifiers, sensitive fields, small cells and the intended recipient. Pseudonymisation is not anonymisation, disclosure control or publication approval.
+
+## 15. Troubleshooting
+
+| Symptom | What it means | Exact next action |
+|---|---|---|
+| Registry audit returns `initialisation_required` | The existing restricted schema has no compatible registry. | Ask the database administrator to review schema access, then run registry initialisation with `mode = "apply"`. |
+| `unmatched_identifier` | A dependent identity cannot resolve exactly through its namespace, registry or confirmed crosswalk. | Review the namespace and restricted crosswalk; correct and reconfirm metadata, then audit again. Do not use fuzzy matching. |
+| `conflicting_record_key` | One declared record key has different retained payloads. | Resolve the source conflict under a reviewed data rule, or correct the declared key. episcout will not select a winner. |
+| `destination_exists` | The output name is already occupied. | Choose a new destination, or review ownership and dependencies before explicitly auditing `existing = "replace"`. |
+| Lock timeout blocker | Another transaction holds a required registry or destination lock. | Let the authorised transaction finish, verify its outcome, then audit again; do not bypass the lock. |
+| Apply returns a sanitised error | An unsafe database or infrastructure condition caused rollback. | Confirm no writes committed, ask the database administrator to inspect restricted logs, correct the condition, then restart with audit. |
+| Audit warns that a table has no record key | Only exact projected duplicates can be assessed. | Confirm and declare the row grain and ordered key columns, or document acceptance of the limitation before apply. |
+| Output is complete but sharing is planned | Completion establishes transactional workflow success only. | Perform a separate disclosure and access review; do not treat the output as anonymous. |
+
+When seeking help, share the value-free status, issue code, reviewed relation metadata and aggregate count. Do not paste source identifiers, record-key values, tokens, credentials, connection strings or native database details into an issue or report.

@@ -95,7 +95,7 @@ received_results$summaries$variables
 
 Audit is assessment; apply is a separate all-or-nothing mutation of a returned copy. Missing sentinels are reviewed missingness declarations, whereas unexpected values require source or level review and are never silently converted to missing. Observed `min` and `max` evidence is not a validation range and preparation does not clamp values. Factor levels are storage metadata and can themselves contain sensitive codes, so inspect the draft before saving or sharing it. Factor metadata that cannot round-trip through the package's semicolon-delimited format is refused rather than silently changed. The same v1 encoding cannot declare empty, whitespace-only or semicolon-containing missing sentinels. Database inventory workflows use `epi_eda_dictionary_scaffold()` instead.
 
-Preparation neither identifies personal information nor anonymises data. `epi_sec_pseudonym()` creates a controlled bridge table but does not by itself rewrite or anonymise a dataset; privacy handling remains a separate reviewed workflow before shareable outputs.
+Preparation neither identifies personal information nor anonymises data. `epi_sec_pseudonym()` creates a controlled single-vector bridge table but does not maintain stable tokens across later calls or rewrite related tables. For restricted PostgreSQL sources, use the dedicated `longitudinal-pseudonymisation` vignette to review a value-free linkage contract, audit before writing and hand the resulting output dictionary back into EDA. Pseudonymised data remain restricted personal data; they are not anonymous or automatically disclosure-controlled.
 
 ## Use the stage-gated new-dataset workflow
 
