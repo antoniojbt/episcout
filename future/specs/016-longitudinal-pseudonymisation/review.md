@@ -79,4 +79,4 @@ Coverage was not measured. The live suite establishes the required safety bounda
 
 ## Closeout Notes
 
-Implementation and primary verification are complete and ready for owner review in a draft pull request. The specification remains active until that review is accepted. No release or tag was created, and episcout did not create schemas, grant roles, manage backups or configure server logging.
+Implementation and primary verification are complete on `feature/longitudinal-pseudonymisation` and published for owner review in draft PR #189, `[Feature] Add longitudinal pseudonymisation workflow`. The specification remains active until that review is accepted. No release or tag was created, and episcout did not create schemas, grant roles, manage backups or configure server logging.
