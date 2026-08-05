@@ -14,7 +14,6 @@ dependencies:
 
 related_files:
   - PROJECT_MAP.md
-  - future/scratch/episcout_postgresql_backend_plan.md
   - R/db_inventory.R
   - R/eda_dictionary.R
   - R/eda_schema.R
