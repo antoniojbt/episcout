@@ -117,6 +117,7 @@
 
 - [x] Extract the useful repository-compatible parts of the hidden environment-level `ds-pipeline-designer` skill into a visible, explicitly non-active scratch draft for later owner review, while excluding its Python defaults, foreign artifacts and scaffolding workflow.
 - [x] Revise and activate spec `003-large-data-backend-strategy` as the PostgreSQL-first large-data EDA handoff, with explicit source/type/statistical/snapshot/privacy/bundle contracts, neutral parity evidence and a redacted three-run external benchmark protocol.
+- [x] Complete spec `017-deterministic-local-time-ambiguity` for issues #190 and #81: replace host timezone sampling with `clock`'s bundled IANA engine, preserve offset-bearing behaviour and value-free blocking, and record GitHub macOS/Ubuntu confirmation as a pull-request check because publication was not authorised.
 - [x] Accept and merge spec `016-longitudinal-pseudonymisation` through PR #189, reconcile its final status records and move the specification to `future/specs/done/`.
 - [x] Separate active and completed specifications and reviews into `done/` directories, repair their references, and make TODO reconciliation part of every future-work change.
 
