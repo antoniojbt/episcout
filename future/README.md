@@ -55,7 +55,7 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Ready Next
 
-- Issue #196 is ready for design as spec `018` after the spec-003 closeout branch merges. Its selected direction is explicit `epi_eda_render_report()` dispatch from a completed database run or verified bundle into a separate self-contained report folder without modifying the manifest-owned source bundle.
+- Issue #196 is ready for design as spec `018`. Its selected direction is explicit `epi_eda_render_report()` dispatch from a completed database run or verified bundle into a separate self-contained report folder without modifying the manifest-owned source bundle.
 
 ### Draft
 

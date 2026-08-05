@@ -35,9 +35,23 @@
 
 ## Task list
 
+### Open GitHub issue map
+
+Reviewed against the complete open issue queue on 2026-08-05. Every open issue has an explicit next gate; question-labelled issues do not authorise implementation until their scope is resolved.
+
+| Issue | Priority | Tracked next action |
+| --- | --- | --- |
+| [#196](https://github.com/antoniojbt/episcout/issues/196) | Priority 1 | Design spec `018-database-eda-report-rendering`, then obtain owner approval before implementation. |
+| [#81](https://github.com/antoniojbt/episcout/issues/81) | Priority 1 release umbrella | Reconcile the queued `release-0.3.0-plan.md`, repository scrub, human walkthrough and current CRAN-readiness findings before any release action. |
+| [#197](https://github.com/antoniojbt/episcout/issues/197) | Priority 2 bug | Choose and specify the PostgreSQL NULL/missing-value catalogue return contract independently of #196. |
+| [#198](https://github.com/antoniojbt/episcout/issues/198) | Priority 2 bug | Choose and specify the released CSV/TSV delimiter compatibility policy independently of #196. |
+| [#61](https://github.com/antoniojbt/episcout/issues/61) | Question | Obtain a concrete dependency target and compatibility objective before planning refactoring. |
+| [#62](https://github.com/antoniojbt/episcout/issues/62) | Question | Inventory the named functions and desired cleanup outcome before planning changes. |
+| [#65](https://github.com/antoniojbt/episcout/issues/65) | Question | Define the intended SIAP/alluvial workflow, inputs and reusable package boundary before planning plots. |
+
 ### Priority 1
 
-- [ ] Plan issue #196 as spec `018-database-eda-report-rendering` after the spec-003 closeout branch merges:
+- [ ] Plan issue #196 as spec `018-database-eda-report-rendering`:
     - Problem: `epi_eda_render_report()` cannot yet consume a completed PostgreSQL EDA run or its verified aggregate bundle.
     - Goal: Define explicit dispatch from a completed database run or verified bundle directory to a separate self-contained report folder while leaving the manifest-owned source bundle unchanged.
     - User need: Create a portable human-readable report from completed aggregate-only database EDA without reconstructing a data frame or mutating accepted evidence.
@@ -60,11 +74,32 @@
 
 ### Priority 2
 
+- [ ] Plan issue #197 as a separate catalogue-missingness contract:
+    - Problem: `epi_db_catalogue_profile()` can return a PostgreSQL NULL row beyond `max_levels`, and the row cannot be consumed directly by the normalised catalogue contract.
+    - Goal: Choose an explicit bounded representation that preserves aggregate missing counts without treating PostgreSQL NULL as an observed category.
+    - User need: Review catalogue profiles without guessing how missing values map into dictionaries.
+    - Proposed scope: Contract decision, PostgreSQL 17 edge tests, help and longitudinal-guide alignment.
+    - Out of scope: Database mutation, automatic missing-code decisions, generic DBI support or issue #196 report rendering.
+    - Candidate files: A new numbered spec, `R/eda_dictionary.R`, related help/guides and live PostgreSQL tests.
+    - Risks: Breaking released result schemas, losing missing counts, exceeding the documented limit or conflating NULL with an observed level.
+    - Suggested spec ID: `019-postgresql-catalogue-missingness`.
+
+- [ ] Plan issue #198 as a separate writer-compatibility contract:
+    - Problem: `epi_write_df(..., suffix = "csv")` currently writes tab-delimited content with a `.csv` filename.
+    - Goal: Make extension and delimiter agree through an explicit backward-compatibility decision.
+    - User need: Produce files downstream tools interpret correctly without silently changing released behaviour.
+    - Proposed scope: Delimiter/suffix contract, raw-byte regression tests, overwrite/directory behaviour, help and NEWS.
+    - Out of scope: A general serialization framework, new dependency or unrelated writer cleanup.
+    - Candidate files: A new numbered spec, `R/epi_write_df.R`, `R/epi_write.R`, related documentation, focused tests and NEWS.
+    - Risks: Silent output-format changes, downstream parsing regressions and ambiguous quoting or missing-value representation.
+    - Suggested spec ID: `020-data-frame-writer-delimiter-contract`.
+
 - [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
 - [ ] add functions to load, connect, etc data into db.
 
 ### Priority 3
 
+- [ ] Triage the PostgreSQL EDA query-repetition finding in `future/scratch/episcout_postgres_eda_performance_issue.md`: promote the narrow redundant `row_count` fix to a focused issue/spec or explicitly defer it, while keeping wider query consolidation separate and preserving aggregate-only snapshot semantics.
 - [ ] check codecov percentage decrease
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.
@@ -72,6 +107,8 @@
 
 
 ## Later
+
+- [ ] Resolve the scope questions in issues #61, #62 and #65 before promoting any of them to numbered specifications; no dependency reduction, broad cleanup or SIAP plot implementation is authorised by their current descriptions.
 
 - [ ] Remediate the historical Codecov upload-token disclosure:
     - Problem: A redacted all-history secret scan found a token-shaped Codecov credential in the deleted `codecov.yml`. Commit `b22f919904317f2d3f27584412ccec02464c7d1c` is an affected historical landmark; commit `13815543bc81f5a16ad40f7c3426cfe40f36738e` removed the plaintext configuration and `78dcd5d53a8b2fa9916b93df4bef5258732b4236` later deleted the file. Deleting the current file did not remove the value from Git history. Never copy the credential into this task, an issue, a PR, chat, terminal output or a remediation report.
@@ -118,6 +155,7 @@
 
 ### 2026-08-05
 
+- [x] Reconcile all seven open GitHub issues into explicit TODO priorities, remove the completed spec-003 backend scratch plan and prune merged local branches without deleting active scratch inputs.
 - [x] Complete spec `003-large-data-backend-strategy` and issue #194 through PR #201: replace the production-performance claim with a fixed synthetic PostgreSQL 17 gate, resolve three independent reviews, pass all local and GitHub checks, record owner acceptance and move the spec to `future/specs/done/` without releasing or tagging.
 - [x] Fix issue #195 so PostgreSQL pseudonymisation apply releases each acquired session advisory lock exactly once during transaction-lock promotion, retains failed releases for exit cleanup, and verifies warning-free success, partial timeout cleanup and forced rollback without changing the public contract.
 
