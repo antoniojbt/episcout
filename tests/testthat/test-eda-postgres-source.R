@@ -73,6 +73,119 @@ test_that("query boundary clears results and enforces fetch limits", {
   expect_equal(DBI::dbGetQuery(con, "SELECT 1 AS reusable")$reusable, 1L)
 })
 
+test_that("transaction lifecycle failures remain value-free", {
+  skip_if_not_installed("RSQLite")
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  source <- structure(list(con = con), class = c("epi_eda_postgres_source", "list"))
+  transaction <- getFromNamespace("eda_postgres_transaction", "episcout")
+
+  begin_error <- tryCatch(
+    with_mocked_bindings(
+      transaction(source, 1L),
+      eda_validate_postgres_source = function(...) invisible(TRUE),
+      eda_db_begin = function(...) stop("BEGIN_CANARY", call. = FALSE),
+      .package = "episcout"
+    ),
+    error = identity
+  )
+  expect_match(conditionMessage(begin_error), "could not begin", fixed = TRUE)
+  expect_false(grepl("CANARY", conditionMessage(begin_error), fixed = TRUE))
+
+  commit_error <- tryCatch(
+    with_mocked_bindings(
+      transaction(source, 1L),
+      eda_validate_postgres_source = function(...) invisible(TRUE),
+      eda_db_statement = function(...) invisible(TRUE),
+      eda_db_commit = function(...) stop("COMMIT_CANARY", call. = FALSE),
+      .package = "episcout"
+    ),
+    error = identity
+  )
+  expect_match(conditionMessage(commit_error), "could not commit safely", fixed = TRUE)
+  expect_false(grepl("CANARY", conditionMessage(commit_error), fixed = TRUE))
+  expect_equal(DBI::dbGetQuery(con, "SELECT 1 AS reusable")$reusable, 1L)
+})
+
+test_that("database messages and warnings retain semantics without native text", {
+  skip_if_not_installed("RSQLite")
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  source <- structure(list(con = con), class = c("epi_eda_postgres_source", "list"))
+  transaction <- getFromNamespace("eda_postgres_transaction", "episcout")
+  observed_messages <- character()
+  observed_warnings <- character()
+
+  value <- withCallingHandlers(
+    with_mocked_bindings(
+      transaction(source, 42L),
+      eda_validate_postgres_source = function(...) invisible(TRUE),
+      eda_db_begin = function(...) {
+        message("MESSAGE_CANARY")
+        warning("WARNING_CANARY", call. = FALSE)
+        invisible(TRUE)
+      },
+      eda_db_statement = function(...) invisible(TRUE),
+      eda_db_commit = function(...) invisible(TRUE),
+      .package = "episcout"
+    ),
+    message = function(condition) {
+      observed_messages <<- c(observed_messages, conditionMessage(condition))
+      invokeRestart("muffleMessage")
+    },
+    warning = function(condition) {
+      observed_warnings <<- c(observed_warnings, conditionMessage(condition))
+      invokeRestart("muffleWarning")
+    }
+  )
+
+  expect_identical(value, 42L)
+  expect_length(observed_messages, 1L)
+  expect_length(observed_warnings, 1L)
+  expect_match(observed_messages, "database message", fixed = TRUE)
+  expect_match(observed_warnings, "database warning", fixed = TRUE)
+  expect_false(any(grepl("CANARY", c(observed_messages, observed_warnings), fixed = TRUE)))
+})
+
+test_that("result cleanup failures remain value-free", {
+  skip_if_not_installed("RSQLite")
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
+  on.exit(DBI::dbDisconnect(con), add = TRUE)
+  fetch <- getFromNamespace("eda_db_fetch", "episcout")
+  statement <- getFromNamespace("eda_db_statement", "episcout")
+  fail_after_clear <- function(result) {
+    DBI::dbClearResult(result)
+    stop("CLEAR_CANARY", call. = FALSE)
+  }
+
+  fetch_error <- tryCatch(
+    with_mocked_bindings(
+      fetch(con, "SELECT 1 AS value", query_kind = "cleanup_fetch", limit = 1L),
+      eda_db_clear_result = fail_after_clear,
+      .package = "episcout"
+    ),
+    error = identity
+  )
+  expect_match(conditionMessage(fetch_error), "cleanup_fetch", fixed = TRUE)
+  expect_false(grepl("CANARY", conditionMessage(fetch_error), fixed = TRUE))
+
+  statement_error <- tryCatch(
+    with_mocked_bindings(
+      statement(
+        con,
+        "CREATE TEMP TABLE cleanup_statement (value integer)",
+        query_kind = "transaction_setup"
+      ),
+      eda_db_clear_result = fail_after_clear,
+      .package = "episcout"
+    ),
+    error = identity
+  )
+  expect_match(conditionMessage(statement_error), "transaction setup", fixed = TRUE)
+  expect_false(grepl("CANARY", conditionMessage(statement_error), fixed = TRUE))
+  expect_equal(DBI::dbGetQuery(con, "SELECT 1 AS reusable")$reusable, 1L)
+})
+
 test_that("storage matrix and sentinel parsing are explicit", {
   compatibility <- getFromNamespace("eda_pg_type_compatibility", "episcout")
   column <- function(base, formatted = base, deterministic = TRUE, typtype = "b") {
