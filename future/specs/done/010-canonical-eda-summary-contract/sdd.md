@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `010-canonical-eda-summary-contract`  
-Status: Active
+Status: Completed
 
 ## Scope
 

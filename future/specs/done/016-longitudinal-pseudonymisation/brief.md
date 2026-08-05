@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `016-longitudinal-pseudonymisation`
-Status: Active
+Status: Implemented
 Owner: Repository owner
 
 ## Problem

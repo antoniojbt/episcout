@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `016-longitudinal-pseudonymisation`
-Status: Active
+Status: Implemented
 
 - [x] The owner-approved scope, exclusions, public interfaces, baseline findings and branch are captured before package-code changes.
 - [x] SDD and TDD define exact review, privacy, identity, row-duplicate, transaction, destination, result, documentation and verification boundaries.
@@ -34,5 +34,5 @@ Status: Active
 - [x] Focused tests, live PostgreSQL integration, package-loaded lint, local/CRAN checks and `git diff --check` pass or every inherited/external limitation is recorded without weakening requirements.
 - [x] A repository-content audit finds no real/project-specific material, credential, developer path, observed identifier or unsupported privacy claim in touched material.
 - [x] Review notes contain exact verification and independent-review evidence; TODO/changelog/spec status are reconciled at checkpoints and closeout.
-- [x] The focused change is committed and pushed on `feature/longitudinal-pseudonymisation`, and draft PR #189, `[Feature] Add longitudinal pseudonymisation workflow`, records behaviour, checks, compatibility, measured coverage, genericity audit, privacy limitations and unresolved issues.
+- [x] The focused change was committed and pushed on `feature/longitudinal-pseudonymisation`; PR #189, `[Feature] Add longitudinal pseudonymisation workflow`, recorded behaviour, checks, compatibility, measured coverage, genericity audit, privacy limitations and unresolved issues and was merged into `master` on 2026-08-04.
 - [x] No release, tag, schema creation, role grant, backup management or server-log configuration is performed.

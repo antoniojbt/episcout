@@ -4,6 +4,8 @@ This directory is the active planning workspace for next-phase `episcout` develo
 
 Use this workspace for internal design notes, TDD plans, review prompts and agent handoff material. Keep executable package tests in `tests/testthat/`.
 
+See `../PROJECT_MAP.md` for the current package and repository map.
+
 ## Directory Structure
 
 ```text
@@ -49,11 +51,11 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- `016-longitudinal-pseudonymisation`
+- None currently.
 
 ### Ready Next
 
-- None currently.
+- `003-large-data-backend-strategy` remains draft and is ready to be revised into a PostgreSQL-first design using `scratch/episcout_postgresql_backend_plan.md`. Package implementation must wait until the revised specification is reviewed and activated.
 
 ### Draft
 
@@ -61,4 +63,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-Completed specs are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+Completed specs, including accepted spec `016-longitudinal-pseudonymisation`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

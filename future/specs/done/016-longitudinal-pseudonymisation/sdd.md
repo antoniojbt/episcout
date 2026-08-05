@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `016-longitudinal-pseudonymisation`
-Status: Active
+Status: Implemented
 
 ## Semantic And Privacy Authority
 
@@ -260,4 +260,4 @@ No implementation, fixture, default, example, test, message or documentation add
 
 ## Recovery
 
-Implementation remains isolated on `feature/longitudinal-pseudonymisation`. PostgreSQL apply is recovered by automatic transaction rollback; a blocked audit/apply writes nothing. If exact identity semantics, source non-mutation, restricted privileges, atomic replacement, value-free diagnostics or dictionary gates cannot satisfy this contract, stop and record the conflict in `review.md` rather than weakening the privacy or integrity boundary. No release or tag is authorised.
+Implementation was completed on `feature/longitudinal-pseudonymisation` and merged through PR #189. PostgreSQL apply is recovered by automatic transaction rollback; a blocked audit/apply writes nothing. If exact identity semantics, source non-mutation, restricted privileges, atomic replacement, value-free diagnostics or dictionary gates cannot satisfy this contract, stop and record the conflict in `review.md` rather than weakening the privacy or integrity boundary. No release or tag was created.

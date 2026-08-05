@@ -5,10 +5,12 @@ owner: TBD
 base_branch: master
 working_branch: TBD
 created: 2026-06-15
-updated: 2026-07-25
+updated: 2026-08-04
 
 related_files:
   - README.md
+  - PROJECT_MAP.md
+  - future/scratch/episcout_postgresql_backend_plan.md
   - future/specs/003-large-data-backend-strategy/
 
 documents:
@@ -26,5 +28,6 @@ check_commands:
 
 notes:
   - Design-only first.
-  - Do not implement Arrow, DuckDB or data.table backends in this spec.
-  - Do not activate until a concrete workload and measurable performance target are defined.
+  - PostgreSQL is the first backend; Arrow, DuckDB, data.table and generic DBI support remain out of scope.
+  - The representative workload and proposed threshold are now available as external design inputs, but the spec remains draft until its contracts are revised and reviewed.
+  - Do not change package code until this specification is activated.

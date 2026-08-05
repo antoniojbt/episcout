@@ -37,19 +37,17 @@
 
 ### Priority 1
 
-- [ ] Review and accept the completed implementation of active spec `016-longitudinal-pseudonymisation` on `feature/longitudinal-pseudonymisation`:
-    - Add reviewed, value-free linkage scaffolding and specification metadata for multi-table PostgreSQL sources.
-    - Add a restricted stable identity registry and exact text/integral/UUID linkage with database-resident confirmed crosswalks.
-    - Add read-only audit and atomic repeatable-read apply modes with deterministic locks, safe destination replacement, longitudinal record-key/duplicate reconciliation and redacted results.
-    - Add comprehensive synthetic unit/live PostgreSQL tests, a mandatory pinned-PostgreSQL CI job and a friendly discoverable canonical guide.
-    - Preserve `epi_sec_pseudonym()` behaviour; make no anonymity/disclosure-control claim and include no project-specific fixture, example, message or documentation material.
-    - Implementation, independent reviews and primary verification are complete; the spec remains active until the draft pull request is accepted.
+- [ ] Revise and activate draft spec `003-large-data-backend-strategy` using `future/scratch/episcout_postgresql_backend_plan.md`:
+    - Narrow the first backend to PostgreSQL while preserving the established data-frame and canonical EDA contracts.
+    - Turn the external representative workload and five-minute threshold into explicit, reviewable acceptance evidence without adding project-specific data, schemas or terminology to this repository.
+    - Complete and review the brief, SDD, TDD, acceptance contract and manifest before changing package code.
+    - Keep Arrow, DuckDB, data.table, generic DBI dispatch and database mutation outside the first implementation.
 
 - [ ] full git scrub
 
 - [ ] Review the two remaining plans/instructions from prior Codex threads saved in `future/scratch`:
-  - [ ] 1-Review applicable agent checklists
-  - [ ] 3-episcout release readiness
+    - [ ] Review `future/scratch/2026-07-31-agent-guidance-impact-and-portable-execution-plan.md`, including the applicable agent checklists.
+    - [ ] Review `future/scratch/release-0.3.0-plan.md` for release readiness.
 - [ ] agent truth review with specific instructions pack
     - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
 - [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
@@ -66,8 +64,6 @@
 - [ ] Consider visual-regression strategy for EDA plots only after plot
       contracts are stable.
 - [ ] Add biomedical EDA extensions as separate numbered specs.
-- [ ] Revisit spec `003-large-data-backend-strategy` only after a concrete
-      workload and performance target are defined.
 
 
 ## Later
@@ -117,6 +113,7 @@
 
 ### 2026-08-04
 
+- [x] Accept and merge spec `016-longitudinal-pseudonymisation` through PR #189, reconcile its final status records and move the specification to `future/specs/done/`.
 - [x] Separate active and completed specifications and reviews into `done/` directories, repair their references, and make TODO reconciliation part of every future-work change.
 
 ### 2026-08-03

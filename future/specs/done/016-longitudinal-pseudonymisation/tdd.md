@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `016-longitudinal-pseudonymisation`
-Status: Active
+Status: Implemented
 
 Use small, hand-authored, unmistakably synthetic fixtures. Generate unique disposable schema suffixes and opaque identifier values at runtime. Independently derive expected counts, resolution and duplicate outcomes; do not generate expected fixtures through the implementation under test. Never use existing package datasets, realistic names, institutions, places, diagnoses, facilities, credentials, connection strings, local paths or source-system labels.
 
