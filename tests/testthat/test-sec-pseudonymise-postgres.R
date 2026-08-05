@@ -45,6 +45,48 @@ pg_pseudonym_quote <- function(connection, schema, table = NULL) {
   as.character(DBI::dbQuoteIdentifier(connection, identifier))
 }
 
+pg_advisory_lock_count <- function(connection) {
+  DBI::dbGetQuery(
+    connection,
+    paste(
+      "SELECT COUNT(*)::integer AS n FROM pg_locks",
+      "WHERE pid = pg_backend_pid() AND locktype = 'advisory' AND granted"
+    )
+  )$n[[1]]
+}
+
+pg_capture_conditions <- function(expr) {
+  conditions <- character()
+  value <- withCallingHandlers(
+    force(expr),
+    warning = function(condition) {
+      conditions <<- c(conditions, conditionMessage(condition))
+      invokeRestart("muffleWarning")
+    },
+    message = function(condition) {
+      conditions <<- c(conditions, conditionMessage(condition))
+      invokeRestart("muffleMessage")
+    }
+  )
+  list(value = value, conditions = conditions)
+}
+
+test_that("session lock cleanup retains only unlock errors", {
+  attempts <- character()
+  failed <- with_mocked_bindings(
+    sec_release_session_locks(NULL, c("released", "error", "not_owned")),
+    dbGetQuery = function(con, statement, params) {
+      attempts <<- c(attempts, params[[1]])
+      if (identical(params[[1]], "error")) stop("simulated unlock error")
+      data.frame(released = !identical(params[[1]], "not_owned"))
+    },
+    .package = "DBI"
+  )
+
+  expect_identical(attempts, c("not_owned", "error", "released"))
+  expect_identical(failed, "error")
+})
+
 pg_pseudonym_dictionary <- function(connection, source_schema) {
   inventory <- epi_db_inventory(
     connection,
@@ -553,16 +595,21 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   ))
   DBI::dbRollback(connection)
 
-  applied_report <- epi_sec_pseudonymise_db(
-    connection,
-    dictionary,
-    linkage,
-    schemas[["registry"]],
-    schemas[["output"]],
-    catalogues = catalogues,
-    mode = "apply",
-    exact_duplicates = "report"
+  applied <- pg_capture_conditions(
+    epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "apply",
+      exact_duplicates = "report"
+    )
   )
+  applied_report <- applied$value
+  expect_false(any(grepl("you don't own a lock", applied$conditions, fixed = TRUE)))
+  expect_identical(pg_advisory_lock_count(connection), 0L)
   expect_identical(applied_report$status, "complete")
   expect_true(applied_report$metadata$writes[[1]])
   expect_equal(
@@ -708,6 +755,38 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     source_before$events
   )
 
+  rollback_conditions <- character()
+  expect_error(
+    withCallingHandlers(
+      with_mocked_bindings(
+        epi_sec_pseudonymise_db(
+          connection,
+          dictionary,
+          linkage,
+          schemas[["registry"]],
+          schemas[["output"]],
+          catalogues = catalogues,
+          mode = "apply",
+          exact_duplicates = "drop",
+          existing = "replace"
+        ),
+        sec_apply_registry = function(...) stop("simulated post-transfer failure"),
+        .package = "episcout"
+      ),
+      warning = function(condition) {
+        rollback_conditions <<- c(rollback_conditions, conditionMessage(condition))
+        invokeRestart("muffleWarning")
+      },
+      message = function(condition) {
+        rollback_conditions <<- c(rollback_conditions, conditionMessage(condition))
+        invokeRestart("muffleMessage")
+      }
+    ),
+    "rolled back safely"
+  )
+  expect_false(any(grepl("you don't own a lock", rollback_conditions, fixed = TRUE)))
+  expect_identical(pg_advisory_lock_count(connection), 0L)
+
   registry_before_timeout <- list(
     aliases = DBI::dbGetQuery(
       connection,
@@ -742,7 +821,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
   DBI::dbBind(
     lock_result,
-    params = list(paste0("registry:", schemas[["registry"]]))
+    params = list(paste0("output:", schemas[["output"]], ".entities"))
   )
   invisible(DBI::dbFetch(lock_result))
   DBI::dbClearResult(lock_result)
@@ -762,6 +841,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_false(timed_out$metadata$writes[[1]])
   expect_true("lock_timeout" %in% timed_out$issues$issue_code)
   expect_false("sensitive_issues" %in% names(timed_out))
+  expect_identical(pg_advisory_lock_count(connection), 0L)
   timed_out_print <- paste(capture.output(print(timed_out)), collapse = "\n")
   expect_false(any(vapply(
     unname(source_ids),

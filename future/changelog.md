@@ -2,6 +2,7 @@
 
 ## 2026-08-05
 
+- Fixed longitudinal PostgreSQL pseudonymisation advisory-lock ownership for issue #195: apply now promotes protection to transaction-scoped locks, releases each acquired session lock once, retains failed releases for exit cleanup and rolls back safely if the transfer cannot complete. Live regression coverage checks warning-free success, partial-acquisition timeout cleanup and forced post-transfer rollback without changing the public result contract.
 - Implemented the active PostgreSQL-backed EDA contract on `feature/postgresql-eda-backend`: added a redacted validated relation source, explicit RPostgres/PostgreSQL 17 type and transaction boundaries, aggregate-only canonical profiles and identifier QA, compact shared plot rendering, checked staged bundle publication, neutral unit/live fixtures, PostgreSQL CI coverage and user documentation. Local PostgreSQL 17 evidence covers type-7 edges, e1071 type-3 shape statistics, sentinels, infinities/NaN, Unicode text, temporal values, identifiers, relation kinds, catalogue drift, stable concurrent snapshots, lifecycle cleanup, bundle ownership/recovery refusal and SVG leakage. The active spec is not complete: the external representative three-run benchmark, required independent reviews and owner acceptance remain pending, and no release or tag is authorised.
 
 ## 2026-08-04
