@@ -114,6 +114,10 @@
 
 ## Done
 
+### 2026-08-05
+
+- [x] Fix issue #195 so PostgreSQL pseudonymisation apply releases each acquired session advisory lock exactly once during transaction-lock promotion, retains failed releases for exit cleanup, and verifies warning-free success, partial timeout cleanup and forced rollback without changing the public contract.
+
 ### 2026-08-04
 
 - [x] Extract the useful repository-compatible parts of the hidden environment-level `ds-pipeline-designer` skill into a visible, explicitly non-active scratch draft for later owner review, while excluding its Python defaults, foreign artifacts and scaffolding workflow.

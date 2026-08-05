@@ -134,13 +134,15 @@ epi_sec_pseudonymise_db <- function(con,
         )
         return(sec_pseudonym_result("blocked", mode, FALSE, context, audit))
       }
-      on.exit(sec_release_session_locks(con, lock_keys), add = TRUE)
 
       applied <- tryCatch(
         DBI::dbWithTransaction(con, {
           DBI::dbExecute(con, "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
           sec_acquire_transaction_locks(con, lock_keys)
-          sec_release_session_locks(con, lock_keys)
+          lock_guard$keys <- sec_release_session_locks(con, lock_guard$keys)
+          if (length(lock_guard$keys) > 0L) {
+            stop("Session advisory locks could not be transferred safely; the transaction was rolled back.", call. = FALSE)
+          }
           if (sec_schema_is_public(con, registry_schema) || sec_schema_is_public(con, output_schema)) {
             stop("registry_schema or output_schema access changed after the initial audit; the transaction was rolled back.", call. = FALSE)
           }
@@ -722,17 +724,24 @@ sec_acquire_transaction_locks <- function(con, keys) {
 }
 
 sec_release_session_locks <- function(con, keys) {
+  failed <- character()
   for (key in rev(keys)) {
-    try(
-      DBI::dbGetQuery(
-        con,
-        "SELECT pg_advisory_unlock(hashtextextended($1, 0))",
-        params = list(key)
-      ),
-      silent = TRUE
+    released <- tryCatch(
+      {
+        DBI::dbGetQuery(
+          con,
+          "SELECT pg_advisory_unlock(hashtextextended($1, 0))",
+          params = list(key)
+        )
+        TRUE
+      },
+      error = function(error) FALSE
     )
+    if (!released) {
+      failed <- c(key, failed)
+    }
   }
-  invisible(TRUE)
+  invisible(failed)
 }
 
 sec_stop_blocked <- function(audit) {
