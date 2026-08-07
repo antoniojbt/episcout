@@ -1,14 +1,15 @@
 # episcout 0.3.0 Release Plan
 
-Status: Ready for execution  
+Status: Queued as roadmap issue #204 item 4; not ready until items 1-3 complete
 Created: 2026-07-31  
+Updated: 2026-08-07
 Owner: Antonio Berlanga-Taylor  
 Baseline release: `0.2.0`  
 Target release: `0.3.0`
 
 ## Outcome
 
-Release `episcout 0.3.0` from a reviewed and reproducible commit after the repository has been scrubbed, spec `010-canonical-eda-summary-contract` has been accepted and implemented, a human has completed the release-facing workflows from a clean clone, all resulting findings have been resolved, and the exact release artifact has passed the required checks and inspection.
+Release `episcout 0.3.0` from a reviewed and reproducible commit after the two ordered correctness contracts in roadmap issue #204 have been resolved, the repository has been scrubbed, the completed spec `010-canonical-eda-summary-contract` and subsequent development delta have been reconciled, a human has completed the release-facing workflows from a clean clone, all resulting findings have been resolved, and the exact release artifact has passed the required checks and inspection.
 
 ## Scope
 
@@ -16,7 +17,8 @@ In scope:
 
 - Audit the current tree, Git history, ignored material, package source contents and public-disclosure risks.
 - Resolve repository-hygiene findings that affect confidentiality, reproducibility, package contents or release quality.
-- Update, approve and implement spec `010-canonical-eda-summary-contract` before testing the release candidate manually.
+- Confirm the already accepted and implemented spec `010-canonical-eda-summary-contract` remains reconciled with the complete post-spec development delta.
+- Resolve issues #198 and #197 through specs `020-data-frame-writer-delimiter-contract` and `019-postgresql-catalogue-missingness` before freezing the release candidate.
 - Run a human walkthrough from a clean clone and record observed results and defects.
 - Resolve walkthrough findings, finalise release metadata and user-facing documentation, and validate the exact source package.
 - Create an annotated `0.3.0` tag and a GitHub release after explicit human approval.
@@ -32,7 +34,9 @@ Out of scope:
 
 - Use `0.3.0`, not `0.2.1`, because the release adds public database and dictionary APIs, introduces the canonical typed EDA summary contract, and includes material behaviour corrections.
 - Use the tag name `0.3.0`, consistent with the immediately preceding release.
-- Treat spec 010 as a pre-release gate. The current v1/v2 EDA distinction is unreleased and should be replaced before the human walkthrough so that the walkthrough exercises the intended public contract.
+- Treat accepted spec 010 as a satisfied historical pre-release gate. Reconfirm its canonical contract during the release audit without reopening or reimplementing the completed specification.
+- Follow roadmap issue #204: complete issues #198 and #197, then the release-readiness audit, before starting this release work. Database aggregate-bundle report rendering in #196 is deferred and is not a release gate.
+- Treat the owner-deferred Codecov item 0b as unresolved until the item 3 audit records an explicit release disposition. Deferral alone does not satisfy the no-unresolved-disclosure go/no-go criterion.
 - Treat the human walkthrough as independent acceptance evidence, not as a substitute for automated checks.
 - Do not create or push a tag, publish a GitHub release or submit to CRAN until the final go/no-go checkpoint is approved by the owner.
 
@@ -47,12 +51,13 @@ Out of scope:
 
 ## Phase 0: Establish the baseline
 
-1. Refresh remote state and confirm the release baseline:
+1. Refresh remote state and confirm the release baseline, treating `upstream/master` as authoritative and requiring local and fork `master` to match it:
 
    ```bash
-   git fetch --prune --tags origin
+   git fetch --all --prune --tags
    git status --short --branch
    git rev-list --left-right --count master...origin/master
+   git rev-list --left-right --count master...upstream/master
    git log -1 --format='%H %ad %s' --date=iso-strict
    git describe --tags --always
    git tag --sort=-version:refname --format='%(refname:short) %(creatordate:iso8601) %(subject)'
@@ -75,7 +80,7 @@ Out of scope:
 
 Exit criteria:
 
-- `master` and `origin/master` are reconciled, the working tree is clean, the baseline commit and environment are recorded, and every baseline failure is classified.
+- Local `master`, `origin/master` and authoritative `upstream/master` are reconciled, the working tree is clean, the baseline commit and environment are recorded, and every baseline failure is classified.
 
 ## Phase 1: Full repository scrub
 
@@ -156,19 +161,16 @@ Perform the scrub as a read-only audit first. Propose and review remediation bef
 - Planning and repository state accurately distinguish completed, active and deferred work.
 - Scrub remediations are reviewed and committed separately from behavioural changes.
 
-## Phase 2: Finalise and implement spec 010
+## Phase 2: Reconfirm completed contracts and ordered bug fixes
 
-1. Update `future/specs/done/010-canonical-eda-summary-contract/` to apply the current `AGENTS.md` and the routed checklists, especially software verification, truth and semantics, analysis and statistics, copy-edit, and render and release.
-2. Reconfirm the observable contract, independently justified analytical expectations, compatibility decision, affected callers, report behaviour and acceptance checks.
-3. Obtain human approval of the revised brief, SDD and TDD before implementation.
-4. Implement on `refactor/canonical-eda-summary-contract` without version bumps, tags or release operations.
-5. Run focused tests first, then `scripts/check-local.sh`, `scripts/check-cran.sh` and `git diff --check` as required by the spec.
-6. Inspect the returned tables, written CSV files, rendered HTML and source package contents directly. Record evidence and unresolved limitations in the spec review.
-7. Complete the spec acceptance record, obtain review, merge it to `master`, and wait for successful macOS, Linux, lint and coverage workflows.
+1. Confirm roadmap issue #204 items 1 and 2 are complete: issue #198 is resolved through spec `020-data-frame-writer-delimiter-contract`, and issue #197 is resolved through spec `019-postgresql-catalogue-missingness`.
+2. Reconfirm accepted spec `010-canonical-eda-summary-contract` remains aligned with its callers, reports, written artifacts, tests and documentation; treat its completed records as evidence rather than an active implementation plan.
+3. Review the complete development delta since `0.2.0`, including PostgreSQL EDA, longitudinal pseudonymisation, preparation, stratified summaries and deterministic temporal handling, against current user-facing claims and release checks.
+4. Keep deferred issue #196 and the post-release identifier-universe and query-repetition work outside the candidate unless the owner explicitly revises roadmap issue #204.
 
 Exit criteria:
 
-- Spec 010 is accepted and merged; package code and user documentation expose one canonical six-component EDA summary contract; no v1/v2 adapter or release operation remains; checks pass with `0 errors, 0 warnings, 0 notes`.
+- Issues #198 and #197 are resolved and merged, completed spec 010 remains reconciled, the release delta is accurately documented, and no deferred feature has entered the candidate.
 
 ## Phase 3: Human walkthrough of the release candidate
 
@@ -258,13 +260,13 @@ Exit criteria:
 The owner explicitly confirms all of the following before publication:
 
 - [ ] The repository scrub is complete and no disclosure or history-remediation issue remains.
-- [ ] Spec 010 is accepted and merged.
+- [x] Spec 010 is accepted and merged.
 - [ ] The human walkthrough records a `GO` against the final behaviour.
 - [ ] Walkthrough findings are resolved or documented as accepted non-blocking limitations.
 - [ ] `DESCRIPTION` and `NEWS.md` identify `0.3.0` and agree with the installed package.
 - [ ] The exact source tarball built from the intended tag target passed with `0 errors, 0 warnings, 0 notes` and was inspected.
 - [ ] GitHub Actions passed on the commit to be tagged.
-- [ ] `master` is clean, equals `origin/master`, and the intended tag target commit is recorded.
+- [ ] `master` is clean, equals `origin/master` and authoritative `upstream/master`, and the intended tag target commit is recorded.
 - [ ] Release notes and any uploaded artifact contain no confidential or unintended material.
 - [ ] The owner authorises public tag and GitHub release creation.
 
@@ -274,9 +276,11 @@ The owner explicitly confirms all of the following before publication:
 
    ```bash
    git switch master
-   git pull --ff-only origin master
+   git fetch --all --prune --tags
+   git merge --ff-only upstream/master
    git status --short --branch
    git rev-list --left-right --count master...origin/master
+   git rev-list --left-right --count master...upstream/master
    git log -1 --format='%H %ad %s' --date=iso-strict
    ```
 
