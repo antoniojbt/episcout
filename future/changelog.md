@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-07
+
+- Created roadmap issue #204 and reconciled the planning workspace to the owner-approved sequence: issue #198/spec 020, issue #197/spec 019, release-readiness audit, release 0.3.0, the post-release PostgreSQL identifier universe as spec 021, then the narrow PostgreSQL EDA row-count fix as spec 022. Historical Codecov work and issue #196/spec 018 are explicitly deferred; no package implementation, release, tag, credential action or history rewrite was started. The release plan now treats completed spec 010 as historical evidence, the scratch index includes the identifier proposal, and the spec template uses authoritative `master` rather than the obsolete `episcout2` base.
+
 ## 2026-08-05
 
 - Reconciled the seven open GitHub issues into explicit TODO priorities and next gates, retained only unresolved or queued scratch inputs, removed the completed spec-003 PostgreSQL backend scratch plan and recorded the noncritical PostgreSQL query-repetition finding for later disposition. No issue implementation, release or tag was started.

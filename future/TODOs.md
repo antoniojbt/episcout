@@ -37,80 +37,99 @@
 
 ### Open GitHub issue map
 
-Reviewed against the complete open issue queue on 2026-08-05. Every open issue has an explicit next gate; question-labelled issues do not authorise implementation until their scope is resolved.
+Reviewed against the complete open issue queue on 2026-08-07. Roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204) records the owner-approved sequence. Question-labelled issues do not authorise implementation until their scope is resolved.
 
 | Issue | Priority | Tracked next action |
 | --- | --- | --- |
-| [#196](https://github.com/antoniojbt/episcout/issues/196) | Priority 1 | Design spec `018-database-eda-report-rendering`, then obtain owner approval before implementation. |
-| [#81](https://github.com/antoniojbt/episcout/issues/81) | Priority 1 release umbrella | Reconcile the queued `release-0.3.0-plan.md`, repository scrub, human walkthrough and current CRAN-readiness findings before any release action. |
-| [#197](https://github.com/antoniojbt/episcout/issues/197) | Priority 2 bug | Choose and specify the PostgreSQL NULL/missing-value catalogue return contract independently of #196. |
-| [#198](https://github.com/antoniojbt/episcout/issues/198) | Priority 2 bug | Choose and specify the released CSV/TSV delimiter compatibility policy independently of #196. |
+| [#204](https://github.com/antoniojbt/episcout/issues/204) | Roadmap | Execute the non-deferred items below in the approved order, with one active implementation spec and one focused branch/PR at a time. |
+| [#198](https://github.com/antoniojbt/episcout/issues/198) | Item 1 | Plan and implement spec `020-data-frame-writer-delimiter-contract`. |
+| [#197](https://github.com/antoniojbt/episcout/issues/197) | Item 2 | Plan and implement spec `019-postgresql-catalogue-missingness`. |
+| [#81](https://github.com/antoniojbt/episcout/issues/81) | Item 4 release umbrella | Start only after the item 3 release-readiness audit and its blocking findings are resolved. |
+| [#196](https://github.com/antoniojbt/episcout/issues/196) | Deferred item 5 | Do not activate spec `018-database-eda-report-rendering` until the owner revises the roadmap. |
 | [#61](https://github.com/antoniojbt/episcout/issues/61) | Question | Obtain a concrete dependency target and compatibility objective before planning refactoring. |
 | [#62](https://github.com/antoniojbt/episcout/issues/62) | Question | Inventory the named functions and desired cleanup outcome before planning changes. |
 | [#65](https://github.com/antoniojbt/episcout/issues/65) | Question | Define the intended SIAP/alluvial workflow, inputs and reusable package boundary before planning plots. |
 
-### Priority 1
+### Approved execution order under issue #204
 
-- [ ] Plan issue #196 as spec `018-database-eda-report-rendering`:
-    - Problem: `epi_eda_render_report()` cannot yet consume a completed PostgreSQL EDA run or its verified aggregate bundle.
-    - Goal: Define explicit dispatch from a completed database run or verified bundle directory to a separate self-contained report folder while leaving the manifest-owned source bundle unchanged.
-    - User need: Create a portable human-readable report from completed aggregate-only database EDA without reconstructing a data frame or mutating accepted evidence.
-    - Proposed scope: A reviewed spec covering dispatch, bundle verification, report ownership, self-contained rendering, disclosure labels, compatibility, tests and failure recovery.
-    - Out of scope: Source-row collection, source-bundle mutation, automatic disclosure control, new database queries, release work or unrelated report redesign.
-    - Candidate files: `future/specs/018-database-eda-report-rendering/`, `R/eda_report.R`, `R/eda_db_run.R`, report templates, focused tests, README and NEWS.
-    - Risks: Ambiguous ownership, stale or tampered bundle input, accidental row-level disclosure, overwrite collisions, divergent data-frame/report contracts and non-portable assets.
-    - Suggested spec ID: `018-database-eda-report-rendering`.
+Do not create all branches in advance. Synchronise from authoritative `upstream/master`, activate only the next numbered spec, and create one focused draft PR when that item starts.
 
-- [ ] full git scrub
+#### Item 1 — writer delimiter contract
 
-- [ ] Review the three remaining plans/instructions saved in `future/scratch`:
-    - [ ] Review `future/scratch/2026-07-31-agent-guidance-impact-and-portable-execution-plan.md`, including the applicable agent checklists.
-    - [ ] Review `future/scratch/release-0.3.0-plan.md` for release readiness.
-    - [ ] Review `future/scratch/repo-specific-spec-design-guidance-draft.md`; decide which repository-compatible practices, if any, should become authoritative and whether environment-level skills should require explicit owner opt-in.
-- [ ] agent truth review with specific instructions pack
-    - [ ] why are penguins and blood data not downloaded directly each time from the package itself. My concern is the agent may re-write them to fit tests given it recreated these fixtures.
-- [ ] Human live walkthrough, no agent needed here (clone, install, follow vignettes).
-- [ ] Carry out changes needed from human review
-
-### Priority 2
-
-- [ ] Plan issue #197 as a separate catalogue-missingness contract:
-    - Problem: `epi_db_catalogue_profile()` can return a PostgreSQL NULL row beyond `max_levels`, and the row cannot be consumed directly by the normalised catalogue contract.
-    - Goal: Choose an explicit bounded representation that preserves aggregate missing counts without treating PostgreSQL NULL as an observed category.
-    - User need: Review catalogue profiles without guessing how missing values map into dictionaries.
-    - Proposed scope: Contract decision, PostgreSQL 17 edge tests, help and longitudinal-guide alignment.
-    - Out of scope: Database mutation, automatic missing-code decisions, generic DBI support or issue #196 report rendering.
-    - Candidate files: A new numbered spec, `R/eda_dictionary.R`, related help/guides and live PostgreSQL tests.
-    - Risks: Breaking released result schemas, losing missing counts, exceeding the documented limit or conflating NULL with an observed level.
-    - Suggested spec ID: `019-postgresql-catalogue-missingness`.
-
-- [ ] Plan issue #198 as a separate writer-compatibility contract:
+- [ ] Plan and implement issue #198 as spec `020-data-frame-writer-delimiter-contract` on `bugfix/data-frame-writer-delimiter-contract`:
     - Problem: `epi_write_df(..., suffix = "csv")` currently writes tab-delimited content with a `.csv` filename.
     - Goal: Make extension and delimiter agree through an explicit backward-compatibility decision.
     - User need: Produce files downstream tools interpret correctly without silently changing released behaviour.
     - Proposed scope: Delimiter/suffix contract, raw-byte regression tests, overwrite/directory behaviour, help and NEWS.
-    - Out of scope: A general serialization framework, new dependency or unrelated writer cleanup.
-    - Candidate files: A new numbered spec, `R/epi_write_df.R`, `R/epi_write.R`, related documentation, focused tests and NEWS.
+    - Out of scope: A general serialisation framework, new dependency or unrelated writer cleanup.
+    - Candidate files: `future/specs/020-data-frame-writer-delimiter-contract/`, `R/epi_write_df.R`, `R/epi_write.R`, related documentation, focused tests and NEWS.
     - Risks: Silent output-format changes, downstream parsing regressions and ambiguous quoting or missing-value representation.
     - Suggested spec ID: `020-data-frame-writer-delimiter-contract`.
 
-- [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/postgreSQL can easily use them as input
-- [ ] add functions to load, connect, etc data into db.
+#### Item 2 — PostgreSQL catalogue missingness
 
-### Priority 3
+- [ ] Plan and implement issue #197 as spec `019-postgresql-catalogue-missingness` on `bugfix/postgresql-catalogue-missingness`:
+    - Problem: `epi_db_catalogue_profile()` can return a PostgreSQL NULL row beyond `max_levels`, and the row cannot be consumed directly by the normalised catalogue contract.
+    - Goal: Choose an explicit bounded representation that preserves aggregate missing counts without treating PostgreSQL NULL as an observed category.
+    - User need: Review catalogue profiles without guessing how missing values map into dictionaries.
+    - Proposed scope: Contract decision, PostgreSQL 17 edge tests, help and longitudinal-guide alignment.
+    - Out of scope: Database mutation, automatic missing-code decisions, generic DBI support or deferred issue #196 report rendering.
+    - Candidate files: `future/specs/019-postgresql-catalogue-missingness/`, `R/eda_dictionary.R`, related help/guides and live PostgreSQL tests.
+    - Risks: Breaking released result schemas, losing missing counts, exceeding the documented limit or conflating NULL with an observed level.
+    - Suggested spec ID: `019-postgresql-catalogue-missingness`.
 
-- [ ] Triage the PostgreSQL EDA query-repetition finding in `future/scratch/episcout_postgres_eda_performance_issue.md`: promote the narrow redundant `row_count` fix to a focused issue/spec or explicitly defer it, while keeping wider query consolidation separate and preserving aggregate-only snapshot semantics.
-- [ ] check codecov percentage decrease
-- [ ] Consider visual-regression strategy for EDA plots only after plot
-      contracts are stable.
-- [ ] Add biomedical EDA extensions as separate numbered specs.
+#### Item 3 — release-readiness audit
+
+- [ ] Perform the release-readiness audit on `refactor/release-readiness-audit`; keep the audit read-only until each finding is classified and give consequential remediation its own issue, spec and branch:
+    - [ ] Run the full git and package-source scrub described in `future/scratch/release-0.3.0-plan.md`.
+    - [ ] Complete the fixture provenance and anti-circularity truth review, including why `penguins_raw` and `blood_storage` are pinned rather than downloaded during tests and whether their expectations were independently justified.
+    - [ ] Review the still-relevant findings in `future/scratch/2026-07-31-agent-guidance-impact-and-portable-execution-plan.md`.
+    - [ ] Review `future/scratch/repo-specific-spec-design-guidance-draft.md` and decide whether any concise repository-compatible practices should become authoritative.
+    - [ ] Establish the current local and CRAN-oriented baseline and classify every error, warning, NOTE, skip and material coverage change.
+    - [ ] Record release blockers, follow-ups and accepted limitations without implementing unrelated features.
+
+#### Item 4 — release 0.3.0
+
+- [ ] Complete issue #81 and `future/scratch/release-0.3.0-plan.md` on `feature/release-0.3.0` only after item 3 blockers are resolved:
+    - [ ] Complete the human live walkthrough from an isolated installed candidate; no agent may mark the human acceptance gate complete.
+    - [ ] Carry out reviewed changes needed from the human walkthrough through appropriately scoped branches/specs.
+    - [ ] Prepare and verify the exact `0.3.0` artifact, then stop at every tag, GitHub release and CRAN owner-approval gate.
+
+#### Item 6 — multi-table PostgreSQL identifier universe
+
+- [ ] Promote `future/scratch/2026-08-06_issue_episcout_universo_identificadores_multitabla.md` to a dedicated GitHub issue, resolve its contract questions, and implement spec `021-postgresql-identity-universe` on `feature/postgresql-identity-universe` after release `0.3.0`:
+    - Problem: The current longitudinal linkage contract requires one enrolment source and cannot audit or materialise a reviewed identity universe from several equivalent PostgreSQL relations.
+    - Goal: Add an audit-first, database-resident, value-free-by-default universe workflow that can materialise a restricted canonical identifier table only after explicit validation.
+    - Out of scope: Probabilistic linkage, automatic correction, pseudonym generation, identifier export or claims of anonymity/disclosure control.
+    - Required design gates: Contract ownership, initial normalisation policy, membership materialisation, enrolment integration, invalid-value policy, replacement semantics, portable fingerprints and resource limits.
+    - Suggested spec ID: `021-postgresql-identity-universe`.
+
+#### Item 7 — narrow PostgreSQL EDA row-count reuse
+
+- [ ] Promote `future/scratch/episcout_postgres_eda_performance_issue.md` to a focused GitHub issue and spec `022-postgresql-eda-row-count-reuse` on `bugfix/postgresql-eda-row-count-reuse` after item 6:
+    - Scope: Reuse the existing transaction-local relation row count in categorical summaries and remove exactly one redundant query per categorical/binary variable.
+    - Out of scope: Wider aggregate consolidation or changed snapshot, bundle, privacy or reconciliation contracts.
+    - Suggested spec ID: `022-postgresql-eda-row-count-reuse`.
 
 
 ## Later
 
+- [ ] Deferred item 0b — historical Codecov credential containment and history decision. The owner deferred this work under issue #204. Do not expose credential material, change token policy, rewrite history or activate conditional spec `011` without a separate owner instruction. Deferral does not itself satisfy the release plan's no-unresolved-disclosure gate; item 3 must classify the remaining release impact for an explicit owner decision before item 4 can pass go/no-go.
+
+- [ ] Deferred item 5 — issue #196 and spec `018-database-eda-report-rendering`:
+    - Problem: `epi_eda_render_report()` cannot yet consume a completed PostgreSQL EDA run or its verified aggregate bundle.
+    - Intended direction: Explicit dispatch into a separate self-contained report folder without modifying the manifest-owned source bundle or reading row-level data.
+    - Status: Design-ready but deliberately outside the approved execution order until the owner revises issue #204.
+
 - [ ] Resolve the scope questions in issues #61, #62 and #65 before promoting any of them to numbered specifications; no dependency reduction, broad cleanup or SIAP plot implementation is authorised by their current descriptions.
 
-- [ ] Remediate the historical Codecov upload-token disclosure:
+- [ ] Sanitise dictionaries so that R, QGIS, SQL/MariaDB/PostgreSQL can use them as input; obtain an explicit interoperability contract before creating an issue or spec.
+- [ ] Add functions to load and connect data into databases; define supported backends, credentials boundary and user workflow before creating an issue or spec.
+- [ ] Check the historical Codecov percentage decrease separately from credential remediation when the roadmap is revised.
+- [ ] Consider visual-regression strategy for EDA plots only after plot contracts are stable.
+- [ ] Add biomedical EDA extensions only as separately prioritised numbered specs.
+
+- [ ] Deferred detailed record for the historical Codecov upload-token disclosure; retain these instructions without acting until the owner reactivates item 0b:
     - Problem: A redacted all-history secret scan found a token-shaped Codecov credential in the deleted `codecov.yml`. Commit `b22f919904317f2d3f27584412ccec02464c7d1c` is an affected historical landmark; commit `13815543bc81f5a16ad40f7c3426cfe40f36738e` removed the plaintext configuration and `78dcd5d53a8b2fa9916b93df4bef5258732b4236` later deleted the file. Deleting the current file did not remove the value from Git history. Never copy the credential into this task, an issue, a PR, chat, terminal output or a remediation report.
     - Goal: Make the historical credential unusable, verify that coverage upload still works securely, assess its exposure, and make an explicit owner-approved decision about whether destructive history rewriting is warranted.
     - User need: A safe walkthrough that separates urgent credential containment from optional history cleanup and leaves evidence that does not disclose the credential.
@@ -152,6 +171,10 @@ Reviewed against the complete open issue queue on 2026-08-05. Every open issue h
 
 
 ## Done
+
+### 2026-08-07
+
+- [x] Reconcile the roadmap under issue #204: defer item 0b and issue #196/spec 018, order issues #198 and #197 before the release-readiness audit and release 0.3.0, then schedule the PostgreSQL identifier-universe and narrow row-count work; align the scratch index, release plan and spec template without starting package implementation.
 
 ### 2026-08-05
 
