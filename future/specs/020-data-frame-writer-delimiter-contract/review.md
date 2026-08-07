@@ -34,6 +34,9 @@ that compatibility decision and direct callers needing other formatting to
 - `scripts/check-local.sh` exited successfully. Its known documentation and
   skipped-visual-snapshot cleanup side effects were restored without retaining
   unrelated changes.
+- The first Ubuntu CI run stopped at four continuation-indentation findings
+  reported by its newer linter; the follow-up aligned those continuations
+  without changing behaviour and reran focused tests and package lint locally.
 - `git diff --check` passed after restoration.
 
 ## Closeout Notes

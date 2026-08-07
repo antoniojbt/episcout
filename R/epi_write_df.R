@@ -35,17 +35,17 @@
 #' @export
 epi_write_df <- function(df, results_subdir, file_n, suffix, sep = NULL) {
   if (!is.character(results_subdir) ||
-      length(results_subdir) != 1L ||
-      is.na(results_subdir) ||
-      !nzchar(results_subdir) ||
-      !dir.exists(results_subdir)) {
+        length(results_subdir) != 1L ||
+        is.na(results_subdir) ||
+        !nzchar(results_subdir) ||
+        !dir.exists(results_subdir)) {
     stop("`results_subdir` must be an existing directory.", call. = FALSE)
   }
 
   if (!is.character(file_n) ||
-      length(file_n) != 1L ||
-      is.na(file_n) ||
-      !nzchar(file_n)) {
+        length(file_n) != 1L ||
+        is.na(file_n) ||
+        !nzchar(file_n)) {
     stop("`file_n` must be one non-empty string.", call. = FALSE)
   }
   if (grepl("[/\\\\]", file_n)) {
@@ -53,9 +53,9 @@ epi_write_df <- function(df, results_subdir, file_n, suffix, sep = NULL) {
   }
 
   if (!is.character(suffix) ||
-      length(suffix) != 1L ||
-      is.na(suffix) ||
-      !nzchar(suffix)) {
+        length(suffix) != 1L ||
+        is.na(suffix) ||
+        !nzchar(suffix)) {
     stop("`suffix` must be either \"csv\" or \"tsv\".", call. = FALSE)
   }
 
@@ -72,9 +72,9 @@ epi_write_df <- function(df, results_subdir, file_n, suffix, sep = NULL) {
 
   if (!is.null(sep)) {
     if (!is.character(sep) ||
-        length(sep) != 1L ||
-        is.na(sep) ||
-        nchar(sep, type = "bytes") != 1L) {
+          length(sep) != 1L ||
+          is.na(sep) ||
+          nchar(sep, type = "bytes") != 1L) {
       stop("`sep` must be NULL or one character.", call. = FALSE)
     }
     if (!identical(sep, expected_sep)) {
