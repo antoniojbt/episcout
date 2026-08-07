@@ -1,0 +1,57 @@
+id: "019"
+slug: "postgresql-catalogue-missingness"
+status: implemented
+owner: repository-owner
+base_branch: master
+working_branch: bugfix/postgresql-catalogue-missingness
+created: 2026-08-07
+updated: 2026-08-07
+
+issues:
+  - 197
+  - 204
+
+related_files:
+  - R/eda_dictionary.R
+  - tests/testthat/test-db-dictionary.R
+  - tests/testthat/test-eda-postgres-catalogue.R
+  - man/epi_db_catalogue_profile.Rd
+  - vignettes/longitudinal-pseudonymisation.Rmd
+  - inst/examples/db-to-report/walkthrough.R
+  - NEWS.md
+  - future/TODOs.md
+  - future/README.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'db-dictionary', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres-catalogue', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/check-local.sh
+  - git diff --check
+
+baseline:
+  focused_tests: "Existing db-dictionary tests passed."
+  observed_defect: "COUNT(DISTINCT) excludes NULL while the grouped result includes it as source_value = NA."
+  local_postgres: "pg_isready was unavailable; mandatory live evidence remains in PostgreSQL CI."
+
+notes:
+  - Non-missing value rows and aggregate PostgreSQL NULL counts have separate schemas.
+  - The values component remains directly convertible into reviewed catalogue rows.
+  - max_levels continues to bound distinct non-missing values only.
