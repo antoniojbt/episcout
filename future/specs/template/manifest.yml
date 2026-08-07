@@ -2,10 +2,10 @@ id: "<id>"
 slug: "<slug>"
 status: draft
 owner: TBD
-base_branch: episcout2
+base_branch: master
 working_branch: TBD
-created: 2026-06-15
-updated: 2026-06-15
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
 
 related_files:
   - R/<file>.R
