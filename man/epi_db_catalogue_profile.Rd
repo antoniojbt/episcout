@@ -11,11 +11,27 @@ epi_db_catalogue_profile(con, dictionary, max_levels = 50)
 
 \item{dictionary}{A validated extended dictionary.}
 
-\item{max_levels}{Maximum distinct non-missing values allowed for each profiled column.}
+\item{max_levels}{Maximum distinct non-missing values allowed for each
+profiled column.}
 }
 \value{
-A data frame containing source keys, \code{source_value} and \code{n}. \code{source_value} is \code{NA} for the optional PostgreSQL \code{NULL} count row.
+An \code{epi_db_catalogue_profile} list with two data frames. \code{values}
+contains source keys, non-missing \code{source_value}, and \code{n}; \code{missing}
+contains one source-key row per profiled column and its aggregate
+\code{n_missing}. A selected empty or all-NULL column therefore has no \code{values}
+rows but still has one \code{missing} row. When no dictionary row is selected,
+both components are typed zero-row data frames.
 }
 \description{
-Return value counts only for active dictionary rows explicitly marked with \code{profile_catalogue = TRUE}. Direct identifiers, quasi-identifiers, unclassified fields and columns exceeding \code{max_levels} are rejected before value counts are returned. The distinct-level limit counts non-missing values; a profiled column containing PostgreSQL \code{NULL} also returns one \code{source_value = NA} row with its count.
+Return value counts only for active dictionary rows explicitly marked with
+\code{profile_catalogue = TRUE}. Direct identifiers, quasi-identifiers,
+unclassified fields and columns exceeding \code{max_levels} are rejected before
+value counts are returned.
+}
+\details{
+\code{max_levels} bounds only rows in \code{values}; PostgreSQL \code{NULL} is
+counted separately and is never returned as a catalogue \code{source_value}.
+This makes \code{values} directly usable when drafting the normalised catalogue
+contract, but does not classify any observed value as a missing code.
+Review the \code{missing} component separately.
 }

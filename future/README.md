@@ -51,11 +51,11 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- Spec `020-data-frame-writer-delimiter-contract` implements issue [#198](https://github.com/antoniojbt/episcout/issues/198) on `bugfix/data-frame-writer-delimiter-contract`. Local acceptance is complete; pull-request CI, owner acceptance and merge remain open.
+- Spec `019-postgresql-catalogue-missingness` implements issue [#197](https://github.com/antoniojbt/episcout/issues/197) on `bugfix/postgresql-catalogue-missingness`. It separates reviewable non-missing catalogue values from aggregate PostgreSQL NULL counts.
 
 ### Ready Next
 
-- Issue [#197](https://github.com/antoniojbt/episcout/issues/197) follows as spec `019-postgresql-catalogue-missingness` after issue #198 is accepted and merged.
+- The release-readiness audit under roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204) follows only after issue #197 is accepted and merged.
 
 ### Draft
 
@@ -69,4 +69,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-Completed specs, including accepted spec `003-large-data-backend-strategy`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+Completed specs, including accepted specs `003-large-data-backend-strategy` and `020-data-frame-writer-delimiter-contract`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

@@ -37,10 +37,13 @@ methods::setMethod("dbGetQuery", signature(conn = "DictionaryMockConnection", st
     return(data.frame(row_count = unname(conn@state$row_counts[[table]])))
   }
   if (grepl("COUNT(DISTINCT", statement, fixed = TRUE)) {
-    return(data.frame(n_levels = conn@state$n_levels))
+    return(data.frame(
+      n_levels = conn@state$n_levels,
+      n_missing = conn@state$n_missing
+    ))
   }
   if (grepl("GROUP BY", statement, fixed = TRUE)) {
-    return(data.frame(source_value = c("A", "B"), n = c(3, 2)))
+    return(conn@state$profile_values)
   }
   if (grepl("COUNT(*)", statement, fixed = TRUE)) {
     table <- sub('.*\\."([^"]+)"$', "\\1", statement)
@@ -92,6 +95,12 @@ make_mock_connection <- function() {
   )
   state$row_counts <- c(cohort_a = 12, cohort_b = 7)
   state$n_levels <- 2
+  state$n_missing <- 1
+  state$profile_values <- data.frame(
+    source_value = c("A", "B"),
+    n = c(3, 2),
+    stringsAsFactors = FALSE
+  )
   methods::new("DictionaryMockConnection", state = state)
 }
 
@@ -433,9 +442,34 @@ test_that("catalogue profiling returns only approved aggregate counts", {
   dictionary$profile_catalogue[[2]] <- TRUE
 
   profile <- epi_db_catalogue_profile(connection, dictionary, max_levels = 2)
-  expect_equal(profile$source_value, c("A", "B"))
-  expect_equal(profile$n, c(3, 2))
-  expect_true(all(profile$source_column == "group_code"))
+  expect_identical(class(profile), c("epi_db_catalogue_profile", "list"))
+  expect_identical(names(profile), c("values", "missing"))
+  expect_identical(
+    names(profile$values),
+    c("source_schema", "source_table", "source_column", "source_value", "n")
+  )
+  expect_identical(
+    names(profile$missing),
+    c("source_schema", "source_table", "source_column", "n_missing")
+  )
+  expect_equal(profile$values$source_value, c("A", "B"))
+  expect_equal(profile$values$n, c(3, 2))
+  expect_false(anyNA(profile$values$source_value))
+  expect_true(all(profile$values$source_column == "group_code"))
+  expect_identical(profile$missing$n_missing, 1)
+  expect_identical(profile$missing$source_column, "group_code")
+  expect_true(any(grepl("IS NOT NULL", connection@state$queries, fixed = TRUE)))
+
+  connection@state$n_levels <- 0
+  connection@state$n_missing <- 2
+  connection@state$profile_values <- data.frame(
+    source_value = character(),
+    n = numeric(),
+    stringsAsFactors = FALSE
+  )
+  all_missing <- epi_db_catalogue_profile(connection, dictionary, max_levels = 2)
+  expect_equal(nrow(all_missing$values), 0L)
+  expect_identical(all_missing$missing$n_missing, 2)
 
   connection@state$n_levels <- 3
   expect_error(
@@ -445,7 +479,23 @@ test_that("catalogue profiling returns only approved aggregate counts", {
   expect_error(epi_db_catalogue_profile(connection, dictionary, max_levels = 0), "positive whole")
 
   dictionary$profile_catalogue <- FALSE
-  expect_equal(nrow(epi_db_catalogue_profile(NULL, dictionary)), 0L)
+  empty <- epi_db_catalogue_profile(NULL, dictionary)
+  expect_identical(class(empty), c("epi_db_catalogue_profile", "list"))
+  expect_identical(empty$values, data.frame(
+    source_schema = character(),
+    source_table = character(),
+    source_column = character(),
+    source_value = character(),
+    n = numeric(),
+    stringsAsFactors = FALSE
+  ))
+  expect_identical(empty$missing, data.frame(
+    source_schema = character(),
+    source_table = character(),
+    source_column = character(),
+    n_missing = numeric(),
+    stringsAsFactors = FALSE
+  ))
 })
 
 test_that("database inventory rejects unsupported DBI backends", {

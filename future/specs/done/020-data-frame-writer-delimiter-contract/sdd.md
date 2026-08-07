@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `020-data-frame-writer-delimiter-contract`
-Status: Implemented
+Status: Completed
 
 ## Scope
 
