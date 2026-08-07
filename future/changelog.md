@@ -2,6 +2,7 @@
 
 ## 2026-08-07
 
+- Implemented issue #198 through active spec `020-data-frame-writer-delimiter-contract`: `epi_write_df()` now maps CSV to comma bytes and TSV to tab bytes, rejects ambiguous suffixes and delimiter contradictions, preserves TSV and lower-level writer behaviour, validates the existing output directory and documents its overwrite, quoting and missing-value contract. Raw-byte/validation tests, legacy focused tests, package lint, the full suite and the local package check passed; unrelated documentation and skipped-snapshot cleanup side effects were restored. Pull-request CI, owner acceptance and merge remain open, so issue #197/spec 019 was not started.
 - Created roadmap issue #204 and reconciled the planning workspace to the owner-approved sequence: issue #198/spec 020, issue #197/spec 019, release-readiness audit, release 0.3.0, the post-release PostgreSQL identifier universe as spec 021, then the narrow PostgreSQL EDA row-count fix as spec 022. Historical Codecov work and issue #196/spec 018 are explicitly deferred; no package implementation, release, tag, credential action or history rewrite was started. The release plan now treats completed spec 010 as historical evidence, the scratch index includes the identifier proposal, and the spec template uses authoritative `master` rather than the obsolete `episcout2` base.
 
 ## 2026-08-05

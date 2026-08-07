@@ -2,6 +2,12 @@
 
 ## Development version
 
+- Corrected `epi_write_df()` so `suffix = "csv"` writes comma-separated bytes
+  instead of tab-separated content with a `.csv` filename. The function now
+  accepts only CSV or TSV suffixes, infers their delimiter, rejects explicit
+  suffix/delimiter contradictions and requires an existing output directory.
+  Existing TSV output is unchanged; callers that relied on the mislabeled CSV
+  bytes must request `"tsv"` instead.
 - Added a deterministic PostgreSQL EDA scalability gate covering one million rows, complete SVG bundle publication and bounded client collection, and strengthened database condition handling so native server notices and warnings are re-signalled with fixed value-free text.
 - Fixed PostgreSQL pseudonymisation apply so session advisory locks are released exactly once when transaction-scoped protection takes over, eliminating successful-run lock-ownership warnings while preserving timeout and rollback cleanup.
 - Added a runnable database-to-report walkthrough with a neutral longitudinal CSV fixture. The commented R script demonstrates duplicate review, PostgreSQL inventory and dictionaries, stable pseudonymisation, aggregate-only database EDA, plots, Table 1 and HTML report output without embedding credentials.

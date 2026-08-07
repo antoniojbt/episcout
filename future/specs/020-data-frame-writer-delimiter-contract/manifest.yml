@@ -1,0 +1,51 @@
+id: "020"
+slug: "data-frame-writer-delimiter-contract"
+status: implemented
+owner: repository-owner
+base_branch: master
+working_branch: bugfix/data-frame-writer-delimiter-contract
+created: 2026-08-07
+updated: 2026-08-07
+
+issues:
+  - 198
+  - 204
+
+related_files:
+  - R/epi_write_df.R
+  - tests/testthat/test-epi-write-df.R
+  - man/epi_write_df.Rd
+  - NEWS.md
+  - future/TODOs.md
+  - future/README.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'epi-write-df', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(reporter = 'summary')"
+  - scripts/check-local.sh
+  - git diff --check
+
+baseline:
+  focused_tests: "Existing missing-functions tests passed."
+  direct_probe: "suffix = 'csv' produced raw bytes a\\tb\\n1\\t2\\n."
+
+notes:
+  - CSV output changes from the erroneous historical tab delimiter to a comma and is called out in NEWS.
+  - TSV output and epi_write() remain unchanged.
+  - Only csv and tsv suffixes are accepted so the filename contract is unambiguous.
