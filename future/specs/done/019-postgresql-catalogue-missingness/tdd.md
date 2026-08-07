@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `019-postgresql-catalogue-missingness`
-Status: Implemented
+Status: Completed
 
 ## Test Files
 

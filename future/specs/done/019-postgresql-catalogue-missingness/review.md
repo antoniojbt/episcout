@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `019-postgresql-catalogue-missingness`
-Status: Implemented
+Status: Completed
 
 ## Root Cause
 
@@ -26,6 +26,8 @@ show the separate review paths. PostgreSQL NULL is not automatically converted
 into a catalogue missing code.
 
 ## Verification Evidence
+
+The owner merged draft PR #207 as commit `806b3e2fa53aceba25dd911b57e9dddd7b6f0691` on 2026-08-07. PostgreSQL 17 integration, macOS, Ubuntu, coverage, Codecov project/patch and CodeFactor checks all passed on the final head.
 
 - The pre-code `db-dictionary` suite passed and source inspection independently
   established the mismatched PostgreSQL NULL domains.
@@ -53,5 +55,5 @@ live PostgreSQL assertions. Truth/semantics review confirmed that NULL remains
 absence rather than a source catalogue value, missing counts remain exact
 aggregates and the non-missing limit retains its documented meaning. Copy-edit
 and render/release review aligned help, NEWS, the longitudinal guide and the
-runnable walkthrough. Mandatory PostgreSQL execution and pull-request CI remain
-open, so this implemented spec stays active until owner acceptance and merge.
+runnable walkthrough. Mandatory PostgreSQL execution and pull-request CI passed,
+and owner acceptance and merge completed the spec.

@@ -1,6 +1,6 @@
 # episcout 0.3.0 Release Plan
 
-Status: Queued as roadmap issue #204 item 4; not ready until items 1-3 complete
+Status: Blocked after roadmap item 3 audit by issues #208/#209 and the owner-gated historical Codecov disposition
 Created: 2026-07-31  
 Updated: 2026-08-07
 Owner: Antonio Berlanga-Taylor  
@@ -10,6 +10,10 @@ Target release: `0.3.0`
 ## Outcome
 
 Release `episcout 0.3.0` from a reviewed and reproducible commit after the two ordered correctness contracts in roadmap issue #204 have been resolved, the repository has been scrubbed, the completed spec `010-canonical-eda-summary-contract` and subsequent development delta have been reconciled, a human has completed the release-facing workflows from a clean clone, all resulting findings have been resolved, and the exact release artifact has passed the required checks and inspection.
+
+## Item 3 audit result
+
+The 2026-08-07 audit at `806b3e2fa53aceba25dd911b57e9dddd7b6f0691` is recorded in `future/reviews/done/2026-08-07-release-readiness-audit.md`. Local validation passed with `0 errors, 0 warnings, 0 notes`; the CRAN-oriented check retained one classified incoming-feasibility NOTE; completed spec 010 and the full release delta remain reconciled. Item 4 must not start until issue #208/spec 023 removes unintended source-package artifacts, issue #209/spec 024 completes immutable fixture provenance/licence evidence, and the owner explicitly dispositions the known historical Codecov finding. The audit itself authorised none of those remediations, no publication action and no human walkthrough completion.
 
 ## Scope
 
@@ -134,8 +138,9 @@ Perform the scrub as a read-only audit first. Propose and review remediation bef
   tar -tzf build/cran-check/episcout_*.tar.gz
   ```
 
-- Resolve the known hidden-file NOTE from `inst/project-template/data/.gitkeep` and `inst/project-template/outputs/.gitkeep`. If the installed template must preserve those directories, use a meaningful non-hidden placeholder or create the directories at runtime; otherwise exclude or remove them.
-- Resolve the known non-standard top-level `outputs/` NOTE and ensure internal truth-review outputs are not included in the source package.
+- Confirm the previously repaired `.gitkeep` and top-level `outputs/` findings do not recur. The item 3 archive correctly excluded both.
+- Resolve issue #208 so generated `tests/testthat/Rplots.pdf`, obsolete developer paths and the unused `vignettes/R_datasets.xlsx` workbook do not enter the exact candidate archive.
+- Resolve issue #209 so both pinned external fixture families carry immutable source, checksum, licence, redistribution, attribution and truth-status evidence without making ordinary tests network-dependent.
 - Verify that the tarball excludes development plans, checklists, review outputs, archives, local configuration, histories, credentials and unrelated generated artifacts while retaining every installed template, vignette, fixture and licence file required by users.
 
 ### 1.5 Review the release delta

@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `019-postgresql-catalogue-missingness`
-Status: Implemented
+Status: Completed
 
 - [x] Non-missing catalogue values and PostgreSQL NULL counts have distinct,
   stable result schemas.
@@ -16,8 +16,12 @@ Status: Implemented
   conversion and compatibility.
 - [x] Focused tests, lint, full tests, local checks and `git diff --check` pass;
   the live PostgreSQL test is discovered locally and awaits mandatory CI.
-- [x] Spec 020 is reconciled as merged and completed, while roadmap item 3 is
-  not started.
+- [x] Spec 020 was reconciled as merged and completed before roadmap item 3
+  started.
 - [x] Mandatory PostgreSQL 17 CI passes the zero-row, all-NULL, exact-limit and
   over-limit live cases.
-- [ ] Pull-request CI passes and the owner accepts and merges the implementation.
+- [x] Pull-request CI passes and the owner accepts and merges the implementation.
+
+## Closeout
+
+Draft PR #207 passed PostgreSQL 17, macOS, Ubuntu, coverage, Codecov project/patch and CodeFactor checks. The repository owner merged it as commit `806b3e2fa53aceba25dd911b57e9dddd7b6f0691` on 2026-08-07.

@@ -42,8 +42,9 @@ Reviewed against the complete open issue queue on 2026-08-07. Roadmap issue [#20
 | Issue | Priority | Tracked next action |
 | --- | --- | --- |
 | [#204](https://github.com/antoniojbt/episcout/issues/204) | Roadmap | Execute the non-deferred items below in the approved order, with one active implementation spec and one focused branch/PR at a time. |
-| [#197](https://github.com/antoniojbt/episcout/issues/197) | Item 2 | Plan and implement spec `019-postgresql-catalogue-missingness`. |
-| [#81](https://github.com/antoniojbt/episcout/issues/81) | Item 4 release umbrella | Start only after the item 3 release-readiness audit and its blocking findings are resolved. |
+| [#208](https://github.com/antoniojbt/episcout/issues/208) | Item 3 blocker, ready next | Implement spec `023-package-source-hygiene` without changing package behaviour, then inspect the exact source archive. |
+| [#209](https://github.com/antoniojbt/episcout/issues/209) | Item 3 blocker, queued | Implement spec `024-external-fixture-provenance` after #208 while keeping routine tests offline. |
+| [#81](https://github.com/antoniojbt/episcout/issues/81) | Item 4 release umbrella | Start only after #208, #209 and the owner-gated historical Codecov release disposition are resolved. |
 | [#196](https://github.com/antoniojbt/episcout/issues/196) | Deferred item 5 | Do not activate spec `018-database-eda-report-rendering` until the owner revises the roadmap. |
 | [#61](https://github.com/antoniojbt/episcout/issues/61) | Question | Obtain a concrete dependency target and compatibility objective before planning refactoring. |
 | [#62](https://github.com/antoniojbt/episcout/issues/62) | Question | Inventory the named functions and desired cleanup outcome before planning changes. |
@@ -53,27 +54,23 @@ Reviewed against the complete open issue queue on 2026-08-07. Roadmap issue [#20
 
 Do not create all branches in advance. Synchronise from authoritative `upstream/master`, activate only the next numbered spec, and create one focused draft PR when that item starts.
 
-#### Item 2 — PostgreSQL catalogue missingness
+#### Item 3 blockers before release work
 
-- [ ] Implement and review active issue #197/spec `019-postgresql-catalogue-missingness` on `bugfix/postgresql-catalogue-missingness`:
-    - Problem: `epi_db_catalogue_profile()` can return a PostgreSQL NULL row beyond `max_levels`, and the row cannot be consumed directly by the normalised catalogue contract.
-    - Goal: Choose an explicit bounded representation that preserves aggregate missing counts without treating PostgreSQL NULL as an observed category.
-    - User need: Review catalogue profiles without guessing how missing values map into dictionaries.
-    - Proposed scope: Contract decision, PostgreSQL 17 edge tests, help and longitudinal-guide alignment.
-    - Out of scope: Database mutation, automatic missing-code decisions, generic DBI support or deferred issue #196 report rendering.
-    - Candidate files: `future/specs/019-postgresql-catalogue-missingness/`, `R/eda_dictionary.R`, related help/guides and live PostgreSQL tests.
-    - Risks: Breaking released result schemas, losing missing counts, exceeding the documented limit or conflating NULL with an observed level.
-    - Suggested spec ID: `019-postgresql-catalogue-missingness`.
+- [ ] Resolve issue #208 through spec `023-package-source-hygiene` on `bugfix/package-source-hygiene`:
+    - Problem: The canonical local-then-CRAN check sequence can package generated `Rplots.pdf`, obsolete developer paths and an unused workbook.
+    - Goal: Make the exact source archive contain only demonstrated package material without changing public or analytical behaviour.
+    - Candidate files: `.Rbuildignore`, focused test/build guardrails, four legacy test comments and `vignettes/R_datasets.xlsx`.
+    - Risks: Removing intended visual references, masking test detritus instead of fixing its boundary or weakening package checks.
+    - Suggested spec ID: `023-package-source-hygiene`.
 
-#### Item 3 — release-readiness audit
+- [ ] Resolve issue #209 through spec `024-external-fixture-provenance` on `refactor/external-fixture-provenance` after #208:
+    - Problem: Fixture bytes match their declared upstream objects, but immutable source checksums and the complete redistribution/attribution record are not committed.
+    - Goal: Make source identity, licence, extraction, transformation, local checksums and independent truth status reviewable while keeping tests offline.
+    - Candidate files: fixture `SOURCE.md` records, the manual generator and focused guardrail tests.
+    - Risks: Network-dependent tests, silently changing fixture bytes, circular expected values or retaining clinical data without an authoritative redistribution basis.
+    - Suggested spec ID: `024-external-fixture-provenance`.
 
-- [ ] Perform the release-readiness audit on `refactor/release-readiness-audit`; keep the audit read-only until each finding is classified and give consequential remediation its own issue, spec and branch:
-    - [ ] Run the full git and package-source scrub described in `future/scratch/release-0.3.0-plan.md`.
-    - [ ] Complete the fixture provenance and anti-circularity truth review, including why `penguins_raw` and `blood_storage` are pinned rather than downloaded during tests and whether their expectations were independently justified.
-    - [ ] Review the still-relevant findings in `future/scratch/2026-07-31-agent-guidance-impact-and-portable-execution-plan.md`.
-    - [ ] Review `future/scratch/repo-specific-spec-design-guidance-draft.md` and decide whether any concise repository-compatible practices should become authoritative.
-    - [ ] Establish the current local and CRAN-oriented baseline and classify every error, warning, NOTE, skip and material coverage change.
-    - [ ] Record release blockers, follow-ups and accepted limitations without implementing unrelated features.
+- [ ] Obtain the explicit owner decision required for the historical Codecov release blocker after #208 and #209; do not activate conditional spec 011, expose values, alter token policy or rewrite history without that instruction.
 
 #### Item 4 — release 0.3.0
 
@@ -161,6 +158,8 @@ Do not create all branches in advance. Synchronise from authoritative `upstream/
 
 ### 2026-08-07
 
+- [x] Complete roadmap item 3's release-readiness audit at `806b3e2`: pass the local `0/0/0` baseline, classify the one CRAN incoming NOTE and 14 source-test skips, inspect/install the 373-member source archive, verify current/archive secret coverage, reconcile spec 010 and the release delta, prove both pinned fixtures match their declared upstream objects, and record blockers as issues #208 and #209 plus the owner-gated historical Codecov disposition. No package behaviour, credential policy, history, tag, release or submission changed.
+- [x] Accept and merge issue #197/spec `019-postgresql-catalogue-missingness` through PR #207 with PostgreSQL 17, macOS, Ubuntu, coverage, Codecov and CodeFactor checks green; move the completed specification to `future/specs/done/`.
 - [x] Accept and merge issue #198/spec `020-data-frame-writer-delimiter-contract` through PR #206 with macOS, Ubuntu, PostgreSQL, coverage, Codecov and CodeFactor checks green; move the completed specification to `future/specs/done/` and activate only issue #197/spec 019 next.
 - [x] Reconcile the roadmap under issue #204: defer item 0b and issue #196/spec 018, order issues #198 and #197 before the release-readiness audit and release 0.3.0, then schedule the PostgreSQL identifier-universe and narrow row-count work; align the scratch index, release plan and spec template without starting package implementation.
 
