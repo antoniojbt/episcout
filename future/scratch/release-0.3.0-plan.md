@@ -1,6 +1,6 @@
 # episcout 0.3.0 Release Plan
 
-Status: Blocked after roadmap item 3 audit by issues #208/#209 and the owner-gated historical Codecov disposition
+Status: #208/#209 implemented; blocked only by merge, five rewritten upstream tags and Codecov containment follow-up
 Created: 2026-07-31  
 Updated: 2026-08-07
 Owner: Antonio Berlanga-Taylor  
@@ -13,7 +13,7 @@ Release `episcout 0.3.0` from a reviewed and reproducible commit after the two o
 
 ## Item 3 audit result
 
-The 2026-08-07 audit at `806b3e2fa53aceba25dd911b57e9dddd7b6f0691` is recorded in `future/reviews/done/2026-08-07-release-readiness-audit.md`. Local validation passed with `0 errors, 0 warnings, 0 notes`; the CRAN-oriented check retained one classified incoming-feasibility NOTE; completed spec 010 and the full release delta remain reconciled. Item 4 must not start until issue #208/spec 023 removes unintended source-package artifacts, issue #209/spec 024 completes immutable fixture provenance/licence evidence, and the owner explicitly dispositions the known historical Codecov finding. The audit itself authorised none of those remediations, no publication action and no human walkthrough completion.
+The 2026-08-07 audit at rewritten-equivalent commit `6a117a06678f1ec020d5b59dbab236339bd1b1e7` is recorded in `future/reviews/done/2026-08-07-release-readiness-audit.md`. Specs 023/024 now remove the archive artifacts and complete fail-closed fixture provenance with a clean local check. The owner authorised history removal: rewritten upstream `master` and fork heads are published, while the five upstream annotated tags, credential revocation/rotation, protected-branch verification and eligible GitHub cache cleanup remain before go/no-go. CRAN URL/vignette polish and submission are deferred; the immediate objective is a usable GitHub `0.3.0` artifact after the human walkthrough and explicit tag/release approval.
 
 ## Scope
 
@@ -32,7 +32,7 @@ Out of scope:
 - CRAN submission. Prepare a CRAN-quality source package, but treat submission under issue `#81` as a separate authorised operation.
 - Unrelated Priority 2 or Priority 3 features.
 - New dependencies, architecture changes or compatibility layers not required by spec 010 or a confirmed release blocker.
-- Git history rewriting, destructive cleanup, branch deletion or removal of published material without a separate finding-specific plan and explicit approval.
+- Further Git history rewriting, destructive cleanup, branch deletion or removal of published material beyond the explicit 2026-08-07 Codecov containment authorisation.
 
 ## Release decisions
 
@@ -40,7 +40,7 @@ Out of scope:
 - Use the tag name `0.3.0`, consistent with the immediately preceding release.
 - Treat accepted spec 010 as a satisfied historical pre-release gate. Reconfirm its canonical contract during the release audit without reopening or reimplementing the completed specification.
 - Follow roadmap issue #204: complete issues #198 and #197, then the release-readiness audit, before starting this release work. Database aggregate-bundle report rendering in #196 is deferred and is not a release gate.
-- Treat the owner-deferred Codecov item 0b as unresolved until the item 3 audit records an explicit release disposition. Deferral alone does not satisfy the no-unresolved-disclosure go/no-go criterion.
+- Treat Codecov item 0b as unresolved until the rewritten upstream tags, credential revocation/rotation, protected-branch upload and eligible cache cleanup are recorded. Rewritten branch heads alone do not invalidate the old credential.
 - Treat the human walkthrough as independent acceptance evidence, not as a substitute for automated checks.
 - Do not create or push a tag, publish a GitHub release or submit to CRAN until the final go/no-go checkpoint is approved by the owner.
 

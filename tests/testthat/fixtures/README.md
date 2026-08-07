@@ -11,9 +11,11 @@ Regenerate fixtures manually with:
 scripts/rscript_env_caller.R data-raw/test-fixtures/make_external_fixtures.R
 ```
 
-The regeneration command rebuilds both fixtures and requires the optional source
-packages `medicaldata` and `palmerpenguins`. Neither package is required to use
-the committed fixtures in offline tests.
+The regeneration command downloads the pinned CRAN source archives, verifies
+their SHA-256 values and installs them into a temporary library before rebuilding
+both fixtures. Neither source package nor network access is required to use the
+committed fixtures in routine offline tests. Each fixture family has a
+`CHECKSUMS.sha256` manifest covering every other committed file in its directory.
 
 - `blood_storage` provides a biomedical workflow fixture with clinical variable
   semantics.

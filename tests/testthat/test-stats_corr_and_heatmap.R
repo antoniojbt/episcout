@@ -11,7 +11,6 @@ library(data.table)
 
 ######################
 # Working directory for informal tests, should be from pkg/tests/testthat/:
-# setwd('/Users/antoniob/Documents/github.dir/AntonioJBT/episcout/tests/testthat/')
 ######################
 
 ######################

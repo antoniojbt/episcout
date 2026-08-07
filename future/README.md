@@ -51,13 +51,12 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- No implementation specification is active. Roadmap item 3's completed audit is recorded under `future/reviews/done/2026-08-07-release-readiness-audit.md`.
+- Implemented specs `023-package-source-hygiene` and `024-external-fixture-provenance` consolidate issues [#208](https://github.com/antoniojbt/episcout/issues/208) and [#209](https://github.com/antoniojbt/episcout/issues/209) on `refactor/release-unblockers-208-209`. They remove exact audited archive artifacts and add fail-closed fixture provenance without changing package behaviour.
 
 ### Ready Next
 
-- Issue [#208](https://github.com/antoniojbt/episcout/issues/208) should activate spec `023-package-source-hygiene` on `bugfix/package-source-hygiene` next. It removes release-blocking generated and legacy source-package artifacts without changing package behaviour.
-- Issue [#209](https://github.com/antoniojbt/episcout/issues/209) should then activate spec `024-external-fixture-provenance` on `refactor/external-fixture-provenance` to complete immutable source, licence, attribution and truth-status evidence while preserving offline tests.
-- Release issue [#81](https://github.com/antoniojbt/episcout/issues/81) remains blocked after those two issues until the owner records the required historical Codecov release disposition.
+- After the combined #208/#209 PR merges, finish the owner-only replacement of the five rewritten upstream release tags and revoke/rotate the historical Codecov credential without recording either value.
+- Release issue [#81](https://github.com/antoniojbt/episcout/issues/81) is then ready to prepare a usable GitHub `0.3.0`; CRAN submission polish is explicitly deferred.
 
 ### Draft
 
@@ -66,7 +65,7 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Deferred
 
-- Historical Codecov credential containment and any conditional spec `011` work are deferred by owner direction. No history rewrite or security-policy change is authorised.
+- The owner authorised the Codecov history rewrite on 2026-08-07. Rewritten `master` and fork heads are published; five upstream annotated tags, credential revocation/rotation and protected-branch upload verification remain owner-only follow-up.
 - Issue [#196](https://github.com/antoniojbt/episcout/issues/196) and spec `018-database-eda-report-rendering` are deferred until the roadmap is explicitly revised.
 
 ### Completed

@@ -2,7 +2,7 @@
 
 Status: Completed self-review; release remains blocked
 Audit date: 2026-08-07
-Baseline commit: `806b3e2fa53aceba25dd911b57e9dddd7b6f0691`
+Baseline commit: `6a117a06678f1ec020d5b59dbab236339bd1b1e7` (rewritten equivalent of the original audited commit)
 Branch: `refactor/release-readiness-audit`
 Roadmap: issue [#204](https://github.com/antoniojbt/episcout/issues/204), item 3
 
@@ -16,7 +16,7 @@ This was an implementation self-review supported by automated checks and officia
 
 | ID | Classification | Finding | Disposition |
 | --- | --- | --- | --- |
-| AUD-001 | Release blocker; owner gate | A redacted Gitleaks 8.30.1 scan of all 424 commits found exactly the already-recorded historical Codecov credential location and no additional secret. The current tree and source archive contain no detected secret. | Keep conditional spec 011 deferred and do not reveal the value, alter token policy or rewrite history. The owner must explicitly decide containment and release disposition before item 4 can pass go/no-go. |
+| AUD-001 | Release blocker; owner gate | A redacted Gitleaks 8.30.1 scan of all 424 commits found exactly the already-recorded historical Codecov credential location and no additional secret. The current tree and source archive contain no detected secret. | The owner subsequently authorised removal on 2026-08-07. Rewritten upstream `master` and fork heads are published; five upstream tags, credential revocation/rotation, protected-branch verification and eligible GitHub cache cleanup remain. |
 | AUD-002 | Release blocker | The prescribed `scripts/check-local.sh` then `scripts/check-cran.sh` sequence leaves an ignored `tests/testthat/Rplots.pdf` that enters the source tarball. Four packaged test files also retain obsolete developer-specific absolute paths, and unused `vignettes/R_datasets.xlsx` enters the archive. | Resolve issue [#208](https://github.com/antoniojbt/episcout/issues/208) through spec `023-package-source-hygiene` on its own branch. Do not remove intended visual fixtures or change package behaviour. |
 | AUD-003 | Release blocker | Both external fixture CSVs match their declared upstream package objects exactly, but the repository does not yet record immutable source archive checksums, fixture checksums and a complete licence/redistribution/attribution record. | Resolve issue [#209](https://github.com/antoniojbt/episcout/issues/209) through spec `024-external-fixture-provenance` on its own branch. Keep routine tests offline and expectations independent. |
 | AUD-004 | Item 4 release work | `scripts/check-cran.sh` reports one incoming-feasibility NOTE: new-submission status, a VignetteBuilder package with no prebuilt CRAN index, and two Stack Overflow URLs returning 403. The built package itself installs correctly and lists all four intended vignettes. | Retain in release issue [#81](https://github.com/antoniojbt/episcout/issues/81): replace/remove unstable links at their roxygen sources, record the first-submission explanation and reconcile the vignette diagnostic against the installed candidate. |
@@ -30,7 +30,7 @@ This was an implementation self-review supported by automated checks and officia
 - The repository is public. The worktree was clean except for ignored `build/` and a generated `tests/testthat/Rplots.pdf`; no untracked non-ignored file and no file larger than 5 MB was found.
 - `git fsck --full` reported five dangling blobs and no corrupt or missing object. The repository contained 507 loose objects (2.39 MiB) and 4,696 packed objects (2.06 MiB).
 - There is one worktree and no submodule. Branches and historical tags were inspected; no branch, tag, worktree or object was deleted.
-- The release baseline is tag `0.2.0`; `git describe` at the audit commit was `0.2.0-79-g806b3e2`.
+- The release baseline is tag `0.2.0`; after the authorised rewrite the equivalent audit commit describes as `0.2.0-79-g6a117a0`.
 - The environment was R 4.5.3 on Ubuntu 24.04.4 with the repository mamba library, OpenBLAS 0.3.33 and UTC runtime timezone.
 
 ## Package checks and coverage
@@ -80,4 +80,4 @@ This was an implementation self-review supported by automated checks and officia
 
 ## Gate to the next work
 
-Issue #208/spec 023 is the next actionable release blocker, followed by issue #209/spec 024. After both are accepted, the repository owner must disposition the historical Codecov blocker before release item 4 can pass go/no-go. Item 4 then remains subject to its isolated human walkthrough, exact-artifact verification and explicit publication/submission approvals.
+Issues #208/#209 are implemented together through specs 023/024. After their PR merges, complete the remaining Codecov tag/credential/cache containment before release item 4. Item 4 then remains subject to its isolated human walkthrough, exact-artifact verification and explicit tag/GitHub-release approval; CRAN polish and submission are deferred.

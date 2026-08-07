@@ -1,0 +1,40 @@
+id: "023"
+slug: "package-source-hygiene"
+status: implemented
+owner: repository-owner
+base_branch: master
+working_branch: refactor/release-unblockers-208-209
+created: 2026-08-07
+updated: 2026-08-07
+
+issues:
+  - 208
+  - 204
+
+related_files:
+  - .Rbuildignore
+  - scripts/check-cran.sh
+  - tests/testthat/test-cleaning_functions.R
+  - tests/testthat/test-plotting.R
+  - tests/testthat/test-stats_corr_and_heatmap.R
+  - tests/testthat/test-various_not_classed.R
+  - vignettes/R_datasets.xlsx
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - tar -tzf build/cran-check/episcout_*.tar.gz
+  - git diff --check
+
+notes:
+  - Package code and installed interfaces remain unchanged.
+  - The archive guard covers exact audited artifact classes.

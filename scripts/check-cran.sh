@@ -22,6 +22,39 @@ fi
 
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/episcout-cran-check.XXXXXX")"
 
+inspect_source_archive() {
+  local tarball="$1"
+  local archive_root
+  local member
+  local legacy_path='/Users/antoniob/Documents/github.dir/AntonioJBT/episcout/tests/testthat/'
+
+  archive_root="$(tar -tzf "$tarball" | sed -n '1s#/.*##p')"
+  if [[ -z "$archive_root" ]]; then
+    echo "Unable to determine source archive root" >&2
+    return 1
+  fi
+
+  for member in \
+    "${archive_root}/tests/testthat/Rplots.pdf" \
+    "${archive_root}/vignettes/R_datasets.xlsx"; do
+    if tar -tzf "$tarball" | grep -Fqx "$member"; then
+      echo "Forbidden source archive artifact: ${member}" >&2
+      return 1
+    fi
+  done
+
+  while IFS= read -r member; do
+    case "$member" in
+      "${archive_root}"/tests/testthat/*.R)
+        if tar -xOzf "$tarball" "$member" | grep -Fq "$legacy_path"; then
+          echo "Obsolete developer path in source archive member: ${member}" >&2
+          return 1
+        fi
+        ;;
+    esac
+  done < <(tar -tzf "$tarball")
+}
+
 copy_check_artifacts() {
   local status=$?
 
@@ -46,5 +79,6 @@ trap copy_check_artifacts EXIT
     echo "R CMD build did not produce an episcout source tarball" >&2
     exit 1
   fi
+  inspect_source_archive "$tarball"
   "$r_bin" CMD check --as-cran "$tarball"
 )

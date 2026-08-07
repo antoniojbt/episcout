@@ -1,21 +1,159 @@
 # Regenerate external test fixtures for specification-first EDA.
 #
 # This script is intentionally manual and is not run by package tests. It uses
-# public package datasets as external sources and computes expected outputs with simple base R code only. The schema output is a regression projection because its classifier mirrors historical production logic; it is not independent compatibility evidence. Do not use the package under test here.
+# verified public source archives and computes expected outputs with simple base
+# R code only. The schema output is a regression projection because its
+# classifier mirrors historical production logic; it is not independent
+# compatibility evidence. Do not use the package under test here.
 
-fixture_source_packages <- c("medicaldata", "palmerpenguins")
-missing_source_packages <- fixture_source_packages[
-  !vapply(fixture_source_packages, requireNamespace, logical(1), quietly = TRUE)
-]
+fixture_sources <- list(
+  medicaldata = list(
+    version = "0.2.0",
+    url = "https://cran.r-project.org/src/contrib/medicaldata_0.2.0.tar.gz",
+    sha256 = "56dab0c6078e6f9a9f183427a4481c5497e5d107b795bf965cc7ce4ac4c39236"
+  ),
+  palmerpenguins = list(
+    version = "0.1.1",
+    url = "https://cran.r-project.org/src/contrib/palmerpenguins_0.1.1.tar.gz",
+    sha256 = "2a40d48ba6c7978fdf2a6daf647ccb39cd17590680138931d11194d3dd1a30b4"
+  )
+)
 
-if (length(missing_source_packages) > 0) {
-  stop(
-    "Packages required to regenerate external fixtures are missing: ",
-    paste(missing_source_packages, collapse = ", "),
-    ". Install them before running this script.",
-    call. = FALSE
+fixture_sha256 <- c(
+  blood_storage = "e3a1c6b83de9ddae8380ef2a92ce995fe927c5a176c589039d8b6089dae812b9",
+  penguins_raw = "a634e85f0676c74c4cd73f94ff8cbf9ec12540d01797434cf1fd0ba8d9af663f"
+)
+
+sha256_file <- function(path) {
+  connection <- file(path, open = "rb")
+  on.exit(close(connection), add = TRUE)
+  paste0(openssl::sha256(connection))
+}
+
+verify_sha256 <- function(path, expected, label) {
+  actual <- sha256_file(path)
+  if (!identical(actual, expected)) {
+    stop(
+      label,
+      " SHA-256 mismatch; expected ",
+      expected,
+      " but found ",
+      actual,
+      ". No committed fixture was overwritten.",
+      call. = FALSE
+    )
+  }
+  invisible(path)
+}
+
+prepare_fixture_sources <- function() {
+  work_dir <- tempfile("episcout-fixture-sources-")
+  source_library <- file.path(work_dir, "library")
+  dir.create(source_library, recursive = TRUE)
+  on.exit(unlink(work_dir, recursive = TRUE, force = TRUE), add = TRUE)
+
+  archives <- character(length(fixture_sources))
+  names(archives) <- names(fixture_sources)
+  for (package in names(fixture_sources)) {
+    source <- fixture_sources[[package]]
+    archive <- file.path(work_dir, basename(source$url))
+    utils::download.file(source$url, archive, mode = "wb", quiet = TRUE)
+    verify_sha256(archive, source$sha256, paste(package, "source archive"))
+    archives[[package]] <- archive
+  }
+
+  utils::install.packages(
+    unname(archives),
+    lib = source_library,
+    repos = NULL,
+    type = "source",
+    dependencies = FALSE,
+    quiet = TRUE
+  )
+
+  for (package in names(fixture_sources)) {
+    actual_version <- utils::packageDescription(
+      package,
+      lib.loc = source_library,
+      fields = "Version"
+    )
+    if (!identical(actual_version, fixture_sources[[package]]$version)) {
+      stop("Unexpected installed source version for ", package, call. = FALSE)
+    }
+  }
+
+  blood_env <- new.env(parent = emptyenv())
+  utils::data(
+    "blood_storage",
+    package = "medicaldata",
+    lib.loc = source_library,
+    envir = blood_env
+  )
+  loadNamespace(
+    "palmerpenguins",
+    lib.loc = source_library
+  )
+  penguins_raw <- getExportedValue("palmerpenguins", "penguins_raw")
+  unloadNamespace("palmerpenguins")
+
+  list(
+    blood_storage = blood_env$blood_storage,
+    penguins_raw = penguins_raw,
+    medicaldata_license = readLines(
+      file.path(source_library, "medicaldata", "LICENSE"),
+      warn = FALSE
+    )
   )
 }
+
+write_verified_csv <- function(data, path, na, expected_sha256, label) {
+  candidate <- tempfile(paste0(basename(path), "-"), tmpdir = dirname(path))
+  on.exit(unlink(candidate, force = TRUE), add = TRUE)
+  write.csv(data, candidate, row.names = FALSE, na = na)
+  verify_sha256(candidate, expected_sha256, label)
+  if (!file.copy(candidate, path, overwrite = TRUE)) {
+    stop("Unable to replace verified fixture: ", path, call. = FALSE)
+  }
+  invisible(path)
+}
+
+verify_serialized_fixture <- function(data, na, expected_sha256, label) {
+  candidate <- tempfile(paste0(label, "-"))
+  on.exit(unlink(candidate, force = TRUE), add = TRUE)
+  write.csv(data, candidate, row.names = FALSE, na = na)
+  verify_sha256(candidate, expected_sha256, label)
+}
+
+write_fixture_checksums <- function(directory) {
+  files <- sort(list.files(directory, full.names = TRUE))
+  files <- files[basename(files) != "CHECKSUMS.sha256"]
+  hashes <- vapply(files, sha256_file, character(1))
+  writeLines(
+    paste(hashes, basename(files), sep = "  "),
+    file.path(directory, "CHECKSUMS.sha256")
+  )
+}
+
+source_objects <- prepare_fixture_sources()
+
+if (!identical(
+  source_objects$medicaldata_license,
+  c("YEAR: 2021", "COPYRIGHT HOLDER: medicaldata authors")
+)) {
+  stop("Unexpected medicaldata licence notice; no fixture was overwritten.", call. = FALSE)
+}
+verify_serialized_fixture(
+  source_objects$blood_storage,
+  na = "",
+  expected_sha256 = fixture_sha256[["blood_storage"]],
+  label = "blood_storage fixture"
+)
+verify_serialized_fixture(
+  source_objects$penguins_raw,
+  na = "NA",
+  expected_sha256 = fixture_sha256[["penguins_raw"]],
+  label = "penguins_raw fixture"
+)
 
 fixture_observed_type <- function(x) {
   if (inherits(x, "POSIXct") || inherits(x, "POSIXlt")) {
@@ -62,7 +200,10 @@ make_expected_missing <- function(data, spec) {
 }
 
 make_expected_numeric_summary <- function(data, spec) {
-  names_to_summarise <- spec$name[spec$type %in% c("numeric", "integer")]
+  identifier <- spec$role %in% c("id", "identifier")
+  names_to_summarise <- spec$name[
+    spec$type %in% c("numeric", "integer") & !identifier
+  ]
   rows <- lapply(names_to_summarise, function(name) {
     values <- data[[name]]
     observed <- values[!is.na(values)]
@@ -70,11 +211,11 @@ make_expected_numeric_summary <- function(data, spec) {
       name = name,
       n = length(values),
       n_missing = sum(is.na(values)),
-      mean = mean(observed),
-      sd = stats::sd(observed),
-      median = stats::median(observed),
-      min = min(observed),
-      max = max(observed),
+      mean = signif(mean(observed), 13L),
+      sd = signif(stats::sd(observed), 13L),
+      median = signif(stats::median(observed), 13L),
+      min = signif(min(observed), 13L),
+      max = signif(max(observed), 13L),
       stringsAsFactors = FALSE
     )
   })
@@ -106,12 +247,12 @@ make_expected_categorical <- function(data, spec) {
 }
 
 make_expected_plot_inventory <- function(spec) {
-  binned <- spec$type %in% c("numeric", "integer", "date", "datetime")
+  identifier <- spec$role %in% c("id", "identifier")
   data.frame(
     name = spec$name,
     type = spec$type,
-    layer_geom = rep("GeomBar", nrow(spec)),
-    layer_stat = ifelse(binned, "StatBin", "StatCount"),
+    layer_geom = ifelse(identifier, NA_character_, "GeomCol"),
+    layer_stat = ifelse(identifier, NA_character_, "StatIdentity"),
     stringsAsFactors = FALSE
   )
 }
@@ -119,11 +260,8 @@ make_expected_plot_inventory <- function(spec) {
 fixture_dir <- file.path("tests", "testthat", "fixtures", "blood_storage")
 dir.create(fixture_dir, recursive = TRUE, showWarnings = FALSE)
 
-medicaldata_version <- as.character(utils::packageVersion("medicaldata"))
-
-data("blood_storage", package = "medicaldata", envir = environment())
-blood_storage <- get("blood_storage", envir = environment())
-
+blood_storage <- source_objects$blood_storage
+medicaldata_source <- fixture_sources$medicaldata
 
 source_lines <- c(
   "# blood_storage fixture provenance",
@@ -132,9 +270,14 @@ source_lines <- c(
   "",
   "- Dataset: `blood_storage`",
   "- Source package: `medicaldata`",
-  paste0("- Source package version used for fixture generation: ", medicaldata_version),
+  paste0("- Source package version used for fixture generation: ", medicaldata_source$version),
+  paste0("- Canonical source archive: ", medicaldata_source$url),
+  paste0("- Source archive SHA-256: `", medicaldata_source$sha256, "`"),
+  paste0("- Serialized fixture SHA-256: `", fixture_sha256[["blood_storage"]], "`"),
   paste0("- Observations: ", nrow(blood_storage)),
   paste0("- Variables: ", ncol(blood_storage)),
+  "- Licence: MIT (`LICENSE.medicaldata` reproduces the package notice)",
+  "- Redistribution basis: the fixture is an exact serialization of the dataset distributed in the MIT-licensed `medicaldata` source package.",
   "- Study type: retrospective cohort",
   "- Clinical area: prostate cancer recurrence after perioperative transfusion",
   "",
@@ -149,6 +292,12 @@ source_lines <- c(
   "- `blood_storage_spec.csv`: manually reviewed fixture data dictionary for the specification-first EDA workflow.",
   "- `expected_schema.csv`: generator-produced regression projection of the historical presence and observed-class fields; it is not independent evidence of type compatibility.",
   "- `expected_missing.csv`: independently computed expected missingness result for the unmodified fixture data.",
+  "- `LICENSE.medicaldata`: source-package MIT copyright notice.",
+  "- `CHECKSUMS.sha256`: offline drift guard for every committed file in this fixture family.",
+  "",
+  "## Extraction and transformation",
+  "",
+  "The verified source archive is installed into a temporary library and `medicaldata::blood_storage` is loaded from that isolated installation. The object is serialized with `write.csv(row.names = FALSE, na = \"\")`. No row, column or value is transformed or excluded.",
   "",
   "## Regeneration",
   "",
@@ -160,13 +309,18 @@ source_lines <- c(
   "",
   "The script computes expected outputs with base R and does not call the package under test. The generated schema classifier mirrors the package's historical classifier, so hand-authored tests provide the independent evidence for type compatibility."
 )
-writeLines(source_lines, file.path(fixture_dir, "SOURCE.md"))
 
-write.csv(
+write_verified_csv(
   blood_storage,
   file.path(fixture_dir, "blood_storage.csv"),
-  row.names = FALSE,
-  na = ""
+  na = "",
+  expected_sha256 = fixture_sha256[["blood_storage"]],
+  label = "blood_storage fixture"
+)
+writeLines(source_lines, file.path(fixture_dir, "SOURCE.md"))
+writeLines(
+  source_objects$medicaldata_license,
+  file.path(fixture_dir, "LICENSE.medicaldata")
 )
 
 spec <- data.frame(
@@ -267,12 +421,13 @@ write.csv(expected_schema, file.path(fixture_dir, "expected_schema.csv"), row.na
 
 expected_missing <- make_expected_missing(blood_storage_serialized, spec)
 write.csv(expected_missing, file.path(fixture_dir, "expected_missing.csv"), row.names = FALSE, na = "")
+write_fixture_checksums(fixture_dir)
 
 penguins_fixture_dir <- file.path("tests", "testthat", "fixtures", "penguins_raw")
 dir.create(penguins_fixture_dir, recursive = TRUE, showWarnings = FALSE)
 
-palmerpenguins_version <- as.character(utils::packageVersion("palmerpenguins"))
-penguins_raw <- palmerpenguins::penguins_raw
+penguins_raw <- source_objects$penguins_raw
+palmerpenguins_source <- fixture_sources$palmerpenguins
 
 penguins_source_lines <- c(
   "# penguins_raw fixture provenance",
@@ -281,7 +436,10 @@ penguins_source_lines <- c(
   "",
   "- Dataset: `penguins_raw`",
   "- Source package: `palmerpenguins`",
-  paste0("- Source package version used for fixture generation: ", palmerpenguins_version),
+  paste0("- Source package version used for fixture generation: ", palmerpenguins_source$version),
+  paste0("- Canonical source archive: ", palmerpenguins_source$url),
+  paste0("- Source archive SHA-256: `", palmerpenguins_source$sha256, "`"),
+  paste0("- Serialized fixture SHA-256: `", fixture_sha256[["penguins_raw"]], "`"),
   paste0("- Observations: ", nrow(penguins_raw)),
   paste0("- Variables: ", ncol(penguins_raw)),
   "- Licence: CC0",
@@ -303,7 +461,12 @@ penguins_source_lines <- c(
   "- `expected_missing.csv`: independently computed missingness contract.",
   "- `expected_summary_numeric.csv`: independently computed numeric summaries.",
   "- `expected_summary_categorical.csv`: independently computed categorical summaries.",
-  "- `expected_plot_inventory.csv`: independently defined non-visual plot dispatch.",
+  "- `expected_plot_inventory.csv`: independently defined non-visual compact-plot dispatch, including named no-plot rows for both reviewed identifiers.",
+  "- `CHECKSUMS.sha256`: offline drift guard for every committed file in this fixture family.",
+  "",
+  "## Extraction and transformation",
+  "",
+  "The verified source archive is installed into a temporary library and `palmerpenguins::penguins_raw` is loaded from that isolated installation. The object is serialized with `write.csv(row.names = FALSE, na = \"NA\")`. No row, column or value is transformed or excluded.",
   "",
   "## Regeneration",
   "",
@@ -315,13 +478,17 @@ penguins_source_lines <- c(
   "",
   "The script computes expected outputs with base R and does not call the package under test. The generated schema classifier mirrors the package's historical classifier, so hand-authored tests provide the independent evidence for type compatibility."
 )
-writeLines(penguins_source_lines, file.path(penguins_fixture_dir, "SOURCE.md"))
 
-write.csv(
+write_verified_csv(
   penguins_raw,
   file.path(penguins_fixture_dir, "penguins_raw.csv"),
-  row.names = FALSE,
-  na = "NA"
+  na = "NA",
+  expected_sha256 = fixture_sha256[["penguins_raw"]],
+  label = "penguins_raw fixture"
+)
+writeLines(
+  penguins_source_lines,
+  file.path(penguins_fixture_dir, "SOURCE.md")
 )
 
 penguins_spec <- data.frame(
@@ -457,5 +624,6 @@ write.csv(
   make_expected_plot_inventory(penguins_spec),
   file.path(penguins_fixture_dir, "expected_plot_inventory.csv"),
   row.names = FALSE,
-  na = ""
+  na = "NA"
 )
+write_fixture_checksums(penguins_fixture_dir)
