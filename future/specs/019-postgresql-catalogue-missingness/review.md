@@ -36,6 +36,10 @@ into a catalogue missing code.
   the environment has no PostgreSQL client/service or container runtime.
 - The live test is named for the mandatory `eda-postgres` CI filter and covers
   zero rows, all NULL, exact limit plus NULL, and limit plus one on PostgreSQL 17.
+- The first PR PostgreSQL 17 job passed all live cases in 3m09s. Ubuntu and
+  macOS stopped only at the newer CI linter's 30-character limit for one private
+  test-helper name; shortening that name changed no behavior and was followed by
+  focused local tests and lint before the replacement CI run.
 - Package-loaded lint returned no findings.
 - The full package suite passed with expected environment-dependent skips.
 - `scripts/check-local.sh` exited successfully; its known generated-help and

@@ -10,7 +10,7 @@ Status: Implemented
 - [x] `missing` contains one exact `n_missing` row per selected column, including
   empty and all-NULL sources.
 - [x] Existing dictionary eligibility, privacy and connection gates remain.
-- [ ] Unit and mandatory PostgreSQL 17 tests cover zero rows, all NULL, exact
+- [x] Unit and mandatory PostgreSQL 17 tests cover zero rows, all NULL, exact
   limit plus NULL and limit plus one.
 - [x] Help, longitudinal guidance, the runnable walkthrough and NEWS explain
   conversion and compatibility.
@@ -18,6 +18,6 @@ Status: Implemented
   the live PostgreSQL test is discovered locally and awaits mandatory CI.
 - [x] Spec 020 is reconciled as merged and completed, while roadmap item 3 is
   not started.
-- [ ] Mandatory PostgreSQL 17 CI passes the zero-row, all-NULL, exact-limit and
+- [x] Mandatory PostgreSQL 17 CI passes the zero-row, all-NULL, exact-limit and
   over-limit live cases.
 - [ ] Pull-request CI passes and the owner accepts and merges the implementation.
