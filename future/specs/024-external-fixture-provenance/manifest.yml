@@ -1,0 +1,39 @@
+id: "024"
+slug: "external-fixture-provenance"
+status: implemented
+owner: repository-owner
+base_branch: master
+working_branch: refactor/release-unblockers-208-209
+created: 2026-08-07
+updated: 2026-08-07
+
+issues:
+  - 209
+  - 204
+
+related_files:
+  - data-raw/test-fixtures/make_external_fixtures.R
+  - tests/testthat/fixtures/README.md
+  - tests/testthat/fixtures/blood_storage/
+  - tests/testthat/fixtures/penguins_raw/
+  - tests/testthat/test-fixture-provenance.R
+  - tests/testthat/test-fixture-generation-guardrails.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R data-raw/test-fixtures/make_external_fixtures.R
+  - scripts/rscript_env_caller.R -e "devtools::test(filter = 'fixture-(provenance|generation-guardrails)', reporter = 'summary')"
+  - scripts/check-local.sh
+  - git diff --check
+
+notes:
+  - Manual regeneration is networked; routine tests remain offline.
+  - Package runtime and analytical behaviour remain unchanged.

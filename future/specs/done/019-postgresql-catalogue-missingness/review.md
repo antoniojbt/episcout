@@ -27,7 +27,7 @@ into a catalogue missing code.
 
 ## Verification Evidence
 
-The owner merged draft PR #207 as commit `806b3e2fa53aceba25dd911b57e9dddd7b6f0691` on 2026-08-07. PostgreSQL 17 integration, macOS, Ubuntu, coverage, Codecov project/patch and CodeFactor checks all passed on the final head.
+The owner merged draft PR #207; its rewritten-equivalent merge commit is `6a117a06678f1ec020d5b59dbab236339bd1b1e7`. PostgreSQL 17 integration, macOS, Ubuntu, coverage, Codecov project/patch and CodeFactor checks all passed on the final head.
 
 - The pre-code `db-dictionary` suite passed and source inspection independently
   established the mismatched PostgreSQL NULL domains.

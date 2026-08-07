@@ -24,4 +24,4 @@ Status: Completed
 
 ## Closeout
 
-Draft PR #207 passed PostgreSQL 17, macOS, Ubuntu, coverage, Codecov project/patch and CodeFactor checks. The repository owner merged it as commit `806b3e2fa53aceba25dd911b57e9dddd7b6f0691` on 2026-08-07.
+Draft PR #207 passed PostgreSQL 17, macOS, Ubuntu, coverage, Codecov project/patch and CodeFactor checks. Its rewritten-equivalent merge commit is `6a117a06678f1ec020d5b59dbab236339bd1b1e7`.

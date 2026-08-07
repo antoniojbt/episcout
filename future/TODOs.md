@@ -42,9 +42,9 @@ Reviewed against the complete open issue queue on 2026-08-07. Roadmap issue [#20
 | Issue | Priority | Tracked next action |
 | --- | --- | --- |
 | [#204](https://github.com/antoniojbt/episcout/issues/204) | Roadmap | Execute the non-deferred items below in the approved order, with one active implementation spec and one focused branch/PR at a time. |
-| [#208](https://github.com/antoniojbt/episcout/issues/208) | Item 3 blocker, ready next | Implement spec `023-package-source-hygiene` without changing package behaviour, then inspect the exact source archive. |
-| [#209](https://github.com/antoniojbt/episcout/issues/209) | Item 3 blocker, queued | Implement spec `024-external-fixture-provenance` after #208 while keeping routine tests offline. |
-| [#81](https://github.com/antoniojbt/episcout/issues/81) | Item 4 release umbrella | Start only after #208, #209 and the owner-gated historical Codecov release disposition are resolved. |
+| [#208](https://github.com/antoniojbt/episcout/issues/208) | Item 3 blocker, implemented | Review and merge consolidated specs 023/024 without package behaviour changes. |
+| [#209](https://github.com/antoniojbt/episcout/issues/209) | Item 3 blocker, implemented | Review and merge the same release-unblock PR; routine tests remain offline. |
+| [#81](https://github.com/antoniojbt/episcout/issues/81) | Item 4 release umbrella | Start after the combined PR merges and the five upstream tags/credential containment follow-up is complete; prepare GitHub 0.3.0 before CRAN polish. |
 | [#196](https://github.com/antoniojbt/episcout/issues/196) | Deferred item 5 | Do not activate spec `018-database-eda-report-rendering` until the owner revises the roadmap. |
 | [#61](https://github.com/antoniojbt/episcout/issues/61) | Question | Obtain a concrete dependency target and compatibility objective before planning refactoring. |
 | [#62](https://github.com/antoniojbt/episcout/issues/62) | Question | Inventory the named functions and desired cleanup outcome before planning changes. |
@@ -56,28 +56,28 @@ Do not create all branches in advance. Synchronise from authoritative `upstream/
 
 #### Item 3 blockers before release work
 
-- [ ] Resolve issue #208 through spec `023-package-source-hygiene` on `bugfix/package-source-hygiene`:
+- [x] Implement issue #208 through spec `023-package-source-hygiene` on the consolidated `refactor/release-unblockers-208-209` branch:
     - Problem: The canonical local-then-CRAN check sequence can package generated `Rplots.pdf`, obsolete developer paths and an unused workbook.
     - Goal: Make the exact source archive contain only demonstrated package material without changing public or analytical behaviour.
     - Candidate files: `.Rbuildignore`, focused test/build guardrails, four legacy test comments and `vignettes/R_datasets.xlsx`.
     - Risks: Removing intended visual references, masking test detritus instead of fixing its boundary or weakening package checks.
     - Suggested spec ID: `023-package-source-hygiene`.
 
-- [ ] Resolve issue #209 through spec `024-external-fixture-provenance` on `refactor/external-fixture-provenance` after #208:
+- [x] Implement issue #209 through spec `024-external-fixture-provenance` on the same consolidated branch:
     - Problem: Fixture bytes match their declared upstream objects, but immutable source checksums and the complete redistribution/attribution record are not committed.
     - Goal: Make source identity, licence, extraction, transformation, local checksums and independent truth status reviewable while keeping tests offline.
     - Candidate files: fixture `SOURCE.md` records, the manual generator and focused guardrail tests.
     - Risks: Network-dependent tests, silently changing fixture bytes, circular expected values or retaining clinical data without an authoritative redistribution basis.
     - Suggested spec ID: `024-external-fixture-provenance`.
 
-- [ ] Obtain the explicit owner decision required for the historical Codecov release blocker after #208 and #209; do not activate conditional spec 011, expose values, alter token policy or rewrite history without that instruction.
+- [ ] Complete the owner-authorised Codecov containment: rewritten upstream `master` and all fork heads are published; force-replace the five rewritten upstream annotated tags, revoke/rotate the credential, verify one protected-branch upload and request eligible GitHub cache/PR-ref cleanup. Never record either credential value.
 
 #### Item 4 — release 0.3.0
 
-- [ ] Complete issue #81 and `future/scratch/release-0.3.0-plan.md` on `feature/release-0.3.0` only after item 3 blockers are resolved:
+- [ ] Complete issue #81 and `future/scratch/release-0.3.0-plan.md` on `feature/release-0.3.0` after the combined PR and remaining security containment:
     - [ ] Complete the human live walkthrough from an isolated installed candidate; no agent may mark the human acceptance gate complete.
     - [ ] Carry out reviewed changes needed from the human walkthrough through appropriately scoped branches/specs.
-    - [ ] Prepare and verify the exact `0.3.0` artifact, then stop at every tag, GitHub release and CRAN owner-approval gate.
+    - [ ] Prepare and verify the exact `0.3.0` artifact, then stop at the tag and GitHub release owner-approval gates. Defer CRAN submission polish.
 
 #### Item 6 — multi-table PostgreSQL identifier universe
 
@@ -98,7 +98,7 @@ Do not create all branches in advance. Synchronise from authoritative `upstream/
 
 ## Later
 
-- [ ] Deferred item 0b — historical Codecov credential containment and history decision. The owner deferred this work under issue #204. Do not expose credential material, change token policy, rewrite history or activate conditional spec `011` without a separate owner instruction. Deferral does not itself satisfy the release plan's no-unresolved-disclosure gate; item 3 must classify the remaining release impact for an explicit owner decision before item 4 can pass go/no-go.
+- [ ] Finish item 0b — the owner authorised history removal on 2026-08-07. The cleaned upstream `master` and all fork heads are published; upstream annotated tags, token revocation/rotation, protected-branch verification and eligible GitHub cache cleanup remain.
 
 - [ ] Deferred item 5 — issue #196 and spec `018-database-eda-report-rendering`:
     - Problem: `epi_eda_render_report()` cannot yet consume a completed PostgreSQL EDA run or its verified aggregate bundle.
@@ -113,7 +113,7 @@ Do not create all branches in advance. Synchronise from authoritative `upstream/
 - [ ] Consider visual-regression strategy for EDA plots only after plot contracts are stable.
 - [ ] Add biomedical EDA extensions only as separately prioritised numbered specs.
 
-- [ ] Deferred detailed record for the historical Codecov upload-token disclosure; retain these instructions without acting until the owner reactivates item 0b:
+- [ ] Active detailed record for the historical Codecov upload-token disclosure. Owner authorisation was received on 2026-08-07; never expose either credential value:
     - Problem: A redacted all-history secret scan found a token-shaped Codecov credential in the deleted `codecov.yml`. Commit `b22f919904317f2d3f27584412ccec02464c7d1c` is an affected historical landmark; commit `13815543bc81f5a16ad40f7c3426cfe40f36738e` removed the plaintext configuration and `78dcd5d53a8b2fa9916b93df4bef5258732b4236` later deleted the file. Deleting the current file did not remove the value from Git history. Never copy the credential into this task, an issue, a PR, chat, terminal output or a remediation report.
     - Goal: Make the historical credential unusable, verify that coverage upload still works securely, assess its exposure, and make an explicit owner-approved decision about whether destructive history rewriting is warranted.
     - User need: A safe walkthrough that separates urgent credential containment from optional history cleanup and leaves evidence that does not disclose the credential.
@@ -158,7 +158,7 @@ Do not create all branches in advance. Synchronise from authoritative `upstream/
 
 ### 2026-08-07
 
-- [x] Complete roadmap item 3's release-readiness audit at `806b3e2`: pass the local `0/0/0` baseline, classify the one CRAN incoming NOTE and 14 source-test skips, inspect/install the 373-member source archive, verify current/archive secret coverage, reconcile spec 010 and the release delta, prove both pinned fixtures match their declared upstream objects, and record blockers as issues #208 and #209 plus the owner-gated historical Codecov disposition. No package behaviour, credential policy, history, tag, release or submission changed.
+- [x] Complete roadmap item 3's release-readiness audit at rewritten-equivalent commit `6a117a0`: pass the local `0/0/0` baseline, classify the one CRAN incoming NOTE and 14 source-test skips, inspect/install the 373-member source archive, verify current/archive secret coverage, reconcile spec 010 and the release delta, prove both pinned fixtures match their declared upstream objects, and record blockers as issues #208 and #209 plus the owner-gated historical Codecov disposition. No package behaviour, credential policy, history, tag, release or submission changed during the audit itself.
 - [x] Accept and merge issue #197/spec `019-postgresql-catalogue-missingness` through PR #207 with PostgreSQL 17, macOS, Ubuntu, coverage, Codecov and CodeFactor checks green; move the completed specification to `future/specs/done/`.
 - [x] Accept and merge issue #198/spec `020-data-frame-writer-delimiter-contract` through PR #206 with macOS, Ubuntu, PostgreSQL, coverage, Codecov and CodeFactor checks green; move the completed specification to `future/specs/done/` and activate only issue #197/spec 019 next.
 - [x] Reconcile the roadmap under issue #204: defer item 0b and issue #196/spec 018, order issues #198 and #197 before the release-readiness audit and release 0.3.0, then schedule the PostgreSQL identifier-universe and narrow row-count work; align the scratch index, release plan and spec template without starting package implementation.
