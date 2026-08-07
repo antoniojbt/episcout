@@ -51,11 +51,13 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- Spec `019-postgresql-catalogue-missingness` implements issue [#197](https://github.com/antoniojbt/episcout/issues/197) on `bugfix/postgresql-catalogue-missingness`. It separates reviewable non-missing catalogue values from aggregate PostgreSQL NULL counts.
+- No implementation specification is active. Roadmap item 3's completed audit is recorded under `future/reviews/done/2026-08-07-release-readiness-audit.md`.
 
 ### Ready Next
 
-- The release-readiness audit under roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204) follows only after issue #197 is accepted and merged.
+- Issue [#208](https://github.com/antoniojbt/episcout/issues/208) should activate spec `023-package-source-hygiene` on `bugfix/package-source-hygiene` next. It removes release-blocking generated and legacy source-package artifacts without changing package behaviour.
+- Issue [#209](https://github.com/antoniojbt/episcout/issues/209) should then activate spec `024-external-fixture-provenance` on `refactor/external-fixture-provenance` to complete immutable source, licence, attribution and truth-status evidence while preserving offline tests.
+- Release issue [#81](https://github.com/antoniojbt/episcout/issues/81) remains blocked after those two issues until the owner records the required historical Codecov release disposition.
 
 ### Draft
 
@@ -69,4 +71,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-Completed specs, including accepted specs `003-large-data-backend-strategy` and `020-data-frame-writer-delimiter-contract`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness` and `020-data-frame-writer-delimiter-contract`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
