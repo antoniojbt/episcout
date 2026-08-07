@@ -42,7 +42,7 @@ Reviewed against the complete open issue queue on 2026-08-07. Roadmap issue [#20
 | Issue | Priority | Tracked next action |
 | --- | --- | --- |
 | [#204](https://github.com/antoniojbt/episcout/issues/204) | Roadmap | Execute the non-deferred items below in the approved order, with one active implementation spec and one focused branch/PR at a time. |
-| [#198](https://github.com/antoniojbt/episcout/issues/198) | Item 1 | Plan and implement spec `020-data-frame-writer-delimiter-contract`. |
+| [#198](https://github.com/antoniojbt/episcout/issues/198) | Item 1 | Review, accept and merge the locally verified spec `020-data-frame-writer-delimiter-contract` implementation. |
 | [#197](https://github.com/antoniojbt/episcout/issues/197) | Item 2 | Plan and implement spec `019-postgresql-catalogue-missingness`. |
 | [#81](https://github.com/antoniojbt/episcout/issues/81) | Item 4 release umbrella | Start only after the item 3 release-readiness audit and its blocking findings are resolved. |
 | [#196](https://github.com/antoniojbt/episcout/issues/196) | Deferred item 5 | Do not activate spec `018-database-eda-report-rendering` until the owner revises the roadmap. |
@@ -56,15 +56,14 @@ Do not create all branches in advance. Synchronise from authoritative `upstream/
 
 #### Item 1 — writer delimiter contract
 
-- [ ] Plan and implement issue #198 as spec `020-data-frame-writer-delimiter-contract` on `bugfix/data-frame-writer-delimiter-contract`:
-    - Problem: `epi_write_df(..., suffix = "csv")` currently writes tab-delimited content with a `.csv` filename.
-    - Goal: Make extension and delimiter agree through an explicit backward-compatibility decision.
+- [ ] Review, accept and merge issue #198/spec `020-data-frame-writer-delimiter-contract` on `bugfix/data-frame-writer-delimiter-contract`; local implementation and acceptance checks are complete:
+    - Problem resolved locally: `epi_write_df(..., suffix = "csv")` now writes comma-delimited content; TSV output is unchanged.
+    - Compatibility decision: Accept only CSV/TSV suffixes, infer their delimiter, reject contradictory explicit separators and call out the corrected CSV bytes in NEWS.
     - User need: Produce files downstream tools interpret correctly without silently changing released behaviour.
     - Proposed scope: Delimiter/suffix contract, raw-byte regression tests, overwrite/directory behaviour, help and NEWS.
     - Out of scope: A general serialisation framework, new dependency or unrelated writer cleanup.
-    - Candidate files: `future/specs/020-data-frame-writer-delimiter-contract/`, `R/epi_write_df.R`, `R/epi_write.R`, related documentation, focused tests and NEWS.
-    - Risks: Silent output-format changes, downstream parsing regressions and ambiguous quoting or missing-value representation.
-    - Suggested spec ID: `020-data-frame-writer-delimiter-contract`.
+    - Implemented files: `future/specs/020-data-frame-writer-delimiter-contract/`, `R/epi_write_df.R`, generated help, focused raw-byte tests and NEWS; `R/epi_write.R` remains unchanged.
+    - Remaining gate: Pull-request CI and owner review/merge. Do not start item 2 before merge.
 
 #### Item 2 — PostgreSQL catalogue missingness
 

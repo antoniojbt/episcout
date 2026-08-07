@@ -51,12 +51,11 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- No package implementation spec is active. Roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204) defines the approved sequence.
+- Spec `020-data-frame-writer-delimiter-contract` implements issue [#198](https://github.com/antoniojbt/episcout/issues/198) on `bugfix/data-frame-writer-delimiter-contract`. Local acceptance is complete; pull-request CI, owner acceptance and merge remain open.
 
 ### Ready Next
 
-- Issue [#198](https://github.com/antoniojbt/episcout/issues/198) is first in the approved implementation order under roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204). Plan it as spec `020-data-frame-writer-delimiter-contract` before package-code changes.
-- Issue [#197](https://github.com/antoniojbt/episcout/issues/197) follows as spec `019-postgresql-catalogue-missingness`.
+- Issue [#197](https://github.com/antoniojbt/episcout/issues/197) follows as spec `019-postgresql-catalogue-missingness` after issue #198 is accepted and merged.
 
 ### Draft
 
