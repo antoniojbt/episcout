@@ -1,6 +1,6 @@
 id: "020"
 slug: "data-frame-writer-delimiter-contract"
-status: implemented
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: bugfix/data-frame-writer-delimiter-contract
@@ -49,3 +49,4 @@ notes:
   - CSV output changes from the erroneous historical tab delimiter to a comma and is called out in NEWS.
   - TSV output and epi_write() remain unchanged.
   - Only csv and tsv suffixes are accepted so the filename contract is unambiguous.
+  - PR 206 passed macOS, Ubuntu, PostgreSQL, coverage, Codecov and CodeFactor checks and was merged on 2026-08-07.

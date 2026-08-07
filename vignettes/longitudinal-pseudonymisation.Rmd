@@ -123,6 +123,34 @@ epi_eda_dictionary_validate(dictionary, catalogues = NULL)
 
 This mechanical assignment is appropriate only for the explicitly synthetic columns created above. For real restricted sources, a qualified reviewer must decide every label, type, role, privacy class, analytic action, provenance, catalogue reference and validation status. Do not leave `review` or `derive`, and do not copy this synthetic classification without reviewing the actual data contract.
 
+For a reviewed categorical or binary column that is safe to profile, set
+`profile_catalogue = TRUE` explicitly and inspect aggregate values without
+extracting source rows:
+
+```{r catalogue-profile, eval = FALSE}
+dictionary$profile_catalogue[
+  dictionary$source_column == "event_type"
+] <- TRUE
+
+catalogue_profile <- epi_db_catalogue_profile(
+  con,
+  dictionary,
+  max_levels = 20
+)
+
+catalogue_profile$values
+catalogue_profile$missing
+```
+
+`values` contains only non-NULL source values and counts, so its rows can be
+copied into a draft normalised catalogue for human labelling and confirmation.
+`missing` reports one aggregate PostgreSQL NULL count per profiled column,
+including zero for an empty table. Review that count separately: PostgreSQL NULL
+is not a catalogue `source_value`, and this profile does not decide whether any
+observed sentinel value represents missingness. Direct identifiers,
+quasi-identifiers, free text and unreviewed fields remain ineligible for this
+profiling step.
+
 The pseudonymisation gate excludes every `bridge` and `drop` column. It retains only confirmed `retain` and `retain_restricted` columns. It blocks unclassified, unreviewed, pending, added, modified, unsupported `derive` or incomplete dictionary rows. A valid dictionary is a reviewed contract, not automatic detection of personal information.
 
 ## 5. Linkage scaffold and confirmed specification

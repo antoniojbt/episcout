@@ -255,9 +255,10 @@ catalogue_profile <- epi_db_catalogue_profile(
   dictionary,
   max_levels = 5L
 )
-catalogue_profile
+catalogue_profile$values
+catalogue_profile$missing
 
-# Catalogue meaning comes from the known fixture contract, not from guessing at the observed profile. Missingness is explicit for the synthetic sex field.
+# Catalogue meaning comes from the known fixture contract, not from guessing at the observed profile. PostgreSQL NULL counts are reviewed separately; missingness is explicit for the synthetic sex field.
 catalogues <- data.frame(
   catalog_name = c(
     "sex", "sex", "sex",

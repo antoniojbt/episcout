@@ -2,6 +2,11 @@
 
 ## Development version
 
+- Corrected the pre-release `epi_db_catalogue_profile()` result contract so
+  non-missing value counts are returned in `values` and one aggregate
+  PostgreSQL NULL count per profiled column is returned in `missing`. Empty and
+  all-NULL tables retain a missing-count row, `values$source_value` is never
+  missing, and `max_levels` now unambiguously bounds only non-missing values.
 - Corrected `epi_write_df()` so `suffix = "csv"` writes comma-separated bytes
   instead of tab-separated content with a `.csv` filename. The function now
   accepts only CSV or TSV suffixes, infers their delimiter, rejects explicit

@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `020-data-frame-writer-delimiter-contract`
-Status: Implemented
+Status: Completed
 
 - [x] CSV filenames contain comma-separated bytes and TSV filenames contain
   tab-separated bytes.
@@ -15,4 +15,5 @@ Status: Implemented
   unrelated limitations are recorded.
 - [x] Planning, review and changelog records reconcile issue #198 and roadmap
   issue #204 without starting item 2.
-- [ ] Pull-request CI passes and the owner accepts and merges the implementation.
+- [x] PR #206 passed all GitHub and external checks and was accepted and merged
+  into `master` on 2026-08-07.
