@@ -2,28 +2,44 @@
 % Please edit documentation in R/epi_write_df.R
 \name{epi_write_df}
 \alias{epi_write_df}
-\title{Save a Data Frame to a File with Custom Formatting}
+\title{Save a Data Frame as CSV or TSV}
 \usage{
-epi_write_df(df, results_subdir, file_n, suffix)
+epi_write_df(df, results_subdir, file_n, suffix, sep = NULL)
 }
 \arguments{
 \item{df}{A data frame to be written to the file.}
 
-\item{results_subdir}{A character string specifying the directory where the file will be saved.}
+\item{results_subdir}{One character string naming an existing directory.
+The directory is not created automatically.}
 
-\item{file_n}{A character string specifying the base name of the file (without the suffix).}
+\item{file_n}{One non-empty character string specifying the base filename,
+without a directory or suffix.}
 
-\item{suffix}{A character string specifying the filename extension. Use \code{"tsv"} for the default tab-separated output.}
+\item{suffix}{One character string specifying the filename extension. The
+supported values are \code{"csv"} (comma separated) and \code{"tsv"} (tab
+separated), matched without regard to case.}
+
+\item{sep}{\code{NULL}, or the one-character delimiter corresponding to \code{suffix}.
+When \code{NULL}, the delimiter is inferred from \code{suffix}. A contradictory
+delimiter is rejected.}
 }
 \value{
-The full file path of the saved file. Prints a message indicating the file's location.
+The full file path of the saved file. Prints a message indicating the
+file's location.
 }
 \description{
-This function constructs a file path using a specified subdirectory, file name and suffix, then calls \code{\link[=epi_write]{epi_write()}}. The suffix changes only the filename; output remains tab-separated unless \code{epi_write()} is called directly with another \code{sep} value.
+This function constructs a file path from an existing directory, file name
+and suffix, then calls \code{\link[=epi_write]{epi_write()}} with the delimiter required by the
+suffix.
+}
+\details{
+Existing files are overwritten. As inherited from \code{\link[=epi_write]{epi_write()}},
+column names are written, row names and quoting are disabled, and missing
+values are written as \code{NA}. Call \code{\link[=epi_write]{epi_write()}} directly when different
+quoting or missing-value behaviour is required.
 }
 \examples{
 \dontrun{
-# Example usage
 results_subdir <- "output"
 file_n <- "desc_dates"
 suffix <- "tsv"
