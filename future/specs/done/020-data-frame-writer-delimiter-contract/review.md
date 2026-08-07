@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `020-data-frame-writer-delimiter-contract`
-Status: Implemented
+Status: Completed
 
 ## Root Cause
 
@@ -47,5 +47,6 @@ that suffix-to-delimiter mapping, rather than parsing through the same writer,
 independently establishes the expected output. Copy-edit review found the API,
 help and NEWS wording consistent about delimiter, directory, overwrite, quote
 and missing-value behaviour. Issue #197/spec 019 was not started. Pull-request
-CI and owner acceptance remain open, so this implemented spec stays in the
-active specs directory until merge.
+PR #206 passed macOS, Ubuntu, PostgreSQL integration, coverage, Codecov and
+CodeFactor checks and was merged into `master` as `4040cf8` on 2026-08-07. The
+completed record now belongs under `future/specs/done/`.

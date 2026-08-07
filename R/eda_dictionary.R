@@ -212,13 +212,28 @@ epi_eda_dictionary_spec <- function(dictionary, table, catalogues = NULL) {
 
 #' Profile approved PostgreSQL catalogue columns
 #'
-#' Return value counts only for active dictionary rows explicitly marked with `profile_catalogue = TRUE`. Direct identifiers, quasi-identifiers, unclassified fields and columns exceeding `max_levels` are rejected before value counts are returned. The distinct-level limit counts non-missing values; a profiled column containing PostgreSQL `NULL` also returns one `source_value = NA` row with its count.
+#' Return value counts only for active dictionary rows explicitly marked with
+#' `profile_catalogue = TRUE`. Direct identifiers, quasi-identifiers,
+#' unclassified fields and columns exceeding `max_levels` are rejected before
+#' value counts are returned.
 #'
 #' @param con An open DBI connection created with RPostgres.
 #' @param dictionary A validated extended dictionary.
-#' @param max_levels Maximum distinct non-missing values allowed for each profiled column.
+#' @param max_levels Maximum distinct non-missing values allowed for each
+#'   profiled column.
 #'
-#' @return A data frame containing source keys, `source_value` and `n`. `source_value` is `NA` for the optional PostgreSQL `NULL` count row.
+#' @return An `epi_db_catalogue_profile` list with two data frames. `values`
+#'   contains source keys, non-missing `source_value`, and `n`; `missing`
+#'   contains one source-key row per profiled column and its aggregate
+#'   `n_missing`. A selected empty or all-NULL column therefore has no `values`
+#'   rows but still has one `missing` row. When no dictionary row is selected,
+#'   both components are typed zero-row data frames.
+#'
+#' @details `max_levels` bounds only rows in `values`; PostgreSQL `NULL` is
+#'   counted separately and is never returned as a catalogue `source_value`.
+#'   This makes `values` directly usable when drafting the normalised catalogue
+#'   contract, but does not classify any observed value as a missing code.
+#'   Review the `missing` component separately.
 #'
 #' @export
 epi_db_catalogue_profile <- function(con, dictionary, max_levels = 50) {
@@ -241,9 +256,13 @@ epi_db_catalogue_profile <- function(con, dictionary, max_levels = 50) {
     row <- profile_rows[index, , drop = FALSE]
     identifiers <- quote_dictionary_identifiers(con, row)
     cardinality_query <- paste(
-      "SELECT COUNT(DISTINCT", identifiers$column, ") AS n_levels FROM", identifiers$table
+      "SELECT COUNT(DISTINCT", identifiers$column, ") AS n_levels,",
+      "COUNT(*) FILTER (WHERE", identifiers$column, "IS NULL) AS n_missing FROM",
+      identifiers$table
     )
-    n_levels <- as.numeric(DBI::dbGetQuery(con, cardinality_query)$n_levels[[1]])
+    cardinality <- DBI::dbGetQuery(con, cardinality_query)
+    n_levels <- as.numeric(cardinality$n_levels[[1]])
+    n_missing <- as.numeric(cardinality$n_missing[[1]])
     if (n_levels > max_levels) {
       stop(
         "Catalogue profiling refused ", qualified_dictionary_column(row),
@@ -253,17 +272,30 @@ epi_db_catalogue_profile <- function(con, dictionary, max_levels = 50) {
     }
     profile_query <- paste(
       "SELECT", identifiers$column, "AS source_value, COUNT(*) AS n FROM",
-      identifiers$table, "GROUP BY", identifiers$column, "ORDER BY", identifiers$column, "NULLS FIRST"
+      identifiers$table, "WHERE", identifiers$column, "IS NOT NULL GROUP BY",
+      identifiers$column, "ORDER BY", identifiers$column
     )
     result <- as.data.frame(DBI::dbGetQuery(con, profile_query), stringsAsFactors = FALSE)
-    result$source_schema <- row$source_schema[[1]]
-    result$source_table <- row$source_table[[1]]
-    result$source_column <- row$source_column[[1]]
+    result$source_value <- as.character(result$source_value)
+    result$source_schema <- rep(row$source_schema[[1]], nrow(result))
+    result$source_table <- rep(row$source_table[[1]], nrow(result))
+    result$source_column <- rep(row$source_column[[1]], nrow(result))
     result <- result[c("source_schema", "source_table", "source_column", "source_value", "n")]
     result$n <- as.numeric(result$n)
-    result
+    missing <- data.frame(
+      source_schema = row$source_schema[[1]],
+      source_table = row$source_table[[1]],
+      source_column = row$source_column[[1]],
+      n_missing = n_missing,
+      stringsAsFactors = FALSE
+    )
+    list(values = result, missing = missing)
   })
-  do.call(rbind, results)
+  values <- do.call(rbind, lapply(results, `[[`, "values"))
+  missing <- do.call(rbind, lapply(results, `[[`, "missing"))
+  row.names(values) <- NULL
+  row.names(missing) <- NULL
+  new_catalogue_profile(values, missing)
 }
 
 validate_inventory_object <- function(inventory) {
@@ -568,12 +600,28 @@ qualified_dictionary_column <- function(row) {
 }
 
 empty_catalogue_profile <- function() {
-  data.frame(
-    source_schema = character(),
-    source_table = character(),
-    source_column = character(),
-    source_value = character(),
-    n = numeric(),
-    stringsAsFactors = FALSE
+  new_catalogue_profile(
+    values = data.frame(
+      source_schema = character(),
+      source_table = character(),
+      source_column = character(),
+      source_value = character(),
+      n = numeric(),
+      stringsAsFactors = FALSE
+    ),
+    missing = data.frame(
+      source_schema = character(),
+      source_table = character(),
+      source_column = character(),
+      n_missing = numeric(),
+      stringsAsFactors = FALSE
+    )
+  )
+}
+
+new_catalogue_profile <- function(values, missing) {
+  structure(
+    list(values = values, missing = missing),
+    class = c("epi_db_catalogue_profile", "list")
   )
 }
