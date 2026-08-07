@@ -1,6 +1,6 @@
 # episcout News
 
-## Development version
+## 0.3.0
 
 - Corrected the pre-release `epi_db_catalogue_profile()` result contract so
   non-missing value counts are returned in `values` and one aggregate
