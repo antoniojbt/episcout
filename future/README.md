@@ -51,15 +51,22 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- None currently.
+- No package implementation spec is active. Roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204) defines the approved sequence.
 
 ### Ready Next
 
-- Issue #196 is ready for design as spec `018`. Its selected direction is explicit `epi_eda_render_report()` dispatch from a completed database run or verified bundle into a separate self-contained report folder without modifying the manifest-owned source bundle.
+- Issue [#198](https://github.com/antoniojbt/episcout/issues/198) is first in the approved implementation order under roadmap issue [#204](https://github.com/antoniojbt/episcout/issues/204). Plan it as spec `020-data-frame-writer-delimiter-contract` before package-code changes.
+- Issue [#197](https://github.com/antoniojbt/episcout/issues/197) follows as spec `019-postgresql-catalogue-missingness`.
 
 ### Draft
 
-- None currently.
+- The multi-table PostgreSQL identifier-universe proposal remains a scratch input until its turn after release `0.3.0`, when it should become a dedicated issue and spec `021-postgresql-identity-universe`.
+- The narrow redundant PostgreSQL EDA row-count finding remains a scratch input until it is promoted after the identifier-universe work as spec `022-postgresql-eda-row-count-reuse`.
+
+### Deferred
+
+- Historical Codecov credential containment and any conditional spec `011` work are deferred by owner direction. No history rewrite or security-policy change is authorised.
+- Issue [#196](https://github.com/antoniojbt/episcout/issues/196) and spec `018-database-eda-report-rendering` are deferred until the roadmap is explicitly revised.
 
 ### Completed
 
