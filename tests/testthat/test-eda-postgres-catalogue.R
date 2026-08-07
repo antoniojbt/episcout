@@ -23,7 +23,7 @@ catalogue_postgres_fixture <- function(con) {
   list(schema = schema, schema_sql = schema_sql)
 }
 
-populate_catalogue_postgres_fixture <- function(con, schema_sql) {
+populate_catalogue_fixture <- function(con, schema_sql) {
   statements <- c(
     "CREATE TABLE zero_rows (category text)",
     "CREATE TABLE all_null (category text)",
@@ -65,7 +65,7 @@ test_that("live PostgreSQL keeps NULL counts separate from catalogue values", {
       DBI::dbDisconnect(con)
     }
   }, add = TRUE)
-  populate_catalogue_postgres_fixture(con, fixture$schema_sql)
+  populate_catalogue_fixture(con, fixture$schema_sql)
   dictionary <- catalogue_profile_dictionary(con, fixture$schema)
 
   zero <- profile_catalogue_table(con, dictionary, "zero_rows")

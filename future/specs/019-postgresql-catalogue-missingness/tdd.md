@@ -28,13 +28,13 @@ PostgreSQL 17 CI job supplies mandatory live evidence.
 
 ## Live PostgreSQL Tests
 
-- [ ] A zero-row table returns no value rows and `n_missing = 0` in mandatory
+- [x] A zero-row table returns no value rows and `n_missing = 0` in mandatory
   PostgreSQL 17 CI.
-- [ ] An all-NULL table returns no value rows and the exact aggregate missing
+- [x] An all-NULL table returns no value rows and the exact aggregate missing
   count.
-- [ ] A table at the non-missing limit plus NULL returns exactly the limited
+- [x] A table at the non-missing limit plus NULL returns exactly the limited
   value rows and its separate missing count.
-- [ ] A table one value beyond the limit refuses without returning values.
+- [x] A table one value beyond the limit refuses without returning values.
 - [x] The live test uses a uniquely named, exactly scoped disposable schema and
   registers cleanup before populating it.
 
