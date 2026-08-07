@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `019-postgresql-catalogue-missingness`
-Status: Implemented
+Status: Completed
 Owner: repository-owner
 
 ## Problem

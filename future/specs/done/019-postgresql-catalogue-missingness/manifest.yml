@@ -1,6 +1,6 @@
 id: "019"
 slug: "postgresql-catalogue-missingness"
-status: implemented
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: bugfix/postgresql-catalogue-missingness
