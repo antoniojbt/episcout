@@ -26,12 +26,15 @@ install.packages("episcout")
 ```
 --->
 
-Install from GitHub:
+Install the released GitHub version:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("AntonioJBT/episcout")
+devtools::install_github("AntonioJBT/episcout@0.3.0")
 ```
+
+Use `devtools::install_github("AntonioJBT/episcout")` only when you
+deliberately want the current development version from `master`.
 
 ## Development
 
