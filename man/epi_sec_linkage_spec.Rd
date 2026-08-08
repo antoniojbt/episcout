@@ -29,6 +29,8 @@ Validation errors indicate malformed or unconfirmed metadata and do not write an
 
 Other longitudinal pseudonymisation:
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
+\code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
+\code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}},
 \code{\link[=epi_sec_pseudonym]{epi_sec_pseudonym()}},
 \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
