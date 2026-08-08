@@ -45,6 +45,8 @@ head(bridge)
 
 Other longitudinal pseudonymisation:
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
+\code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
+\code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}},
 \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}},
 \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
