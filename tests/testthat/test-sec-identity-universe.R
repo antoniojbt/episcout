@@ -120,7 +120,7 @@ test_that("identity-universe issue semantics are stable and value-free", {
   )
   namespace_audit <- data.frame(n_collisions = 1)
 
-  issues <- episcout:::identity_universe_issues(
+  issues <- identity_universe_issues(
     spec, source_audit, namespace_audit
   )
 
@@ -144,9 +144,9 @@ test_that("identity-universe result print is aggregate only", {
     source_audit = data.frame(source_table = c("a", "b")),
     namespace_audit = data.frame(n_distinct = 4),
     overlap_audit = data.frame(),
-    issues = episcout:::identity_universe_empty_issues()
+    issues = identity_universe_empty_issues()
   )
-  result <- episcout:::identity_universe_result("audit", FALSE, spec, audit)
+  result <- identity_universe_result("audit", FALSE, spec, audit)
   printed <- capture.output(print(result))
 
   expect_identical(result$status, "audit_complete")

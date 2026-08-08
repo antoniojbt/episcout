@@ -197,7 +197,7 @@ test_that("live identity-universe audit and materialisation reconcile without le
   )
   expect_equal(constraints$n[[1]], 1L)
   expect_false(
-    episcout:::sec_table_is_public(connection, output_schema, "identity_universe")
+    sec_table_is_public(connection, output_schema, "identity_universe")
   )
 
   existing <- epi_sec_identity_universe_db(
