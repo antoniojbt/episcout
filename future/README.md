@@ -51,23 +51,22 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- Implemented specs `023-package-source-hygiene` and `024-external-fixture-provenance` consolidate issues [#208](https://github.com/antoniojbt/episcout/issues/208) and [#209](https://github.com/antoniojbt/episcout/issues/209) on `refactor/release-unblockers-208-209`. They remove exact audited archive artifacts and add fail-closed fixture provenance without changing package behaviour.
+- No numbered implementation specification is active.
 
 ### Ready Next
 
-- After the combined #208/#209 PR merges, finish the owner-only replacement of the five rewritten upstream release tags and revoke/rotate the historical Codecov credential without recording either value.
-- Release issue [#81](https://github.com/antoniojbt/episcout/issues/81) is then ready to prepare a usable GitHub `0.3.0`; CRAN submission polish is explicitly deferred.
+- Promote issue [#215](https://github.com/antoniojbt/episcout/issues/215) to spec `021-postgresql-identity-universe`, record its baseline and implement the audit-first PostgreSQL identifier-universe contract.
 
 ### Draft
 
-- The multi-table PostgreSQL identifier-universe proposal remains a scratch input until its turn after release `0.3.0`, when it should become a dedicated issue and spec `021-postgresql-identity-universe`.
 - The narrow redundant PostgreSQL EDA row-count finding remains a scratch input until it is promoted after the identifier-universe work as spec `022-postgresql-eda-row-count-reuse`.
 
 ### Deferred
 
-- The owner authorised the Codecov history rewrite on 2026-08-07. Rewritten `master` and fork heads are published; five upstream annotated tags, credential revocation/rotation and protected-branch upload verification remain owner-only follow-up.
+- Issue [#213](https://github.com/antoniojbt/episcout/issues/213) retains only the owner-side Codecov credential and eligible cache/hidden-ref cleanup. Rewritten branches/tags and a protected-`master` upload are complete.
+- CRAN readiness and submission remain deferred under issue [#81](https://github.com/antoniojbt/episcout/issues/81).
 - Issue [#196](https://github.com/antoniojbt/episcout/issues/196) and spec `018-database-eda-report-rendering` are deferred until the roadmap is explicitly revised.
 
 ### Completed
 
-Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness` and `020-data-frame-writer-delimiter-contract`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+GitHub release `0.3.0` is published from commit `40ef702`. Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness`, `020-data-frame-writer-delimiter-contract`, `023-package-source-hygiene` and `024-external-fixture-provenance`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

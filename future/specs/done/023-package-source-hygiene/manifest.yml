@@ -1,11 +1,11 @@
 id: "023"
 slug: "package-source-hygiene"
-status: implemented
+status: accepted
 owner: repository-owner
 base_branch: master
 working_branch: refactor/release-unblockers-208-209
 created: 2026-08-07
-updated: 2026-08-07
+updated: 2026-08-08
 
 issues:
   - 208

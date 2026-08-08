@@ -1,5 +1,11 @@
 # Future Workspace Changelog
 
+## 2026-08-08
+
+- Published GitHub release `0.3.0` from commit `40ef702` after exact source-package build/check/install and canonical-summary smoke validation; all protected-branch macOS, Ubuntu, PostgreSQL, coverage, Codecov and CodeFactor checks passed. Rewritten historical tags were transferred upstream, while CRAN work remains deferred and the unrecorded owner human walkthrough is not claimed retroactively.
+- Reconciled the post-release roadmap: issue #204 is the durable return point, new issue #215 is the next package feature and will become spec `021-postgresql-identity-universe`, spec 022 follows, and #81/#196 remain deferred. Issue #213 now records completed tag replacement and protected-branch upload while retaining credential and eligible GitHub cache cleanup for the owner.
+- Moved accepted release-blocker specs 023/024 to `future/specs/done/` and aligned README installation, project mapping, TODOs, scratch status and release-plan history with the published release.
+
 ## 2026-08-07
 
 - Implemented issues #208/#209 through consolidated specs 023/024 to unblock a usable 0.3 release: exact build exclusions and an archive guard remove generated `Rplots.pdf`, four obsolete developer paths and the unused workbook; verified CRAN source archives, raw-fixture SHA-256 gates, the medicaldata MIT notice and complete offline checksum manifests make both external fixture families fail closed. Manual regeneration, focused provenance tests and the full local check pass with `0/0/0`; the earlier CRAN-oriented run retained only its pre-existing incoming NOTE, and further CRAN polish is deferred. By explicit owner instruction, the historical Codecov line was removed from rewritten upstream `master` and all fork heads without exposing the value; five upstream annotated tags plus credential revocation/rotation, protected-branch verification and eligible GitHub cache cleanup remain.

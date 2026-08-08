@@ -36,8 +36,10 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 
 ## Planning Status
 
-- No numbered specification is active. Issue #196 is the ready-next design task and will become spec `018` before implementation.
-- Completed spec records `001`–`010` except reserved `011`, and `012`–`017`, are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
+- GitHub release `0.3.0` is published from commit `40ef702`; CRAN work remains deferred under issue #81.
+- No numbered specification is active. Issue #215 is next and must become spec `021-postgresql-identity-universe` before package-code changes.
+- Completed spec records `001`–`010` except reserved `011`, `012`–`017`, `019`–`020` and `023`–`024` are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
+- Roadmap issue #204 is the return point for the approved sequence. Security issue #213 tracks the remaining owner-only Codecov credential/cache actions in parallel.
 - `future/TODOs.md` is the only task backlog. `future/README.md` defines the specification lifecycle, and `future/changelog.md` records material planning and implementation outcomes.
 
 ## Verification Entry Points

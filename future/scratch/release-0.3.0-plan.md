@@ -1,8 +1,8 @@
 # episcout 0.3.0 Release Plan
 
-Status: #208/#209 implemented; blocked only by merge, five rewritten upstream tags and Codecov containment follow-up
+Status: GitHub release `0.3.0` published on 2026-08-08; historical plan retained for evidence
 Created: 2026-07-31  
-Updated: 2026-08-07
+Updated: 2026-08-08
 Owner: Antonio Berlanga-Taylor  
 Baseline release: `0.2.0`  
 Target release: `0.3.0`
@@ -11,9 +11,11 @@ Target release: `0.3.0`
 
 Release `episcout 0.3.0` from a reviewed and reproducible commit after the two ordered correctness contracts in roadmap issue #204 have been resolved, the repository has been scrubbed, the completed spec `010-canonical-eda-summary-contract` and subsequent development delta have been reconciled, a human has completed the release-facing workflows from a clean clone, all resulting findings have been resolved, and the exact release artifact has passed the required checks and inspection.
 
+Actual outcome: tag and GitHub Release `0.3.0` were published from commit `40ef702`. The exact source package passed local build/check/install and smoke validation, and all protected-branch checks passed. The separate owner-performed human walkthrough was not recorded before publication and is not marked complete retroactively. CRAN submission was not performed.
+
 ## Item 3 audit result
 
-The 2026-08-07 audit at rewritten-equivalent commit `6a117a06678f1ec020d5b59dbab236339bd1b1e7` is recorded in `future/reviews/done/2026-08-07-release-readiness-audit.md`. Specs 023/024 now remove the archive artifacts and complete fail-closed fixture provenance with a clean local check. The owner authorised history removal: rewritten upstream `master` and fork heads are published, while the five upstream annotated tags, credential revocation/rotation, protected-branch verification and eligible GitHub cache cleanup remain before go/no-go. CRAN URL/vignette polish and submission are deferred; the immediate objective is a usable GitHub `0.3.0` artifact after the human walkthrough and explicit tag/release approval.
+The 2026-08-07 audit at rewritten-equivalent commit `6a117a06678f1ec020d5b59dbab236339bd1b1e7` is recorded in `future/reviews/done/2026-08-07-release-readiness-audit.md`. Specs 023/024 removed the archive artifacts and completed fail-closed fixture provenance. Rewritten upstream branches and historical tags are published, and a protected-`master` Codecov upload passed; issue #213 retains credential revocation/rotation and eligible cache/hidden-ref cleanup. CRAN URL/vignette polish and submission remain deferred under #81.
 
 ## Scope
 
