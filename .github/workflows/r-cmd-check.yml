@@ -142,5 +142,5 @@ jobs:
 
       - name: Run PostgreSQL integration tests
         run: |
-          devtools::test(filter = "eda-postgres|sec-pseudonymise-postgres", reporter = "summary")
+          devtools::test(filter = "eda-postgres|sec-pseudonymise-postgres|sec-identity-universe-postgres", reporter = "summary")
         shell: Rscript {0}

@@ -19,17 +19,7 @@ to return for the approved sequence.
 
 ## Current sequence
 
-### 1. Post-release housekeeping
-
-- [ ] Merge the documentation/planning reconciliation after GitHub release
-  `0.3.0`:
-  - pin the README release installation command;
-  - align the project map and planning workspace;
-  - move accepted specs 023/024 to `future/specs/done/`;
-  - record release and security status without claiming an unperformed human
-    walkthrough.
-
-### 2. Multi-table PostgreSQL identifier universe
+### 1. Multi-table PostgreSQL identifier universe
 
 - [ ] Complete issue
   [#215](https://github.com/antoniojbt/episcout/issues/215) through spec
@@ -42,7 +32,7 @@ to return for the approved sequence.
   - use synthetic unit/live PostgreSQL evidence for success, blocking,
     redaction, rollback, timeout and lock behaviour.
 
-### 3. Narrow PostgreSQL EDA row-count reuse
+### 2. Narrow PostgreSQL EDA row-count reuse
 
 - [ ] After #215, promote
   `future/scratch/episcout_postgres_eda_performance_issue.md` to a dedicated
@@ -86,6 +76,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-08
 
+- [x] Merge the post-release documentation and planning reconciliation through PR #216, pin the released installation command, align the workspace and move accepted specs 023/024 to `future/specs/done/` without claiming the unperformed owner walkthrough.
 - [x] Publish GitHub release `0.3.0` from commit `40ef702` after exact package
   build/check/install and installed-package smoke validation.
 - [x] Transfer rewritten historical tags upstream and verify a successful
