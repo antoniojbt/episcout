@@ -32,7 +32,7 @@ Implementation evidence at the pre-PR branch head:
 - Representative geometry, numeric, categorical and missing-theme maps were visually inspected. A report containing a failed declared pair showed stable `incomplete_pairs` inventory rows with no files, and an empty report showed `no_rows` plus “No maps were created.” Repeated SVG renders were byte-identical, manifest MD5 values matched the files and HTML embedded only created map paths.
 - Generated roxygen, all affected vignettes, both report paths and the replacement database walkthrough build successfully.
 
-Pending: stacked draft PR publication, required CI and review-thread inspection.
+Draft implementation PR #246 is stacked on the contributor branch that contains planning PR #244; because GitHub cannot target a fork-only base branch in an upstream cross-fork PR, #246 targets `master`, declares the dependency and will shed the duplicate planning commits when #244 merges. Required CI and review-thread inspection are pending.
 
 ## Closeout Review
 
