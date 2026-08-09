@@ -19,7 +19,11 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ### 1. Phase-C reviewed coordinate roles
 
-- [ ] Begin successor issue [#237](https://github.com/antoniojbt/episcout/issues/237) only after the Phase-B closeout is canonical. It must preserve the completed Phase-A and Phase-B source contracts, define reviewed coordinate roles before EDA output, and keep database writes, arbitrary SQL, raster, web mapping and spatial inference deferred.
+- [ ] Complete active issue [#237](https://github.com/antoniojbt/episcout/issues/237) through implementation spec `029-eda-reviewed-coordinate-roles`:
+  - approve the coordinate-role, aggregate-QA and privacy contract in a green planning PR before changing package code;
+  - then continue on an explicitly stacked implementation branch under the owner's instruction without waiting for the planning PR to merge;
+  - require data-frame/PostgreSQL parity, aggregate-only database queries and byte-level absence of coordinates, geometry, bounds and maps from ordinary EDA bundles;
+  - treat this as the terminal bounded geospatial phase; any later spatial inference requires a new concrete scientific tracker.
 
 ## Parallel owner action
 
