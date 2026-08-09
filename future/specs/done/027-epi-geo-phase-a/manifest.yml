@@ -2,7 +2,7 @@ id: "027"
 slug: "epi-geo-phase-a"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/phase-a-geo-mapping
@@ -14,7 +14,7 @@ source_issues:
   - 218
 pull_request: 234
 planning_pull_request: 223
-merge_commit: null
+merge_commit: b37b391c1ff57aa9d84c4b0beb31be4d90558b03
 successor_issue: 233
 terminal_reason: null
 
@@ -73,5 +73,6 @@ activation_gates:
 notes:
   - Completed design-only spec 026 is the source contract for this bounded phase-A implementation.
   - Phase-B PostGIS collection and phase-C aggregate EDA-coordinate integration remain out of scope.
-  - A phase-B successor tracker must be created before issue 226 closes unless the owner records a terminal reason.
+  - PR 234 merged to canonical master as b37b391c1ff57aa9d84c4b0beb31be4d90558b03; tracking issue 226 closed automatically.
+  - Phase-B successor issue 233 exists but remains unstarted until this closeout becomes canonical.
   - Inferential analysis, raster support, web mapping, automatic coordinate discovery and spatial database writes remain out of scope.

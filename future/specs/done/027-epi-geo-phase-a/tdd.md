@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Review
+Status: Completed and accepted through PR #234
 
 ## Independent Basis
 
@@ -59,6 +59,7 @@ Record the exact outcomes in this file before changing package code.
 - `scripts/check-local.sh` passed the complete enabled suite with 15 expected PostgreSQL, parallel and visual skips; `R CMD check` completed with 0 errors, 0 warnings and 0 notes.
 - `scripts/check-cran.sh` built the source package, rebuilt every vignette, ran tests and generated both manuals successfully. It retained one external/incoming-feasibility NOTE for new-submission context, the existing missing prebuilt vignette index and two existing Stack Overflow URLs returning 403.
 - The standalone primer rendered to HTML with all 12 sections and two embedded maps. The neutral polygon value map and point map with an explicit missing-value category were visually inspected at the vignette dimensions.
+- Final PR #234 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor before merging to canonical `master` as `b37b391c1ff57aa9d84c4b0beb31be4d90558b03`. Codecov reported every modified coverable line tested and project coverage of 92.25%, up 0.35 percentage points from the base.
 
 ## Acceptance Commands
 

@@ -1,11 +1,11 @@
 # Review Notes
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Review
+Status: Completed and accepted through PR #234
 
 ## Findings
 
-No unresolved local blocker remains. Pull-request CI and review feedback remain pending.
+No unresolved implementation, CI or review blocker remains.
 
 - Public-interface review confirmed exact scalar/name validation, one optional-dependency boundary per entry point, typed zero-row behaviour and no silent row dropping, CRS assignment, geometry repair, layer choice or overwrite.
 - File-side-effect review confirmed local-path restrictions, explicit layer collisions, complete-file staging, post-write reconciliation, unrelated-layer retention, rollback after forced publication failure and owned-temporary cleanup.
@@ -24,11 +24,11 @@ No unresolved local blocker remains. Pull-request CI and review feedback remain 
 
 ## Open Questions
 
-No local implementation question remains. Cross-platform system-library behaviour and project coverage are intentionally left to pull-request CI rather than inferred from the Linux environment.
+No implementation question remains. Pull-request CI supplied the independent macOS, Ubuntu and PostgreSQL evidence, and Codecov measured project and patch coverage.
 
 ## Closeout Notes
 
-- Pull request: draft PR #234; merge commit pending.
-- Required checks and material exceptions: focused tests, package lint and local check pass; CRAN-oriented check passes with the recorded external/incoming-feasibility NOTE; pull-request CI pending.
-- Tracking issue and roadmap disposition: pending.
-- Successor issue: #233, blocked until Phase A merge and closeout.
+- Pull request: PR #234 merged to canonical `master` as `b37b391c1ff57aa9d84c4b0beb31be4d90558b03`.
+- Required checks and material exceptions: focused tests, package lint and local check passed; the CRAN-oriented check retained only the recorded external/incoming-feasibility NOTE; macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor passed. Codecov reported every modified coverable line tested and project coverage at 92.25%.
+- Tracking issue and roadmap disposition: issue #226 closed automatically; roadmap #227 remains open and is reconciled through this terminal closeout.
+- Successor issue: #233 is the ready-next tracker after this closeout becomes canonical; no implementation specification is active.

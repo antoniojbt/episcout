@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Review
+Status: Completed and accepted through PR #234
 Owner: repository-owner
 Tracking issue: [#226](https://github.com/antoniojbt/episcout/issues/226)
 
