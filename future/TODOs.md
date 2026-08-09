@@ -19,7 +19,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ### 1. CURP structural audit implementation
 
-- [ ] Complete issue [#225](https://github.com/antoniojbt/episcout/issues/225) through active spec `025-curp-validation-and-reconciliation`:
+- [ ] Complete issue [#225](https://github.com/antoniojbt/episcout/issues/225) through review spec `025-curp-validation-and-reconciliation` and draft PR [#231](https://github.com/antoniojbt/episcout/pull/231):
   - [x] accept the public audit-result and one-cycle legacy compatibility contract;
   - [x] reject silent normalisation and accept the explicit 1900–2099 local domain;
   - [x] pin the reviewed 2021 RENAPO birthplace catalogue and restricted synthetic-fixture provenance;

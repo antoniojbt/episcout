@@ -2,7 +2,7 @@ id: "025"
 slug: "curp-validation-and-reconciliation"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: feature/curp-structural-audit
@@ -12,13 +12,11 @@ updated: 2026-08-09
 tracking_issue: 225
 source_issues:
   - 217
-pull_request: null
+pull_request: 231
 planning_pull_request: 224
 merge_commit: null
-successor_issue: null
+successor_issue: 230
 terminal_reason: null
-
-followup_issue: 230
 
 dependencies: []
 
@@ -81,5 +79,5 @@ notes:
   - Local structural validity never proves registry assignment, certification or identity.
   - CURP and derived fields are restricted personal data.
   - Planning PR 224 changes no package behaviour and closed source issue 217.
-  - Tracking issue 225 remains open through activation-gate resolution and implementation closeout.
+  - Draft PR 231 carries the implementation; tracking issue 225 remains open through review and implementation closeout.
   - Owner direction on 2026-08-09 removed checksum evidence as a blocking gate and deferred it to issue 230.

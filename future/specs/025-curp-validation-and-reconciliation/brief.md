@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Active
+Status: Review
 Owner: repository-owner
 
 ## Problem

@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Active
+Status: Review
 
 ## Baseline Evidence
 

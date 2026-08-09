@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Active
+Status: Review
 
 Tracking issue: [#225](https://github.com/antoniojbt/episcout/issues/225); source planning issue #217 and PR #224 are complete.
 

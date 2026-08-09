@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Active
+Status: Review
 
 ## Findings
 
@@ -33,4 +33,4 @@ The birthplace catalogue is pinned from the RENAPO rules published 2021-12-17. T
 
 Focused tests passed 30 legacy compatibility expectations and 69 audit expectations. Package lint found no issues, the complete test suite passed with only documented opt-in integration/graphics skips, and `scripts/check-local.sh` completed with 0 errors, 0 warnings and 0 notes. The final diff has no whitespace errors and excludes unrelated generated documentation and snapshot cleanup.
 
-The unresolved boundary is deliberate: `valid` means only the documented local structural contract passed, position 18 remains `not_verified`, and registry assignment, certification, authenticity and identity are not inferred. Issue #230 is the non-blocking successor for authoritative checksum evidence. Pull-request CI and post-merge closeout remain pending.
+The unresolved boundary is deliberate: `valid` means only the documented local structural contract passed, position 18 remains `not_verified`, and registry assignment, certification, authenticity and identity are not inferred. Issue #230 is the non-blocking successor for authoritative checksum evidence. Draft PR #231 carries the implementation; its CI and post-merge closeout remain pending.

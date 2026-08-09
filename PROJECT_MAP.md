@@ -40,7 +40,7 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 
 - GitHub release `0.3.0` is published from commit `40ef702`; CRAN work remains deferred under issue #81.
 - GitHub roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) is the authoritative live sequence. `future/TODOs.md` is its synchronised repository index, `future/README.md` defines the lifecycle and `future/changelog.md` records completed outcomes.
-- Active spec `025-curp-validation-and-reconciliation` and issue #225 own the current structural audit implementation. Checksum verification is explicitly `not_verified` and deferred to evidence issue #230.
+- Review spec `025-curp-validation-and-reconciliation`, issue #225 and draft PR #231 own the current structural audit implementation. Checksum verification is explicitly `not_verified` and deferred to successor evidence issue #230.
 - Completed design-only spec `026-epi-geo-series-plan` is preserved under `future/specs/done/`; issue #226 tracks its deferred phase-A file/in-memory implementation, while later PostGIS and aggregate EDA-coordinate phases remain in the design record.
 - Completed spec `022-postgresql-eda-row-count-reuse` is under `future/specs/done/` after issue #220 and PR #222 merged. Historical completed manifests remain authoritative records of their own accepted work.
 - Security issue #213 remains a parallel owner action. CRAN issue #81, PostgreSQL report-rendering issue #196 and clarification issues #61/#62/#65/#212 remain deferred unless roadmap #227 is explicitly revised.

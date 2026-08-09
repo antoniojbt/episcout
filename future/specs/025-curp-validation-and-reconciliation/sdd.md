@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Active
+Status: Review
 
 ## Authoritative Basis Reviewed On 2026-08-09
 
