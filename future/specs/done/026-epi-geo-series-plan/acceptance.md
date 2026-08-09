@@ -22,4 +22,4 @@
 - [x] New and changed Markdown files pass repository whitespace and link review.
 - [x] `scripts/check-local.sh` completed with 0 errors, 0 warnings and one worktree-only NOTE because the worktree `.git` pointer file entered the check directory; the suite passed with 15 expected PostgreSQL/parallel/visual skips.
 - [x] Final diff contains only issue-218 planning records and planning-index reconciliation; check-generated Rd and disabled-snapshot churn was restored unchanged.
-- [ ] Draft pull-request checks are inspected after publication.
+- [x] Initial draft pull-request checks were inspected after publication; CodeFactor passed and the macOS, Ubuntu, PostgreSQL and coverage jobs entered progress with no immediate failure.
