@@ -340,6 +340,7 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   expect_identical(names(run), c("status", "output_dir", "manifest", "source", "spec", "schema", "missing", "summaries", "identifier_qa", "plots", "plot_inventory", "timings", "messages", "metadata"))
   expect_identical(run$status, "complete")
   expect_named(run$plots, character())
+  expect_identical(sum(run$timings$query_kind == "row_count"), 1L)
   expect_equal(run$identifier_qa$n_distinct, 3L)
   expect_equal(run$identifier_qa$n_repeated_values, 2L)
   expect_equal(run$identifier_qa$duplicate_excess, 2L)

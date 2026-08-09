@@ -2,6 +2,8 @@
 
 ## 2026-08-09
 
+- Implemented issue #220 under spec `022-postgresql-eda-row-count-reuse` after red/green unit and live PostgreSQL tests proved the two categorical/binary recounts in the fixed fixture fell from three total row-count queries to one. Exact aggregates remain unchanged; focused tests, the PostgreSQL 18.4 EDA parity and million-row benchmark suites, package lint and the complete local package check pass. The combined PostgreSQL 18.4 selection also passed catalogue and identity-universe coverage but retains two unrelated pre-existing registry-metadata errors in the longitudinal pseudonymisation suite; upstream CI remains PostgreSQL 17.
+- Activated issue #220 as spec `022-postgresql-eda-row-count-reuse` after the offline PostgreSQL EDA tests and complete live PostgreSQL 18.4 parity selection passed. The pre-code contract changes only the internal categorical/binary call path, removes exactly one redundant relation count per affected variable and preserves public, aggregate, snapshot, timing, privacy and bundle semantics.
 - Accepted completed issue #215/spec `021-postgresql-identity-universe` after PR #219 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor and merged as `ec6134b`; moved the specification to `future/specs/done/` and reconciled its acceptance, review and planning records.
 - Promoted the reserved spec-022 scratch finding to issue #220, a deliberately narrow reuse of the transaction-local PostgreSQL EDA row count. Issue #217 is queued as the following planning candidate because its referenced photo is absent and the existing CURP parser needs authoritative validity, century, vector and privacy contracts before implementation.
 

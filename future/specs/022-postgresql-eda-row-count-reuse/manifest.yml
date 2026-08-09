@@ -1,0 +1,60 @@
+id: "022"
+slug: "postgresql-eda-row-count-reuse"
+status: implemented
+owner: repository-owner
+base_branch: master
+working_branch: agent/postgresql-eda-row-count-reuse
+created: 2026-08-09
+updated: 2026-08-09
+
+issues:
+  - 220
+  - 204
+
+dependencies:
+  - 003-large-data-backend-strategy
+
+related_files:
+  - R/eda_postgres_queries.R
+  - NEWS.md
+  - tests/testthat/test-eda-postgres-source.R
+  - tests/testthat/test-eda-postgres-parity.R
+  - future/scratch/episcout_postgres_eda_performance_issue.md
+  - future/README.md
+  - future/TODOs.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/analysis-and-statistics.md
+  - checklists/copy-edit.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres-source', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=synthetic_records PGUSER=postgres scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres-parity', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - git diff --check
+
+baseline:
+  offline_tests: "eda-postgres source tests passed; ten live/benchmark cases skipped behind explicit gates."
+  live_tests: "PostgreSQL 18.4 parity selection passed before code changes."
+  query_shape: "One initial row_count plus one categorical-helper recount per categorical/binary variable."
+
+notes:
+  - The change removes exactly one redundant relation count per categorical or binary variable.
+  - The transaction-local checked n_total remains the only denominator.
+  - Public APIs, aggregates, timing schema, privacy and publication remain unchanged.
+  - Red/green unit and live tests proved the fixed two-variable fixture falls from three row-count queries to one.
+  - Focused tests, PostgreSQL 18.4 EDA parity and benchmark, lint and the complete local package check pass.
+  - The unrelated longitudinal pseudonymisation suite retains two registry-metadata errors on PostgreSQL 18.4; required upstream CI uses PostgreSQL 17.

@@ -24,12 +24,12 @@ to return for the approved sequence.
 - [ ] Complete issue
   [#220](https://github.com/antoniojbt/episcout/issues/220) through spec
   `022-postgresql-eda-row-count-reuse`:
-  - promote the existing scratch investigation and record the current
+  - [x] promote the existing scratch investigation and record the current
     PostgreSQL query-count baseline before code;
-  - reuse the existing transaction-local relation row count in categorical and
+  - [x] reuse the existing transaction-local relation row count in categorical and
     binary summaries;
-  - remove exactly one redundant query per affected variable;
-  - do not broaden snapshot, privacy, bundle or reconciliation behaviour.
+  - [x] remove exactly one redundant query per affected variable;
+  - [x] do not broaden snapshot, privacy, bundle or reconciliation behaviour.
 
 ### 2. CURP validation and reconciliation planning
 
