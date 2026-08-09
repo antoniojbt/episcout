@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Review
+Status: Completed and accepted through PR #231
 
 ## Baseline Evidence
 
@@ -68,6 +68,7 @@ No test may infer that a mismatch identifies which source is correct.
 - The complete `devtools::test()` run passed with only the repository's documented opt-in PostgreSQL and graphics skips.
 - `scripts/check-local.sh` completed documentation generation, lint, the complete tests and `R CMD check` with 0 errors, 0 warnings and 0 notes.
 - `git diff --check` passed after the final test changes.
+- PR #231 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor before merging to canonical `master` as `7e42f228969dbc62060f0660c43119882140052f`.
 
 ## Later Acceptance Commands
 

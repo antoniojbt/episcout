@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Review
+Status: Completed and accepted through PR #231
 
 ## Findings
 
@@ -21,7 +21,7 @@ The current official instruction is sufficient to design position classes, date/
 
 ## Closeout Notes
 
-Planning PR #224 merged and source issue #217 closed. Owner direction on 2026-08-09 resolved the activation gates by explicitly deferring checksum verification to issue #230. Tracking issue #225 now owns the active structural audit, comparison and one-cycle legacy compatibility implementation under roadmap #227.
+Planning PR #224 merged and source issue #217 closed. Owner direction on 2026-08-09 resolved the activation gates by explicitly deferring checksum verification. Tracking issue #225 then owned the structural audit, comparison and one-cycle legacy compatibility implementation under roadmap #227.
 
 ## Implementation Review On 2026-08-09
 
@@ -31,6 +31,6 @@ The legacy `epi_clean_curp()` remains a positional extractor with its exact 13-c
 
 The birthplace catalogue is pinned from the RENAPO rules published 2021-12-17. The official attachment was accessed 2026-08-09 with SHA-256 `c41fe8044a73e12802ca615d33dc3660c7e120d39603c77faa7bb50ab4d39be8`; the installed CSV contains only the 32 entity codes plus `NE` and no personal data.
 
-Focused tests passed 31 legacy compatibility expectations and 69 audit expectations. The Codecov review exposed two unused empty-result helpers and one unexercised input guard; the helpers were removed and a value-free guard test was added. Package lint found no issues, the complete test suite passed with only documented opt-in integration/graphics skips, and `scripts/check-local.sh` completed with 0 errors, 0 warnings and 0 notes. Draft PR #231 passed Ubuntu, macOS, PostgreSQL integration, coverage, both Codecov gates and CodeFactor before that cleanup; the revised head is required to pass the same gates. The final diff has no whitespace errors and excludes unrelated generated documentation and snapshot cleanup.
+Focused tests passed 31 legacy compatibility expectations and 69 audit expectations. The Codecov review exposed two unused empty-result helpers and one unexercised input guard; the helpers were removed and a value-free guard test was added. Package lint found no issues, the complete test suite passed with only documented opt-in integration/graphics skips, and `scripts/check-local.sh` completed with 0 errors, 0 warnings and 0 notes. The final PR head passed Ubuntu, macOS, PostgreSQL integration, coverage, both Codecov gates and CodeFactor; Codecov confirmed all modified, coverable lines were tested and project coverage reached 91.90%. The final diff had no whitespace errors and excluded unrelated generated documentation and snapshot cleanup.
 
-The unresolved boundary is deliberate: `valid` means only the documented local structural contract passed, position 18 remains `not_verified`, and registry assignment, certification, authenticity and identity are not inferred. Issue #230 is the non-blocking successor for authoritative checksum evidence. Draft PR #231 carries the implementation; owner review, merge and post-merge closeout remain pending.
+The unresolved boundary is deliberate: `valid` means only the documented local structural contract passed, position 18 remains `not_verified`, and registry assignment, certification, authenticity and identity are not inferred. Issue #230 closed through the owner-approved rescope without adopting an unofficial algorithm; any future checksum work requires new authoritative evidence and a separately reviewed tracker. PR #231 merged to canonical `master` as `7e42f228969dbc62060f0660c43119882140052f` and closed #225 automatically. Issue #226 is the approved next tracker after this closeout becomes canonical.
