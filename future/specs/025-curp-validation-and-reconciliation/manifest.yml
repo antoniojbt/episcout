@@ -1,0 +1,66 @@
+id: "025"
+slug: "curp-validation-and-reconciliation"
+status: draft
+owner: repository-owner
+base_branch: master
+working_branch: agent/plan-curp-validation
+created: 2026-08-09
+updated: 2026-08-09
+
+issues:
+  - 217
+
+dependencies: []
+
+related_files:
+  - R/epi_clean_curp.R
+  - tests/testthat/test-curp_misc.R
+  - future/reviews/done/robots_output_truth_review/20260729_final/truth_review_catalog.csv
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'curp_misc', reporter = 'summary')"
+  - git diff --check
+
+baseline:
+  focused_tests: "Twenty existing expectations passed."
+  vector_probe: "A two-element vector failed with 'the condition has length > 1'."
+  malformed_probe: "An 18-character non-numeric value passed the length gate, warned during coercion and returned sliced fields."
+
+sources:
+  - title: "Instructivo Normativo para la Asignación de la CURP, texto vigente"
+    publisher: "Secretaría de Relaciones Exteriores / Diario Oficial de la Federación"
+    url: "https://sre.gob.mx/component/phocadownload/category/2-marco-normativo?download=1116%3Ainstructivo-normativo-para-la-asignacion-de-la-clave-unica-de-registro-de-poblacion-dof-18-10-2021-texto-vigente"
+    accessed: 2026-08-09
+  - title: "Reglas para la ejecución de los procedimientos para la asignación de la CURP"
+    publisher: "Registro Nacional de Población"
+    url: "https://www.gob.mx/segob%7Crenapo/documentos/reglas-para-la-ejecucion-de-los-procedimientos-para-la-asignacion-de-la-clave-unica-de-registro-de-poblacion"
+    accessed: 2026-08-09
+  - title: "Reglas de Operación del Programa de Fortalecimiento de los Registros Civiles 2026"
+    publisher: "Diario Oficial de la Federación"
+    url: "https://www.dof.gob.mx/abrirPDF.php?anio=2026&archivo=20022026-MAT.pdf&repo="
+    accessed: 2026-08-09
+
+activation_gates:
+  - Owner accepts the public result and legacy compatibility design.
+  - Repository pins a reviewed official birthplace catalogue and version.
+  - Official verification-digit algorithm or sufficient official test vectors are obtained.
+  - Fixture provenance, lowercase policy and supported year domain are approved.
+
+notes:
+  - Local structural validity never proves registry assignment, certification or identity.
+  - CURP and derived fields are restricted personal data.
+  - This planning PR changes no package behavior.
