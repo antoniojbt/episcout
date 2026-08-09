@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-No package implementation specification is active. Roadmap issue [#249](https://github.com/antoniojbt/episcout/issues/249) makes [#245](https://github.com/antoniojbt/episcout/issues/245) the ready-next canonical EDA-delivery tracker: an opt-in dated output layout with a portable aggregate-bundle HTML entry point, no PostgreSQL connection or row-level extraction, and no governance decisions. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
+Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is draft spec `031-canonical-eda-delivery`. Its planning PR fixes the opt-in delivery layout, aggregate-bundle HTML renderer, manifest ownership, relocation and compatibility contracts before package changes. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
 
 ## Deferred owner action
 

@@ -1,0 +1,76 @@
+id: "031"
+slug: "canonical-eda-delivery"
+workflow_version: 1
+deliverable: implementation
+status: draft
+owner: repository-owner
+base_branch: master
+working_branch: agent/plan-canonical-eda-delivery
+created: 2026-08-09
+updated: 2026-08-09
+
+tracking_issue: 245
+source_issues:
+  - 196
+  - 249
+pull_request: null
+planning_pull_request: null
+merge_commit: null
+successor_issue: 248
+terminal_reason: null
+
+dependencies:
+  suggests:
+    - rmarkdown
+    - knitr
+
+related_files:
+  - R/eda_db_run.R
+  - R/eda_db_report.R
+  - inst/report-template/eda-db.qmd
+  - inst/examples/db-to-report/walkthrough.R
+  - tests/testthat/test-eda-db-report.R
+  - tests/testthat/test-eda-postgres-parity.R
+  - README.md
+  - NEWS.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-(db-report|postgres-parity|maps-postgres)|db-dictionary', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-(db-report|postgres-parity|maps-postgres)', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+activation_gates:
+  - pending: Planning PR is green and the public renderer/layout contracts are accepted before package changes.
+  - accepted: Existing data-frame report and default flat PostgreSQL bundle contracts remain backward compatible.
+  - accepted: HTML is the normal human entry point while CSV, SVG and manifests remain canonical evidence.
+  - accepted: Bundle validation is technical only; core EDA does not make governance or sharing decisions.
+
+baseline:
+  canonical_master: "e037512a4474ca6653b0cd079341efffa0a12047"
+  roadmap: "Issue 249 is authoritative; issue 245 is ready next and issue 248 follows it."
+  database_reporting: "epi_eda_db_run publishes a complete flat aggregate bundle; epi_eda_render_report accepts only in-memory data frames."
+  compatibility: "The five-column core manifest and existing flat database bundle are public tested contracts."
+
+notes:
+  - Issue 196 closed as superseded after its technical renderer requirements moved into issue 245.
+  - No package implementation begins until the planning PR is green.
+  - Issue 248 is the explicit successor after issue 245 closeout.
