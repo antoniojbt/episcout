@@ -21,6 +21,10 @@ bundle_files <- function(path) {
   sort(list.files(path, recursive = TRUE, include.dirs = FALSE))
 }
 
+intake_internal <- function(name) {
+  getFromNamespace(name, "episcout")
+}
+
 test_that("public intake and return contracts include map components", {
   expect_named(
     formals(epi_eda_intake_run),
@@ -246,6 +250,320 @@ test_that("unowned output and report failures preserve safe artifacts", {
   expect_false(file.exists(file.path(output_dir, "report.html")))
 })
 
+test_that("canonical reconciliation fails closed for corrupted artifacts", {
+  fixture <- make_intake_fixture()
+  observed <- epi_eda_intake_run(
+    fixture$data, fixture$spec, tempfile("intake-reconcile-canonical-"),
+    strata = "arm", render = FALSE
+  )
+  reconcile <- intake_internal("intake_reconcile_canonical")
+  check <- function(summary = observed$summary, missing = observed$missing) {
+    reconcile(summary, missing, fixture$data, fixture$spec)
+  }
+
+  changed <- observed$summary
+  names(changed)[[1]] <- "wrong"
+  expect_match(check(changed), "six-component")
+
+  changed <- observed$summary
+  changed$variables$name[[1]] <- "wrong"
+  expect_match(check(changed), "variable membership")
+
+  changed <- observed$summary
+  changed$numeric <- changed$numeric[0, , drop = FALSE]
+  expect_match(check(changed), "component membership")
+
+  changed <- observed$summary
+  changed$categorical <- rbind(changed$categorical, changed$categorical[1, ])
+  expect_match(check(changed), "component membership")
+
+  changed <- observed$summary
+  changed$variables$n[[1]] <- changed$variables$n[[1]] + 1L
+  expect_match(check(changed), "row counts")
+
+  changed <- observed$summary
+  changed$variables$n_missing[[1]] <- changed$variables$n_missing[[1]] + 1L
+  expect_match(check(changed), "missing and observed")
+
+  missing <- observed$missing
+  missing$n_missing[[1]] <- missing$n_missing[[1]] + 1L
+  expect_match(check(missing = missing), "missingness")
+
+  changed <- observed$summary
+  changed$categorical$n[[1]] <- changed$categorical$n[[1]] + 1L
+  expect_match(check(changed), "categorical counts")
+
+  changed <- observed$summary
+  changed$numeric$n_finite[[1]] <- changed$numeric$n_finite[[1]] + 1L
+  expect_match(check(changed), "finite and infinite")
+})
+
+test_that("stratified reconciliation fails closed for corrupted artifacts", {
+  fixture <- make_intake_fixture()
+  observed <- epi_eda_intake_run(
+    fixture$data, fixture$spec, tempfile("intake-reconcile-stratified-"),
+    strata = "arm", render = FALSE
+  )
+  reconcile <- intake_internal("intake_reconcile_stratified")
+  reconcile_groups <- intake_internal("intake_reconcile_groups")
+  check <- function(stratified) {
+    reconcile(observed$summary, stratified, fixture$data)
+  }
+
+  changed <- observed$stratified
+  changed$metadata$n_input[[1]] <- changed$metadata$n_input[[1]] + 1L
+  expect_match(check(changed), "input and included")
+
+  changed <- observed$stratified
+  overall <- which(changed$groups$is_overall)[[1]]
+  changed$groups$n[[overall]] <- changed$groups$n[[overall]] + 1L
+  expect_match(check(changed), "Overall group")
+
+  changed <- observed$stratified
+  grouped <- which(!changed$groups$is_overall)[[1]]
+  changed$groups$n[[grouped]] <- changed$groups$n[[grouped]] + 1L
+  expect_match(check(changed), "group counts")
+
+  changed <- observed$stratified
+  changed$variables$n[[1]] <- changed$variables$n[[1]] + 1L
+  expect_match(check(changed), "variable counts")
+
+  changed <- observed$stratified
+  changed$numeric <- changed$numeric[-1, , drop = FALSE]
+  expect_match(reconcile_groups(changed), "component membership")
+
+  changed <- observed$stratified
+  changed$numeric$n[[1]] <- changed$numeric$n[[1]] + 1L
+  expect_match(reconcile_groups(changed), "denominators")
+
+  changed <- observed$stratified
+  changed$categorical <- rbind(changed$categorical, changed$categorical[1, ])
+  expect_match(reconcile_groups(changed), "categorical component membership")
+
+  changed <- observed$stratified
+  changed$categorical$n_total[[1]] <- changed$categorical$n_total[[1]] + 1L
+  expect_match(reconcile_groups(changed), "categorical denominators")
+
+  changed <- observed$stratified
+  ordinary <- which(!changed$categorical$is_missing_level)[[1]]
+  changed$categorical$n[[ordinary]] <-
+    changed$categorical$n[[ordinary]] + 1L
+  expect_match(reconcile_groups(changed), "counts or proportions")
+
+  changed <- observed$stratified
+  changed$variables$label[[1]] <- "corrupted"
+  expect_match(check(changed), "variable summaries")
+
+  changed <- observed$stratified
+  overall_numeric <- which(changed$numeric$is_overall)[[1]]
+  changed$numeric$mean[[overall_numeric]] <- 999
+  expect_match(check(changed), "numeric summaries")
+
+  changed <- observed$stratified
+  overall_categorical <- which(
+    changed$categorical$is_overall &
+      !changed$categorical$is_missing_level
+  )[[1]]
+  changed$categorical$is_declared[[overall_categorical]] <-
+    !changed$categorical$is_declared[[overall_categorical]]
+  expect_match(check(changed), "categorical summaries")
+})
+
+test_that("overwrite rejects corrupted ownership and restores failed swaps", {
+  fixture <- make_intake_fixture()
+  malformed <- tempfile("intake-malformed-manifest-")
+  epi_eda_intake_run(
+    fixture$data, fixture$spec, malformed, render = FALSE
+  )
+  manifest_path <- file.path(malformed, "manifest.csv")
+  manifest <- utils::read.csv(
+    manifest_path, stringsAsFactors = FALSE, na.strings = character()
+  )
+  manifest$type[manifest$artifact == "summary_numeric"] <- "untrusted"
+  utils::write.csv(manifest, manifest_path, row.names = FALSE, na = "")
+  expect_error(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec, malformed,
+      overwrite = TRUE, render = FALSE
+    ),
+    "valid prior"
+  )
+
+  owned <- tempfile("intake-failed-swap-")
+  epi_eda_intake_run(
+    fixture$data, fixture$spec, owned, render = FALSE
+  )
+  before_files <- bundle_files(owned)
+  before_checksums <- unname(tools::md5sum(file.path(owned, before_files)))
+  rename_count <- 0L
+  expect_error(
+    with_mocked_bindings(
+      epi_eda_intake_run(
+        fixture$data, fixture$spec, owned,
+        overwrite = TRUE, render = FALSE
+      ),
+      intake_rename = function(from, to) {
+        rename_count <<- rename_count + 1L
+        if (rename_count == 2L) {
+          return(FALSE)
+        }
+        base::file.rename(from, to)
+      },
+      .package = "episcout"
+    ),
+    "prior bundle was restored"
+  )
+  expect_identical(rename_count, 3L)
+  expect_identical(bundle_files(owned), before_files)
+  expect_identical(
+    unname(tools::md5sum(file.path(owned, before_files))),
+    before_checksums
+  )
+})
+
+test_that("rendered intake HTML escapes metadata and remains portable", {
+  fixture <- make_intake_fixture()
+  fixture$spec$label[fixture$spec$name == "value"] <-
+    "<script>alert('x')</script>"
+  output_dir <- tempfile("intake-portable-report-")
+  observed <- epi_eda_intake_run(
+    fixture$data, fixture$spec, output_dir,
+    strata = "arm", render = TRUE
+  )
+  html <- paste(readLines(file.path(output_dir, "report.html")), collapse = "\n")
+
+  expect_identical(observed$status, "complete")
+  expect_false(grepl("<script>alert", html, fixed = TRUE))
+  expect_true(grepl("&lt;script&gt;alert", html, fixed = TRUE))
+  expect_false(grepl(output_dir, html, fixed = TRUE))
+
+  moved <- paste0(output_dir, "-moved")
+  expect_true(file.rename(output_dir, moved))
+  created <- observed$manifest$path[observed$manifest$status == "created"]
+  expect_true(all(file.exists(file.path(moved, created))))
+  moved_html <- paste(readLines(file.path(moved, "report.html")), collapse = "\n")
+  expect_true(all(vapply(created, function(path) {
+    grepl(paste0("href=\"", path, "\""), moved_html, fixed = TRUE) ||
+      identical(path, "report.html")
+  }, logical(1))))
+})
+
+test_that("factual stage failures publish blocked diagnostic bundles", {
+  fixture <- make_intake_fixture()
+
+  scaffold <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data,
+      output_dir = tempfile("intake-scaffold-failure-"),
+      render = FALSE
+    ),
+    epi_eda_spec_scaffold = function(...) stop("simulated scaffold failure"),
+    .package = "episcout"
+  )
+  expect_identical(scaffold$status, "blocked")
+  expect_match(scaffold$messages$reason, "simulated scaffold failure")
+
+  audit <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-audit-failure-"), render = FALSE
+    ),
+    epi_eda_prepare = function(...) stop("simulated audit failure"),
+    .package = "episcout"
+  )
+  expect_identical(audit$status, "blocked")
+  expect_match(audit$messages$reason, "simulated audit failure")
+
+  geo <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-geo-failure-"), render = FALSE
+    ),
+    epi_eda_profile_geo = function(...) stop("simulated geo failure"),
+    .package = "episcout"
+  )
+  expect_identical(geo$status, "blocked")
+  expect_match(geo$messages$reason, "simulated geo failure")
+
+  summary <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-summary-failure-"), render = FALSE
+    ),
+    epi_eda_profile_summaries = function(...) {
+      stop("simulated summary failure")
+    },
+    .package = "episcout"
+  )
+  expect_identical(summary$status, "blocked")
+  expect_match(summary$messages$reason, "simulated summary failure")
+
+  canonical <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-canonical-failure-"), render = FALSE
+    ),
+    intake_reconcile_canonical = function(...) {
+      "simulated canonical reconciliation failure"
+    },
+    .package = "episcout"
+  )
+  expect_identical(canonical$status, "blocked")
+  expect_match(canonical$messages$reason, "simulated canonical")
+
+  invalid_strata <- epi_eda_intake_run(
+    fixture$data, fixture$spec,
+    tempfile("intake-invalid-strata-"),
+    strata = "value", render = FALSE
+  )
+  expect_identical(invalid_strata$status, "blocked")
+  expect_match(invalid_strata$messages$reason, "categorical or binary")
+
+  stratified <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-stratified-failure-"),
+      strata = "arm", render = FALSE
+    ),
+    epi_eda_profile_stratified = function(...) {
+      stop("simulated stratified failure")
+    },
+    .package = "episcout"
+  )
+  expect_identical(stratified$status, "blocked")
+  expect_match(stratified$messages$reason, "simulated stratified failure")
+
+  stratified_reconciliation <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-stratified-reconcile-failure-"),
+      strata = "arm", render = FALSE
+    ),
+    intake_reconcile_stratified = function(...) {
+      "simulated stratified reconciliation failure"
+    },
+    .package = "episcout"
+  )
+  expect_identical(stratified_reconciliation$status, "blocked")
+  expect_match(
+    stratified_reconciliation$messages$reason,
+    "simulated stratified reconciliation"
+  )
+
+  table1 <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-table1-failure-"),
+      strata = "arm", render = FALSE
+    ),
+    epi_eda_table1 = function(...) stop("simulated Table 1 failure"),
+    .package = "episcout"
+  )
+  expect_identical(table1$status, "blocked")
+  expect_s3_class(table1$stratified, "epi_eda_stratified")
+  expect_null(table1$table1)
+})
+
 test_that("intake bundles maps, checksums and portable HTML", {
   data <- data.frame(
     lon = c(-1, 0, 1),
@@ -280,6 +598,37 @@ test_that("intake bundles maps, checksums and portable HTML", {
 test_that("argument validation happens before publication", {
   fixture <- make_intake_fixture()
   expect_error(epi_eda_intake_run(list(), output_dir = tempfile()), "data frame")
+
+  duplicate <- fixture$data
+  names(duplicate)[2] <- names(duplicate)[1]
+  expect_error(
+    epi_eda_intake_run(duplicate, output_dir = tempfile()),
+    "Duplicate"
+  )
+  blank <- fixture$data
+  names(blank)[[1]] <- ""
+  expect_error(
+    epi_eda_intake_run(blank, output_dir = tempfile()),
+    "non-empty"
+  )
+  reserved <- fixture$data
+  names(reserved)[[1]] <- ".dataset.private"
+  expect_error(
+    epi_eda_intake_run(reserved, output_dir = tempfile()),
+    "reserved"
+  )
+  expect_error(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec, tempfile(), render = NA
+    ),
+    "render"
+  )
+  expect_error(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec, tempfile(), strata = c("arm", "status")
+    ),
+    "strata"
+  )
   expect_error(
     epi_eda_intake_run(
       fixture$data, fixture$spec, tempfile(), map_vars = "value"
@@ -294,10 +643,48 @@ test_that("argument validation happens before publication", {
   )
   expect_error(
     epi_eda_intake_run(
+      fixture$data, fixture$spec, tempfile(),
+      source_id = "\\\\server\\share\\source.csv"
+    ),
+    "absolute"
+  )
+  expect_error(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec, tempfile(), source_id = "\n"
+    ),
+    "source_id"
+  )
+  expect_error(
+    epi_eda_intake_run(
       fixture$data, "https://example.test/spec.csv", tempfile()
     ),
     "network URLs"
   )
+  expect_error(
+    epi_eda_intake_run(
+      fixture$data, tempfile("missing-spec-", fileext = ".csv"), tempfile()
+    ),
+    "must exist"
+  )
+
+  output_file <- tempfile("intake-output-file-")
+  writeLines("not a directory", output_file)
+  expect_error(
+    epi_eda_intake_run(fixture$data, fixture$spec, output_file),
+    "not a directory"
+  )
+
+  target <- tempfile("intake-link-target-")
+  dir.create(target)
+  link <- tempfile("intake-link-")
+  linked <- file.symlink(target, link)
+  if (linked) {
+    expect_error(
+      epi_eda_intake_run(fixture$data, fixture$spec, link),
+      "symbolic link"
+    )
+    expect_length(list.files(target), 0L)
+  }
 })
 
 test_that("zero-row inputs retain summary and map inventory schemas", {
