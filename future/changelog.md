@@ -2,6 +2,7 @@
 
 ## 2026-08-09
 
+- Completed issue #218's design-only `epi_geo_*` plan as spec `026-epi-geo-series-plan`: selected `sf` and the existing `ggplot2` path for a small vector foundation; made GeoPackage the created-file format and Shapefile an import compatibility format; separated CRS assignment, transformation and geometry validity; defined a later read-only bounded PostGIS source and aggregate-only EDA coordinate-pair integration; and deferred inferential, raster, web-map and automatic coordinate discovery work. No package code, dependency, vignette, test or exported interface changed, and the #220/#217 roadmap order remains intact.
 - Accepted completed issue #215/spec `021-postgresql-identity-universe` after PR #219 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor and merged as `ec6134b`; moved the specification to `future/specs/done/` and reconciled its acceptance, review and planning records.
 - Promoted the reserved spec-022 scratch finding to issue #220, a deliberately narrow reuse of the transaction-local PostgreSQL EDA row count. Issue #217 is queued as the following planning candidate because its referenced photo is absent and the existing CURP parser needs authoritative validity, century, vector and privacy contracts before implementation.
 

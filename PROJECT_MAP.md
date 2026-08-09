@@ -40,7 +40,8 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 - GitHub release `0.3.0` is published from commit `40ef702`; CRAN work remains deferred under issue #81.
 - Issue #220/spec `022-postgresql-eda-row-count-reuse` is ready next for a narrow internal PostgreSQL query-reuse correction; no implementation spec is active.
 - Issue #217 is the following planning candidate for CURP validation and reconciliation after its missing source reference and authoritative contract are resolved.
-- Completed spec records `001`–`010` except reserved `011`, `012`–`017`, `019`–`021` and `023`–`024` are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
+- Issue #218's mapping-only `epi_geo_*` architecture is recorded as completed design-only spec `026-epi-geo-series-plan`; file/in-memory mapping, read-only PostGIS collection and aggregate EDA coordinate integration require separate later implementation specs and do not displace the current sequence.
+- Completed spec records `001`–`010` except reserved `011`, `012`–`017`, `019`–`021`, `023`–`024` and `026` are under `future/specs/done/`; specs `007` and `026` are design-only records and the others record implemented package work.
 - Roadmap issue #204 is the return point for the approved sequence. Security issue #213 tracks the remaining owner-only Codecov credential/cache actions in parallel.
 - `future/TODOs.md` is the only task backlog. `future/README.md` defines the specification lifecycle, and `future/changelog.md` records material planning and implementation outcomes.
 
