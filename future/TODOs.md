@@ -17,13 +17,9 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### 1. Phase-C reviewed coordinate roles
+### No active implementation specification
 
-- [ ] Complete active issue [#237](https://github.com/antoniojbt/episcout/issues/237) through implementation spec `029-eda-reviewed-coordinate-roles`:
-  - approve the coordinate-role, aggregate-QA and privacy contract in a green planning PR before changing package code;
-  - then continue on an explicitly stacked implementation branch under the owner's instruction without waiting for the planning PR to merge;
-  - require data-frame/PostgreSQL parity, aggregate-only database queries and byte-level absence of coordinates, geometry, bounds and maps from ordinary EDA bundles;
-  - treat this as the terminal bounded geospatial phase; any later spatial inference requires a new concrete scientific tracker.
+Issue #237/spec 029 is complete. The bounded three-phase geospatial programme has no automatic successor; any later spatial inference requires a new concrete scientific tracker. Roadmap #227 remains open for its parallel owner action and deferred work.
 
 ## Parallel owner action
 
@@ -50,6 +46,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-09
 
+- [x] Complete issue #237/spec 029 through planning PR #240 (`d97d8bf`) and implementation PR #241, merged to canonical `master` as `308d5442b9c7d0e180343c89f97e9f0fb8668062`; issue #237 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed terminal record moved to `future/specs/done/`. No successor was created: later spatial inference requires a new concrete scientific tracker.
 - [x] Complete issue #233/spec 028 through PR #238, merged to canonical `master` as `460acd0908044e963827ddc4d2a865984ed9fc76`; issue #233 closed automatically, macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor passed, Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%, the completed record moved to `future/specs/done/`, and issue #237 is the ready-next tracker after this closeout becomes canonical.
 - [x] Complete issue #226/spec 027 through PR #234, merged to canonical `master` as `b37b391`; issue #226 closed automatically, all required CI passed, Codecov reported every modified coverable line tested and project coverage at 92.25%, the completed record moved to `future/specs/done/`, and issue #233 is the ready-next tracker after this closeout becomes canonical.
 - [x] Complete issue #225/spec 025 through PR #231, merged to canonical `master` as `7e42f22`; issue #225 closed automatically, all required CI passed, the completed record moved to `future/specs/done/`, and issue #226 is the approved next tracker. Checksum remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.

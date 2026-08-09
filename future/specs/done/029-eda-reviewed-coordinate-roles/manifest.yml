@@ -2,7 +2,7 @@ id: "029"
 slug: "eda-reviewed-coordinate-roles"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/eda-reviewed-coordinate-roles
@@ -16,7 +16,7 @@ source_issues:
   - 233
 pull_request: 241
 planning_pull_request: 240
-merge_commit: null
+merge_commit: 308d5442b9c7d0e180343c89f97e9f0fb8668062
 successor_issue: null
 terminal_reason: "Completes the bounded three-phase geospatial programme; any spatial inference requires a new concrete scientific tracker."
 

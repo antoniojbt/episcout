@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `029-eda-reviewed-coordinate-roles`
-Status: Review
+Status: Completed
 
 ## Findings
 
@@ -32,7 +32,8 @@ None. The issue contract and completed source designs resolve the implementation
 
 ## Closeout Notes
 
-- Implementation PR: #241; merge commit pending.
-- Required local and pull-request checks: passed at `2a668d4`; final evidence-only head checks pending.
-- Tracking issue and roadmap disposition: pending.
+- Planning PR #240 merged to canonical `master` as `d97d8bf95fb8c19e97eee727b943f39c7c530ae1`.
+- Implementation PR #241 merged to canonical `master` as `308d5442b9c7d0e180343c89f97e9f0fb8668062`; issue #237 closed automatically.
+- Final evidence head `17a6287` passed PostgreSQL integration, Ubuntu, macOS, coverage, Codecov project/patch and CodeFactor; no actionable review feedback was present.
+- Roadmap #227 remains open as the authoritative index for its parallel and deferred work. No successor is created because this is the explicit terminal bounded geospatial phase.
 - Terminal reason: bounded Phase-C completes the current geospatial programme; future inference requires a separate concrete scientific tracker.
