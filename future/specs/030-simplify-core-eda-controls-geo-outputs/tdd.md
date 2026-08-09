@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Draft
+Status: Active
 
 ## Test Files
 
@@ -12,26 +12,26 @@ Status: Draft
 
 ## Workflow Prerequisite
 
-- [ ] Online and offline workflow checks pass in the canonical checkout.
-- [ ] A fresh checkout whose actual path contains spaces passes both modes.
+- [x] Online and offline workflow checks pass in the canonical checkout.
+- [x] A fresh checkout whose actual path contains spaces passes both modes.
 - [ ] The audit still detects malformed manifests and GitHub lifecycle drift.
 
 ## Breaking Schema Tests
 
-- [ ] Lean frame scaffolds have exactly 15 columns for ordinary, zero-column and factor/logical frames.
-- [ ] Storage-derived types and level metadata are deterministic and contain no observed-count/candidate evidence.
-- [ ] Removed scaffold fields receive a targeted migration error.
-- [ ] Extended PostgreSQL dictionaries omit four governance fields, contain all geo fields and round-trip them into EDA specs.
-- [ ] Catalogue metadata omits `validation_status`; explicit three-key profile selectors are unique, exact and bounded.
-- [ ] Old combined dictionaries, catalogue rows, linkage objects and six-column core manifests fail with migration guidance.
+- [x] Lean frame scaffolds have exactly 15 columns for ordinary, zero-column and factor/logical frames.
+- [x] Storage-derived types and level metadata are deterministic and contain no observed-count/candidate evidence.
+- [x] Removed scaffold fields receive a targeted migration error.
+- [x] Extended PostgreSQL dictionaries omit four governance fields, contain all geo fields and round-trip them into EDA specs.
+- [x] Catalogue metadata omits `validation_status`; explicit three-key profile selectors are unique, exact and bounded.
+- [x] Old combined dictionaries, catalogue rows, linkage objects and six-column core manifests fail with migration guidance.
 
 ## Core Behaviour Tests
 
-- [ ] Preparation and stratification ignore roles and contain no review-state gates.
-- [ ] Identifier and coordinate variables receive declared summaries and ordinary plots for data frames and PostgreSQL.
-- [ ] Identifier and coordinate QA remain present and independently reconciled.
-- [ ] Intake-generated specifications continue through factual audit/complete/blocked outcomes and are saved/returned.
-- [ ] Core manifests have exactly five columns while specialised security manifests retain their existing schema.
+- [x] Preparation and stratification ignore roles and contain no review-state gates.
+- [x] Identifier and coordinate variables receive declared summaries and ordinary plots for data frames and PostgreSQL.
+- [x] Identifier and coordinate QA remain present and independently reconciled.
+- [x] Intake-generated specifications continue through factual audit/complete/blocked outcomes and are saved/returned.
+- [x] Core manifests have exactly five columns while specialised security manifests retain their existing schema.
 
 ## Independent Map Fixture
 
@@ -41,39 +41,39 @@ Themes cover numeric, integer, factor, logical, character, ordinary missing and 
 
 ## Data-frame Map Tests
 
-- [ ] Public formals, defaults, result components and typed empty inventory are exact.
-- [ ] `maps = FALSE` creates no objects, directory or SVG; `map_vars` then errors before profiling.
-- [ ] Invalid, duplicate, absent or temporal selectors and invalid bounds fail before processing.
-- [ ] One geometry map per ready pair and one thematic map per requested pair/variable are produced in deterministic order.
-- [ ] Failed QA, zero rows and over-limit pairs create no partial geometry/map/file and have `n_mapped = 0`.
-- [ ] Missing themes use the existing missing colour and text/categorical values are not collapsed.
-- [ ] Inputs are unchanged and rendered point/theme values reconcile independently.
+- [x] Public formals, defaults, result components and typed empty inventory are exact.
+- [x] `maps = FALSE` creates no objects, directory or SVG; `map_vars` then errors before profiling.
+- [x] Invalid, duplicate, absent or temporal selectors and invalid bounds fail before processing.
+- [x] One geometry map per ready pair and one thematic map per requested pair/variable are produced in deterministic order.
+- [x] Failed QA, zero rows and over-limit pairs create no partial geometry/map/file and have `n_mapped = 0`.
+- [x] Missing themes use the existing missing colour and text/categorical values are not collapsed.
+- [x] Inputs are unchanged and rendered point/theme values reconcile independently.
 
 ## PostgreSQL Map Tests
 
-- [ ] Data-frame and PostgreSQL QA/inventory results match independently loaded fixtures.
-- [ ] No observation query occurs when maps are disabled, no pair is ready or the snapshot count exceeds the bound.
-- [ ] Collection occurs inside the same read-only repeatable-read snapshot as QA.
-- [ ] The projection contains only ready-pair coordinates and explicitly requested themes, with exact quoted identifiers.
-- [ ] Exactly 10,000 rows collect and 10,001 do not; no query truncates.
-- [ ] Snapshot changes, catalogue drift, incompatible types and query failures remain value-free and leave the connection idle/usable.
-- [ ] Map collection timings record the bound and row count without SQL or observations.
+- [x] Data-frame and PostgreSQL QA/inventory results match independently loaded fixtures.
+- [x] No observation query occurs when maps are disabled, no pair is ready or the snapshot count exceeds the bound.
+- [x] Collection occurs inside the same read-only repeatable-read snapshot as QA.
+- [x] The projection contains only ready-pair coordinates and explicitly requested themes, with exact quoted identifiers.
+- [x] Exactly 10,000 rows collect and 10,001 do not; no query truncates.
+- [x] Snapshot changes, catalogue drift, incompatible types and query failures remain value-free and leave the connection idle/usable.
+- [x] Map collection timings record the bound and row count without SQL or observations.
 
 ## Publication And Report Tests
 
-- [ ] Data-frame outputs, intake bundles and database bundles use deterministic `maps/` SVG paths.
-- [ ] Intake and database manifests include exact map checksums and reconcile every regular file.
-- [ ] Overwrite accepts an exact unchanged new-contract bundle and rejects old, changed, unowned, symlinked or settings-mismatched bundles.
-- [ ] Standard and intake HTML render geometry, numeric, categorical, missing-theme, empty and skipped-map states.
-- [ ] PostgreSQL bundles do not add HTML rendering.
+- [x] Data-frame outputs, intake bundles and database bundles use deterministic `maps/` SVG paths.
+- [x] Intake and database manifests include exact map checksums and reconcile every regular file.
+- [x] Overwrite accepts an exact unchanged new-contract bundle and rejects old, changed, unowned, symlinked or settings-mismatched bundles.
+- [x] Standard and intake HTML render geometry, numeric, categorical, missing-theme, empty and skipped-map states.
+- [x] PostgreSQL bundles do not add HTML rendering.
 
 ## Security Tests
 
-- [ ] Linkage scaffolds/specs require exact column policy coverage and reject old three-component objects.
-- [ ] Policy retains current identifier bridge/drop, retained-column, record-key and validation guarantees.
-- [ ] Audit/apply, crosswalk, exact duplicate, conflict, lock, rollback, replacement and sensitive-diagnostic cases remain green.
-- [ ] Output dictionaries/catalogues have semantic schemas and pass directly into `epi_eda_dictionary_spec()`.
-- [ ] Security result manifests and restricted-data wording remain unchanged.
+- [x] Linkage scaffolds/specs require exact column policy coverage and reject old three-component objects.
+- [x] Policy retains current identifier bridge/drop, retained-column, record-key and validation guarantees.
+- [x] Audit/apply, crosswalk, exact duplicate, conflict, lock, rollback, replacement and sensitive-diagnostic cases remain green.
+- [x] Output dictionaries/catalogues have semantic schemas and pass directly into `epi_eda_dictionary_spec()`.
+- [x] Security result manifests and restricted-data wording remain unchanged.
 
 ## Acceptance Commands
 

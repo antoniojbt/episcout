@@ -1,6 +1,6 @@
 #' Generate synthetic data from an EDA specification
 #'
-#' Generate simple deterministic synthetic data from a validated specification-first EDA data dictionary. Synthetic data are intended for pipeline preparation and testing only, not for inference or disclosure control.
+#' Generate simple deterministic synthetic data from a validated specification-first EDA data dictionary. Synthetic data are intended for pipeline preparation and testing only, not for inference.
 #'
 #' @param spec A data frame containing an EDA specification, or a path accepted by [epi_eda_spec()].
 #' @param n Number of rows to generate.

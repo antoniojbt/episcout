@@ -17,9 +17,9 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### Planning gate — issue #243 / draft spec 030
+### Active implementation — issue #243 / spec 030
 
-Issue [#243](https://github.com/antoniojbt/episcout/issues/243) is the active planning target for `030-simplify-core-eda-controls-geo-outputs`. Its planning/prerequisite PR must repair the workflow-state path-with-spaces failure and accept the breaking semantic, mapping, publication and security-separation contracts before package implementation begins. Once that PR is green, the owner has authorised implementation to continue on a stacked draft PR without waiting for merge.
+Issue [#243](https://github.com/antoniojbt/episcout/issues/243) is active as `030-simplify-core-eda-controls-geo-outputs`. Planning/prerequisite PR #244 is fully green at `8c4935f`, repairs workflow checks for paths containing spaces and accepts the breaking semantic, mapping, publication and security-separation contracts. Implementation is continuing on a stacked draft branch under the owner's instruction; merge #244 before the implementation PR.
 
 ## Parallel owner action
 

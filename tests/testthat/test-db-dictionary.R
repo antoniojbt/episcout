@@ -146,9 +146,13 @@ test_that("dictionary scaffold maps technical types without semantic guesses", {
   expect_equal(dictionary$source_column, c("subject_code", "group_code", "score"))
   expect_equal(dictionary$type, c("text", "text", "numeric"))
   expect_equal(dictionary$label, dictionary$source_column)
-  expect_true(all(dictionary$privacy_class == "unclassified"))
-  expect_true(all(dictionary$analytic_action == "review"))
-  expect_true(all(dictionary$validation_status == "unreviewed"))
+  expect_true(all(dictionary$geo_role == ""))
+  expect_true(all(dictionary$geo_pair == ""))
+  expect_true(all(dictionary$geo_crs == ""))
+  expect_false(any(c(
+    "privacy_class", "analytic_action", "validation_status",
+    "profile_catalogue"
+  ) %in% names(dictionary)))
   expect_equal(dictionary$analytic_order, 1:3)
   expect_silent(epi_eda_dictionary_validate(dictionary))
 })
@@ -193,9 +197,10 @@ test_that("PostgreSQL inventory validates its inputs and table selection", {
 test_that("dictionary refresh preserves curation and reports source drift", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
   dictionary$label[dictionary$source_column == "group_code"] <- "Study group"
-  dictionary$privacy_class <- "non_sensitive"
-  dictionary$analytic_action <- "retain"
-  dictionary$validation_status <- "confirmed"
+  dictionary$type[[1]] <- "numeric"
+  dictionary$geo_role[c(1, 3)] <- c("x", "y")
+  dictionary$geo_pair[c(1, 3)] <- "site"
+  dictionary$geo_crs[c(1, 3)] <- "4326"
 
   current_columns <- make_test_inventory()$columns
   current_columns <- current_columns[current_columns$source_column != "score", , drop = FALSE]
@@ -227,10 +232,9 @@ test_that("dictionary refresh preserves curation and reports source drift", {
     refreshed$drift_status[match(c("subject_code", "group_code", "score", "visit_date"), refreshed$source_column)],
     c("current", "modified", "removed", "added")
   )
-  expect_equal(
-    refreshed$privacy_class[refreshed$source_column == "score"],
-    "non_sensitive"
-  )
+  geo <- refreshed$geo_pair == "site"
+  expect_identical(refreshed$geo_role[geo], c("x", "y"))
+  expect_identical(refreshed$geo_crs[geo], c("4326", "4326"))
 })
 
 test_that("dictionary validation rejects ambiguous keys and orders", {
@@ -255,7 +259,7 @@ test_that("dictionary validation rejects ambiguous keys and orders", {
   )
 })
 
-test_that("dictionary validation rejects invalid contract values", {
+test_that("dictionary validation rejects invalid and removed contract values", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
   expect_error(epi_eda_dictionary_validate(list()), "data frame")
   expect_error(
@@ -267,23 +271,17 @@ test_that("dictionary validation rejects invalid contract values", {
   invalid$type[[1]] <- "unknown"
   expect_error(epi_eda_dictionary_validate(invalid), "type.*invalid")
   invalid <- dictionary
-  invalid$privacy_class[[1]] <- "public"
-  expect_error(epi_eda_dictionary_validate(invalid), "privacy_class.*invalid")
-  invalid <- dictionary
-  invalid$analytic_action[[1]] <- "publish"
-  expect_error(epi_eda_dictionary_validate(invalid), "analytic_action.*invalid")
-  invalid <- dictionary
-  invalid$validation_status[[1]] <- "done"
-  expect_error(epi_eda_dictionary_validate(invalid), "validation_status.*invalid")
+  invalid$privacy_class <- "non_sensitive"
+  expect_error(
+    epi_eda_dictionary_validate(invalid),
+    "removed combined EDA/security schema.*epi_sec_linkage_spec"
+  )
   invalid <- dictionary
   invalid$drift_status[[1]] <- "changed"
   expect_error(epi_eda_dictionary_validate(invalid), "drift_status.*invalid")
   invalid <- dictionary
   invalid$required <- as.character(invalid$required)
   expect_error(epi_eda_dictionary_validate(invalid), "required")
-  invalid <- dictionary
-  invalid$profile_catalogue <- as.character(invalid$profile_catalogue)
-  expect_error(epi_eda_dictionary_validate(invalid), "profile_catalogue")
   invalid <- dictionary
   invalid$analytic_order[[1]] <- 0
   expect_error(epi_eda_dictionary_validate(invalid), "positive whole")
@@ -300,15 +298,16 @@ test_that("empty inventories and refreshes keep the dictionary contract", {
   expect_error(epi_eda_dictionary_scaffold(list()), "epi_db_inventory")
 })
 
-test_that("dictionary specifications use reviewed catalogue values", {
+test_that("dictionary specifications propagate semantic and geo catalogue values", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
   dictionary$role <- c("id", "covariate", "outcome")
   dictionary$group <- c("identifiers", "design", "measurements")
-  dictionary$privacy_class <- c("direct_identifier", "non_sensitive", "sensitive")
-  dictionary$analytic_action <- c("drop", "retain", "retain_restricted")
-  dictionary$validation_status <- "confirmed"
   dictionary$type[dictionary$source_column == "group_code"] <- "categorical"
   dictionary$catalog_name[dictionary$source_column == "group_code"] <- "study_group"
+  dictionary$type[[1]] <- "numeric"
+  dictionary$geo_role[c(1, 3)] <- c("x", "y")
+  dictionary$geo_pair[c(1, 3)] <- "site"
+  dictionary$geo_crs[c(1, 3)] <- "3857"
   catalogues <- data.frame(
     catalog_name = c("study_group", "study_group"),
     source_value = c("A", "B"),
@@ -316,7 +315,6 @@ test_that("dictionary specifications use reviewed catalogue values", {
     display_order = 1:2,
     is_missing = c(FALSE, TRUE),
     provenance = "test_definition",
-    validation_status = "confirmed",
     stringsAsFactors = FALSE
   )
 
@@ -330,9 +328,12 @@ test_that("dictionary specifications use reviewed catalogue values", {
   expect_equal(spec$levels, c("", "A;B", ""))
   expect_equal(spec$missing_codes, c("", "B", ""))
   expect_equal(spec$group, c("identifiers", "design", "measurements"))
+  expect_identical(spec$geo_role, c("x", "", "y"))
+  expect_identical(spec$geo_pair, c("site", "", "site"))
+  expect_identical(spec$geo_crs, c("3857", "", "3857"))
 
   data <- data.frame(
-    subject_code = c("S1", "S2"),
+    subject_code = c(1, 2),
     group_code = c("A", "B"),
     score = c(10, 20),
     stringsAsFactors = FALSE
@@ -366,7 +367,6 @@ test_that("catalogue validation rejects malformed definitions", {
     display_order = 1,
     is_missing = FALSE,
     provenance = "artificial_test",
-    validation_status = "confirmed",
     stringsAsFactors = FALSE
   )
 
@@ -385,8 +385,8 @@ test_that("catalogue validation rejects malformed definitions", {
   invalid$label <- ""
   expect_error(epi_eda_dictionary_validate(dictionary, invalid), "label.*non-empty")
   invalid <- catalogue
-  invalid$validation_status <- "done"
-  expect_error(epi_eda_dictionary_validate(dictionary, invalid), "invalid values")
+  invalid$validation_status <- "confirmed"
+  expect_error(epi_eda_dictionary_validate(dictionary, invalid), "validation_status was removed")
   invalid <- catalogue
   invalid$is_missing <- "FALSE"
   expect_error(epi_eda_dictionary_validate(dictionary, invalid), "is_missing")
@@ -412,36 +412,32 @@ test_that("table selection is explicit and active", {
   expect_error(epi_eda_dictionary_spec(dictionary, "study.cohort_a"), "No active columns")
 })
 
-test_that("catalogue profiling blocks unsafe and free-text fields before querying", {
+test_that("catalogue profiling validates explicit source-key selectors before querying", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
-  dictionary$profile_catalogue[[1]] <- TRUE
-  dictionary$privacy_class[[1]] <- "direct_identifier"
-  dictionary$analytic_action[[1]] <- "drop"
+  selector <- dictionary[1, c("source_schema", "source_table", "source_column")]
   expect_error(
-    epi_db_catalogue_profile(NULL, dictionary),
-    "Catalogue profiling is not allowed"
+    epi_db_catalogue_profile(NULL, dictionary, selector[, -1, drop = FALSE]),
+    "exactly source_schema"
   )
-
-  dictionary$profile_catalogue <- FALSE
-  dictionary$profile_catalogue[[2]] <- TRUE
-  dictionary$privacy_class[[2]] <- "non_sensitive"
-  dictionary$analytic_action[[2]] <- "retain"
+  duplicate <- rbind(selector, selector)
   expect_error(
-    epi_db_catalogue_profile(NULL, dictionary),
-    "Catalogue profiling is not allowed"
+    epi_db_catalogue_profile(NULL, dictionary, duplicate),
+    "must be unique"
+  )
+  selector$source_column <- "absent"
+  expect_error(
+    epi_db_catalogue_profile(NULL, dictionary, selector),
+    "active dictionary row"
   )
 })
 
-test_that("catalogue profiling returns only approved aggregate counts", {
+test_that("catalogue profiling returns bounded aggregate counts for explicit columns", {
   connection <- make_mock_connection()
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
   dictionary$type[[2]] <- "categorical"
-  dictionary$privacy_class[[2]] <- "non_sensitive"
-  dictionary$analytic_action[[2]] <- "retain"
-  dictionary$validation_status[[2]] <- "confirmed"
-  dictionary$profile_catalogue[[2]] <- TRUE
+  selector <- dictionary[2, c("source_schema", "source_table", "source_column")]
 
-  profile <- epi_db_catalogue_profile(connection, dictionary, max_levels = 2)
+  profile <- epi_db_catalogue_profile(connection, dictionary, selector, max_levels = 2)
   expect_identical(class(profile), c("epi_db_catalogue_profile", "list"))
   expect_identical(names(profile), c("values", "missing"))
   expect_identical(
@@ -467,19 +463,19 @@ test_that("catalogue profiling returns only approved aggregate counts", {
     n = numeric(),
     stringsAsFactors = FALSE
   )
-  all_missing <- epi_db_catalogue_profile(connection, dictionary, max_levels = 2)
+  all_missing <- epi_db_catalogue_profile(connection, dictionary, selector, max_levels = 2)
   expect_equal(nrow(all_missing$values), 0L)
   expect_identical(all_missing$missing$n_missing, 2)
 
   connection@state$n_levels <- 3
   expect_error(
-    epi_db_catalogue_profile(connection, dictionary, max_levels = 2),
+    epi_db_catalogue_profile(connection, dictionary, selector, max_levels = 2),
     "exceed max_levels"
   )
-  expect_error(epi_db_catalogue_profile(connection, dictionary, max_levels = 0), "positive whole")
+  expect_error(epi_db_catalogue_profile(connection, dictionary, selector, max_levels = 0), "positive whole")
 
-  dictionary$profile_catalogue <- FALSE
-  empty <- epi_db_catalogue_profile(NULL, dictionary)
+  empty_selector <- selector[0, , drop = FALSE]
+  empty <- epi_db_catalogue_profile(NULL, dictionary, empty_selector)
   expect_identical(class(empty), c("epi_db_catalogue_profile", "list"))
   expect_identical(empty$values, data.frame(
     source_schema = character(),

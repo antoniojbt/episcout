@@ -1,4 +1,4 @@
-#' Prepare data using a reviewed EDA specification
+#' Prepare data using an EDA specification
 #'
 #' Audit or apply deterministic, specification-guided missing-value, type and
 #' level preparation. Audit mode never changes the returned data. Apply mode is
@@ -7,8 +7,7 @@
 #'
 #' @param data A data frame to assess or prepare.
 #' @param spec An EDA specification data frame or CSV path accepted by
-#'   [epi_eda_spec()]. If scaffold evidence includes `review_status`, every row
-#'   must be `reviewed` before apply mode can proceed.
+#'   [epi_eda_spec()].
 #' @param mode Either `"audit"` (the default) or `"apply"`.
 #' @param unexpected_levels Either `"error"` (the default) or `"append"` for
 #'   categorical variables. Binary variables never append a third level.
@@ -23,7 +22,7 @@
 #' @details Character numeric parsing is deliberately unsupported because no
 #' locale or decimal-mark contract is present. Character dates and datetimes
 #' use strict ISO forms. Offset or `Z` datetimes are normalised to UTC; local
-#' datetimes require a valid reviewed `timezone` field supported by `clock`'s
+#' datetimes require a valid declared `timezone` field supported by `clock`'s
 #' packaged IANA timezone database. Ambiguous, nonexistent, unsupported or
 #' otherwise unclassifiable local wall times block preparation without exposing
 #' observed values. Optional `min` and `max` fields are descriptive metadata,
@@ -176,20 +175,6 @@ prepare_dataset_rows <- function(data, spec) {
     )
   )
 
-  if ("review_status" %in% names(spec)) {
-    reviewed <- !is.na(spec$review_status) & as.character(spec$review_status) == "reviewed"
-    n_unreviewed <- as.integer(sum(!reviewed))
-    rows[[length(rows) + 1L]] <- prepare_audit_row(
-      ".dataset.spec_review", "dataset", action = "verify_spec_review",
-      status = if (n_unreviewed > 0L) "blocking" else "unchanged",
-      n_total = nrow(spec), n_affected = n_unreviewed,
-      reason = if (n_unreviewed > 0L) {
-        "Scaffold evidence contains specification rows that are not explicitly reviewed."
-      } else {
-        "Every scaffold evidence row is explicitly reviewed."
-      }
-    )
-  }
   rows
 }
 
@@ -487,7 +472,7 @@ prepare_levels_plan <- function(values, remaining, row, unexpected_levels, type_
     return(prepare_level_result(
       "declare_levels", if (same_factor) "unchanged" else "planned", "factor",
       levels, 0L, if (same_factor) 0L else length(values), if (same_factor) 0L else length(values),
-      if (same_factor) "Observed factor levels already match the reviewed declaration." else "Reviewed factor levels will be applied in declared order."
+      if (same_factor) "Observed factor levels already match the declaration." else "Declared factor levels will be applied in declared order."
     ))
   }
   if (type == "binary" || unexpected_levels == "error") {
@@ -580,7 +565,7 @@ prepare_datetime_plan <- function(values, timezone) {
     reason = if (n_invalid > 0L) {
       paste(
         "Character storage contains invalid, unzoned, ambiguous, nonexistent or unsupported strict ISO datetimes;",
-        "provide an explicit Z or numeric offset or correct the reviewed IANA timezone."
+        "provide an explicit Z or numeric offset or correct the declared IANA timezone."
       )
     } else {
       "Strict ISO datetime text will be converted and normalised to UTC."

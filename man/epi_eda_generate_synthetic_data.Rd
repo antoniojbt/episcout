@@ -17,5 +17,5 @@ epi_eda_generate_synthetic_data(spec, n = 100, seed = NULL)
 A data frame with one column per specification variable and \code{n} rows.
 }
 \description{
-Generate simple deterministic synthetic data from a validated specification-first EDA data dictionary. Synthetic data are intended for pipeline preparation and testing only, not for inference or disclosure control.
+Generate simple deterministic synthetic data from a validated specification-first EDA data dictionary. Synthetic data are intended for pipeline preparation and testing only, not for inference.
 }

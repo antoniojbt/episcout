@@ -43,17 +43,17 @@ populate_catalogue_fixture <- function(con, schema_sql) {
 catalogue_profile_dictionary <- function(con, schema) {
   dictionary <- epi_eda_dictionary_scaffold(epi_db_inventory(con, schema))
   dictionary$type <- "categorical"
-  dictionary$privacy_class <- "non_sensitive"
-  dictionary$analytic_action <- "retain"
   dictionary$provenance <- "synthetic_postgresql_fixture"
-  dictionary$validation_status <- "confirmed"
   dictionary
 }
 
 profile_catalogue_table <- function(con, dictionary, table, max_levels = 2) {
-  selected <- dictionary
-  selected$profile_catalogue <- selected$source_table == table
-  epi_db_catalogue_profile(con, selected, max_levels = max_levels)
+  columns <- dictionary[
+    dictionary$source_table == table,
+    c("source_schema", "source_table", "source_column"),
+    drop = FALSE
+  ]
+  epi_db_catalogue_profile(con, dictionary, columns, max_levels = max_levels)
 }
 
 test_that("live PostgreSQL keeps NULL counts separate from catalogue values", {

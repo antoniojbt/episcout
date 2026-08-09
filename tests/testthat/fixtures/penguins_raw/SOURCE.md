@@ -29,7 +29,7 @@ https://doi.org/10.1371/journal.pone.0090081
 - `expected_missing.csv`: independently computed missingness contract.
 - `expected_summary_numeric.csv`: independently computed numeric summaries.
 - `expected_summary_categorical.csv`: independently computed categorical summaries.
-- `expected_plot_inventory.csv`: independently defined non-visual compact-plot dispatch, including named no-plot rows for both reviewed identifiers.
+- `expected_plot_inventory.csv`: independently defined non-visual compact-plot dispatch for every declared variable.
 - `CHECKSUMS.sha256`: offline drift guard for every committed file in this fixture family.
 
 ## Extraction and transformation

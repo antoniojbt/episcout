@@ -29,7 +29,11 @@ test_that("Table 1 is stable, traceable and contains no inferential fields", {
 
   missing <- table1[table1$name == "status" & table1$statistic == "missing", ]
   expect_true(all(missing$denominator == missing$group_n))
-  expect_match(paste(unique(table1$note), collapse = " "), "not disclosure-controlled", ignore.case = TRUE)
+  expect_false(grepl(
+    "disclosure|sharing|approval",
+    paste(unique(table1$note), collapse = " "),
+    ignore.case = TRUE
+  ))
 })
 
 test_that("Table 1 never reproduces text observations and validates input", {

@@ -22,7 +22,7 @@ epi_sec_pseudonymise_db(
 \arguments{
 \item{con}{An open PostgreSQL DBI connection created with RPostgres.}
 
-\item{dictionary}{A confirmed multi-table dictionary accepted by \code{\link[=epi_eda_dictionary_validate]{epi_eda_dictionary_validate()}}.}
+\item{dictionary}{A technical and semantic multi-table dictionary accepted by \code{\link[=epi_eda_dictionary_validate]{epi_eda_dictionary_validate()}}.}
 
 \item{linkage}{A confirmed object returned by \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}.}
 
@@ -30,7 +30,9 @@ epi_sec_pseudonymise_db(
 
 \item{output_schema}{Existing restricted schema for pseudonymised output tables.}
 
-\item{catalogues}{Optional normalised catalogue data frame used by \code{dictionary}, with \code{catalog_name}, \code{source_value}, \code{label}, \code{display_order}, \code{is_missing}, \code{provenance} and \code{validation_status}.}
+\item{catalogues}{Optional normalised semantic catalogue data frame used by
+\code{dictionary}, with \code{catalog_name}, \code{source_value}, \code{label},
+\code{display_order}, \code{is_missing} and \code{provenance}.}
 
 \item{mode}{\code{"audit"} performs no writes; \code{"apply"} repeats all checks and writes atomically.}
 
@@ -48,14 +50,14 @@ epi_sec_pseudonymise_db(
 A redacted \code{epi_sec_pseudonymisation_result} list containing \code{status}; \code{metadata} columns \code{mode}, \code{writes}, \code{registry_schema}, \code{output_schema}, \code{next_action}; \code{identity_audit} columns \code{n_crosswalk_rows}, \code{n_unused_crosswalk_rows}, \code{n_crosswalk_conflicts}; \code{table_audit} columns \code{source_schema}, \code{source_table}, \code{destination_table}, \code{n_input}, \code{n_invalid_id}, \code{n_unmatched}, \code{n_missing_key}, \code{n_output}, \code{n_exact_removed}; \code{duplicate_audit} columns \code{source_schema}, \code{source_table}, \code{n_exact_excess}, \code{n_conflicting_keys}, \code{action}; \code{issues}; \code{output_dictionary}; \code{output_catalogues}; and \code{manifest} columns \code{source_schema}, \code{source_table}, \code{output_schema}, \code{output_table}, \code{status}, \code{sensitivity}. When \code{sensitive_issues = TRUE}, a marked memory-only data frame with \code{issue_code}, source relation/column metadata and \code{source_value} is appended. episcout does not print or persist that component automatically; deliberate extraction is the caller's responsibility. Status is \code{audit_complete}, \code{blocked} or \code{complete}.
 }
 \description{
-Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact, reviewed linkage metadata and a confirmed multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
+Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, specialised column policy and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
 }
 \details{
 Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. \code{existing = "replace"} is deliberately opt-in and is limited to declared ordinary destination tables without \code{CASCADE}. Source tables are never altered.
 
 Expected identity, duplicate, dictionary and governance findings return \code{status = "blocked"} with a value-free issue table containing \code{issue_code}, \code{severity}, \code{stage}, \code{source_schema}, \code{source_table}, \code{source_column}, \code{n_affected}, \code{message}, \code{recommended_action} and \code{sensitive}. Correct the declared metadata or source governance problem and audit again. Errors are reserved for malformed arguments, unsupported types or unsafe database/infrastructure state; apply errors roll back before returning a sanitised condition.
 
-The dictionary must completely and currently cover every declared source table. The declared ID column must be a confirmed \code{direct_identifier} with action \code{bridge}; \code{bridge} and \code{drop} columns are excluded, while reviewed \code{retain} and \code{retain_restricted} columns form the output. The generated token is classified as restricted identifier metadata. Use \code{output_dictionary} and \code{output_catalogues} with \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}} only after reviewing the output and its disclosure risk.
+The semantic dictionary must completely and currently cover every declared source table. The linkage \code{columns} policy requires the declared ID column to be a confirmed \code{direct_identifier} with action \code{bridge}; \code{bridge} and \code{drop} columns are excluded, while \code{retain} and \code{retain_restricted} columns form the output. The generated token is semantic identifier metadata. \code{output_dictionary} and \code{output_catalogues} can pass directly to \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}.
 
 Identifier families are PostgreSQL \code{text}/\code{varchar}, integral types and \code{uuid}. Fixed-width character identifiers and nondeterministic text collations are rejected. Text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons; UUIDs follow PostgreSQL UUID identity. Matching never trims, case-folds, hashes or infers identity.
 

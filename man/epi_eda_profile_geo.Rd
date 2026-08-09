@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda_geo.R
 \name{epi_eda_profile_geo}
 \alias{epi_eda_profile_geo}
-\title{Profile reviewed coordinate pairs without collecting geometry}
+\title{Profile declared coordinate pairs without collecting geometry}
 \usage{
 epi_eda_profile_geo(data, spec)
 }
@@ -12,18 +12,18 @@ epi_eda_profile_geo(data, spec)
 \item{spec}{An EDA specification data frame or CSV path.}
 }
 \value{
-A data frame with one aggregate row per reviewed coordinate pair.
+A data frame with one aggregate row per declared coordinate pair.
 A specification without coordinate metadata returns a typed zero-row data
 frame.
 }
 \description{
-Calculate aggregate eligibility QA for coordinate pairs declared explicitly
+Calculate aggregate map-readiness QA for coordinate pairs declared explicitly
 in an EDA specification. Coordinate values, row identifiers, geometry,
 bounds and maps are never returned.
 }
 \details{
-Eligibility confirms only that every row has a complete, finite
-pair and, for EPSG:4326, lies within the reviewed longitude/latitude
-limits. It is not disclosure approval, geometry construction or evidence
-that coordinates represent the intended place, person, time or unit.
+Map readiness confirms only that every row has a complete, finite
+pair and, for EPSG:4326, lies within the declared longitude/latitude
+limits. It is not geometry construction or evidence that coordinates
+represent the intended place, person, time or unit.
 }

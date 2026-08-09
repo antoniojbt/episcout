@@ -9,31 +9,12 @@
 #' @export
 epi_eda_spec <- function(path_or_data) {
   if (is.character(path_or_data) && length(path_or_data) == 1) {
-    header <- utils::read.csv(
+    spec <- utils::read.csv(
       path_or_data,
-      nrows = 0L,
       check.names = FALSE,
-      stringsAsFactors = FALSE
+      stringsAsFactors = FALSE,
+      na.strings = character()
     )
-    if (is_eda_scaffold_spec(header)) {
-      spec <- utils::read.csv(
-        path_or_data,
-        check.names = FALSE,
-        stringsAsFactors = FALSE,
-        colClasses = "character",
-        na.strings = character()
-      )
-      if ("required" %in% names(spec)) {
-        serialized_missing <- trimws(tolower(spec$required)) == "na"
-        spec$required[serialized_missing] <- NA_character_
-      }
-    } else {
-      spec <- utils::read.csv(
-        path_or_data,
-        check.names = FALSE,
-        stringsAsFactors = FALSE
-      )
-    }
   } else if (is.data.frame(path_or_data)) {
     spec <- as.data.frame(path_or_data, stringsAsFactors = FALSE)
   } else {
@@ -58,6 +39,15 @@ epi_eda_validate_spec <- function(spec) {
   }
 
   spec <- as.data.frame(spec, stringsAsFactors = FALSE)
+  deprecated <- intersect(names(spec), eda_removed_scaffold_fields())
+  if (length(deprecated) > 0L) {
+    stop(
+      "This EDA specification uses the removed evidence/review scaffold schema (",
+      paste(deprecated, collapse = ", "),
+      "). Regenerate it with epi_eda_spec_scaffold() and copy only semantic fields.",
+      call. = FALSE
+    )
+  }
   required_cols <- c("name", "label", "type", "role")
   missing_cols <- setdiff(required_cols, names(spec))
 
@@ -100,15 +90,21 @@ epi_eda_validate_spec <- function(spec) {
     )
   }
 
-  if ("required" %in% names(spec)) {
-    spec$required <- parse_eda_spec_logical(spec$required)
+  character_fields <- intersect(
+    c(
+      "label", "role", "units", "levels", "min", "max",
+      "missing_codes", "group", "description"
+    ),
+    names(spec)
+  )
+  for (field in character_fields) {
+    value <- as.character(spec[[field]])
+    value[is.na(value)] <- ""
+    spec[[field]] <- value
   }
 
-  if (is_eda_scaffold_spec(spec)) {
-    for (name in eda_scaffold_count_cols()) {
-      spec[[name]] <- parse_eda_spec_integer(spec[[name]], name)
-    }
-    validate_eda_scaffold_counts(spec)
+  if ("required" %in% names(spec)) {
+    spec$required <- parse_eda_spec_logical(spec$required)
   }
 
   spec <- validate_eda_geo_spec(spec)
@@ -173,8 +169,11 @@ validate_eda_geo_spec <- function(spec) {
 }
 
 eda_geo_resolve_crs <- function(crs) {
-  value <- if (grepl("^[0-9]+$", crs)) suppressWarnings(as.numeric(crs)) else crs
-  epi_geo_crs(value)
+  epi_geo_crs(eda_geo_crs_value(crs))
+}
+
+eda_geo_crs_value <- function(crs) {
+  if (grepl("^[0-9]+$", crs)) suppressWarnings(as.numeric(crs)) else crs
 }
 
 parse_eda_spec_integer <- function(x, name) {
@@ -190,37 +189,15 @@ parse_eda_spec_integer <- function(x, name) {
   as.integer(values)
 }
 
-eda_scaffold_count_cols <- function() {
-  c("n", "n_missing", "n_observed", "n_unique")
-}
-
-eda_scaffold_evidence_cols <- function() {
+eda_removed_scaffold_fields <- function() {
   c(
     "observed_class",
-    eda_scaffold_count_cols(),
+    "n", "n_missing", "n_observed", "n_unique",
     "candidate_type",
     "candidate_levels",
     "review_status",
     "review_reason"
   )
-}
-
-is_eda_scaffold_spec <- function(spec) {
-  all(eda_scaffold_evidence_cols() %in% names(spec))
-}
-
-validate_eda_scaffold_counts <- function(spec) {
-  counts <- spec[eda_scaffold_count_cols()]
-  if (anyNA(counts)) {
-    stop("EDA scaffold count fields must be complete.", call. = FALSE)
-  }
-  if (any(spec$n_missing + spec$n_observed != spec$n)) {
-    stop("EDA scaffold missing and observed counts must reconcile with n.", call. = FALSE)
-  }
-  if (any(spec$n_unique > spec$n_observed)) {
-    stop("EDA scaffold unique counts must not exceed observed counts.", call. = FALSE)
-  }
-  invisible(TRUE)
 }
 
 parse_eda_spec_logical <- function(x) {

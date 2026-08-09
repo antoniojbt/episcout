@@ -225,7 +225,8 @@ sec_registry_structure_ok <- function(con, schema) {
     paste(
       "SELECT c.relname AS table_name, k.contype, pg_get_constraintdef(k.oid) AS definition",
       "FROM pg_constraint k INNER JOIN pg_class c ON c.oid = k.conrelid",
-      "INNER JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = $1"
+      "INNER JOIN pg_namespace n ON n.oid = c.relnamespace",
+      "WHERE n.nspname = $1 AND k.contype IN ('p', 'f', 'c')"
     ),
     params = list(schema)
   )

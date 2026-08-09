@@ -156,6 +156,9 @@ eda_db_query_stage <- function(query_kind) {
   if (grepl("plot", query_kind)) {
     return("plot_preparation")
   }
+  if (grepl("map", query_kind)) {
+    return("map_collection")
+  }
   if (grepl("transaction", query_kind)) {
     return("snapshot")
   }
@@ -252,19 +255,19 @@ eda_pg_type_compatibility <- function(column, expected_type, declared_levels = c
   if (expected_type %in% c("categorical", "binary")) {
     allowed <- family %in% c("text", "enum", "boolean", "integer")
     if (allowed && family %in% c("text", "enum") && !deterministic) {
-      return(eda_type_result("incompatible", "PostgreSQL text equality uses a nondeterministic collation; use a reviewed deterministic view cast."))
+      return(eda_type_result("incompatible", "PostgreSQL text equality uses a nondeterministic collation; use a deterministic view cast."))
     }
     if (expected_type == "binary" && family != "boolean" && length(declared_levels) != 2L) {
-      return(eda_type_result("incompatible", "Non-boolean binary storage requires exactly two reviewed levels."))
+      return(eda_type_result("incompatible", "Non-boolean binary storage requires exactly two declared levels."))
     }
     if (allowed) {
       status <- if (family %in% c("text", "enum", "boolean")) "compatible" else "coercible"
-      return(eda_type_result(status, "PostgreSQL storage is compatible with the reviewed categorical declaration."))
+      return(eda_type_result(status, "PostgreSQL storage is compatible with the categorical declaration."))
     }
   }
   if (expected_type == "text" && family %in% c("text", "enum")) {
     if (!deterministic) {
-      return(eda_type_result("incompatible", "PostgreSQL text equality uses a nondeterministic collation; use a reviewed deterministic view cast."))
+      return(eda_type_result("incompatible", "PostgreSQL text equality uses a nondeterministic collation; use a deterministic view cast."))
     }
     return(eda_type_result("compatible", "PostgreSQL text storage is compatible with text."))
   }
@@ -275,15 +278,16 @@ eda_pg_type_compatibility <- function(column, expected_type, declared_levels = c
     return(eda_type_result("compatible", "PostgreSQL timestamp with time zone storage is compatible with UTC datetime."))
   }
   if (expected_type == "datetime" && family == "local_datetime") {
-    return(eda_type_result("incompatible", "PostgreSQL timestamp without time zone has no reviewed instant or DST meaning; use a reviewed view cast to timestamp with time zone."))
+    return(eda_type_result("incompatible", "PostgreSQL timestamp without time zone has no declared instant or DST meaning; use a view cast to timestamp with time zone."))
   }
   eda_type_result(
     "incompatible",
-    paste0("PostgreSQL storage type ", column$formatted_type[[1]], " is incompatible with reviewed type ", expected_type, ".")
+    paste0("PostgreSQL storage type ", column$formatted_type[[1]], " is incompatible with declared type ", expected_type, ".")
   )
 }
 
-eda_postgres_missing_contract <- function(source, column, expected_type, codes) {
+eda_postgres_missing_contract <- function(source, column, expected_type, codes,
+                                          offset = 0L) {
   column_sql <- eda_postgres_column_sql(source, column$name[[1]])
   family <- eda_postgres_storage_family(column)
   standard <- paste0("(", column_sql, " IS NULL)")
@@ -298,7 +302,7 @@ eda_postgres_missing_contract <- function(source, column, expected_type, codes) 
     return(list(sql = standard, params = list(), valid = FALSE, reason = parsed$reason))
   }
   predicates <- vapply(seq_along(parsed$values), function(index) {
-    placeholder <- paste0("$", index)
+    placeholder <- paste0("$", offset + index)
     if (family == "integer") {
       return(paste0(column_sql, " = ", placeholder, "::bigint"))
     }
@@ -358,7 +362,7 @@ eda_postgres_parse_sentinels <- function(codes, family, expected_type, column) {
     return(list(
       valid = FALSE,
       values = character(),
-      reason = paste0("A reviewed missing sentinel cannot be represented safely for PostgreSQL ", expected_type, " storage.")
+      reason = paste0("A declared missing sentinel cannot be represented safely for PostgreSQL ", expected_type, " storage.")
     ))
   }
   list(valid = TRUE, values = values, reason = NA_character_)
@@ -838,16 +842,6 @@ eda_postgres_summaries_inside <- function(source, spec, timing_env = NULL, n_tot
       eda_postgres_basic_counts(source, column, contract, expression, index, timing_env),
       error = function(error) c(n_missing = NA_integer_, n_observed = NA_integer_, n_unique = NA_integer_)
     )
-    identifier <- trimws(tolower(role)) %in% c("id", "identifier")
-    coordinate <- eda_coordinate_role(spec, index)
-    if (identifier) {
-      reason <- "Variable was skipped by the explicit identifier-role policy."
-    } else if (coordinate) {
-      reason <- paste(
-        "Variable was skipped by the explicit coordinate-role policy;",
-        "use aggregate geo QA and separate reviewed feature conversion."
-      )
-    }
     if (type == "integer" && is.na(reason) && !eda_postgres_integer_exact(source, column, contract, index, timing_env)) {
       reason <- "PostgreSQL bigint values exceed the exact R double integer range."
     }
@@ -1031,12 +1025,6 @@ eda_postgres_plot_data_inside <- function(source,
     type <- spec$type[[index]]
     label <- if (!is.na(spec$label[[index]]) && nzchar(spec$label[[index]])) spec$label[[index]] else name
     variable <- summaries$variables[summaries$variables$name == name, , drop = FALSE]
-    if (eda_identifier_role(spec$role[[index]])) {
-      return(eda_plot_entry(name, label, type, "identifier", NULL, variable$n, variable$n_missing, 0L, 0L, "not_created", "Variable was skipped by the explicit identifier-role policy."))
-    }
-    if (eda_coordinate_role(spec, index)) {
-      return(eda_plot_entry(name, label, type, "coordinate", NULL, variable$n, variable$n_missing, 0L, 0L, "not_created", "Variable was skipped by the explicit coordinate-role policy."))
-    }
     if (nrow(variable) != 1L || variable$status[[1]] != "summarised") {
       reason <- if (nrow(variable) == 1L) variable$reason[[1]] else "Variable summary was unavailable."
       return(eda_plot_entry(name, label, type, "not_created", NULL, if (nrow(variable)) variable$n[[1]] else NA_integer_, if (nrow(variable)) variable$n_missing[[1]] else NA_integer_, 0L, 0L, "not_created", reason))

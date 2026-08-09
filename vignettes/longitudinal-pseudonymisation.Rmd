@@ -165,38 +165,29 @@ Materialisation repeats all validation in one protected transaction and creates 
 
 The result creates no token and writes no identity-registry row. After a separate authorisation and dictionary review, `restricted_identity.identity_universe` may be declared as the sole `can_enrol = TRUE` source in `epi_sec_linkage_spec()`, with `canonical_identifier` as its ID column and the same reviewed namespace. Retain only the minimum permitted metadata in later pseudonymised output; do not treat the universe as anonymous or as evidence that identifiers denote distinct people.
 
-## 4. Inventory and dictionary review
+## 4. Inventory and semantic dictionary
 
-Create a conservative dictionary draft from the inventory, then review every active source column. The final dictionary must completely cover each selected table, have current drift status and confirmed validation status, and use a reviewed privacy/action pair.
+Create a technical and semantic dictionary from the inventory. It contains EDA labels, types, roles, units, missingness, catalogue and geographic declarations, but no privacy classification or retained-column action.
 
 ```{r dictionary-review, eval = FALSE}
 dictionary <- epi_eda_dictionary_scaffold(inventory)
-
-id_rows <- dictionary$source_column == "entity_id"
-dictionary$privacy_class[id_rows] <- "direct_identifier"
-dictionary$analytic_action[id_rows] <- "bridge"
-dictionary$privacy_class[!id_rows] <- "non_sensitive"
-dictionary$analytic_action[!id_rows] <- "retain"
 dictionary$provenance <- "reviewed_synthetic_metadata"
-dictionary$validation_status <- "confirmed"
 
 epi_eda_dictionary_validate(dictionary, catalogues = NULL)
 ```
 
-This mechanical assignment is appropriate only for the explicitly synthetic columns created above. For real restricted sources, a qualified reviewer must decide every label, type, role, privacy class, analytic action, provenance, catalogue reference and validation status. Do not leave `review` or `derive`, and do not copy this synthetic classification without reviewing the actual data contract.
-
-For a reviewed categorical or binary column that is safe to profile, set
-`profile_catalogue = TRUE` explicitly and inspect aggregate values without
-extracting source rows:
+For an explicitly selected categorical or binary column, profile bounded aggregate values with an exact three-key selector:
 
 ```{r catalogue-profile, eval = FALSE}
-dictionary$profile_catalogue[
-  dictionary$source_column == "event_type"
-] <- TRUE
+catalogue_columns <- dictionary[
+  dictionary$source_column == "event_type",
+  c("source_schema", "source_table", "source_column")
+]
 
 catalogue_profile <- epi_db_catalogue_profile(
   con,
   dictionary,
+  columns = catalogue_columns,
   max_levels = 20
 )
 
@@ -206,18 +197,11 @@ catalogue_profile$missing
 
 `values` contains only non-NULL source values and counts, so its rows can be
 copied into a draft normalised catalogue for human labelling and confirmation.
-`missing` reports one aggregate PostgreSQL NULL count per profiled column,
-including zero for an empty table. Review that count separately: PostgreSQL NULL
-is not a catalogue `source_value`, and this profile does not decide whether any
-observed sentinel value represents missingness. Direct identifiers,
-quasi-identifiers, free text and unreviewed fields remain ineligible for this
-profiling step.
-
-The pseudonymisation gate excludes every `bridge` and `drop` column. It retains only confirmed `retain` and `retain_restricted` columns. It blocks unclassified, unreviewed, pending, added, modified, unsupported `derive` or incomplete dictionary rows. A valid dictionary is a reviewed contract, not automatic detection of personal information.
+`missing` reports one aggregate PostgreSQL NULL count per profiled column, including zero for an empty table. PostgreSQL NULL is not a catalogue `source_value`, and this technical profile does not decide whether a sentinel represents missingness.
 
 ## 5. Linkage scaffold and confirmed specification
 
-Create the value-free draft without reading source rows. The scaffold may propose an ID column only when the dictionary has exactly one direct-identifier/bridge candidate for that table. It deliberately leaves namespace, enrolment authority, row grain, provenance and review status unfinished.
+Create the value-free draft without reading source rows. The scaffold covers every selected semantic dictionary column in a separate `columns` component and leaves all specialised policy unfinished. It does not infer an ID column.
 
 ```{r linkage-scaffold, eval = FALSE}
 draft <- epi_sec_linkage_scaffold(
@@ -236,12 +220,21 @@ Complete every consequential field through human review. This example uses one e
 
 ```{r linkage-specification, eval = FALSE}
 tables <- draft$tables
+tables$id_column <- "entity_id"
 tables$identity_namespace <- "entity_id"
 tables$can_enrol <- tables$source_table == "entities"
 tables$one_row_per_entity <- tables$source_table == "entities"
 tables$destination_table <- tables$source_table
 tables$provenance <- "reviewed_metadata"
 tables$validation_status <- "confirmed"
+
+columns <- draft$columns
+id_rows <- columns$source_column == "entity_id"
+columns$privacy_class[id_rows] <- "direct_identifier"
+columns$analytic_action[id_rows] <- "bridge"
+columns$privacy_class[!id_rows] <- "non_sensitive"
+columns$analytic_action[!id_rows] <- "retain"
+columns$validation_status <- "confirmed"
 
 record_keys <- data.frame(
   source_schema = c("source_data", "source_data"),
@@ -253,6 +246,7 @@ record_keys <- data.frame(
 
 linkage <- epi_sec_linkage_spec(
   tables = tables,
+  columns = columns,
   record_keys = record_keys
 )
 
@@ -284,6 +278,7 @@ crosswalks <- data.frame(
 
 linkage <- epi_sec_linkage_spec(
   tables = tables,
+  columns = columns,
   record_keys = record_keys,
   crosswalks = crosswalks
 )
@@ -388,6 +383,7 @@ repeat_tables <- linkage$tables
 repeat_tables$destination_table <- paste0(repeat_tables$destination_table, "_repeat")
 repeat_linkage <- epi_sec_linkage_spec(
   repeat_tables,
+  columns = linkage$columns,
   record_keys = linkage$record_keys,
   crosswalks = linkage$crosswalks
 )

@@ -11,8 +11,8 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Cleaning** - `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels; `epi_clean_curp_audit()` performs value-free local CURP structural auditing and reviewed-field reconciliation without claiming registry validation.
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
-* **Reviewed geospatial mapping** - `epi_geo_*` functions convert explicit coordinates, read local or explicitly bounded PostGIS geometry, describe and transform `sf` objects, create extensible static maps and stage safe GeoPackage output. Start with the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd).
-* **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data, including aggregate-only QA for explicitly reviewed coordinate pairs.
+* **Explicit geospatial mapping** - `epi_geo_*` functions convert declared coordinates, read local or explicitly bounded PostGIS geometry, describe and transform `sf` objects, create extensible static maps and stage safe GeoPackage output. Start with the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd).
+* **Specification-first EDA** - `epi_eda_*` functions use a semantic data dictionary to run repeatable EDA on synthetic or real data, including coordinate-pair QA and explicitly requested bounded point maps.
 * **PostgreSQL-backed EDA** - `epi_eda_postgres_source()` and the existing profilers run aggregate-only specification-first EDA against PostgreSQL 17 relations, while `epi_eda_db_run()` publishes a manifest-owned bundle.
 * **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
 * **PostgreSQL identifier universes** - `epi_sec_identity_universe_spec()` and `epi_sec_identity_universe_db()` audit one reviewed identifier namespace across multiple tables and can atomically publish a restricted canonical enrolment source without generating pseudonyms.
@@ -83,13 +83,13 @@ CRAN does not require `renv`; it requires a source tarball from `R CMD build` th
 There are four main ways to use episcout:
 
 * Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
-* Use the review-gated new-dataset workflow through `epi_eda_intake_run()`, or compose the lower-level specification-first functions directly.
+* Use the new-dataset workflow through `epi_eda_intake_run()`, or compose the lower-level specification-first functions directly.
 * For related restricted PostgreSQL tables, follow the [audit-first longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd) to create value-free linkage metadata, initialise a stable registry and inspect blockers before any write.
-* For explicitly reviewed vector data or coordinate pairs, follow the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd) to inspect CRS and geometry, create a static map and publish GeoPackage output safely.
+* For explicit vector data or declared coordinate pairs, follow the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd) to inspect CRS and geometry, create a static map and publish GeoPackage output safely.
 
-For a complete runnable learning path, use the [database-to-report walkthrough](inst/examples/db-to-report/README.md). Its commented R script starts with a duplicated synthetic longitudinal CSV, creates disposable PostgreSQL relations, pseudonymises them, runs database-backed EDA and finishes with plots, a Table 1 and an HTML report.
+For a complete runnable learning path, use the [database-to-EDA-bundle walkthrough](inst/examples/db-to-report/README.md). Its commented R script starts with a duplicated synthetic longitudinal CSV, creates disposable PostgreSQL relations, separates semantic and linkage policy metadata, pseudonymises the relations and finishes with a manifest-owned database EDA bundle.
 
-Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled. The guide explains database-administrator prerequisites, duplicate handling, recovery and the reviewed handoff into EDA.
+Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled. The guide explains database-administrator prerequisites, duplicate handling, recovery and the semantic handoff into EDA.
 
 ### Helper functions
 
@@ -127,9 +127,9 @@ desc_stats
 # And many more functions for cleaning, stats and plotting that do things a bit faster or more conveniently and I couldn't easily find in other packages.
 ```
 
-### Reviewed geospatial mapping
+### Explicit geospatial mapping
 
-Use the geospatial interface only after the coordinate columns, axis order, CRS, geometry meaning and privacy classification have been reviewed. `sf` is an optional dependency, and GeoPackage is the created-file format.
+The geospatial interface requires explicit coordinate columns, axis order and CRS. `sf` is an optional dependency, and GeoPackage is the created-file format.
 
 ``` r
 locations <- data.frame(
@@ -157,7 +157,7 @@ For PostGIS, construct `epi_geo_postgis_source()` from an open caller-owned RPos
 
 ### Specification-first EDA quickstart
 
-If data arrive before a dictionary, create a conservative draft from the in-memory data frame:
+If data arrive before a dictionary, generate a lean semantic dictionary from storage metadata:
 
 ``` r
 received_data <- data.frame(
@@ -167,11 +167,11 @@ received_data <- data.frame(
 )
 
 draft_spec <- epi_eda_spec_scaffold(received_data)
-draft_spec[, c("name", "type", "candidate_type", "n_missing", "review_status")]
+names(draft_spec)
 write.csv(draft_spec, "data_dictionary_draft.csv", row.names = FALSE, na = "")
 ```
 
-The draft records storage classes, missing counts, cardinality and conservative type candidates without including observed values as examples or candidate levels. It deliberately leaves roles, units, missing sentinels, validation bounds and requiredness unset. Review those fields, categorical declarations, privacy classification and factor metadata before loading the edited file with `epi_eda_spec()` or sharing it. Database inventory users should continue to use `epi_eda_dictionary_scaffold()`.
+The dictionary has exactly `name`, `label`, `type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. It contains no observed-count evidence, candidate fields, approval states or privacy policy. Factor and logical levels are storage metadata; scientific roles, sentinels, bounds and geographic meaning are not inferred. Database inventory users use `epi_eda_dictionary_scaffold()`.
 
 Start from a data dictionary with at least these columns:
 
@@ -184,7 +184,9 @@ death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome in
 
 The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The canonical summary contract covers numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable coverage and documented skips.
 
-Scaffolds also reserve blank `geo_role`, `geo_pair` and `geo_crs` fields. They are never inferred. After review, exactly one numeric/integer row may be marked `x` and one `y` under the same non-empty pair identifier and resolvable CRS. `epi_eda_profile_geo()` then reports aggregate completeness, non-finite and EPSG:4326 range-failure counts for data frames or PostgreSQL sources. Coordinate-role variables are policy-skipped from ordinary summaries and plots, so bundles contain no coordinate values, geometry, bounds or maps. Eligibility is neither disclosure approval nor scientific validation; use `epi_geo_from_coords()` separately only after those reviews.
+Geo fields are never inferred. A declared pair contains exactly one numeric/integer `x` row and one `y` row with the same pair identifier and resolvable CRS. `epi_eda_profile_geo()` reports pair completeness, non-finite values and EPSG:4326 range failures for data frames or PostgreSQL sources. Roles are descriptive: identifier and coordinate variables receive their declared summaries and ordinary plots.
+
+Mapping is opt-in on all runners. `maps = TRUE` creates one coordinate-derived point map per map-ready pair; each explicit `map_vars` variable adds one thematic map per pair. Date and datetime themes are unsupported. Failed QC, zero rows and sources above `max_map_points` record `not_created` without partial maps or truncation. Bundle workflows use deterministic `maps/` SVG paths.
 
 After saving and reviewing the dictionary, load it with its matching data and inspect the preparation plan before changing anything. Apply is all-or-nothing: a missing required variable, unsafe conversion or unexpected level returns the original data and a complete blocking audit.
 
@@ -200,9 +202,9 @@ prepared$metadata
 prepared$data
 ```
 
-Character numeric parsing is not implicit, categorical levels come from the reviewed specification, and local character datetimes require a reviewed `timezone`. Empty or whitespace-only sentinels cannot be represented by the current semicolon-delimited `missing_codes` format. The preparation core is in memory and does not write row-level data. It does not identify personal information or anonymise data; pseudonymisation remains a separate controlled step.
+Character numeric parsing is not implicit, categorical levels come from the declared specification, and local character datetimes require an explicit `timezone`. Empty or whitespace-only sentinels cannot be represented by the current semicolon-delimited `missing_codes` format. The preparation core is in memory and does not write row-level data.
 
-Summarise a prepared cohort overall and by one reviewed categorical or binary variable, then create a traceable long-form Table 1:
+Summarise a prepared cohort overall and by one declared categorical or binary variable, then create a traceable long-form Table 1:
 
 ``` r
 stratified <- epi_eda_profile_stratified(prepared$data, spec, strata = "sex")
@@ -213,9 +215,9 @@ table1 <- epi_eda_table1(stratified)
 table1
 ```
 
-Declared empty groups and levels remain visible, unexpected and missing strata are flagged, and numeric percentages retain their denominators in the calculation result. If missing strata are excluded, Overall describes only the included rows and metadata accounts for the omission. Table 1 contains no p-values and performs no automatic small-cell suppression; it is not disclosure-controlled and must be reviewed before sharing.
+Declared empty groups and levels remain visible, unexpected and missing strata are flagged, and numeric percentages retain their denominators. If missing strata are excluded, Overall describes only the included rows and metadata accounts for the omission. Table 1 contains no p-values or automatic role-based suppression.
 
-For a guided new-dataset run, let the workflow create the first scaffold and stop for review:
+For a guided new-dataset run, let intake generate, save and use the semantic dictionary:
 
 ``` r
 intake_dir <- tempfile("episcout-intake-")
@@ -224,28 +226,28 @@ first_run$status
 first_run$manifest
 ```
 
-Edit `spec_scaffold.csv` outside the run, explicitly review every field and set each `review_status` to `reviewed`. Then audit the reviewed specification before applying it:
+Supply an edited semantic dictionary when the declarations differ from storage or preparation is required:
 
 ``` r
-reviewed_spec <- epi_eda_spec("reviewed_spec.csv")
+semantic_spec <- epi_eda_spec("semantic_spec.csv")
 
 audit_run <- epi_eda_intake_run(
   received_data,
-  reviewed_spec,
+  semantic_spec,
   output_dir = tempfile("episcout-audit-"),
   prepare = "audit"
 )
 
 final_run <- epi_eda_intake_run(
   received_data,
-  reviewed_spec,
+  semantic_spec,
   output_dir = tempfile("episcout-report-"),
   prepare = "apply",
   strata = "study_group"
 )
 ```
 
-Expected gates return `review_required`, `blocked` or `audit_complete`; a reconciled analysis returns `complete`. The manifest distinguishes files that were and were not created. The workflow writes specification metadata, audits and aggregate summaries, never raw or prepared rows. Explicit `id`/`identifier` roles and reviewed coordinate-role variables are excluded from ordinary returned/exported profiles; coordinate pairs receive only `geo_qa.csv` aggregate eligibility counts. Variable names, supplied specification metadata and small groups may still be sensitive. The bundle is not de-identified or disclosure-controlled, and pseudonymisation remains a separate explicit workflow.
+Processing returns `blocked`, `audit_complete` or `complete`. The workflow writes `specification.csv`, audits, aggregate summaries, optional maps and reports, never raw or prepared rows. Core manifests contain only `artifact`, `type`, `path`, `status` and `checksum_md5`.
 
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 
@@ -284,7 +286,7 @@ results <- epi_eda_run(
 
 The workflow writes `summary_variables.csv`, `summary_numeric.csv`, `summary_categorical.csv`, `summary_text.csv`, `summary_temporal.csv` and `summary_skipped.csv`. The `variables` table accounts for every specification row, including unavailable counts and reasons for absent or incompatible variables. Numeric summaries distinguish observed infinities from finite analytical values, categorical summaries expose total-row and observed-value denominators, and temporal summaries state their range units. The active lower-level statistics path uses the same univariate calculation cores; `epi_stats_summary(data, output = "typed")` returns the corresponding typed components without requiring an EDA specification.
 
-Numeric, text and temporal plots use compact 30-bin aggregate data. Text plots show Unicode character lengths rather than raw strings. Variables whose reviewed role is `id` or `identifier` retain aggregate missingness, are skipped from typed summaries and have named `NULL` plot entries.
+Numeric, text and temporal plots use compact 30-bin aggregate data. Text plots show Unicode character lengths rather than raw strings. Roles describe variables and do not authorise or suppress plots.
 
 ### PostgreSQL-backed specification-first EDA
 
@@ -314,25 +316,34 @@ bundle <- epi_eda_db_run(
   spec,
   output_dir = "postgres-eda-bundle",
   plots = TRUE,
-  max_plot_levels = 20L
+  max_plot_levels = 20L,
+  maps = TRUE,
+  map_vars = "sex",
+  max_map_points = 10000L
 )
 
 DBI::dbDisconnect(con)
 ```
 
-Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db_run()` uses one such snapshot for all database reads, ends it before rendering or filesystem publication, and writes only registered aggregate artifacts through a sibling staging directory. Overwrite requires an exact unchanged prior database-EDA manifest plus matching source identity, specification fingerprint and plot options.
+Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db_run()` uses one such snapshot for all database reads, including map QC, the row bound and any requested coordinate/theme collection. It collects only ready-pair coordinates and explicit themes, never truncates, ends the snapshot before rendering, and publishes through a sibling staging directory. Overwrite fingerprints source, specification, plot and map settings.
 
-The bundle is aggregate-only, not anonymous or disclosure-controlled. Complete categorical frequencies, identifier QA, plots, variable and relation names, declared levels and missing sentinels may be sensitive. The normalized caller-authored specification is deliberately written for review, so its declared values are not covered by the raw-observation exclusion. Review every artifact before sharing. episcout does not control PostgreSQL, RPostgres, administrator, backup or server logging. Unsupported storage, especially `timestamp without time zone`, requires a caller-reviewed view cast; episcout does not infer local-time or DST meaning.
+episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared. It does not control PostgreSQL, RPostgres, administrator, backup or server logging. Unsupported storage, especially `timestamp without time zone`, requires an explicit view cast; episcout does not infer local-time or DST meaning.
 
-The aggregate PostgreSQL bundle is the end of the server-backed workflow. `epi_eda_render_report()` currently accepts an in-memory data frame, not a PostgreSQL source or aggregate bundle. Render its optional HTML report only for an approved in-memory dataset when `rmarkdown` and Pandoc are installed:
+The PostgreSQL bundle does not render HTML. `epi_eda_render_report()` accepts an in-memory data frame and supports the same map options when `rmarkdown` and Pandoc are installed:
 
 ``` r
 epi_eda_render_report(
   data = prepared$data,
   spec = spec,
-  output_dir = "outputs"
+  output_dir = "outputs",
+  maps = TRUE,
+  map_vars = "sex"
 )
 ```
+
+### Breaking EDA migration
+
+This release rejects old core schemas immediately. Replace scaffold evidence/review fields by regenerating with `epi_eda_spec_scaffold()`; move `privacy_class`, `analytic_action` and `validation_status` from combined dictionaries into `epi_sec_linkage_spec(columns = ...)`; remove ordinary catalogue `validation_status`; pass an exact three-key `columns` selector to `epi_db_catalogue_profile()`; replace six-column sensitivity-bearing core manifests with the five-column manifest; and rebuild old three-component linkage objects with a `columns` component. See the [EDA vignette](vignettes/specification-first-eda.Rmd) for old-to-new examples.
 
 To create a starter project scaffold:
 
@@ -340,7 +351,7 @@ To create a starter project scaffold:
 epi_eda_create_project("my-eda-project")
 ```
 
-Current EDA workflow limits: the synthetic data generator is for pipeline preparation and testing only, generated synthetic data are not suitable for inference or disclosure control, and PostgreSQL is the only server-backed EDA source. Arrow, DuckDB, data.table, SQLite, generic DBI and arbitrary lazy-query backends are not supported. Correlation, contingency and epidemiological outcome statistics remain separate from univariate EDA summaries.
+Current EDA workflow limits: the synthetic data generator is for pipeline preparation and testing only, generated synthetic data are not suitable for inference, and PostgreSQL is the only server-backed EDA source. Arrow, DuckDB, data.table, SQLite, generic DBI and arbitrary lazy-query backends are not supported. Correlation, contingency and epidemiological outcome statistics remain separate from univariate EDA summaries.
 
 ## Contribute
 

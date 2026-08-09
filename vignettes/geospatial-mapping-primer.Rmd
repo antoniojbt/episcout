@@ -1,12 +1,12 @@
 ---
-title: "Reviewed geospatial mapping"
+title: "Explicit geospatial mapping"
 author: "episcout contributors"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Reviewed geospatial mapping}
+  %\VignetteIndexEntry{Explicit geospatial mapping}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -26,9 +26,9 @@ knitr::opts_chunk$set(
 cat("This vignette needs sf and ggplot2 to run the mapping examples. Install both suggested packages to run the examples.")
 ```
 
-> **Privacy boundary:** Geometry is value-bearing data. Exact points, lines, polygons, narrow bounds and rare attribute combinations may identify sensitive locations. A technically valid geometry or attractive map is not automatically scientifically valid, anonymous, disclosure-controlled or safe to share.
+Geometry is value-bearing data. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
 
-This guide introduces episcout's reviewed vector-mapping path. It reads local vector data, converts explicitly declared coordinates, reports structural geometry QA, transforms coordinates, creates static maps and publishes named GeoPackage layers safely. It does not infer coordinate meaning, repair geometry, add basemaps, perform spatial inference or put feature-level locations into specification-first EDA output.
+This guide introduces episcout's explicit vector-mapping path. It reads local vector data, converts declared coordinates, reports structural geometry QA, transforms coordinates, creates static maps and publishes named GeoPackage layers safely. It does not infer coordinate meaning, repair geometry, add basemaps or perform spatial inference.
 
 ## 1. Features, attributes and geometry
 
@@ -46,7 +46,7 @@ Shapefile is accepted for import compatibility only. A Shapefile is a multi-file
 
 The API accepts local `.gpkg` and `.shp` paths only. It does not accept URLs, GDAL virtual file systems, database connections, inline GeoJSON or arbitrary driver options.
 
-## 3. Create a neutral reviewed example
+## 3. Create a neutral declared example
 
 The following geometry is deliberately synthetic and contains no patient, household, clinic or real administrative location. Its CRS is assigned because the coordinate meaning is declared here, not inferred from its values.
 
@@ -66,7 +66,7 @@ east_ring <- matrix(
 
 regions <- sf::st_sf(
   area = c("west", "east"),
-  reviewed_rate = c(4.0, 7.5),
+  declared_rate = c(4.0, 7.5),
   geometry = sf::st_sfc(
     sf::st_polygon(list(west_ring)),
     sf::st_polygon(list(east_ring)),
@@ -99,9 +99,9 @@ description$validity
 description$messages
 ```
 
-## 6. Convert an explicitly reviewed coordinate pair
+## 6. Convert an explicitly declared coordinate pair
 
-`x` means x/longitude/easting and `y` means y/latitude/northing only because a reviewed data dictionary or source specification says so. Names and plausible ranges are not enough to infer axes or CRS.
+`x` means x/longitude/easting and `y` means y/latitude/northing only because a data dictionary or source specification declares it. Names and plausible ranges are not enough to infer axes or CRS.
 
 ```{r coordinates}
 locations <- data.frame(
@@ -138,7 +138,7 @@ The function retains features and attributes in order, uses the `sf`/PROJ transf
 
 ## 8. Use direct sf operations where episcout adds no contract
 
-Selection, cropping and spatial joins remain ordinary `sf` operations. Their predicate, boundary, population and duplicate-match meaning require review in the analysis protocol.
+Selection, cropping and spatial joins remain ordinary `sf` operations. Declare their predicate, boundary, population and duplicate-match meaning in the analysis protocol.
 
 ```{r direct-sf}
 selected <- regions_read["area"]
@@ -155,15 +155,15 @@ joined[c("site", "area")]
 ```{r region-map}
 region_map <- epi_geo_map(
   regions_read,
-  value = "reviewed_rate",
+  value = "declared_rate",
   geometry_colour = "white"
 )
-region_map + ggplot2::labs(fill = "Reviewed rate", title = "Neutral synthetic regions")
+region_map + ggplot2::labs(fill = "Declared rate", title = "Neutral synthetic regions")
 ```
 
 ```{r point-map}
 point_map <- epi_geo_map(points, value = "group", na_colour = "grey60")
-point_map + ggplot2::labs(colour = "Reviewed group", title = "Neutral synthetic sites")
+point_map + ggplot2::labs(colour = "Declared group", title = "Neutral synthetic sites")
 ```
 
 Mixed polygonal and non-polygonal objects require explicit user-composed `ggplot2` layers so their appearance and meaning are not hidden behind a default.
@@ -186,8 +186,8 @@ The PostGIS path starts from an open caller-owned RPostgres connection and exact
 ```{r postgis-workflow, eval = FALSE}
 spatial_source <- epi_geo_postgis_source(
   con,
-  schema = "reviewed_schema",
-  relation = "reviewed_features",
+  schema = "declared_schema",
+  relation = "declared_features",
   geometry_column = "geom"
 )
 
@@ -196,32 +196,32 @@ aggregate_qa$dataset
 aggregate_qa$validity
 aggregate_qa$bounding_box
 
-reviewed_extent <- sf::st_bbox(
+declared_extent <- sf::st_bbox(
   c(xmin = 0, ymin = 0, xmax = 1, ymax = 1),
   crs = 4326
 )
 selected_features <- epi_geo_postgis_collect(
   spatial_source,
-  columns = c("reviewed_group", "reviewed_rate"),
-  bbox = reviewed_extent,
+  columns = c("declared_group", "declared_rate"),
+  bbox = declared_extent,
   max_features = 1000L
 )
 ```
 
-Description runs catalogue, type, SRID, dimension, validity and bound aggregates inside one read-only repeatable-read snapshot. It does not select feature geometry or ordinary attributes. Its bounds and rare aggregate combinations may still disclose sensitive locations and require review before they are printed, logged or shared.
+Description runs catalogue, type, SRID, dimension, validity and bound aggregates inside one read-only repeatable-read snapshot. It does not select feature geometry or ordinary attributes.
 
 Collection is a separate explicit act. Identifiers are quoted, bbox ordinates are bound as values in the source CRS, and the complete selection is counted before at most `max_features + 1` rows can be fetched in the same snapshot. An over-limit selection fails rather than truncates. Null geometry in the selected rows also fails because it cannot satisfy the Phase-A `sf` contract. The connection remains caller-owned and usable after handled success or failure.
 
-episcout does not accept credentials, connection strings, predicates, ordering or SQL fragments through these functions. It does not install PostGIS, create or modify database objects, create indexes or collect automatically from `epi_geo_map()`. Large reviewed selections may need a database-administered spatial index, but index design and tuning are outside this interface.
+episcout does not accept credentials, connection strings, predicates, ordering or SQL fragments through these functions. It does not install PostGIS, create or modify database objects, create indexes or collect automatically from `epi_geo_map()`. Large selections may need a database-administered spatial index, but index design and tuning are outside this interface.
 
-## 12. Review coordinate roles in specification-first EDA
+## 12. Declare coordinate roles in specification-first EDA
 
-Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. A reviewer can assign exactly one numeric/integer `x` row and one `y` row to the same non-empty pair identifier and explicit resolvable CRS. Existing specifications without these fields keep their prior semantics.
+Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. Assign exactly one numeric/integer `x` row and one `y` row to the same non-empty pair identifier and explicit resolvable CRS.
 
 ```{r eda-coordinate-qa}
 coordinate_spec <- data.frame(
   name = c("longitude", "latitude"),
-  label = c("Reviewed longitude", "Reviewed latitude"),
+  label = c("Declared longitude", "Declared latitude"),
   type = c("numeric", "numeric"),
   role = c("", ""),
   geo_role = c("x", "y"),
@@ -232,8 +232,10 @@ coordinate_spec <- data.frame(
 epi_eda_profile_geo(locations, coordinate_spec)
 ```
 
-The result contains one aggregate row with total, complete, missing-axis, both-missing, non-finite and EPSG:4326 range-failure counts plus a stable eligibility reason. The same call accepts an `epi_eda_postgres_source()` and computes one aggregate SQL row per pair without PostGIS or coordinate collection. Coordinate-role variables are policy-skipped from ordinary EDA summaries and plots, and ordinary bundles contain no coordinates, WKT/WKB, feature maps or bounds. Technical eligibility is not disclosure approval or evidence that the pair represents the intended place, person, time or analytic unit. Use the explicit conversion and mapping workflow in this guide only after those separate reviews.
+The result contains one aggregate row with total, complete, missing-axis, both-missing, non-finite and EPSG:4326 range-failure counts plus a stable map-readiness reason. The same call accepts an `epi_eda_postgres_source()` and computes one aggregate SQL row per pair without PostGIS or coordinate collection. Coordinate roles do not suppress ordinary summaries or plots.
+
+All EDA runners accept `maps`, `map_vars` and `max_map_points`. Mapping remains off by default. When requested, complete within-limit pairs create coordinate-derived point maps, with one additional thematic map per explicit theme. Failed pairs record `not_created`; PostgreSQL does not collect coordinate or theme observations for failed or over-limit pairs. Existing `sf`, line, polygon and PostGIS geometry remain explicit `epi_geo_*` workflows.
 
 ## 13. Descriptive maps are not spatial inference
 
-These maps display reviewed geometries and attributes. They do not test clustering, estimate spatial risk, select neighbours, define denominators, handle spatial dependence, quantify uncertainty or support causal claims. Any inferential method requires a concrete epidemiological question, authoritative method, explicit population and spatial/temporal unit, denominator, distance or adjacency definition, null hypothesis, multiplicity policy and independent numerical validation. Those decisions are outside this mapping foundation.
+These maps display declared geometries and attributes. They do not test clustering, estimate spatial risk, select neighbours, define denominators, handle spatial dependence, quantify uncertainty or support causal claims. Any inferential method requires a concrete epidemiological question, authoritative method, explicit population and spatial/temporal unit, denominator, distance or adjacency definition, null hypothesis, multiplicity policy and independent numerical validation. Those decisions are outside this mapping foundation.

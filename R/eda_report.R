@@ -9,6 +9,10 @@
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
 #' @param quiet Logical; passed to [rmarkdown::render()] to control render output.
+#' @param maps Whether to create one geometry-only point map for every declared
+#'   coordinate pair.
+#' @param map_vars Unique declared variables for additional thematic maps.
+#' @param max_map_points Inclusive maximum number of rows allowed for mapping.
 #' @return A single character string containing the rendered HTML report path.
 #'
 #' @export
@@ -18,7 +22,10 @@ epi_eda_render_report <- function(data,
                                   synthetic = FALSE,
                                   n = 100,
                                   seed = NULL,
-                                  quiet = TRUE) {
+                                  quiet = TRUE,
+                                  maps = FALSE,
+                                  map_vars = character(),
+                                  max_map_points = 10000L) {
   validate_run_eda_output_dir(output_dir)
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
@@ -41,7 +48,10 @@ epi_eda_render_report <- function(data,
     output_dir = output_dir,
     synthetic = synthetic,
     n = n,
-    seed = seed
+    seed = seed,
+    maps = maps,
+    map_vars = map_vars,
+    max_map_points = max_map_points
   )
 
   render_input <- file.path(tempdir(), "episcout-eda-report.qmd")

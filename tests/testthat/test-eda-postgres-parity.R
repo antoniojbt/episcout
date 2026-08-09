@@ -135,6 +135,7 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   expect_identical(flag$is_declared, c(TRUE, TRUE))
   expect_identical(flag$is_unexpected, c(FALSE, FALSE))
   text <- summaries$text[summaries$text$name == "note", ]
+  rownames(text) <- NULL
   expect_identical(text, data.frame(
     name = "note", n = 6L, n_missing = 2L, n_observed = 4L,
     n_unique = 4L, n_empty = 1L, n_whitespace = 1L,
@@ -155,10 +156,17 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
     range_unit = c("days", "seconds"),
     stringsAsFactors = FALSE
   ))
-  identifier_reason <- "Variable was skipped by the explicit identifier-role policy."
+  participant_text <- summaries$text[
+    summaries$text$name == "participant_id", , drop = FALSE
+  ]
+  expect_identical(participant_text, data.frame(
+    name = "participant_id", n = 6L, n_missing = 1L, n_observed = 5L,
+    n_unique = 3L, n_empty = 0L, n_whitespace = 0L,
+    min_length = 1L, max_length = 1L, stringsAsFactors = FALSE
+  ))
   local_time_reason <- paste(
-    "PostgreSQL timestamp without time zone has no reviewed instant or DST meaning;",
-    "use a reviewed view cast to timestamp with time zone."
+    "PostgreSQL timestamp without time zone has no declared instant or DST meaning;",
+    "use a view cast to timestamp with time zone."
   )
   expect_identical(summaries$variables, data.frame(
     name = fixture$spec$name,
@@ -171,22 +179,22 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
     n_observed = c(5L, 3L, 6L, 4L, 5L, 4L, 4L, 5L, 5L),
     n_unique = c(3L, 3L, 5L, 3L, 2L, 4L, 4L, 5L, 5L),
     n_infinite = c(0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L),
-    status = c("skipped", rep("summarised", 7L), "skipped"),
-    reason = c(identifier_reason, rep(NA_character_, 7L), local_time_reason),
+    status = c(rep("summarised", 8L), "skipped"),
+    reason = c(rep(NA_character_, 8L), local_time_reason),
     stringsAsFactors = FALSE
   ))
   expect_identical(summaries$skipped, data.frame(
-    name = c("participant_id", "local_time"),
-    type = c("text", "datetime"),
-    observed_class = c("text", "timestamp without time zone"),
-    reason = c(identifier_reason, local_time_reason),
+    name = "local_time",
+    type = "datetime",
+    observed_class = "timestamp without time zone",
+    reason = local_time_reason,
     stringsAsFactors = FALSE
   ))
-  expect_identical(summaries$variables$status[summaries$variables$name == "participant_id"], "skipped")
-  expect_false("participant_id" %in% summaries$text$name)
+  expect_identical(summaries$variables$status[summaries$variables$name == "participant_id"], "summarised")
+  expect_true("participant_id" %in% summaries$text$name)
   expect_identical(schema$type_status[schema$name == "local_time"], "incompatible")
   expect_named(plots, fixture$spec$name)
-  expect_null(plots$participant_id)
+  expect_s3_class(plots$participant_id, "ggplot")
   expect_s3_class(plots$measurement, "ggplot")
   expect_s3_class(plots$note, "ggplot")
   expect_null(plots$local_time)
@@ -337,9 +345,12 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   run <- epi_eda_db_run(source, fixture$spec, output_dir, plots = FALSE)
 
   expect_s3_class(run, "epi_eda_db_run")
-  expect_identical(names(run), c("status", "output_dir", "manifest", "source", "spec", "schema", "missing", "summaries", "identifier_qa", "geo", "plots", "plot_inventory", "timings", "messages", "metadata"))
+  expect_identical(names(run), c("status", "output_dir", "manifest", "source", "spec", "schema", "missing", "summaries", "identifier_qa", "geo", "plots", "plot_inventory", "maps", "map_inventory", "timings", "messages", "metadata"))
   expect_identical(run$status, "complete")
   expect_named(run$plots, character())
+  expect_named(run$maps, character())
+  expect_equal(nrow(run$map_inventory), 0L)
+  expect_identical(names(run$manifest), c("artifact", "type", "path", "status", "checksum_md5"))
   expect_identical(sum(run$timings$query_kind == "row_count"), 1L)
   expect_equal(run$identifier_qa$n_distinct, 3L)
   expect_equal(run$identifier_qa$n_repeated_values, 2L)
@@ -355,7 +366,7 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   changed_spec$label[[1]] <- "Changed reviewed label"
   expect_error(
     epi_eda_db_run(source, changed_spec, output_dir, overwrite = TRUE, plots = FALSE),
-    "source, specification, or plot options"
+    "source, specification, plot options, or map options"
   )
   missing_path <- file.path(output_dir, "missing.csv")
   write("tamper", missing_path, append = TRUE)
@@ -369,7 +380,7 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   plot_dir <- tempfile("postgres-eda-plots-")
   plotted <- epi_eda_db_run(source, fixture$spec, plot_dir, plots = TRUE, max_plot_levels = 2L)
   expect_named(plotted$plots, fixture$spec$name)
-  expect_null(plotted$plots$participant_id)
+  expect_s3_class(plotted$plots$participant_id, "ggplot")
   svg_paths <- file.path(plot_dir, plotted$plot_inventory$path[plotted$plot_inventory$status == "created"])
   expect_true(length(svg_paths) > 0L)
   expect_true(all(file.exists(svg_paths)))

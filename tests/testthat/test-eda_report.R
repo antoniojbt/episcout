@@ -35,6 +35,12 @@ test_that("EDA report template is bundled with report sections", {
   expect_match(template_text, "missing|Missing")
   expect_match(template_text, "summar|Summar")
   expect_match(template_text, "plot|Plot")
+  expect_match(template_text, "map|Map")
+  expect_match(
+    template_text,
+    "episcout creates the outputs explicitly requested by the analyst",
+    fixed = TRUE
+  )
 })
 
 test_that("epi_eda_render_report renders a real fixture-data report", {
@@ -145,4 +151,35 @@ test_that("epi_eda_render_report requires an existing output directory", {
     ),
     regexp = "output_dir|directory|exist"
   )
+})
+
+test_that("epi_eda_render_report embeds declared point maps", {
+  data <- data.frame(
+    lon = c(-10, 0, 10),
+    lat = c(-5, 0, 5),
+    theme = c("A", "MISSING", "B"),
+    stringsAsFactors = FALSE
+  )
+  spec <- epi_eda_spec_scaffold(data)
+  spec$geo_role[1:2] <- c("x", "y")
+  spec$geo_pair[1:2] <- "site"
+  spec$geo_crs[1:2] <- "4326"
+  spec$missing_codes[[3]] <- "MISSING"
+  output_dir <- tempfile("eda-report-maps-")
+  dir.create(output_dir)
+
+  report_path <- epi_eda_render_report(
+    data,
+    spec,
+    output_dir,
+    maps = TRUE,
+    map_vars = "theme"
+  )
+
+  report_text <- read_report_text(report_path)
+  expect_match(report_text, "Map inventory", fixed = TRUE)
+  expect_match(report_text, "map-p001-geometry", fixed = TRUE)
+  expect_match(report_text, "map-p001-v003", fixed = TRUE)
+  expect_true(file.exists(file.path(output_dir, "maps", "map-p001-geometry.svg")))
+  expect_true(file.exists(file.path(output_dir, "maps", "map-p001-v003.svg")))
 })

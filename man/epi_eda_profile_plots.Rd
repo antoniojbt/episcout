@@ -13,13 +13,12 @@ observed data.}
 \item{spec}{An EDA specification data frame or CSV path.}
 }
 \value{
-A named list containing one ggplot object or identifier-policy
-\code{NULL} per specification row, in specification order.
+A named list containing one ggplot object per specification row, in
+specification order.
 }
 \description{
 Create one compact aggregate plot for each variable listed in a
 specification-first EDA data dictionary. Numeric and temporal values use
 fixed 30-bin distributions, categorical values use complete frequencies,
-and text uses character lengths rather than observed strings. Explicit
-identifier roles return named \code{NULL} elements.
+and text uses character lengths rather than observed strings.
 }

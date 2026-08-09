@@ -1,14 +1,16 @@
 #' Render a traceable Table 1 data frame
 #'
-#' Format an [epi_eda_profile_stratified()] calculation as a long, review-ready
+#' Format an [epi_eda_profile_stratified()] calculation as a long, traceable
 #' plain data frame. Formatting never replaces the machine-readable source
 #' fields and adds no p-values or automatic small-cell suppression.
 #'
 #' @param result An `epi_eda_stratified` result.
 #'
 #' @return An ordinary long-form data frame. `denominator` records the numeric
-#'   denominator behind every count/percentage display. Output is not
-#'   disclosure-controlled and must be reviewed before sharing.
+#'   denominator behind every count/percentage display.
+#'
+#' @details episcout creates the outputs explicitly requested by the analyst
+#'   and does not decide whether they may be shared.
 #'
 #' @export
 epi_eda_table1 <- function(result) {
@@ -202,7 +204,7 @@ stratified_table_row <- function(variable_order,
 }
 
 stratified_table_note <- function(row) {
-  notes <- "Counts are not disclosure-controlled."
+  notes <- ""
   if (isTRUE(row$is_missing_stratum[[1]])) {
     notes <- paste(notes, "Missing stratum.")
   }

@@ -8,8 +8,12 @@
 #' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec` before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
+#' @param maps Whether to create one geometry-only point map for every declared
+#'   coordinate pair.
+#' @param map_vars Unique declared variables for additional thematic maps.
+#' @param max_map_points Inclusive maximum number of rows allowed for mapping.
 #' @return A named list with `metadata`, `schema`, `missing`, `geo`,
-#'   `summaries` and `plots` components.
+#'   `summaries`, `plots`, `maps`, and `map_inventory` components.
 #'
 #' @export
 epi_eda_run <- function(data,
@@ -17,29 +21,38 @@ epi_eda_run <- function(data,
                         output_dir = NULL,
                         synthetic = FALSE,
                         n = 100,
-                        seed = NULL) {
+                        seed = NULL,
+                        maps = FALSE,
+                        map_vars = character(),
+                        max_map_points = 10000L) {
   synthetic <- validate_run_eda_synthetic(synthetic)
   spec <- epi_eda_spec(spec)
+  map_options <- eda_map_options(spec, maps, map_vars, max_map_points)
 
   if (synthetic) {
     data <- epi_eda_generate_synthetic_data(spec = spec, n = n, seed = seed)
   } else if (!is.data.frame(data)) {
     stop("data must be a data frame when synthetic is FALSE.", call. = FALSE)
   }
+  eda_validate_map_columns(names(data), map_options)
 
   if (!is.null(output_dir)) {
     validate_run_eda_output_dir(output_dir)
   }
 
   plot_spec <- spec[spec$name %in% names(data), , drop = FALSE]
-  results <- list(
-    metadata = run_eda_metadata(data, spec, synthetic = synthetic),
+  geo <- epi_eda_profile_geo(data, spec)
+  map_result <- eda_data_frame_maps(data, spec, geo, map_options)
+  results <- c(list(
+    metadata = run_eda_metadata(
+      data, spec, synthetic = synthetic, map_options = map_options
+    ),
     schema = epi_eda_check_schema(data, spec),
     missing = epi_eda_profile_missing(data, spec),
-    geo = epi_eda_profile_geo(data, spec),
+    geo = geo,
     summaries = epi_eda_profile_summaries(data, spec),
     plots = epi_eda_profile_plots(data, plot_spec)
-  )
+  ), map_result)
 
   if (!is.null(output_dir)) {
     write_run_eda_outputs(results, output_dir)
@@ -67,12 +80,15 @@ validate_run_eda_output_dir <- function(output_dir) {
   invisible(TRUE)
 }
 
-run_eda_metadata <- function(data, spec, synthetic) {
+run_eda_metadata <- function(data, spec, synthetic, map_options) {
   data.frame(
     synthetic = synthetic,
     n_rows = as.integer(nrow(data)),
     n_columns = as.integer(ncol(data)),
     n_spec_variables = as.integer(nrow(spec)),
+    maps = map_options$maps,
+    map_vars = paste(map_options$map_vars, collapse = ";"),
+    max_map_points = map_options$max_map_points,
     stringsAsFactors = FALSE
   )
 }
@@ -98,6 +114,11 @@ write_run_eda_outputs <- function(results, output_dir) {
     file.path(output_dir, "geo_qa.csv"),
     row.names = FALSE
   )
+  utils::write.csv(
+    results$map_inventory,
+    file.path(output_dir, "map_inventory.csv"),
+    row.names = FALSE
+  )
   for (name in names(results$summaries)) {
     utils::write.csv(
       results$summaries[[name]],
@@ -105,6 +126,7 @@ write_run_eda_outputs <- function(results, output_dir) {
       row.names = FALSE
     )
   }
+  eda_write_maps(results$maps, results$map_inventory, output_dir)
 
   invisible(TRUE)
 }

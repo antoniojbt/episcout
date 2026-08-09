@@ -1,13 +1,15 @@
 #' Pseudonymise related PostgreSQL tables through a stable identity registry
 #'
-#' Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact, reviewed linkage metadata and a confirmed multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
+#' Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, specialised column policy and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
 #'
 #' @param con An open PostgreSQL DBI connection created with RPostgres.
-#' @param dictionary A confirmed multi-table dictionary accepted by [epi_eda_dictionary_validate()].
+#' @param dictionary A technical and semantic multi-table dictionary accepted by [epi_eda_dictionary_validate()].
 #' @param linkage A confirmed object returned by [epi_sec_linkage_spec()].
 #' @param registry_schema Existing restricted identity-registry schema initialised by [epi_sec_identity_registry_init()].
 #' @param output_schema Existing restricted schema for pseudonymised output tables.
-#' @param catalogues Optional normalised catalogue data frame used by `dictionary`, with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing`, `provenance` and `validation_status`.
+#' @param catalogues Optional normalised semantic catalogue data frame used by
+#'   `dictionary`, with `catalog_name`, `source_value`, `label`,
+#'   `display_order`, `is_missing` and `provenance`.
 #' @param mode `"audit"` performs no writes; `"apply"` repeats all checks and writes atomically.
 #' @param token_column Name used for the pseudonym token in every output table.
 #' @param exact_duplicates `"report"` retains identical projected rows; `"drop"` removes them explicitly.
@@ -21,7 +23,7 @@
 #'
 #' Expected identity, duplicate, dictionary and governance findings return `status = "blocked"` with a value-free issue table containing `issue_code`, `severity`, `stage`, `source_schema`, `source_table`, `source_column`, `n_affected`, `message`, `recommended_action` and `sensitive`. Correct the declared metadata or source governance problem and audit again. Errors are reserved for malformed arguments, unsupported types or unsafe database/infrastructure state; apply errors roll back before returning a sanitised condition.
 #'
-#' The dictionary must completely and currently cover every declared source table. The declared ID column must be a confirmed `direct_identifier` with action `bridge`; `bridge` and `drop` columns are excluded, while reviewed `retain` and `retain_restricted` columns form the output. The generated token is classified as restricted identifier metadata. Use `output_dictionary` and `output_catalogues` with [epi_eda_dictionary_spec()] only after reviewing the output and its disclosure risk.
+#' The semantic dictionary must completely and currently cover every declared source table. The linkage `columns` policy requires the declared ID column to be a confirmed `direct_identifier` with action `bridge`; `bridge` and `drop` columns are excluded, while `retain` and `retain_restricted` columns form the output. The generated token is semantic identifier metadata. `output_dictionary` and `output_catalogues` can pass directly to [epi_eda_dictionary_spec()].
 #'
 #' Identifier families are PostgreSQL `text`/`varchar`, integral types and `uuid`. Fixed-width character identifiers and nondeterministic text collations are rejected. Text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons; UUIDs follow PostgreSQL UUID identity. Matching never trims, case-folds, hashes or infers identity.
 #'
@@ -57,8 +59,15 @@ epi_sec_pseudonymise_db <- function(con,
       if (!is.logical(sensitive_issues) || length(sensitive_issues) != 1L || is.na(sensitive_issues)) {
         stop("sensitive_issues must be TRUE or FALSE.", call. = FALSE)
       }
-      if (!inherits(linkage, "epi_sec_linkage_spec")) {
-        stop("linkage must be a confirmed epi_sec_linkage_spec object.", call. = FALSE)
+      if (!inherits(linkage, "epi_sec_linkage_spec") ||
+        !identical(
+          names(linkage),
+          c("tables", "columns", "record_keys", "crosswalks")
+        )) {
+        stop(
+          "linkage must use the four-component epi_sec_linkage_spec schema; regenerate old linkage objects with an explicit columns policy.",
+          call. = FALSE
+        )
       }
       if (mode == "apply" && sec_connection_is_transacting(con)) {
         stop("mode = 'apply' requires a connection that is not already inside a caller-managed transaction.", call. = FALSE)
@@ -239,7 +248,30 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
       )
     }
     dictionary_rows <- dictionary_rows[match(columns$source_column, dictionary_rows$source_column), , drop = FALSE]
-    sec_validate_privacy_rows(dictionary_rows, declaration$id_column)
+    policy_rows <- linkage$columns[
+      linkage$columns$source_schema == declaration$source_schema &
+        linkage$columns$source_table == declaration$source_table,
+      , drop = FALSE
+    ]
+    policy_match <- match(
+      dictionary_rows$source_column, policy_rows$source_column
+    )
+    if (nrow(policy_rows) != nrow(dictionary_rows) || anyNA(policy_match) ||
+          !setequal(policy_rows$source_column, dictionary_rows$source_column)) {
+      sec_governance_stop(
+        "column_policy_coverage", declaration, NA_character_,
+        length(setdiff(
+          union(dictionary_rows$source_column, policy_rows$source_column),
+          intersect(dictionary_rows$source_column, policy_rows$source_column)
+        )),
+        "The linkage column policy does not exactly cover the current semantic dictionary.",
+        "Regenerate the linkage scaffold from the current dictionary and reconfirm its columns policy."
+      )
+    }
+    policy_rows <- policy_rows[policy_match, , drop = FALSE]
+    sec_validate_privacy_rows(
+      dictionary_rows, policy_rows, declaration$id_column
+    )
     id_index <- match(declaration$id_column, columns$source_column)
     if (is.na(id_index)) {
       stop("The declared id_column was not found in source table ", declaration$source_schema, ".", declaration$source_table, ".", call. = FALSE)
@@ -251,7 +283,7 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     if (id_family == "text" && !sec_id_collation_deterministic(con, columns[id_index, , drop = FALSE])) {
       stop("A textual identifier uses a nondeterministic PostgreSQL collation and cannot provide exact identity matching.", call. = FALSE)
     }
-    retained <- dictionary_rows$analytic_action %in% c("retain", "retain_restricted")
+    retained <- policy_rows$analytic_action %in% c("retain", "retain_restricted")
     retained_columns <- dictionary_rows$source_column[retained]
     if (token_column %in% retained_columns) {
       stop("token_column collides with a retained source column in ", declaration$source_schema, ".", declaration$source_table, ".", call. = FALSE)
@@ -274,6 +306,7 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
       declaration = declaration,
       columns = columns,
       dictionary = dictionary_rows,
+      policy = policy_rows,
       id_family = id_family,
       retained_columns = retained_columns,
       record_keys = keys
@@ -282,7 +315,9 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
   names(table_contexts) <- vapply(table_contexts, function(item) paste(item$declaration$source_schema, item$declaration$source_table, sep = "."), character(1))
   sec_validate_crosswalks_db(con, linkage$crosswalks, table_contexts)
   sec_validate_ns_families(con, registry_schema, table_contexts, linkage$crosswalks)
-  sec_validate_catalogue_review(dictionary, catalogues, linkage$tables)
+  sec_validate_catalogues(
+    dictionary, catalogues, linkage$tables, linkage$columns
+  )
   list(
     dictionary = dictionary,
     catalogues = catalogues,
@@ -599,7 +634,7 @@ sec_apply_outputs <- function(con, context, audit) {
     fields <- character()
     for (row in seq_len(nrow(item$dictionary))) {
       column <- item$dictionary$source_column[[row]]
-      action <- item$dictionary$analytic_action[[row]]
+      action <- item$policy$analytic_action[[row]]
       if (column == d$id_column) {
         fields <- c(fields, paste0("a.entity_token AS ", sec_quote_identifier(con, context$token_column)))
       } else if (action %in% c("retain", "retain_restricted")) {
@@ -956,29 +991,31 @@ sec_id_collation_deterministic <- function(con, column) {
   nrow(observed) == 1L && isTRUE(observed$collisdeterministic[[1]])
 }
 
-sec_validate_privacy_rows <- function(rows, id_column) {
+sec_validate_privacy_rows <- function(rows, policy, id_column) {
   declaration <- data.frame(
     source_schema = rows$source_schema[[1]],
     source_table = rows$source_table[[1]],
     stringsAsFactors = FALSE
   )
-  if (any(rows$validation_status != "confirmed") || any(rows$drift_status != "current")) {
+  if (any(policy$validation_status != "confirmed") ||
+        any(rows$drift_status != "current")) {
     sec_governance_stop(
-      "dictionary_not_confirmed", declaration, NA_character_,
-      sum(rows$validation_status != "confirmed" | rows$drift_status != "current"),
-      "Every selected dictionary row must be confirmed and current.",
-      "Refresh and review the dictionary, confirm every current row, then audit again."
+      "column_policy_not_confirmed", declaration, NA_character_,
+      sum(policy$validation_status != "confirmed" | rows$drift_status != "current"),
+      "Every selected semantic dictionary row must be current and its column policy confirmed.",
+      "Refresh the dictionary and reconfirm every linkage column-policy row, then audit again."
     )
   }
-  if (any(rows$privacy_class == "unclassified") || any(rows$analytic_action %in% c("review", "derive"))) {
+  if (any(policy$privacy_class == "unclassified") ||
+        any(policy$analytic_action %in% c("review", "derive"))) {
     sec_governance_stop(
-      "dictionary_action_unreviewed", declaration, NA_character_,
-      sum(rows$privacy_class == "unclassified" | rows$analytic_action %in% c("review", "derive")),
-      "Every selected dictionary row must have a supported reviewed privacy action.",
-      "Classify each column and choose bridge, drop, retain or retain_restricted under review."
+      "column_policy_unreviewed", declaration, NA_character_,
+      sum(policy$privacy_class == "unclassified" | policy$analytic_action %in% c("review", "derive")),
+      "Every selected column-policy row must have a supported classified action.",
+      "Classify each column and choose bridge, drop, retain or retain_restricted."
     )
   }
-  id <- rows[rows$source_column == id_column, , drop = FALSE]
+  id <- policy[policy$source_column == id_column, , drop = FALSE]
   if (nrow(id) != 1L || id$privacy_class[[1]] != "direct_identifier" || id$analytic_action[[1]] != "bridge") {
     sec_governance_stop(
       "identifier_not_bridged", declaration, id_column, 1L,
@@ -986,37 +1023,60 @@ sec_validate_privacy_rows <- function(rows, id_column) {
       "Review the declared ID column as privacy_class = 'direct_identifier' and analytic_action = 'bridge'."
     )
   }
-  other_direct <- rows$source_column != id_column & rows$privacy_class == "direct_identifier" & rows$analytic_action != "drop"
+  other_direct <- policy$source_column != id_column &
+    policy$privacy_class == "direct_identifier" &
+    policy$analytic_action != "drop"
   if (any(other_direct)) {
     sec_governance_stop(
       "additional_identifier_retained", declaration, NA_character_, sum(other_direct),
       "An additional direct identifier is not excluded from output.",
-      "Set every additional direct identifier to analytic_action = 'drop', then reconfirm the dictionary."
+      "Set every additional direct identifier to analytic_action = 'drop', then reconfirm the column policy."
     )
   }
   invisible(TRUE)
 }
 
-sec_validate_catalogue_review <- function(dictionary, catalogues, tables) {
+sec_validate_catalogues <- function(dictionary,
+                                    catalogues,
+                                    tables,
+                                    columns) {
   selected <- merge(
     dictionary[dictionary$drift_status != "removed", , drop = FALSE],
     tables[c("source_schema", "source_table")],
     by = c("source_schema", "source_table")
   )
-  referenced <- unique(selected$catalog_name[selected$analytic_action %in% c("retain", "retain_restricted") & selected$catalog_name != ""])
+  policy <- merge(
+    columns,
+    tables[c("source_schema", "source_table")],
+    by = c("source_schema", "source_table")
+  )
+  retained <- policy[
+    policy$analytic_action %in% c("retain", "retain_restricted"),
+    dictionary_key_columns(),
+    drop = FALSE
+  ]
+  selected_key <- dictionary_key(selected)
+  retained_key <- dictionary_key(retained)
+  referenced <- unique(
+    selected$catalog_name[
+      selected_key %in% retained_key & selected$catalog_name != ""
+    ]
+  )
   if (length(referenced) == 0L) {
     return(invisible(TRUE))
   }
-  invalid <- is.null(catalogues) || any(!(referenced %in% catalogues$catalog_name)) ||
-    any(catalogues$validation_status[catalogues$catalog_name %in% referenced] != "confirmed")
-  invalid_types <- selected$catalog_name != "" & !(selected$type %in% c("categorical", "binary"))
+  invalid <- is.null(catalogues) ||
+    any(!(referenced %in% catalogues$catalog_name))
+  invalid_types <- selected_key %in% retained_key &
+    selected$catalog_name != "" &
+    !(selected$type %in% c("categorical", "binary"))
   invalid <- invalid || any(invalid_types)
   if (invalid) {
     declaration <- tables[1, , drop = FALSE]
     sec_governance_stop(
-      "catalogue_not_confirmed", declaration, NA_character_, length(referenced),
-      "A retained column references a missing or unconfirmed catalogue.",
-      "Supply and confirm every referenced catalogue definition, then audit again."
+      "catalogue_contract_invalid", declaration, NA_character_, length(referenced),
+      "A retained column references missing or incompatible semantic catalogue metadata.",
+      "Supply every referenced semantic catalogue definition, then audit again."
     )
   }
   invisible(TRUE)
@@ -1159,7 +1219,14 @@ sec_destination_state <- function(con, schema, table) {
 sec_output_dictionary <- function(context) {
   output <- lapply(context$tables, function(item) {
     d <- item$declaration
-    rows <- item$dictionary[item$dictionary$source_column == d$id_column | item$dictionary$analytic_action %in% c("retain", "retain_restricted"), , drop = FALSE]
+    retained <- item$policy$source_column[
+      item$policy$analytic_action %in% c("retain", "retain_restricted")
+    ]
+    rows <- item$dictionary[
+      item$dictionary$source_column == d$id_column |
+        item$dictionary$source_column %in% retained,
+      , drop = FALSE
+    ]
     id_index <- match(d$id_column, rows$source_column)
     rows$source_schema <- context$output_schema
     rows$source_table <- d$destination_table
@@ -1176,17 +1243,24 @@ sec_output_dictionary <- function(context) {
     rows$label[[id_index]] <- "Pseudonym token"
     rows$type[[id_index]] <- "text"
     rows$role[[id_index]] <- "id"
-    rows$privacy_class[[id_index]] <- "sensitive"
-    rows$analytic_action[[id_index]] <- "retain_restricted"
+    for (field in intersect(
+      c(
+        "units", "levels", "min", "max", "missing_codes", "group",
+        "geo_role", "geo_pair", "geo_crs", "catalog_name"
+      ),
+      names(rows)
+    )) {
+      rows[[field]][[id_index]] <- ""
+    }
+    rows$required[[id_index]] <- TRUE
+    rows$description[[id_index]] <- "Generated pseudonym token."
     rows$catalog_name[[id_index]] <- ""
     rows$provenance[[id_index]] <- "generated_pseudonymisation"
-    rows$validation_status[[id_index]] <- "confirmed"
-    rows$profile_catalogue[[id_index]] <- FALSE
     rows
   })
   result <- do.call(rbind, output)
   rownames(result) <- NULL
-  result
+  result[c(dictionary_source_columns(), dictionary_curated_columns(), "drift_status")]
 }
 
 sec_output_catalogues <- function(context) {
@@ -1217,6 +1291,7 @@ sec_configuration_hash <- function(context) {
     context$token_column,
     context$exact_duplicates,
     unlist(context$linkage$tables, use.names = FALSE),
+    unlist(context$linkage$columns, use.names = FALSE),
     unlist(context$linkage$record_keys, use.names = FALSE),
     unlist(context$linkage$crosswalks, use.names = FALSE)
   )

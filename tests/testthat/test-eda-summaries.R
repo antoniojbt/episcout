@@ -34,11 +34,17 @@ test_that("public EDA summary interfaces expose one canonical contract", {
   expect_named(formals(epi_eda_profile_summaries), c("data", "spec"))
   expect_named(
     formals(epi_eda_run),
-    c("data", "spec", "output_dir", "synthetic", "n", "seed")
+    c(
+      "data", "spec", "output_dir", "synthetic", "n", "seed",
+      "maps", "map_vars", "max_map_points"
+    )
   )
   expect_named(
     formals(epi_eda_render_report),
-    c("data", "spec", "output_dir", "synthetic", "n", "seed", "quiet")
+    c(
+      "data", "spec", "output_dir", "synthetic", "n", "seed", "quiet",
+      "maps", "map_vars", "max_map_points"
+    )
   )
 
   fixture <- make_canonical_fixture()

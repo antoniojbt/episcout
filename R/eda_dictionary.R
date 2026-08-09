@@ -28,25 +28,28 @@ dictionary_curated_columns <- function() {
     "required",
     "group",
     "description",
+    "geo_role",
+    "geo_pair",
+    "geo_crs",
     "catalog_name",
-    "privacy_class",
-    "analytic_action",
     "analytic_order",
-    "provenance",
-    "validation_status",
-    "profile_catalogue"
+    "provenance"
   )
+}
+
+dictionary_removed_fields <- function() {
+  c("privacy_class", "analytic_action", "validation_status", "profile_catalogue")
 }
 
 #' Create an editable data dictionary scaffold
 #'
-#' Convert an [epi_db_inventory()] result into a deterministic dictionary scaffold. Technical database types are mapped to the existing episcout EDA types, while semantic fields remain explicitly unreviewed.
+#' Convert an [epi_db_inventory()] result into a deterministic semantic dictionary scaffold. Technical database types are mapped to episcout EDA types, while semantic and geographic fields remain unset.
 #'
 #' @param inventory An `epi_db_inventory` object.
 #'
 #' @return A data frame with one row per source column.
 #'
-#' @details The scaffold is metadata only and deliberately leaves privacy and analytic decisions unreviewed. For restricted related PostgreSQL tables, review the dictionary before creating value-free linkage metadata with [epi_sec_linkage_scaffold()]. See `vignette("longitudinal-pseudonymisation")`; exporting identifiable database rows is not required.
+#' @details The scaffold contains technical and semantic metadata only. Privacy and pseudonymisation policy belongs to [epi_sec_linkage_scaffold()]. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
 #'
 #' @seealso [epi_db_inventory()], [epi_sec_linkage_scaffold()], [epi_sec_pseudonymise_db()]
 #' @export
@@ -68,13 +71,12 @@ epi_eda_dictionary_scaffold <- function(inventory) {
   dictionary$required <- TRUE
   dictionary$group <- ""
   dictionary$description <- ""
+  dictionary$geo_role <- ""
+  dictionary$geo_pair <- ""
+  dictionary$geo_crs <- ""
   dictionary$catalog_name <- ""
-  dictionary$privacy_class <- "unclassified"
-  dictionary$analytic_action <- "review"
   dictionary$analytic_order <- as.integer(dictionary$source_ordinal)
   dictionary$provenance <- "database_inventory"
-  dictionary$validation_status <- "unreviewed"
-  dictionary$profile_catalogue <- FALSE
   dictionary$drift_status <- "current"
 
   order_dictionary(dictionary)
@@ -132,11 +134,11 @@ epi_eda_dictionary_refresh <- function(dictionary, inventory) {
 #' Validate the reusable multi-table dictionary contract and, when supplied, its normalised catalogue definitions.
 #'
 #' @param dictionary A data frame returned by [epi_eda_dictionary_scaffold()] or [epi_eda_dictionary_refresh()].
-#' @param catalogues Optional data frame of normalised catalogue values with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing`, `provenance` and `validation_status`.
+#' @param catalogues Optional data frame of normalised catalogue values with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing` and `provenance`.
 #'
 #' @return The validated dictionary, invisibly.
 #'
-#' @details Validation checks the dictionary and catalogue contract; it does not approve linkage, inspect source values, identify personal information or establish disclosure safety. The PostgreSQL pseudonymisation workflow applies additional confirmed privacy and drift gates described in `vignette("longitudinal-pseudonymisation")`.
+#' @details Validation checks technical and semantic contracts only. Specialised privacy and retained-column policy is declared separately through [epi_sec_linkage_spec()].
 #'
 #' @seealso [epi_eda_dictionary_scaffold()], [epi_sec_linkage_scaffold()], [epi_sec_pseudonymise_db()]
 #' @export
@@ -157,11 +159,11 @@ epi_eda_dictionary_validate <- function(dictionary, catalogues = NULL) {
 #'
 #' @param dictionary A validated extended dictionary.
 #' @param table A table name or a `schema.table` qualified name.
-#' @param catalogues Optional normalised catalogue data frame with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing`, `provenance` and `validation_status`.
+#' @param catalogues Optional normalised catalogue data frame with `catalog_name`, `source_value`, `label`, `display_order`, `is_missing` and `provenance`.
 #'
 #' @return A validated episcout EDA specification data frame.
 #'
-#' @details A pseudonymisation result's `output_dictionary` and `output_catalogues` can be passed here after the restricted output has been reviewed. The generated token is analytically restricted; this handoff does not make the data anonymous or disclosure-safe.
+#' @details A pseudonymisation result's semantic `output_dictionary` and `output_catalogues` can be passed here directly.
 #'
 #' @seealso [epi_sec_pseudonymise_db()], [epi_eda_dictionary_validate()]
 #' @export
@@ -204,21 +206,24 @@ epi_eda_dictionary_spec <- function(dictionary, table, catalogues = NULL) {
     required = selected$required,
     group = selected$group,
     description = selected$description,
+    geo_role = selected$geo_role,
+    geo_pair = selected$geo_pair,
+    geo_crs = selected$geo_crs,
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
   epi_eda_spec(spec)
 }
 
-#' Profile approved PostgreSQL catalogue columns
+#' Profile explicitly selected PostgreSQL catalogue columns
 #'
-#' Return value counts only for active dictionary rows explicitly marked with
-#' `profile_catalogue = TRUE`. Direct identifiers, quasi-identifiers,
-#' unclassified fields and columns exceeding `max_levels` are rejected before
-#' value counts are returned.
+#' Return bounded value counts for an explicit metadata-only selection of active
+#' dictionary columns.
 #'
 #' @param con An open DBI connection created with RPostgres.
 #' @param dictionary A validated extended dictionary.
+#' @param columns A data frame containing exactly `source_schema`,
+#'   `source_table` and `source_column` keys.
 #' @param max_levels Maximum distinct non-missing values allowed for each
 #'   profiled column.
 #'
@@ -233,17 +238,20 @@ epi_eda_dictionary_spec <- function(dictionary, table, catalogues = NULL) {
 #'   counted separately and is never returned as a catalogue `source_value`.
 #'   This makes `values` directly usable when drafting the normalised catalogue
 #'   contract, but does not classify any observed value as a missing code.
-#'   Review the `missing` component separately.
+#'   The selector requests technical profiling only and makes no privacy,
+#'   approval or sharing decision.
 #'
 #' @export
-epi_db_catalogue_profile <- function(con, dictionary, max_levels = 50) {
+epi_db_catalogue_profile <- function(con, dictionary, columns, max_levels = 50) {
   validate_dictionary_shape(dictionary)
   validate_dictionary_values(dictionary)
-  profile_rows <- dictionary[
-    dictionary$drift_status != "removed" & dictionary$profile_catalogue, ,
-    drop = FALSE
-  ]
-  validate_profile_rows(profile_rows)
+  columns <- validate_profile_columns(columns)
+  active <- dictionary[dictionary$drift_status != "removed", , drop = FALSE]
+  matched <- match(dictionary_key(columns), dictionary_key(active))
+  if (anyNA(matched)) {
+    stop("Every catalogue profile column must identify an active dictionary row.", call. = FALSE)
+  }
+  profile_rows <- active[matched, , drop = FALSE]
   if (nrow(profile_rows) == 0) {
     return(empty_catalogue_profile())
   }
@@ -336,13 +344,12 @@ empty_dictionary <- function() {
     required = logical(),
     group = character(),
     description = character(),
+    geo_role = character(),
+    geo_pair = character(),
+    geo_crs = character(),
     catalog_name = character(),
-    privacy_class = character(),
-    analytic_action = character(),
     analytic_order = integer(),
     provenance = character(),
-    validation_status = character(),
-    profile_catalogue = logical(),
     drift_status = character(),
     stringsAsFactors = FALSE
   )
@@ -372,6 +379,15 @@ validate_dictionary_shape <- function(dictionary) {
   if (!is.data.frame(dictionary)) {
     stop("dictionary must be a data frame.", call. = FALSE)
   }
+  deprecated <- intersect(names(dictionary), dictionary_removed_fields())
+  if (length(deprecated) > 0L) {
+    stop(
+      "This dictionary uses the removed combined EDA/security schema (",
+      paste(deprecated, collapse = ", "),
+      "). Regenerate the semantic dictionary and move column policy into epi_sec_linkage_spec().",
+      call. = FALSE
+    )
+  }
   required <- c(dictionary_source_columns(), dictionary_curated_columns(), "drift_status")
   missing <- setdiff(required, names(dictionary))
   if (length(missing) > 0) {
@@ -389,10 +405,7 @@ validate_dictionary_values <- function(dictionary) {
     "source_data_type",
     "label",
     "type",
-    "privacy_class",
-    "analytic_action",
     "provenance",
-    "validation_status",
     "drift_status"
   )
   for (column in character_required) {
@@ -404,30 +417,12 @@ validate_dictionary_values <- function(dictionary) {
   allowed_types <- c("numeric", "integer", "categorical", "binary", "date", "datetime", "text")
   validate_dictionary_choice(dictionary$type, allowed_types, "type")
   validate_dictionary_choice(
-    dictionary$privacy_class,
-    c("unclassified", "direct_identifier", "quasi_identifier", "sensitive", "non_sensitive"),
-    "privacy_class"
-  )
-  validate_dictionary_choice(
-    dictionary$analytic_action,
-    c("review", "bridge", "drop", "retain_restricted", "retain", "derive"),
-    "analytic_action"
-  )
-  validate_dictionary_choice(
-    dictionary$validation_status,
-    c("unreviewed", "pending", "confirmed"),
-    "validation_status"
-  )
-  validate_dictionary_choice(
     dictionary$drift_status,
     c("current", "added", "modified", "removed"),
     "drift_status"
   )
   if (!is.logical(dictionary$required) || anyNA(dictionary$required)) {
     stop("dictionary required must contain non-missing logical values.", call. = FALSE)
-  }
-  if (!is.logical(dictionary$profile_catalogue) || anyNA(dictionary$profile_catalogue)) {
-    stop("dictionary profile_catalogue must contain non-missing logical values.", call. = FALSE)
   }
   valid_order <- is.numeric(dictionary$analytic_order) & !is.na(dictionary$analytic_order) &
     dictionary$analytic_order >= 1 & dictionary$analytic_order == floor(dictionary$analytic_order)
@@ -438,6 +433,29 @@ validate_dictionary_values <- function(dictionary) {
   order_keys <- paste(active$source_schema, active$source_table, active$analytic_order, sep = "\r")
   if (anyDuplicated(order_keys)) {
     stop("dictionary analytic_order values must be unique within each active table.", call. = FALSE)
+  }
+  validate_dictionary_geo(active)
+  invisible(TRUE)
+}
+
+validate_dictionary_geo <- function(dictionary) {
+  if (nrow(dictionary) == 0L) {
+    return(invisible(TRUE))
+  }
+  tables <- unique(paste(dictionary$source_schema, dictionary$source_table, sep = "\r"))
+  for (table in tables) {
+    rows <- dictionary[paste(dictionary$source_schema, dictionary$source_table, sep = "\r") == table, , drop = FALSE]
+    spec <- data.frame(
+      name = rows$source_column,
+      label = rows$label,
+      type = rows$type,
+      role = rows$role,
+      geo_role = rows$geo_role,
+      geo_pair = rows$geo_pair,
+      geo_crs = rows$geo_crs,
+      stringsAsFactors = FALSE
+    )
+    epi_eda_validate_spec(spec)
   }
   invisible(TRUE)
 }
@@ -464,9 +482,15 @@ validate_catalogues <- function(dictionary, catalogues) {
   if (!is.data.frame(catalogues)) {
     stop("catalogues must be NULL or a data frame.", call. = FALSE)
   }
+  if ("validation_status" %in% names(catalogues)) {
+    stop(
+      "catalogues validation_status was removed. Supply semantic catalogue metadata without approval fields.",
+      call. = FALSE
+    )
+  }
   required <- c(
     "catalog_name", "source_value", "label", "display_order",
-    "is_missing", "provenance", "validation_status"
+    "is_missing", "provenance"
   )
   missing <- setdiff(required, names(catalogues))
   if (length(missing) > 0) {
@@ -478,15 +502,11 @@ validate_catalogues <- function(dictionary, catalogues) {
   if (anyNA(catalogues$source_value) || any(grepl(";", catalogues$source_value, fixed = TRUE))) {
     stop("catalogues source_value must be non-missing and must not contain semicolons.", call. = FALSE)
   }
-  for (column in c("label", "provenance", "validation_status")) {
+  for (column in c("label", "provenance")) {
     values <- as.character(catalogues[[column]])
     if (anyNA(values) || any(trimws(values) == "")) {
       stop("catalogues column '", column, "' must contain non-empty values.", call. = FALSE)
     }
-  }
-  invalid_status <- !(catalogues$validation_status %in% c("unreviewed", "pending", "confirmed"))
-  if (any(invalid_status)) {
-    stop("catalogues validation_status contains invalid values.", call. = FALSE)
   }
   catalogue_keys <- paste(catalogues$catalog_name, catalogues$source_value, sep = "\r")
   if (anyDuplicated(catalogue_keys)) {
@@ -516,20 +536,29 @@ validate_catalogues <- function(dictionary, catalogues) {
   invisible(TRUE)
 }
 
-validate_profile_rows <- function(rows) {
-  if (nrow(rows) == 0) {
-    return(invisible(TRUE))
+validate_profile_columns <- function(columns) {
+  if (!is.data.frame(columns)) {
+    stop("columns must be a data frame with the three source key fields.", call. = FALSE)
   }
-  blocked <- rows$privacy_class %in% c("unclassified", "direct_identifier", "quasi_identifier") |
-    rows$analytic_action %in% c("review", "bridge", "drop") |
-    rows$type == "text"
-  if (any(blocked)) {
-    names <- vapply(which(blocked), function(index) {
-      qualified_dictionary_column(rows[index, , drop = FALSE])
-    }, character(1))
-    stop("Catalogue profiling is not allowed for: ", paste(names, collapse = ", "), call. = FALSE)
+  required <- dictionary_key_columns()
+  if (!identical(names(columns), required)) {
+    stop(
+      "columns must contain exactly source_schema, source_table and source_column in that order.",
+      call. = FALSE
+    )
   }
-  invisible(TRUE)
+  columns <- as.data.frame(columns, stringsAsFactors = FALSE)
+  for (column in required) {
+    values <- as.character(columns[[column]])
+    if (anyNA(values) || any(trimws(values) == "")) {
+      stop("columns source keys must be non-empty.", call. = FALSE)
+    }
+    columns[[column]] <- values
+  }
+  if (anyDuplicated(dictionary_key(columns))) {
+    stop("columns source keys must be unique.", call. = FALSE)
+  }
+  columns
 }
 
 select_dictionary_table <- function(dictionary, table) {

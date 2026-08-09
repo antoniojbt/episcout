@@ -10,7 +10,10 @@ epi_eda_db_run(
   output_dir,
   overwrite = FALSE,
   plots = TRUE,
-  max_plot_levels = 20L
+  max_plot_levels = 20L,
+  maps = FALSE,
+  map_vars = character(),
+  max_map_points = 10000L
 )
 }
 \arguments{
@@ -27,24 +30,30 @@ matching source, specification, and plot options may be replaced.}
 
 \item{max_plot_levels}{Whole number from 2 through 100 controlling only the
 displayed categorical levels. Canonical frequencies remain complete.}
+
+\item{maps}{Whether to create one geometry-only point map for every declared
+coordinate pair.}
+
+\item{map_vars}{Unique declared variables for additional thematic maps.}
+
+\item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
 }
 \value{
 An \code{epi_eda_db_run} list with fixed components \code{status},
 \code{output_dir}, \code{manifest}, \code{source}, \code{spec}, \code{schema}, \code{missing},
-\code{summaries}, \code{identifier_qa}, \code{geo}, \code{plots}, \code{plot_inventory}, \code{timings},
-\code{messages}, and \code{metadata}.
+\code{summaries}, \code{identifier_qa}, \code{geo}, \code{plots}, \code{plot_inventory}, \code{maps},
+\code{map_inventory}, \code{timings}, \code{messages}, and \code{metadata}.
 }
 \description{
-Execute schema, missingness, canonical summary, identifier-QA, and compact
-plot preparation against one read-only repeatable-read snapshot, then publish
-a staged aggregate-only bundle.
+Execute schema, missingness, canonical summary, identifier-QA, compact plot
+preparation, and optional bounded point-map collection against one read-only
+repeatable-read snapshot, then publish a staged bundle.
 }
 \details{
-The bundle contains aggregates and the caller-authored reviewed
-specification, but no source rows, text observations, identifier values,
-SQL, query parameters, credentials, or connection attributes. Aggregation
-is not de-identification or disclosure control. Complete categorical
-frequencies, identifier QA, plots, and declared specification values require
-disclosure review before sharing. PostgreSQL and driver/server logs remain
-the caller's infrastructure responsibility.
+The bundle contains aggregates, the caller-authored specification,
+and only explicitly requested bounded point maps. It contains no source-row
+table, SQL, query parameters, credentials, or connection attributes.
+PostgreSQL and driver/server logs remain the caller's infrastructure
+responsibility. episcout creates the outputs explicitly requested by the
+analyst and does not decide whether they may be shared.
 }

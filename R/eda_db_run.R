@@ -1,8 +1,8 @@
 #' Run specification-first EDA against PostgreSQL
 #'
-#' Execute schema, missingness, canonical summary, identifier-QA, and compact
-#' plot preparation against one read-only repeatable-read snapshot, then publish
-#' a staged aggregate-only bundle.
+#' Execute schema, missingness, canonical summary, identifier-QA, compact plot
+#' preparation, and optional bounded point-map collection against one read-only
+#' repeatable-read snapshot, then publish a staged bundle.
 #'
 #' @param source An [epi_eda_postgres_source()].
 #' @param spec An EDA specification data frame or local CSV path.
@@ -12,19 +12,22 @@
 #' @param plots Whether deterministic SVG plots are rendered and written.
 #' @param max_plot_levels Whole number from 2 through 100 controlling only the
 #'   displayed categorical levels. Canonical frequencies remain complete.
+#' @param maps Whether to create one geometry-only point map for every declared
+#'   coordinate pair.
+#' @param map_vars Unique declared variables for additional thematic maps.
+#' @param max_map_points Inclusive maximum number of rows allowed for mapping.
 #'
 #' @return An `epi_eda_db_run` list with fixed components `status`,
 #'   `output_dir`, `manifest`, `source`, `spec`, `schema`, `missing`,
-#'   `summaries`, `identifier_qa`, `geo`, `plots`, `plot_inventory`, `timings`,
-#'   `messages`, and `metadata`.
+#'   `summaries`, `identifier_qa`, `geo`, `plots`, `plot_inventory`, `maps`,
+#'   `map_inventory`, `timings`, `messages`, and `metadata`.
 #'
-#' @details The bundle contains aggregates and the caller-authored reviewed
-#' specification, but no source rows, text observations, identifier values,
-#' SQL, query parameters, credentials, or connection attributes. Aggregation
-#' is not de-identification or disclosure control. Complete categorical
-#' frequencies, identifier QA, plots, and declared specification values require
-#' disclosure review before sharing. PostgreSQL and driver/server logs remain
-#' the caller's infrastructure responsibility.
+#' @details The bundle contains aggregates, the caller-authored specification,
+#' and only explicitly requested bounded point maps. It contains no source-row
+#' table, SQL, query parameters, credentials, or connection attributes.
+#' PostgreSQL and driver/server logs remain the caller's infrastructure
+#' responsibility. episcout creates the outputs explicitly requested by the
+#' analyst and does not decide whether they may be shared.
 #'
 #' @export
 epi_eda_db_run <- function(source,
@@ -32,7 +35,10 @@ epi_eda_db_run <- function(source,
                            output_dir,
                            overwrite = FALSE,
                            plots = TRUE,
-                           max_plot_levels = 20L) {
+                           max_plot_levels = 20L,
+                           maps = FALSE,
+                           map_vars = character(),
+                           max_map_points = 10000L) {
   if (!inherits(source, "epi_eda_postgres_source")) {
     stop("source must be an epi_eda_postgres_source.", call. = FALSE)
   }
@@ -40,12 +46,14 @@ epi_eda_db_run <- function(source,
   intake_validate_flag(plots, "plots")
   max_plot_levels <- eda_db_whole_number(max_plot_levels, "max_plot_levels", 2L, 100L)
   spec <- epi_eda_spec(spec)
+  map_options <- eda_map_options(spec, maps, map_vars, max_map_points)
+  eda_validate_map_columns(source$columns$name, map_options)
   catalogue <- eda_validate_postgres_source(source, require_idle = TRUE)
   source_fingerprint <- eda_pg_source_fingerprint(source)
   spec_fingerprint <- eda_postgres_fingerprint(spec)
   paths <- eda_db_prepare_output_dir(
     output_dir, overwrite, source_fingerprint, spec_fingerprint, plots,
-    max_plot_levels
+    max_plot_levels, map_options
   )
   published <- FALSE
   on.exit(
@@ -68,6 +76,9 @@ epi_eda_db_run <- function(source,
       schema <- eda_postgres_schema_inside(source, spec, timing_env)
       missing <- eda_postgres_missing_inside(source, spec, timing_env, n_total)
       geo <- eda_postgres_geo_inside(source, spec, timing_env)
+      map_data <- eda_postgres_map_data_inside(
+        source, spec, geo, map_options, timing_env, n_total
+      )
       summaries <- eda_postgres_summaries_inside(source, spec, timing_env, n_total)
       identifier_qa <- eda_pg_identifier_qa_inside(source, spec, timing_env, n_total)
       plot_data <- eda_postgres_plot_data_inside(
@@ -79,7 +90,7 @@ epi_eda_db_run <- function(source,
       list(
         n_total = n_total, schema = schema, missing = missing,
         summaries = summaries, identifier_qa = identifier_qa, geo = geo,
-        plot_data = plot_data
+        plot_data = plot_data, map_data = map_data
       )
     },
     timing_env = timing_env
@@ -92,6 +103,14 @@ epi_eda_db_run <- function(source,
   if (plots) {
     eda_db_write_plots(paths$staging_dir, snapshot$plot_data$entries, rendered, plot_inventory)
   }
+  map_result <- eda_data_frame_maps(
+    snapshot$map_data, spec, snapshot$geo, map_options
+  )
+  snapshot$map_data <- NULL
+  eda_write_maps(
+    map_result$maps, map_result$map_inventory, paths$staging_dir,
+    "database EDA"
+  )
   messages <- eda_db_messages(snapshot$summaries, snapshot$identifier_qa)
   finished_at <- intake_timestamp()
   source_metadata <- data.frame(
@@ -104,9 +123,9 @@ epi_eda_db_run <- function(source,
     stringsAsFactors = FALSE
   )
   metadata <- data.frame(
-    workflow_contract = "postgres-eda-bundle-1",
+    workflow_contract = "postgres-eda-bundle-2",
     canonical_summary_contract = "canonical-summary-1",
-    geo_qa_contract = "reviewed-coordinate-pair-1",
+    geo_qa_contract = "declared-coordinate-pair-2",
     plot_data_contract = "compact-plot-data-1",
     package_version = intake_package_version(),
     r_version = paste(R.version$major, R.version$minor, sep = "."),
@@ -117,6 +136,10 @@ epi_eda_db_run <- function(source,
     n_spec_variables = as.integer(nrow(spec)),
     plots = plots,
     max_plot_levels = max_plot_levels,
+    maps = map_options$maps,
+    map_vars = paste(map_options$map_vars, collapse = ";"),
+    map_vars_fingerprint_sha256 = eda_postgres_fingerprint(map_options$map_vars),
+    max_map_points = map_options$max_map_points,
     source_fingerprint_sha256 = source_fingerprint,
     spec_fingerprint_sha256 = spec_fingerprint,
     started_at_utc = started_at,
@@ -136,9 +159,11 @@ epi_eda_db_run <- function(source,
 
   eda_db_write_bundle_tables(
     paths$staging_dir, metadata, messages, spec, source_metadata,
-    snapshot, plot_inventory, timings
+    snapshot, plot_inventory, map_result$map_inventory, timings
   )
-  manifest <- eda_db_create_manifest(paths$staging_dir, plot_inventory)
+  manifest <- eda_db_create_manifest(
+    paths$staging_dir, plot_inventory, map_result$map_inventory
+  )
   intake_atomic_csv(manifest, file.path(paths$staging_dir, "manifest.csv"))
   eda_db_validate_staged_bundle(paths$staging_dir, manifest)
 
@@ -163,6 +188,8 @@ epi_eda_db_run <- function(source,
       geo = snapshot$geo,
       plots = rendered,
       plot_inventory = plot_inventory,
+      maps = map_result$maps,
+      map_inventory = map_result$map_inventory,
       timings = timings,
       messages = messages,
       metadata = metadata
@@ -194,7 +221,8 @@ eda_db_prepare_output_dir <- function(output_dir,
                                       source_fingerprint,
                                       spec_fingerprint,
                                       plots,
-                                      max_plot_levels) {
+                                      max_plot_levels,
+                                      map_options) {
   if (!is.character(output_dir) || length(output_dir) != 1L || is.na(output_dir) || !nzchar(trimws(output_dir))) {
     stop("output_dir must be one non-empty local directory path.", call. = FALSE)
   }
@@ -212,7 +240,10 @@ eda_db_prepare_output_dir <- function(output_dir,
     entries <- list.files(output_dir, all.files = TRUE, no.. = TRUE)
     if (length(entries) > 0L && !overwrite) stop("output_dir is non-empty; set overwrite = TRUE only for an unchanged owned database-EDA bundle.", call. = FALSE)
     if (length(entries) > 0L) {
-      eda_db_validate_prior_bundle(output_dir, source_fingerprint, spec_fingerprint, plots, max_plot_levels)
+      eda_db_validate_prior_bundle(
+        output_dir, source_fingerprint, spec_fingerprint, plots,
+        max_plot_levels, map_options
+      )
     }
   }
   staging_dir <- tempfile(paste0(".", basename(output_dir), "-staging-"), tmpdir = parent)
@@ -224,15 +255,22 @@ eda_db_validate_prior_bundle <- function(output_dir,
                                          source_fingerprint,
                                          spec_fingerprint,
                                          plots,
-                                         max_plot_levels) {
+                                         max_plot_levels,
+                                         map_options) {
   manifest_path <- file.path(output_dir, "manifest.csv")
   metadata_path <- file.path(output_dir, "run_metadata.csv")
   if (!file.exists(manifest_path) || !file.exists(metadata_path)) stop("overwrite = TRUE requires a valid prior database-EDA manifest and metadata.", call. = FALSE)
   all_entries <- list.files(output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
   if (any(nzchar(Sys.readlink(all_entries)))) stop("A prior bundle containing symbolic links cannot be overwritten safely.", call. = FALSE)
   manifest <- tryCatch(utils::read.csv(manifest_path, check.names = FALSE, stringsAsFactors = FALSE, na.strings = character()), error = identity)
-  valid_names <- c("artifact", "type", "path", "status", "sensitivity", "checksum_md5")
-  if (inherits(manifest, "error") || !identical(names(manifest), valid_names) || anyDuplicated(manifest$path) || !all(manifest$status %in% c("created", "not_created"))) stop("overwrite = TRUE requires a valid prior database-EDA manifest.", call. = FALSE)
+  if (!inherits(manifest, "error") && "sensitivity" %in% names(manifest)) {
+    stop(
+      "The prior database-EDA manifest uses the removed sensitivity schema; regenerate the bundle with the five-column core manifest before using overwrite = TRUE.",
+      call. = FALSE
+    )
+  }
+  valid_names <- c("artifact", "type", "path", "status", "checksum_md5")
+  if (inherits(manifest, "error") || !identical(names(manifest), valid_names) || anyDuplicated(manifest$artifact) || anyDuplicated(manifest$path) || !all(manifest$status %in% c("created", "not_created"))) stop("overwrite = TRUE requires a valid prior database-EDA manifest.", call. = FALSE)
   created <- manifest$status == "created"
   expected <- sort(manifest$path[created])
   actual <- sort(list.files(output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE, include.dirs = FALSE))
@@ -242,13 +280,25 @@ eda_db_validate_prior_bundle <- function(output_dir,
   checked <- created & manifest$artifact != "manifest"
   if (!identical(as.character(manifest$checksum_md5[checked]), unname(tools::md5sum(file.path(output_dir, manifest$path[checked]))))) stop("Prior bundle checksums do not match its manifest.", call. = FALSE)
   metadata <- tryCatch(utils::read.csv(metadata_path, check.names = FALSE, stringsAsFactors = FALSE, na.strings = character()), error = identity)
+  identity_fields <- c(
+    "workflow_contract", "source_fingerprint_sha256",
+    "spec_fingerprint_sha256", "plots", "max_plot_levels", "maps",
+    "map_vars_fingerprint_sha256", "max_map_points"
+  )
   valid_identity <- !inherits(metadata, "error") && nrow(metadata) == 1L &&
-    identical(as.character(metadata$workflow_contract[[1]]), "postgres-eda-bundle-1") &&
+    all(identity_fields %in% names(metadata)) &&
+    identical(as.character(metadata$workflow_contract[[1]]), "postgres-eda-bundle-2") &&
     identical(as.character(metadata$source_fingerprint_sha256[[1]]), as.character(source_fingerprint)) &&
     identical(as.character(metadata$spec_fingerprint_sha256[[1]]), as.character(spec_fingerprint)) &&
     identical(toupper(as.character(metadata$plots[[1]])), toupper(as.character(plots))) &&
-    identical(as.integer(metadata$max_plot_levels[[1]]), as.integer(max_plot_levels))
-  if (!valid_identity) stop("Prior bundle source, specification, or plot options do not match this run.", call. = FALSE)
+    identical(as.integer(metadata$max_plot_levels[[1]]), as.integer(max_plot_levels)) &&
+    identical(toupper(as.character(metadata$maps[[1]])), toupper(as.character(map_options$maps))) &&
+    identical(
+      as.character(metadata$map_vars_fingerprint_sha256[[1]]),
+      as.character(eda_postgres_fingerprint(map_options$map_vars))
+    ) &&
+    identical(as.integer(metadata$max_map_points[[1]]), map_options$max_map_points)
+  if (!valid_identity) stop("Prior bundle source, specification, plot options, or map options do not match this run.", call. = FALSE)
   invisible(TRUE)
 }
 
@@ -394,11 +444,12 @@ eda_db_write_bundle_tables <- function(staging_dir,
                                        source_metadata,
                                        snapshot,
                                        plot_inventory,
+                                       map_inventory,
                                        timings) {
   tables <- list(
     run_metadata.csv = metadata,
     messages.csv = messages,
-    spec_reviewed.csv = spec,
+    specification.csv = spec,
     source_metadata.csv = source_metadata,
     schema.csv = snapshot$schema,
     missing.csv = snapshot$missing,
@@ -411,52 +462,58 @@ eda_db_write_bundle_tables <- function(staging_dir,
     identifier_qa.csv = snapshot$identifier_qa,
     geo_qa.csv = snapshot$geo,
     plot_inventory.csv = plot_inventory,
+    map_inventory.csv = map_inventory,
     query_timings.csv = timings
   )
   for (name in names(tables)) intake_atomic_csv(tables[[name]], file.path(staging_dir, name))
   invisible(TRUE)
 }
 
-eda_db_create_manifest <- function(staging_dir, plot_inventory) {
+eda_db_create_manifest <- function(staging_dir, plot_inventory, map_inventory) {
   fixed_paths <- c(
-    "manifest.csv", "run_metadata.csv", "messages.csv", "spec_reviewed.csv",
+    "manifest.csv", "run_metadata.csv", "messages.csv", "specification.csv",
     "source_metadata.csv", "schema.csv", "missing.csv", "summary_variables.csv",
     "summary_numeric.csv", "summary_categorical.csv", "summary_text.csv",
     "summary_temporal.csv", "summary_skipped.csv", "identifier_qa.csv",
-    "geo_qa.csv",
-    "plot_inventory.csv", "query_timings.csv"
+    "geo_qa.csv", "plot_inventory.csv", "map_inventory.csv",
+    "query_timings.csv"
   )
   fixed_artifacts <- c(
-    "manifest", "run_metadata", "messages", "spec_reviewed", "source_metadata",
+    "manifest", "run_metadata", "messages", "specification", "source_metadata",
     "schema", "missing", "summary_variables", "summary_numeric",
     "summary_categorical", "summary_text", "summary_temporal",
     "summary_skipped", "identifier_qa", "geo_qa", "plot_inventory",
-    "query_timings"
+    "map_inventory", "query_timings"
   )
   fixed_types <- c(
     "manifest", "metadata", "messages", "specification", "source_metadata",
     "schema", "missingness", rep("canonical_summary", 6L), "identifier_qa",
-    "geo_qa", "plot_inventory", "query_timings"
-  )
-  fixed_sensitivity <- c(
-    "internal_review", "internal_review", "internal_review", "specification_review",
-    "internal_review", "internal_review", "disclosure_review",
-    "disclosure_review", "disclosure_review", "disclosure_review",
-    "disclosure_review", "disclosure_review", "disclosure_review",
-    "disclosure_review", "disclosure_review", "disclosure_review",
-    "internal_review"
+    "geo_qa", "plot_inventory", "map_inventory", "query_timings"
   )
   manifest <- data.frame(
     artifact = fixed_artifacts, type = fixed_types, path = fixed_paths,
-    status = "created", sensitivity = fixed_sensitivity,
-    checksum_md5 = "", stringsAsFactors = FALSE
+    status = "created", checksum_md5 = "", stringsAsFactors = FALSE
   )
   created_plots <- plot_inventory[plot_inventory$status == "created", , drop = FALSE]
   if (nrow(created_plots) > 0L) {
     dynamic <- data.frame(
       artifact = sprintf("plot_%03d_%s", created_plots$variable_index, created_plots$plot_type),
       type = "plot", path = created_plots$path, status = "created",
-      sensitivity = "disclosure_review", checksum_md5 = "",
+      checksum_md5 = "",
+      stringsAsFactors = FALSE
+    )
+    manifest <- rbind(manifest, dynamic)
+  }
+  created_maps <- map_inventory[
+    map_inventory$status == "created", , drop = FALSE
+  ]
+  if (nrow(created_maps) > 0L) {
+    dynamic <- data.frame(
+      artifact = created_maps$map_id,
+      type = "map",
+      path = created_maps$path,
+      status = "created",
+      checksum_md5 = "",
       stringsAsFactors = FALSE
     )
     manifest <- rbind(manifest, dynamic)

@@ -1,4 +1,4 @@
-context("reviewed coordinate-pair PostgreSQL EDA")
+context("declared coordinate-pair PostgreSQL EDA")
 
 geo_eda_postgres_connection <- function() {
   if (Sys.getenv("EPISCOUT_TEST_POSTGRES") != "1") {
@@ -79,16 +79,16 @@ test_that("PostgreSQL coordinate QA matches independently stated aggregates", {
   expect_identical(observed$both_missing, 1L)
   expect_identical(observed$non_finite, 2L)
   expect_identical(observed$range_failures, 1L)
-  expect_false(observed$eligible)
+  expect_false(observed$map_ready)
   expect_identical(
     observed$reason,
-    "incomplete_pairs;non_finite_coordinates;reviewed_crs_range_failure"
+    "incomplete_pairs;non_finite_coordinates;declared_crs_range_failure"
   )
   expect_false(getFromNamespace("eda_pg_is_transacting", "episcout")(con))
   expect_true(DBI::dbIsValid(con))
 })
 
-test_that("PostgreSQL numeric storage families follow reviewed coordinate types", {
+test_that("PostgreSQL numeric storage families follow declared coordinate types", {
   con <- geo_eda_postgres_connection()
   schema <- paste0("epi_geo_types_", Sys.getpid(), "_", sample.int(1000000L, 1L))
   relation <- "coordinate types"
@@ -126,7 +126,7 @@ test_that("PostgreSQL numeric storage families follow reviewed coordinate types"
   observed <- epi_eda_profile_geo(source, spec)
 
   expect_identical(observed$geo_pair, c("integer", "numeric", "real", "double"))
-  expect_true(all(observed$eligible))
+  expect_true(all(observed$map_ready))
   expect_identical(observed$complete_pairs, rep(1L, 4L))
 })
 
@@ -156,13 +156,13 @@ test_that("PostgreSQL bundle publishes one-row aggregate QA without PostGIS", {
   expect_identical(nrow(timings), 1L)
   expect_identical(timings$rows_returned, 1L)
   expect_identical(timings$bounded_limit, 1L)
-  bundle <- paste(vapply(list.files(
-    output_dir, recursive = TRUE, full.names = TRUE
-  ), function(path) paste(readLines(path, warn = FALSE), collapse = "\n"),
-  character(1)), collapse = "\n")
-  expect_false(grepl("179.123456789", bundle, fixed = TRUE))
-  expect_false(grepl("45.987654321", bundle, fixed = TRUE))
-  expect_false(grepl("PostGIS", bundle, fixed = TRUE))
+  expect_identical(
+    names(run$manifest),
+    c("artifact", "type", "path", "status", "checksum_md5")
+  )
+  expect_length(run$maps, 0L)
+  expect_equal(nrow(run$map_inventory), 0L)
+  expect_false(any(run$timings$query_kind == "map_collection"))
 })
 
 test_that("PostgreSQL coordinate failures remain value-free and recover", {

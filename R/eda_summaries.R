@@ -21,10 +21,7 @@ epi_eda_profile_summaries <- function(data, spec) {
     stop("EDA data must be a data frame or an epi_eda_postgres_source.", call. = FALSE)
   }
   spec <- epi_eda_spec(spec)
-  canonical <- build_typed_summaries(data, spec)
-  eda_apply_summary_exclusions(
-    canonical, data, spec, eda_summary_exclusions(data, spec)
-  )
+  build_typed_summaries(data, spec)
 }
 
 build_typed_summaries <- function(data, spec, global_missing_codes = NULL) {
@@ -280,20 +277,7 @@ empty_eda_skipped <- function() {
 }
 
 eda_summary_exclusions <- function(data, spec) {
-  role <- trimws(tolower(as.character(spec$role)))
-  identifiers <- spec$name[role %in% c("id", "identifier")]
-  out <- stats::setNames(
-    rep("Variable was skipped by the explicit identifier-role policy.", length(identifiers)),
-    identifiers
-  )
-  if (all(eda_geo_spec_fields() %in% names(spec))) {
-    coordinates <- spec$name[spec$geo_role %in% c("x", "y")]
-    out[coordinates] <- paste(
-      "Variable was skipped by the explicit coordinate-role policy;",
-      "use aggregate geo QA and separate reviewed feature conversion."
-    )
-  }
-  out
+  stats::setNames(character(), character())
 }
 
 eda_apply_summary_exclusions <- function(canonical, data, spec, exclusions) {
