@@ -10,7 +10,26 @@ cd "$repo_root"
 
 mkdir -p "$check_dir"
 
-export PATH="$("$rscript" -e 'cat(Sys.getenv("PATH"))')"
+runtime_path="$("$rscript" -e 'cat(Sys.getenv("PATH"))')"
+export PATH="$runtime_path"
+
+runtime_conda_prefix="$("$rscript" -e 'cat(Sys.getenv("CONDA_PREFIX"))')"
+runtime_proj_data="$("$rscript" -e 'cat(Sys.getenv("PROJ_DATA"))')"
+runtime_gdal_data="$("$rscript" -e 'cat(Sys.getenv("GDAL_DATA"))')"
+runtime_gdal_driver_path="$("$rscript" -e 'cat(Sys.getenv("GDAL_DRIVER_PATH"))')"
+
+if [[ -n "$runtime_conda_prefix" ]]; then
+  export CONDA_PREFIX="$runtime_conda_prefix"
+fi
+if [[ -n "$runtime_proj_data" ]]; then
+  export PROJ_DATA="$runtime_proj_data"
+fi
+if [[ -n "$runtime_gdal_data" ]]; then
+  export GDAL_DATA="$runtime_gdal_data"
+fi
+if [[ -n "$runtime_gdal_driver_path" ]]; then
+  export GDAL_DRIVER_PATH="$runtime_gdal_driver_path"
+fi
 
 r_home="$("$rscript" -e 'cat(R.home())')"
 r_bin="${r_home}/bin/R"

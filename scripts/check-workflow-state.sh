@@ -128,7 +128,7 @@ for (path in paths) {
   }
 
   value_or_empty <- function(value) {
-    if (is.null(value) || length(value) == 0L || is.na(value[[1L]])) "" else as.character(value[[1L]])
+    if (is.null(value) || length(value) == 0L || is.na(value[[1L]])) "-" else as.character(value[[1L]])
   }
 
   rows[[length(rows) + 1L]] <- c(
@@ -245,6 +245,10 @@ fi
 
 while IFS=$'\t' read -r record_type path status _ issue pull_request merge_commit successor_issue; do
   [[ $record_type == "SPEC" ]] || continue
+
+  [[ $pull_request == "-" ]] && pull_request=""
+  [[ $merge_commit == "-" ]] && merge_commit=""
+  [[ $successor_issue == "-" ]] && successor_issue=""
 
   issue_state="$(gh issue view "$issue" --repo "$repository" --json state --jq .state 2>/dev/null)"
   if [[ -z $issue_state ]]; then

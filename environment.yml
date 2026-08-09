@@ -40,6 +40,7 @@ dependencies:
   - r-rsqlite
   - r-roxygen2
   - r-scales
+  - r-sf
   - r-stringi
   - r-stringr
   - r-styler
