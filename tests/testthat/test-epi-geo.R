@@ -28,6 +28,10 @@ geo_temp_path <- function(extension = ".gpkg") {
   tempfile(pattern = "episcout-geo-test-", fileext = extension)
 }
 
+geo_internal <- function(name) {
+  get(name, envir = asNamespace("episcout"), inherits = FALSE)
+}
+
 test_that("all geo entry points retain an optional sf boundary", {
   functions <- c(
     "epi_geo_read", "epi_geo_from_coords", "epi_geo_describe",
@@ -539,26 +543,27 @@ test_that("GeoPackage writing rejects unsafe targets and attribute classes", {
 
 test_that("reconciliation rejects each structural mismatch", {
   expected <- geo_points()
-  expect_false(episcout:::epi_geo_reconciles(expected, expected[1:2, ]))
+  reconciles <- geo_internal("epi_geo_reconciles")
+  expect_false(reconciles(expected, expected[1:2, ]))
 
   renamed <- expected
   names(renamed)[[1L]] <- "renamed"
-  expect_false(episcout:::epi_geo_reconciles(expected, renamed))
+  expect_false(reconciles(expected, renamed))
 
   regrouped <- expected
   regrouped$score <- as.integer(regrouped$score)
-  expect_false(episcout:::epi_geo_reconciles(expected, regrouped))
+  expect_false(reconciles(expected, regrouped))
 
   changed_crs <- suppressWarnings(sf::st_set_crs(expected, 3857))
-  expect_false(episcout:::epi_geo_reconciles(expected, changed_crs))
+  expect_false(reconciles(expected, changed_crs))
 
   changed_type <- expected
   sf::st_geometry(changed_type) <- sf::st_cast(sf::st_geometry(changed_type), "MULTIPOINT")
-  expect_false(episcout:::epi_geo_reconciles(expected, changed_type))
+  expect_false(reconciles(expected, changed_type))
 
   moved <- expected
   sf::st_geometry(moved) <- sf::st_geometry(moved) + c(1, 0)
-  expect_false(episcout:::epi_geo_reconciles(expected, moved))
+  expect_false(reconciles(expected, moved))
 })
 
 test_that("publication recovery branches report deterministic conditions", {
@@ -566,16 +571,17 @@ test_that("publication recovery branches report deterministic conditions", {
   destination <- geo_temp_path()
   on.exit(unlink(c(stage, destination)), add = TRUE)
   writeLines("stage", stage)
+  publish_stage <- geo_internal("epi_geo_publish_stage")
 
   testthat::with_mocked_bindings(
-    expect_error(episcout:::epi_geo_publish_stage(stage, destination), "could not be published"),
+    expect_error(publish_stage(stage, destination), "could not be published"),
     epi_geo_file_rename = function(from, to) FALSE,
     .package = "episcout"
   )
 
   writeLines("destination", destination)
   testthat::with_mocked_bindings(
-    expect_error(episcout:::epi_geo_publish_stage(stage, destination), "could not be secured"),
+    expect_error(publish_stage(stage, destination), "could not be secured"),
     epi_geo_file_rename = function(from, to) FALSE,
     .package = "episcout"
   )
@@ -583,7 +589,7 @@ test_that("publication recovery branches report deterministic conditions", {
   rename_state <- new.env(parent = emptyenv())
   rename_state$calls <- 0L
   testthat::with_mocked_bindings(
-    expect_error(episcout:::epi_geo_publish_stage(stage, destination), "was restored"),
+    expect_error(publish_stage(stage, destination), "was restored"),
     epi_geo_file_rename = function(from, to) {
       rename_state$calls <- rename_state$calls + 1L
       rename_state$calls != 2L
@@ -593,7 +599,7 @@ test_that("publication recovery branches report deterministic conditions", {
 
   rename_state$calls <- 0L
   testthat::with_mocked_bindings(
-    expect_error(episcout:::epi_geo_publish_stage(stage, destination), "recovery backup"),
+    expect_error(publish_stage(stage, destination), "recovery backup"),
     epi_geo_file_rename = function(from, to) {
       rename_state$calls <- rename_state$calls + 1L
       rename_state$calls == 1L
@@ -602,7 +608,7 @@ test_that("publication recovery branches report deterministic conditions", {
   )
 
   testthat::with_mocked_bindings(
-    expect_warning(episcout:::epi_geo_publish_stage(stage, destination), "backup could not be removed"),
+    expect_warning(publish_stage(stage, destination), "backup could not be removed"),
     epi_geo_file_rename = function(from, to) TRUE,
     epi_geo_file_remove = function(path) 1L,
     .package = "episcout"
