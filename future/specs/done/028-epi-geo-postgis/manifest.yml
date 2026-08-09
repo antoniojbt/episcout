@@ -2,7 +2,7 @@ id: "028"
 slug: "epi-geo-postgis"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/read-only-postgis-geo
@@ -15,7 +15,7 @@ source_issues:
   - 226
 pull_request: 238
 planning_pull_request: 223
-merge_commit: null
+merge_commit: 460acd0908044e963827ddc4d2a865984ed9fc76
 successor_issue: 237
 terminal_reason: null
 
@@ -78,7 +78,8 @@ baseline:
 notes:
   - Completed design spec 026 and implementation spec 027 are the source contracts.
   - Phase-C EDA coordinate metadata, database writes, arbitrary SQL, raster, web mapping and spatial inference remain out of scope.
-  - Phase-C successor issue 237 exists and remains gated on Phase-B merge and closeout.
+  - PR 238 merged to canonical master as 460acd0908044e963827ddc4d2a865984ed9fc76; tracking issue 233 closed automatically.
+  - Phase-C successor issue 237 is ready only after this closeout becomes canonical.
   - Disposable PostGIS 3.6.1/PostgreSQL 18.4 Phase-B tests, package lint and the complete local check pass; the CRAN-oriented check retains its existing external incoming-feasibility NOTE.
   - The complete local database filter retains two pre-existing PostgreSQL 18.4 registry-metadata errors outside this change; the supported CI service remains PostgreSQL 17.
-  - Draft PR 238 passed all required implementation checks at 6811f9d; Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%.
+  - PR 238 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor; Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%.
