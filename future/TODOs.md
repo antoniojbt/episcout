@@ -17,12 +17,13 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### 1. Phase-A geographic mapping implementation in review
+### 1. Phase-B read-only PostGIS collection
 
-- [ ] Review and complete issue [#226](https://github.com/antoniojbt/episcout/issues/226) through draft PR [#234](https://github.com/antoniojbt/episcout/pull/234) and spec `027-epi-geo-phase-a`:
-  - retain accepted design-only spec `026-epi-geo-series-plan` as the source contract;
-  - implement reviewed file and in-memory `sf` handling, static mapping and the offline primer;
-  - keep phase-B successor [#233](https://github.com/antoniojbt/episcout/issues/233) blocked until merge/closeout and phase-C aggregate EDA-coordinate work deferred.
+- [ ] Begin issue [#233](https://github.com/antoniojbt/episcout/issues/233) only after this #226/spec 027 closeout commit is canonical:
+  - retain completed design spec `026-epi-geo-series-plan` and completed implementation spec `027-epi-geo-phase-a` as source contracts;
+  - create and activate one separate numbered specification before package-code work;
+  - require disposable PostGIS integration and structural data-locality evidence;
+  - keep phase-C aggregate EDA-coordinate integration and inferential/raster/web-map work deferred.
 
 ## Parallel owner action
 
@@ -44,12 +45,12 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 - [ ] Define explicit contracts before adding cross-tool dictionary
   interoperability, database loading/connection helpers, visual-regression
   redesign or biomedical extensions.
-- [ ] After #226 merges and closes out, consider activating phase-B read-only PostGIS issue [#233](https://github.com/antoniojbt/episcout/issues/233) through a separate approved spec. Retain phase-C aggregate-only EDA coordinate integration in spec 026 until then; inferential spatial analysis, raster and web mapping remain outside the programme.
 
 ## Done
 
 ### 2026-08-09
 
+- [x] Complete issue #226/spec 027 through PR #234, merged to canonical `master` as `b37b391`; issue #226 closed automatically, all required CI passed, Codecov reported every modified coverable line tested and project coverage at 92.25%, the completed record moved to `future/specs/done/`, and issue #233 is the ready-next tracker after this closeout becomes canonical.
 - [x] Complete issue #225/spec 025 through PR #231, merged to canonical `master` as `7e42f22`; issue #225 closed automatically, all required CI passed, the completed record moved to `future/specs/done/`, and issue #226 is the approved next tracker. Checksum remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.
 - [x] Complete issue #220/spec 022 through merged PR #222 at `b07f9e8`; verify all required checks, reconcile acceptance and move the completed record under `future/specs/done/`.
 - [x] Complete planning issue #217 through merged PR #224, retain spec 025 as a gated draft and create implementation successor #225.

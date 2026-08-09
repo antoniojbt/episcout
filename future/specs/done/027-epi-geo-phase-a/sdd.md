@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Review
+Status: Completed and accepted through PR #234
 
 ## Scope And Authority
 

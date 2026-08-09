@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Review
+Status: Completed and accepted through PR #234
 
 Tracking issue: [#226](https://github.com/antoniojbt/episcout/issues/226); source design issue #218 and design spec 026 are complete.
 
@@ -15,6 +15,7 @@ Tracking issue: [#226](https://github.com/antoniojbt/episcout/issues/226); sourc
 - [x] Transformation passes an independent control and mapping passes layer-data, coordinate and rendered visual inspection.
 - [x] The offline primer, README, NEWS, generated help and project map agree with observed behaviour and retain the mapping-only boundary.
 - [x] Focused tests, package lint, full local and CRAN-oriented checks pass or material external exceptions are recorded.
-- [ ] Required pull-request CI passes and review notes contain no unresolved blocker caused by this contribution.
-- [x] Separate phase-B successor issue [#233](https://github.com/antoniojbt/episcout/issues/233) exists and remains blocked until this contribution's merge and closeout.
-- [ ] The PR merges to canonical `master`, issue #226 and roadmap #227 are reconciled, and post-merge closeout moves this spec to `future/specs/done/` as `completed`.
+- [x] Required pull-request CI passes and review notes contain no unresolved blocker caused by this contribution.
+- [x] Separate phase-B successor issue [#233](https://github.com/antoniojbt/episcout/issues/233) exists and was held until this contribution's merge and closeout.
+- [x] PR #234 merged to canonical `master` as `b37b391c1ff57aa9d84c4b0beb31be4d90558b03`; issue #226 closed automatically.
+- [x] Post-merge closeout reconciles roadmap #227, this acceptance record, TODOs, changelog and successor issue #233 and moves this spec to `future/specs/done/` as `completed`.
