@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Draft for owner review
+Status: Review
 Owner: repository-owner
 
 ## Problem
@@ -24,7 +24,7 @@ Define an authoritative, vector-safe and privacy-aware contract for CURP structu
 
 ## Non-goals
 
-- Implementing package code before every activation gate is accepted and this specification becomes `active`.
+- Calculating or claiming verification of position 18 without an authoritative published algorithm or sufficient official vectors; checksum status is `not_verified` in this slice and evidence research continues in issue #230.
 - Generating or assigning CURPs.
 - Calling public or restricted government services.
 - Claiming that syntactic/check-digit validity proves assignment, certification or identity.
@@ -43,7 +43,7 @@ Define an authoritative, vector-safe and privacy-aware contract for CURP structu
 
 ## Risks
 
-- Treating an unofficial checksum implementation as the government algorithm.
+- Treating an unofficial checksum implementation as the government algorithm; this slice deliberately does not calculate the checksum.
 - Confusing local structural validity with authoritative registry validation.
 - Deriving the wrong century or accepting an impossible date.
 - Misclassifying collected sex/gender values by conflating CURP's encoded `H`/`M` field with broader identity concepts.

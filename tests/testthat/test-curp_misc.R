@@ -8,7 +8,7 @@ library(data.table)
 # epi_clean_curp
 
 test_that("epi_clean_curp extracts components", {
-  curp <- "GOMC900514HDFRLA07"
+  curp <- "XEXX900514HDFXXX00"
   res <- epi_clean_curp(curp)
   expect_true(tibble::is_tibble(res))
   expect_equal(nrow(res), 1)
@@ -17,19 +17,56 @@ test_that("epi_clean_curp extracts components", {
   expect_equal(res$DiaNacimiento, "14")
   expect_equal(res$Sexo, "H")
   expect_equal(res$EntidadFederativa, "DF")
-  expect_equal(res$PrimerasConsonantes, "RLA")
+  expect_equal(res$PrimerasConsonantes, "XXX")
   expect_equal(res$Homoclave, "0")
-  expect_equal(res$DigitoVerificador, "7")
+  expect_equal(res$DigitoVerificador, "0")
 })
 
 test_that("epi_clean_curp handles post-2000 years", {
-  curp <- "LOAM020715MMCRSR09"
+  curp <- "XEXX020715MASXXXA0"
   res <- epi_clean_curp(curp)
   expect_equal(res$AnoNacimiento, "2002")
 })
 
 test_that("epi_clean_curp errors on wrong length", {
   expect_error(epi_clean_curp("SHORT"))
+})
+
+test_that("epi_clean_curp rejects non-character input without echoing it", {
+  private_value <- 987654321
+  condition <- tryCatch(epi_clean_curp(private_value), error = identity)
+
+  expect_s3_class(condition, "error")
+  expect_match(conditionMessage(condition), "vector de texto", fixed = TRUE)
+  expect_false(grepl(as.character(private_value), conditionMessage(condition), fixed = TRUE))
+})
+
+test_that("epi_clean_curp preserves its documented vector schema", {
+  curps <- c("XEXX900514HDFXXX00", "XEXX020715MASXXXA0")
+  result <- epi_clean_curp(curps)
+
+  expect_s3_class(result, "tbl_df")
+  expect_equal(nrow(result), 2L)
+  expect_equal(result$CURP, curps)
+  expect_equal(
+    names(result),
+    c(
+      "CURP", "PrimeraLetraApellidoPaterno", "PrimeraVocalApellidoPaterno",
+      "PrimeraLetraApellidoMaterno", "PrimeraLetraNombre", "AnoNacimiento",
+      "MesNacimiento", "DiaNacimiento", "Sexo", "EntidadFederativa",
+      "PrimerasConsonantes", "Homoclave", "DigitoVerificador"
+    )
+  )
+})
+
+test_that("epi_clean_curp handles empty and missing compatibility inputs", {
+  empty <- epi_clean_curp(character())
+  missing <- epi_clean_curp(NA_character_)
+
+  expect_equal(nrow(empty), 0L)
+  expect_equal(names(empty), names(missing))
+  expect_equal(nrow(missing), 1L)
+  expect_true(all(vapply(missing, function(value) all(is.na(value)), logical(1L))))
 })
 
 # epi_clean_drop_zero_levels_vector

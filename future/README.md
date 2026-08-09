@@ -56,6 +56,6 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 Roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) is the authoritative return point. `TODOs.md` mirrors its ready-next, parallel and deferred work without replacing live GitHub state.
 
-Draft spec `025-curp-validation-and-reconciliation` and issue [#225](https://github.com/antoniojbt/episcout/issues/225) are ready next for activation-gate resolution; package-code implementation remains blocked while the spec is `draft`. Issue [#226](https://github.com/antoniojbt/episcout/issues/226) preserves deferred phase-A implementation from completed design-only spec `026-epi-geo-series-plan`.
+Review spec `025-curp-validation-and-reconciliation`, issue [#225](https://github.com/antoniojbt/episcout/issues/225) and draft PR [#231](https://github.com/antoniojbt/episcout/pull/231) own the current structural audit implementation. Checksum verification is explicitly deferred as `not_verified` under successor evidence issue [#230](https://github.com/antoniojbt/episcout/issues/230). Issue [#226](https://github.com/antoniojbt/episcout/issues/226) preserves deferred phase-A implementation from completed design-only spec `026-epi-geo-series-plan`.
 
 Completed specifications live under `specs/done/`. Release `0.3.0` remains published from commit `40ef702`; CRAN work remains deferred under issue #81, and owner-only Codecov containment remains parallel under issue #213.

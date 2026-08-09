@@ -2,6 +2,7 @@
 
 ## Development version
 
+- Added `epi_clean_curp_audit()` for vector-safe, privacy-aware local CURP structure checks and exact reconciliation with reviewed birth-date, recorded-sex, birthplace-code and initials references. The result omits the supplied CURP, reports value-free issues and aggregate-only printing, distinguishes missing and unavailable comparisons, and explicitly reports checksum verification as `not_verified`; it does not claim registry assignment, certification or identity. The legacy `epi_clean_curp()` now honours its documented vector interface while retaining its 13-column compatibility schema.
 - Reused the transaction-local PostgreSQL EDA relation count in categorical and binary summaries, removing one redundant `COUNT(*)` query per affected variable without changing aggregates, public interfaces or bundle output.
 - Added a value-free, audit-first PostgreSQL identifier-universe workflow for one reviewed namespace distributed across multiple ordinary tables. It reconciles source quality, distinct-universe membership and pairwise overlap in a read-only snapshot, then can atomically publish a blocker-free restricted canonical universe without generating pseudonyms or collecting identifiers into ordinary R results.
 

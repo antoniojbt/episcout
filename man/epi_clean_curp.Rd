@@ -2,48 +2,31 @@
 % Please edit documentation in R/epi_clean_curp.R
 \name{epi_clean_curp}
 \alias{epi_clean_curp}
-\title{Extraer datos del CURP en Mexico}
+\title{Extract CURP components using the legacy schema}
 \usage{
 epi_clean_curp(curp)
 }
 \arguments{
-\item{curp}{Un vector de texto que contiene uno o mas CURPs. Cada CURP debe tener exactamente 18 caracteres.}
+\item{curp}{A character vector of CURPs. Non-missing values must contain
+exactly 18 characters.}
 }
 \value{
-Un \code{tibble} con los componentes del CURP organizados en columnas:
-\itemize{
-\item \code{CURP}: El CURP original.
-\item \code{PrimeraLetraApellidoPaterno}: Primera letra del apellido paterno.
-\item \code{PrimeraVocalApellidoPaterno}: Primera vocal del apellido paterno.
-\item \code{PrimeraLetraApellidoMaterno}: Primera letra del apellido materno.
-\item \code{PrimeraLetraNombre}: Primera letra del nombre.
-\item \code{AnoNacimiento}: Ano completo de nacimiento (e.g., "1990", "2002").
-\item \code{MesNacimiento}: Mes de nacimiento (2 digitos).
-\item \code{DiaNacimiento}: Dia de nacimiento (2 digitos).
-\item \code{Sexo}: Genero registrado (H para hombre, M para mujer).
-\item \code{EntidadFederativa}: Entidad federativa de nacimiento (codigo de 2 letras).
-\item \code{PrimerasConsonantes}: Consonantes internas (3 caracteres).
-\item \code{Homoclave}: Caracter alfanumerico asignado para evitar duplicados.
-\item \code{DigitoVerificador}: Digito para validacion final.
-}
+A tibble with one row per input and the historical columns \code{CURP},
+\code{PrimeraLetraApellidoPaterno}, \code{PrimeraVocalApellidoPaterno},
+\code{PrimeraLetraApellidoMaterno}, \code{PrimeraLetraNombre}, \code{AnoNacimiento},
+\code{MesNacimiento}, \code{DiaNacimiento}, \code{Sexo}, \code{EntidadFederativa},
+\code{PrimerasConsonantes}, \code{Homoclave} and \code{DigitoVerificador}.
 }
 \description{
-Esta funcion descompone un CURP en sus componentes principales segun las posiciones definidas en su estructura.
+\code{epi_clean_curp()} is a compatibility extractor, not a CURP validator. It
+preserves the historical 13-column Spanish schema and includes the supplied
+CURP in its result. Use \code{\link[=epi_clean_curp_audit]{epi_clean_curp_audit()}} for privacy-aware structural
+validation and optional reconciliation.
 }
-\examples{
-# Ejemplo de uso con un solo CURP
-epi_clean_curp("GOMC900514HDFRLA07")
-
-# Ejemplo con varios CURPs
-curps <- c(
-  "GOMC900514HDFRLA07", # Antes del 2000
-  "LOAM020715MMCRSR09" # Despues del 2000
-)
-
-# Aplicar la funcion a un vector de CURPs
-resultados <- purrr::map_dfr(.x = curps, .f = epi_clean_curp)
-
-# Mostrar resultados
-print(t(resultados))
-
+\details{
+This function performs positional extraction after a length check.
+It does not establish structural validity, checksum validity, registry
+assignment, certification or identity. Its returned CURP and derived fields
+are personal data; callers are responsible for access, storage and retention.
+The historical year split is retained for one compatibility cycle.
 }
