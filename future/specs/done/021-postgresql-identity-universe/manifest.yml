@@ -1,0 +1,57 @@
+id: "021"
+slug: "postgresql-identity-universe"
+status: completed
+owner: repository-owner
+base_branch: master
+working_branch: feature/postgresql-identity-universe
+created: 2026-08-08
+updated: 2026-08-09
+
+issues:
+  - 215
+  - 204
+
+dependencies:
+  - 016-longitudinal-pseudonymisation
+
+related_files:
+  - R/epi_sec_identity_universe.R
+  - tests/testthat/test-sec-identity-universe.R
+  - tests/testthat/test-sec-identity-universe-postgres.R
+  - vignettes/longitudinal-pseudonymisation.Rmd
+  - .github/workflows/r-cmd-check.yml
+  - environment.yml
+  - PROJECT_MAP.md
+  - NEWS.md
+  - man/
+  - NAMESPACE
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/analysis-and-statistics.md
+  - checklists/copy-edit.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-identity-universe', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-identity-universe-postgres', reporter = 'summary')"
+  - scripts/check-local.sh
+  - git diff --check
+
+notes:
+  - The universe represents observed identifiers, not confirmed people.
+  - Version 1 accepts one namespace, identity normalisation and existing = error only.
+  - Ordinary results and conditions contain reviewed metadata and aggregates only.
+  - The output table is a restricted, re-identifying enrolment source and is not anonymous or disclosure-controlled.
+  - Local focused tests, package lint, PostgreSQL integration and R CMD check passed.
+  - PR 219 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor, then merged on 2026-08-08 and closed issue 215.

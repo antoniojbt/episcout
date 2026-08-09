@@ -14,6 +14,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
 * **PostgreSQL-backed EDA** - `epi_eda_postgres_source()` and the existing profilers run aggregate-only specification-first EDA against PostgreSQL 17 relations, while `epi_eda_db_run()` publishes a manifest-owned bundle.
 * **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
+* **PostgreSQL identifier universes** - `epi_sec_identity_universe_spec()` and `epi_sec_identity_universe_db()` audit one reviewed identifier namespace across multiple tables and can atomically publish a restricted canonical enrolment source without generating pseudonyms.
 * **Utilities** - `epi_utils_*` helpers cover tasks like parallel processing and logging.
 
 ## Installation
@@ -26,12 +27,15 @@ install.packages("episcout")
 ```
 --->
 
-Install from GitHub:
+Install the released GitHub version:
 
 ``` r
 install.packages("devtools")
-devtools::install_github("AntonioJBT/episcout")
+devtools::install_github("AntonioJBT/episcout@0.3.0")
 ```
+
+Use `devtools::install_github("AntonioJBT/episcout")` only when you
+deliberately want the current development version from `master`.
 
 ## Development
 

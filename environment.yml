@@ -4,6 +4,7 @@ channels:
 dependencies:
   - r-base
   - pandoc
+  - postgresql=18
   - qpdf
   - ghostscript
   - r-broom

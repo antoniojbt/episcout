@@ -51,23 +51,23 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- Implemented specs `023-package-source-hygiene` and `024-external-fixture-provenance` consolidate issues [#208](https://github.com/antoniojbt/episcout/issues/208) and [#209](https://github.com/antoniojbt/episcout/issues/209) on `refactor/release-unblockers-208-209`. They remove exact audited archive artifacts and add fail-closed fixture provenance without changing package behaviour.
+- Issue [#220](https://github.com/antoniojbt/episcout/issues/220) is active as spec `022-postgresql-eda-row-count-reuse`, a bounded internal correction that reuses the transaction-local PostgreSQL EDA row count.
 
 ### Ready Next
 
-- After the combined #208/#209 PR merges, finish the owner-only replacement of the five rewritten upstream release tags and revoke/rotate the historical Codecov credential without recording either value.
-- Release issue [#81](https://github.com/antoniojbt/episcout/issues/81) is then ready to prepare a usable GitHub `0.3.0`; CRAN submission polish is explicitly deferred.
+- Review the draft contract for issue [#217](https://github.com/antoniojbt/episcout/issues/217) after spec 022 is handed off; package-code activation remains gated on accepting the authoritative CURP design.
 
 ### Draft
 
-- The multi-table PostgreSQL identifier-universe proposal remains a scratch input until its turn after release `0.3.0`, when it should become a dedicated issue and spec `021-postgresql-identity-universe`.
-- The narrow redundant PostgreSQL EDA row-count finding remains a scratch input until it is promoted after the identifier-universe work as spec `022-postgresql-eda-row-count-reuse`.
+- Issue [#217](https://github.com/antoniojbt/episcout/issues/217) is the next planning candidate after spec 022. It needs an authoritative CURP validation, derivation, quality and privacy contract before becoming spec `025-curp-validation-and-reconciliation`; the issue's referenced photo is not present in the repository or its Git history.
 
 ### Deferred
 
-- The owner authorised the Codecov history rewrite on 2026-08-07. Rewritten `master` and fork heads are published; five upstream annotated tags, credential revocation/rotation and protected-branch upload verification remain owner-only follow-up.
+- Issue [#213](https://github.com/antoniojbt/episcout/issues/213) retains only the owner-side Codecov credential and eligible cache/hidden-ref cleanup. Rewritten branches/tags and a protected-`master` upload are complete.
+- CRAN readiness and submission remain deferred under issue [#81](https://github.com/antoniojbt/episcout/issues/81).
 - Issue [#196](https://github.com/antoniojbt/episcout/issues/196) and spec `018-database-eda-report-rendering` are deferred until the roadmap is explicitly revised.
+- Implementation from completed design-only spec `026-epi-geo-series-plan` is deferred to separately approved phase-A file/in-memory mapping, phase-B read-only PostGIS and phase-C aggregate EDA-coordinate specifications.
 
 ### Completed
 
-Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness` and `020-data-frame-writer-delimiter-contract`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+GitHub release `0.3.0` is published from commit `40ef702`. Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness`, `020-data-frame-writer-delimiter-contract`, `021-postgresql-identity-universe`, `023-package-source-hygiene`, `024-external-fixture-provenance` and design-only `026-epi-geo-series-plan`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

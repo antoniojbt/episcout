@@ -1,5 +1,10 @@
 # episcout News
 
+## Development version
+
+- Reused the transaction-local PostgreSQL EDA relation count in categorical and binary summaries, removing one redundant `COUNT(*)` query per affected variable without changing aggregates, public interfaces or bundle output.
+- Added a value-free, audit-first PostgreSQL identifier-universe workflow for one reviewed namespace distributed across multiple ordinary tables. It reconciles source quality, distinct-universe membership and pairwise overlap in a read-only snapshot, then can atomically publish a blocker-free restricted canonical universe without generating pseudonyms or collecting identifiers into ordinary R results.
+
 ## 0.3.0
 
 - Corrected the pre-release `epi_db_catalogue_profile()` result contract so

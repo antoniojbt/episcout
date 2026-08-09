@@ -12,6 +12,7 @@ This map identifies the current `episcout` implementation, its user-facing entry
 | PostgreSQL-backed specification-first EDA | `epi_eda_postgres_source()`, the four direct EDA profilers, `epi_eda_db_run()` | `R/eda_postgres_source.R`, `R/eda_postgres_queries.R`, `R/eda_db_run.R`, shared EDA modules | `tests/testthat/test-eda-postgres-*.R` plus data-frame EDA regressions | `README.md`, `vignettes/specification-first-eda.Rmd`, function help |
 | PostgreSQL inventory and dictionaries | `epi_db_inventory()`, `epi_eda_dictionary_scaffold()`, `epi_eda_dictionary_validate()` | `R/db_inventory.R`, `R/eda_dictionary.R` | Database inventory and dictionary tests under `tests/testthat/` | Function help and both workflow vignettes |
 | Longitudinal PostgreSQL pseudonymisation | `epi_sec_linkage_scaffold()`, `epi_sec_linkage_spec()`, `epi_sec_identity_registry_init()`, `epi_sec_pseudonymise_db()` | `R/epi_sec_linkage.R`, `R/epi_sec_registry.R`, `R/epi_sec_pseudonymise_db.R` | `tests/testthat/test-sec-linkage.R`, `tests/testthat/test-sec-pseudonymise-postgres.R` | `vignettes/longitudinal-pseudonymisation.Rmd` |
+| Multi-table PostgreSQL identifier universe | `epi_sec_identity_universe_spec()`, `epi_sec_identity_universe_db()` | `R/epi_sec_identity_universe.R` | `tests/testthat/test-sec-identity-universe.R`, `tests/testthat/test-sec-identity-universe-postgres.R` | `vignettes/longitudinal-pseudonymisation.Rmd` and function help |
 | Synthetic database-to-report walkthrough | Inventory, dictionary, duplicate, pseudonymisation, PostgreSQL EDA, Table 1 and report entry points | Installed script and fixtures under `inst/examples/db-to-report/` | Component PostgreSQL and report tests listed above; complete script verified manually | `inst/examples/db-to-report/README.md`, `inst/examples/db-to-report/walkthrough.R` |
 | Starter EDA project | `epi_eda_create_project()` | `R/use_episcout_project.R`, `inst/project-template/` | `tests/testthat/test-project-template.R` | `inst/project-template/README.md` |
 | Lower-level cleaning, statistics, plotting and utilities | `epi_clean_*`, `epi_stats_*`, `epi_plot_*`, `epi_utils_*` | Prefix-matched files under `R/` | Prefix-matched tests under `tests/testthat/` | `README.md`, generated help under `man/` |
@@ -36,8 +37,12 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 
 ## Planning Status
 
-- No numbered specification is active. Issue #196 is the ready-next design task and will become spec `018` before implementation.
-- Completed spec records `001`–`010` except reserved `011`, and `012`–`017`, are under `future/specs/done/`; spec `007` was a design-only review and the others record implemented package work.
+- GitHub release `0.3.0` is published from commit `40ef702`; CRAN work remains deferred under issue #81.
+- Issue #220/spec `022-postgresql-eda-row-count-reuse` is active for a narrow internal PostgreSQL query-reuse correction.
+- Issue #217 is the following planning candidate for CURP validation and reconciliation after its missing source reference and authoritative contract are resolved.
+- Issue #218's mapping-only `epi_geo_*` architecture is recorded as completed design-only spec `026-epi-geo-series-plan`; file/in-memory mapping, read-only PostGIS collection and aggregate EDA coordinate integration require separate later implementation specs and do not displace the current sequence.
+- Completed spec records `001`–`010` except reserved `011`, `012`–`017`, `019`–`021`, `023`–`024` and `026` are under `future/specs/done/`; specs `007` and `026` are design-only records and the others record implemented package work.
+- Roadmap issue #204 is the return point for the approved sequence. Security issue #213 tracks the remaining owner-only Codecov credential/cache actions in parallel.
 - `future/TODOs.md` is the only task backlog. `future/README.md` defines the specification lifecycle, and `future/changelog.md` records material planning and implementation outcomes.
 
 ## Verification Entry Points
