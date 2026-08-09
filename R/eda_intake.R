@@ -24,7 +24,7 @@
 #'
 #' @return An `epi_eda_intake` list with fixed components `status`, `stage`,
 #'   `output_dir`, `manifest`, `input`, `spec`, `schema_before`, `schema_after`,
-#'   `preparation_audit`, `missing`, `summary`, `stratified`, `table1`, `report`,
+#'   `preparation_audit`, `missing`, `geo`, `summary`, `stratified`, `table1`, `report`,
 #'   `messages`, and `metadata`.
 #'   Status is one of `review_required`, `blocked`, `audit_complete`, or
 #'   `complete`. Manifest paths and the report path are relative to `output_dir`.
@@ -221,6 +221,22 @@ epi_eda_intake_run <- function(data,
   missing <- epi_eda_profile_missing(analysis_frame, parsed_spec)
   result$missing <- missing
   intake_write_csv(state, "missing", missing)
+  geo <- tryCatch(
+    epi_eda_profile_geo(analysis_frame, parsed_spec),
+    error = identity
+  )
+  if (inherits(geo, "error")) {
+    messages <- intake_add_message(
+      messages, "analysis", "blocker", "geo_qa",
+      conditionMessage(geo),
+      "Resolve the reviewed coordinate-pair contract before rerunning the workflow."
+    )
+    result$status <- "blocked"
+    return(intake_finish(result, state, input, messages, render, fingerprint))
+  }
+  eda_geo_reconcile(geo, nrow(analysis_frame))
+  result$geo <- geo
+  intake_write_csv(state, "geo_qa", geo)
   summaries <- tryCatch(
     epi_eda_profile_summaries(analysis_frame, parsed_spec),
     error = identity
@@ -259,6 +275,13 @@ epi_eda_intake_run <- function(data,
       messages, "analysis", "warning", paste(identifier_names, collapse = ", "),
       "Explicit identifier-role variables were excluded from analytical missingness and type-specific summaries.",
       "Review identifier handling separately; no observed values read from those data columns entered analytical artifacts."
+    )
+  }
+  if (nrow(geo) > 0L) {
+    messages <- intake_add_message(
+      messages, "analysis", "warning", "geo_qa",
+      "Coordinate-pair eligibility is aggregate structural QA, not disclosure approval or scientific validation.",
+      "Use feature-level conversion or mapping only after separate privacy and scientific review."
     )
   }
   result$stage <- "canonical_summary"
@@ -342,6 +365,7 @@ intake_empty_result <- function(output_dir, state, input, render) {
     schema_after = NULL,
     preparation_audit = NULL,
     missing = NULL,
+    geo = NULL,
     summary = NULL,
     stratified = NULL,
     table1 = NULL,
@@ -594,6 +618,7 @@ intake_manifest_registry <- function() {
     schema_after = "schema_after.csv",
     preparation_audit = "preparation_audit.csv",
     missing = "missing.csv",
+    geo_qa = "geo_qa.csv",
     summary_variables = "summary_variables.csv",
     summary_numeric = "summary_numeric.csv",
     summary_categorical = "summary_categorical.csv",
@@ -613,7 +638,7 @@ intake_manifest_registry <- function() {
   )
   types <- c(
     "manifest", "metadata", "messages", "specification", "guide",
-    "specification", "schema", "schema", "audit", "missingness",
+    "specification", "schema", "schema", "audit", "missingness", "geo_qa",
     rep("canonical_summary", 6L), rep("stratified_summary", 8L),
     "presentation", "report"
   )
@@ -621,6 +646,7 @@ intake_manifest_registry <- function() {
     "internal_review", "internal_review", "internal_review", "specification_review",
     "internal_review", "specification_review", "internal_review",
     "internal_review", "internal_review", "disclosure_review",
+    "disclosure_review",
     rep("disclosure_review", 6L), rep("disclosure_review", 8L),
     "disclosure_review", "disclosure_review"
   )
@@ -946,6 +972,7 @@ intake_review_guide <- function() {
     "The generated scaffold is not approval. Review every row before preparation or analysis.",
     "",
     "For each variable, confirm `name`, `label`, `type`, `role`, `units`, declared `levels`, `missing_codes`, `required`, `group`, and `description`.",
+    "Coordinate fields remain blank unless a reviewer explicitly assigns one x row, one y row, a shared pair identifier and the same resolvable CRS.",
     "Treat observed class and count fields as aggregate evidence only. `candidate_type` is a prompt for review, not a semantic decision.",
     "Set `review_status` to `reviewed` only after resolving `review_reason`; do not add raw observations, identifiers, or free-text examples to the specification.",
     "Column names and copied factor-level metadata may themselves be sensitive; review the scaffold before storing or sharing it.",
@@ -1295,6 +1322,7 @@ intake_report_sections <- function(output_dir, created_paths) {
     "schema_after.csv" = "Schema after preparation",
     "preparation_audit.csv" = "Preparation audit",
     "missing.csv" = "Canonical missingness",
+    "geo_qa.csv" = "Reviewed coordinate-pair aggregate QA",
     "summary_variables.csv" = "Canonical variable summaries",
     "summary_numeric.csv" = "Canonical numeric summaries",
     "summary_categorical.csv" = "Canonical categorical summaries",

@@ -2,7 +2,7 @@ id: "029"
 slug: "eda-reviewed-coordinate-roles"
 workflow_version: 1
 deliverable: implementation
-status: draft
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: feature/eda-reviewed-coordinate-roles
@@ -14,11 +14,11 @@ source_issues:
   - 218
   - 226
   - 233
-pull_request: null
+pull_request: 241
 planning_pull_request: 240
 merge_commit: null
 successor_issue: null
-terminal_reason: null
+terminal_reason: "Completes the bounded three-phase geospatial programme; any spatial inference requires a new concrete scientific tracker."
 
 dependencies:
   suggests:
@@ -82,3 +82,4 @@ notes:
   - Draft planning PR 240 is the review gate for the contract; it references issue 237 without closing it.
   - The implementation is the terminal bounded Phase-C slice of the current geospatial programme; later inferential spatial work requires a separate concrete scientific question and tracker.
   - PostgreSQL 17 is the supported CI service; local PostgreSQL 18.4 evidence will be recorded separately.
+  - Planning PR 240 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor at efd4b2d.

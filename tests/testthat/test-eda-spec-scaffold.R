@@ -5,7 +5,8 @@ library(episcout)
 
 scaffold_columns <- c(
   "name", "label", "type", "role", "units", "levels", "min", "max",
-  "missing_codes", "required", "group", "description", "observed_class",
+  "missing_codes", "required", "group", "description", "geo_role",
+  "geo_pair", "geo_crs", "observed_class",
   "n", "n_missing", "n_observed", "n_unique", "candidate_type",
   "candidate_levels", "review_status", "review_reason"
 )
@@ -47,6 +48,7 @@ test_that("scaffold records conservative structural evidence in source order", {
     role = "character", units = "character", levels = "character",
     min = "character", max = "character", missing_codes = "character",
     required = "logical", group = "character", description = "character",
+    geo_role = "character", geo_pair = "character", geo_crs = "character",
     observed_class = "character", n = "integer", n_missing = "integer",
     n_observed = "integer", n_unique = "integer",
     candidate_type = "character", candidate_levels = "character",
@@ -78,6 +80,9 @@ test_that("scaffold records conservative structural evidence in source order", {
   expect_true(all(observed$missing_codes == ""))
   expect_true(all(observed$group == ""))
   expect_true(all(observed$description == ""))
+  expect_true(all(observed$geo_role == ""))
+  expect_true(all(observed$geo_pair == ""))
+  expect_true(all(observed$geo_crs == ""))
   expect_false(any(grepl("PRIVATE_SITE_", unlist(observed), fixed = TRUE)))
 })
 

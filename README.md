@@ -12,7 +12,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
 * **Reviewed geospatial mapping** - `epi_geo_*` functions convert explicit coordinates, read local or explicitly bounded PostGIS geometry, describe and transform `sf` objects, create extensible static maps and stage safe GeoPackage output. Start with the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd).
-* **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
+* **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data, including aggregate-only QA for explicitly reviewed coordinate pairs.
 * **PostgreSQL-backed EDA** - `epi_eda_postgres_source()` and the existing profilers run aggregate-only specification-first EDA against PostgreSQL 17 relations, while `epi_eda_db_run()` publishes a manifest-owned bundle.
 * **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
 * **PostgreSQL identifier universes** - `epi_sec_identity_universe_spec()` and `epi_sec_identity_universe_db()` audit one reviewed identifier namespace across multiple tables and can atomically publish a restricted canonical enrolment source without generating pseudonyms.
@@ -184,6 +184,8 @@ death,Death during follow-up,binary,outcome,,"0;1",0,1,,TRUE,outcomes,Outcome in
 
 The optional `missing_codes` column accepts semicolon-separated sentinel values such as `Unknown;Refused`. These values are counted as missing in `epi_eda_profile_missing()` and excluded from observed EDA summaries and plots. Schema output reports presence in `status` and separately reports descriptive type compatibility in `type_status` and `type_reason`; it does not coerce data. The canonical summary contract covers numeric, integer, categorical, binary, text, date and datetime variables, with explicit variable coverage and documented skips.
 
+Scaffolds also reserve blank `geo_role`, `geo_pair` and `geo_crs` fields. They are never inferred. After review, exactly one numeric/integer row may be marked `x` and one `y` under the same non-empty pair identifier and resolvable CRS. `epi_eda_profile_geo()` then reports aggregate completeness, non-finite and EPSG:4326 range-failure counts for data frames or PostgreSQL sources. Coordinate-role variables are policy-skipped from ordinary summaries and plots, so bundles contain no coordinate values, geometry, bounds or maps. Eligibility is neither disclosure approval nor scientific validation; use `epi_geo_from_coords()` separately only after those reviews.
+
 After saving and reviewing the dictionary, load it with its matching data and inspect the preparation plan before changing anything. Apply is all-or-nothing: a missing required variable, unsafe conversion or unexpected level returns the original data and a complete blocking audit.
 
 ``` r
@@ -243,7 +245,7 @@ final_run <- epi_eda_intake_run(
 )
 ```
 
-Expected gates return `review_required`, `blocked` or `audit_complete`; a reconciled analysis returns `complete`. The manifest distinguishes files that were and were not created. The workflow writes specification metadata, audits and aggregate summaries, never raw or prepared rows. Explicit `id`/`identifier` roles are excluded from returned and exported profiles, but variable names, supplied specification metadata and small groups may still be sensitive. The bundle is not de-identified or disclosure-controlled, and pseudonymisation remains a separate explicit workflow.
+Expected gates return `review_required`, `blocked` or `audit_complete`; a reconciled analysis returns `complete`. The manifest distinguishes files that were and were not created. The workflow writes specification metadata, audits and aggregate summaries, never raw or prepared rows. Explicit `id`/`identifier` roles and reviewed coordinate-role variables are excluded from ordinary returned/exported profiles; coordinate pairs receive only `geo_qa.csv` aggregate eligibility counts. Variable names, supplied specification metadata and small groups may still be sensitive. The bundle is not de-identified or disclosure-controlled, and pseudonymisation remains a separate explicit workflow.
 
 You can prepare the workflow before real data arrive by generating synthetic data from the same specification:
 

@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `029-eda-reviewed-coordinate-roles`
-Status: Draft
+Status: Review
 Owner: repository-owner
 Tracking issue: #237
 

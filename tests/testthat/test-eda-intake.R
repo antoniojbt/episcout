@@ -43,7 +43,7 @@ test_that("public intake interface and return contract are fixed", {
   expect_s3_class(observed, "epi_eda_intake")
   expect_named(observed, c(
     "status", "stage", "output_dir", "manifest", "input", "spec",
-    "schema_before", "schema_after", "preparation_audit", "missing", "summary",
+    "schema_before", "schema_after", "preparation_audit", "missing", "geo", "summary",
     "stratified", "table1", "report", "messages", "metadata"
   ))
   expect_identical(observed$status, "complete")

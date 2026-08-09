@@ -181,6 +181,8 @@ Statuses are `review_required`, `blocked`, `audit_complete` or `complete`; `stag
 
 Explicit roles `id` and `identifier` retain aggregate missingness but are policy-skipped from typed profiles and value-bearing plots, so observed identifier values do not enter analytical components, CSV summaries or the report. This is not automatic PII detection. Caller-supplied specification fields, variable names, category/group labels and small aggregate cells may remain sensitive and are retained as review-required metadata, so every bundle requires disclosure review. No bridge table, row-level input or prepared data is written, and the report is not evidence of de-identification or publication safety.
 
+Scaffolds reserve blank `geo_role`, `geo_pair` and `geo_crs` fields and never infer them. A reviewed coordinate pair has exactly one numeric/integer `x` row and one `y` row with the same pair identifier and resolvable CRS. `epi_eda_profile_geo()` returns only aggregate completeness, non-finite and reviewed-CRS range QA; coordinate-role variables are excluded from ordinary summaries and plots. The PostgreSQL path computes the same aggregates without collecting coordinates or requiring PostGIS. Eligibility is structural QA, not disclosure approval, geometry construction or scientific validation.
+
 ## Create a specification
 
 The specification is usually stored as `metadata/data_dictionary.csv`. It must include `name`, `label`, `type` and `role`.

@@ -214,9 +214,25 @@ Collection is a separate explicit act. Identifiers are quoted, bbox ordinates ar
 
 episcout does not accept credentials, connection strings, predicates, ordering or SQL fragments through these functions. It does not install PostGIS, create or modify database objects, create indexes or collect automatically from `epi_geo_map()`. Large reviewed selections may need a database-administered spatial index, but index design and tuning are outside this interface.
 
-## 12. Deferred EDA integration
+## 12. Review coordinate roles in specification-first EDA
 
-Another later phase may add reviewed x/y roles to the specification-first EDA dictionary and return aggregate eligibility counts only. Ordinary EDA bundles will not contain coordinates, WKT/WKB, feature maps or bounds. Use the explicit workflow in this guide when feature-level mapping is approved.
+Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. A reviewer can assign exactly one numeric/integer `x` row and one `y` row to the same non-empty pair identifier and explicit resolvable CRS. Existing specifications without these fields keep their prior semantics.
+
+```{r eda-coordinate-qa}
+coordinate_spec <- data.frame(
+  name = c("longitude", "latitude"),
+  label = c("Reviewed longitude", "Reviewed latitude"),
+  type = c("numeric", "numeric"),
+  role = c("", ""),
+  geo_role = c("x", "y"),
+  geo_pair = c("neutral_sites", "neutral_sites"),
+  geo_crs = c("4326", "4326")
+)
+
+epi_eda_profile_geo(locations, coordinate_spec)
+```
+
+The result contains one aggregate row with total, complete, missing-axis, both-missing, non-finite and EPSG:4326 range-failure counts plus a stable eligibility reason. The same call accepts an `epi_eda_postgres_source()` and computes one aggregate SQL row per pair without PostGIS or coordinate collection. Coordinate-role variables are policy-skipped from ordinary EDA summaries and plots, and ordinary bundles contain no coordinates, WKT/WKB, feature maps or bounds. Technical eligibility is not disclosure approval or evidence that the pair represents the intended place, person, time or analytic unit. Use the explicit conversion and mapping workflow in this guide only after those separate reviews.
 
 ## 13. Descriptive maps are not spatial inference
 
