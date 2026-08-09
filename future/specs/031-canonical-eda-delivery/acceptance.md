@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Draft
+Status: Active
 
 ## Planning
 
@@ -9,7 +9,7 @@ Status: Draft
 - [x] Superseded issue #196 contributes technical renderer requirements only.
 - [x] The SDD fixes public API, compatibility, ownership and failure contracts before implementation.
 - [x] The TDD covers integrity, atomicity, relocation, database absence and rendered truth.
-- [ ] Planning PR is green with no actionable review feedback before package changes.
+- [x] Planning PR #251 is green at `4b7b10b` with no actionable review feedback before package changes.
 
 ## Implementation
 

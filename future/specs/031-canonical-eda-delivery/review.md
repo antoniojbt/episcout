@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Draft
+Status: Active
 
 ## Findings
 
@@ -18,9 +18,12 @@ None. Issue #245 and owner direction settle HTML ownership, compatibility and go
 ## Planning Handoff
 
 - Planning base: canonical `master` at `e037512a4474ca6653b0cd079341efffa0a12047`.
-- Draft planning PR #251 is the required green review gate.
-- Package code remains unchanged until this planning PR is green.
-- Implementation will stack on the green planning branch under the owner's instruction without waiting for merge.
+- Draft planning PR #251 passed PostgreSQL, Ubuntu, macOS, coverage, both
+  Codecov gates and CodeFactor at `4b7b10b`; it has no actionable review
+  feedback.
+- Implementation is active on `agent/implement-canonical-eda-delivery`, stacked
+  on that green planning head under the owner's instruction without waiting for
+  merge.
 
 ## Closeout Notes
 

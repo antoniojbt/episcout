@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is draft spec `031-canonical-eda-delivery`. Its planning PR fixes the opt-in delivery layout, aggregate-bundle HTML renderer, manifest ownership, relocation and compatibility contracts before package changes. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
+Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is active spec `031-canonical-eda-delivery`. Planning PR #251 is green at `4b7b10b`; implementation is stacked on that accepted contract for the opt-in delivery layout, aggregate-bundle HTML renderer, manifest ownership, relocation and compatibility behavior. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
 
 ## Deferred owner action
 

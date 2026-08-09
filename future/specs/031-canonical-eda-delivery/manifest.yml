@@ -2,10 +2,10 @@ id: "031"
 slug: "canonical-eda-delivery"
 workflow_version: 1
 deliverable: implementation
-status: draft
+status: active
 owner: repository-owner
 base_branch: master
-working_branch: agent/plan-canonical-eda-delivery
+working_branch: agent/implement-canonical-eda-delivery
 created: 2026-08-09
 updated: 2026-08-09
 
@@ -59,7 +59,7 @@ check_commands:
   - git diff --check
 
 activation_gates:
-  - pending: Planning PR is green and the public renderer/layout contracts are accepted before package changes.
+  - accepted: Planning PR #251 is green at 4b7b10b and the public renderer/layout contracts are accepted before package changes.
   - accepted: Existing data-frame report and default flat PostgreSQL bundle contracts remain backward compatible.
   - accepted: HTML is the normal human entry point while CSV, SVG and manifests remain canonical evidence.
   - accepted: Bundle validation is technical only; core EDA does not make governance or sharing decisions.
