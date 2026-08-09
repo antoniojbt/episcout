@@ -1,0 +1,77 @@
+id: "027"
+slug: "epi-geo-phase-a"
+workflow_version: 1
+deliverable: implementation
+status: review
+owner: repository-owner
+base_branch: master
+working_branch: feature/phase-a-geo-mapping
+created: 2026-08-09
+updated: 2026-08-09
+
+tracking_issue: 226
+source_issues:
+  - 218
+pull_request: 234
+planning_pull_request: 223
+merge_commit: null
+successor_issue: 233
+terminal_reason: null
+
+dependencies:
+  suggests:
+    - sf (>= 1.0-17)
+    - ggplot2
+
+related_files:
+  - DESCRIPTION
+  - environment.yml
+  - R/epi_geo.R
+  - R/episcout-package.R
+  - tests/testthat/test-epi-geo.R
+  - vignettes/geospatial-mapping-primer.Rmd
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
+  - scripts/rscript_env_caller.R
+  - README.md
+  - NEWS.md
+  - PROJECT_MAP.md
+  - man/
+  - NAMESPACE
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/figures.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'epi-geo', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+activation_gates:
+  - accepted: Keep sf optional in Suggests and return one actionable dependency error from every geo entry point when it is unavailable.
+  - accepted: Accept EPSG integers and character authority/WKT inputs that resolve through sf::st_crs(); reject missing or unresolvable CRS values.
+  - accepted: Coordinate conversion is all-or-nothing and returns data, audit and metadata without geometry when any row is blocked.
+  - accepted: Support XY point, multipoint, line, multiline, polygon and multipolygon geometry; reject geometry collections and non-XY dimensions in phase A.
+  - accepted: Write only named GeoPackage layers through a staged complete-file copy, preserving unrelated layers and the prior destination on failure.
+  - accepted: Use repository-created neutral geometries and an independently published EPSG transformation control; do not add a downloaded runtime fixture.
+
+notes:
+  - Completed design-only spec 026 is the source contract for this bounded phase-A implementation.
+  - Phase-B PostGIS collection and phase-C aggregate EDA-coordinate integration remain out of scope.
+  - A phase-B successor tracker must be created before issue 226 closes unless the owner records a terminal reason.
+  - Inferential analysis, raster support, web mapping, automatic coordinate discovery and spatial database writes remain out of scope.

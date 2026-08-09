@@ -17,12 +17,12 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### 1. Phase-A geographic mapping implementation
+### 1. Phase-A geographic mapping implementation in review
 
-- [ ] Begin issue [#226](https://github.com/antoniojbt/episcout/issues/226) only after this #225/spec 025 closeout commit is canonical:
+- [ ] Review and complete issue [#226](https://github.com/antoniojbt/episcout/issues/226) through draft PR [#234](https://github.com/antoniojbt/episcout/pull/234) and spec `027-epi-geo-phase-a`:
   - retain accepted design-only spec `026-epi-geo-series-plan` as the source contract;
-  - activate one scoped implementation specification before package-code work;
-  - keep the phase-B PostGIS and phase-C aggregate EDA-coordinate work deferred.
+  - implement reviewed file and in-memory `sf` handling, static mapping and the offline primer;
+  - keep phase-B successor [#233](https://github.com/antoniojbt/episcout/issues/233) blocked until merge/closeout and phase-C aggregate EDA-coordinate work deferred.
 
 ## Parallel owner action
 
@@ -37,7 +37,6 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ## Deferred
 
-- [ ] Phase-A file and in-memory mapping under [#226](https://github.com/antoniojbt/episcout/issues/226), promoted from completed design-only spec `026-epi-geo-series-plan` only after roadmap approval.
 - [ ] CRAN readiness/submission under [#81](https://github.com/antoniojbt/episcout/issues/81). The GitHub release is complete; no CRAN submission is currently authorised.
 - [ ] PostgreSQL aggregate-bundle HTML rendering under [#196](https://github.com/antoniojbt/episcout/issues/196) and future spec `018-database-eda-report-rendering`.
 - [ ] Clarify issue [#212](https://github.com/antoniojbt/episcout/issues/212) before treating “code complexity” as implementable work.
@@ -45,7 +44,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 - [ ] Define explicit contracts before adding cross-tool dictionary
   interoperability, database loading/connection helpers, visual-regression
   redesign or biomedical extensions.
-- [ ] After #226 is promoted and completed, create only the next approved issue/spec for phase-B read-only PostGIS collection; retain phase-C aggregate-only EDA coordinate integration in spec 026 until then. Inferential spatial analysis, raster and web mapping remain outside that programme.
+- [ ] After #226 merges and closes out, consider activating phase-B read-only PostGIS issue [#233](https://github.com/antoniojbt/episcout/issues/233) through a separate approved spec. Retain phase-C aggregate-only EDA coordinate integration in spec 026 until then; inferential spatial analysis, raster and web mapping remain outside the programme.
 
 ## Done
 

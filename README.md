@@ -11,6 +11,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Cleaning** - `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels; `epi_clean_curp_audit()` performs value-free local CURP structural auditing and reviewed-field reconciliation without claiming registry validation.
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
+* **Reviewed geospatial mapping** - `epi_geo_*` functions convert explicit coordinates, read GeoPackage or Shapefile layers, describe and transform `sf` objects, create extensible static maps and stage safe GeoPackage output. Start with the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd).
 * **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
 * **PostgreSQL-backed EDA** - `epi_eda_postgres_source()` and the existing profilers run aggregate-only specification-first EDA against PostgreSQL 17 relations, while `epi_eda_db_run()` publishes a manifest-owned bundle.
 * **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
@@ -79,11 +80,12 @@ CRAN does not require `renv`; it requires a source tarball from `R CMD build` th
 
 ## Getting Started
 
-There are three main ways to use episcout:
+There are four main ways to use episcout:
 
 * Use lower-level helpers directly: `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*`.
 * Use the review-gated new-dataset workflow through `epi_eda_intake_run()`, or compose the lower-level specification-first functions directly.
 * For related restricted PostgreSQL tables, follow the [audit-first longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd) to create value-free linkage metadata, initialise a stable registry and inspect blockers before any write.
+* For explicitly reviewed vector data or coordinate pairs, follow the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd) to inspect CRS and geometry, create a static map and publish GeoPackage output safely.
 
 For a complete runnable learning path, use the [database-to-report walkthrough](inst/examples/db-to-report/README.md). Its commented R script starts with a duplicated synthetic longitudinal CSV, creates disposable PostgreSQL relations, pseudonymises them, runs database-backed EDA and finishes with plots, a Table 1 and an HTML report.
 
@@ -124,6 +126,32 @@ desc_stats
 
 # And many more functions for cleaning, stats and plotting that do things a bit faster or more conveniently and I couldn't easily find in other packages.
 ```
+
+### Reviewed geospatial mapping
+
+Use the geospatial interface only after the coordinate columns, axis order, CRS, geometry meaning and privacy classification have been reviewed. `sf` is an optional dependency, and GeoPackage is the created-file format.
+
+``` r
+locations <- data.frame(
+  site = c("site_a", "site_b"),
+  longitude = c(0.25, 1.25),
+  latitude = c(0.25, 0.75),
+  group = c("reference", "comparison")
+)
+
+converted <- epi_geo_from_coords(
+  locations,
+  x = "longitude",
+  y = "latitude",
+  crs = 4326
+)
+
+converted$audit
+epi_geo_describe(converted$data)
+epi_geo_map(converted$data, value = "group")
+```
+
+Conversion is all-or-nothing: missing, non-finite or EPSG:4326 out-of-range rows return aggregate blockers and no partial geometry. Bounds and feature maps remain value-bearing and may disclose location. The interface does not infer coordinates, repair geometry, add basemaps, perform spatial inference or publish feature-level locations through ordinary EDA bundles.
 
 ### Specification-first EDA quickstart
 

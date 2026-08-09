@@ -21,6 +21,18 @@ EOF
 fi
 
 env_bin="$(cd "$(dirname "$rscript")" && pwd)"
+env_prefix="$(cd "${env_bin}/.." && pwd)"
 export PATH="${env_bin}:${PATH}"
+export CONDA_PREFIX="${env_prefix}"
+
+if [[ -d "${env_prefix}/share/proj" ]]; then
+  export PROJ_DATA="${env_prefix}/share/proj"
+fi
+if [[ -d "${env_prefix}/share/gdal" ]]; then
+  export GDAL_DATA="${env_prefix}/share/gdal"
+fi
+if [[ -d "${env_prefix}/lib/gdalplugins" ]]; then
+  export GDAL_DRIVER_PATH="${env_prefix}/lib/gdalplugins"
+fi
 
 exec "$rscript" "$@"

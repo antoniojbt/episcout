@@ -6,15 +6,15 @@
 \alias{episcout-package}
 \title{episcout: cleaning, exploration and reviewed data workflows}
 \description{
-Helpers for cleaning, exploring and visualising data, including specification-first EDA and an audit-first PostgreSQL workflow for stable longitudinal pseudonymisation.
+Helpers for cleaning, exploring and visualising data, including reviewed static geospatial mapping, specification-first EDA and an audit-first PostgreSQL workflow for stable longitudinal pseudonymisation.
 }
 \details{
-Start with \code{vignette("introduction_episcout")} for package helpers, \code{vignette("specification-first-eda")} for reviewed EDA, or \code{vignette("longitudinal-pseudonymisation")} for one stable pseudonymous identity across related PostgreSQL tables. The longitudinal guide covers database prerequisites, value-free linkage metadata, read-only audits, blockers, apply, recovery and EDA handoff. The installed \code{examples/db-to-report/walkthrough.R} script provides a complete interactive synthetic exercise from duplicate review and database setup through pseudonymisation, EDA, Table 1 and HTML report output.
+Start with \code{vignette("introduction_episcout")} for package helpers, \code{vignette("geospatial-mapping-primer")} for reviewed vector mapping, \code{vignette("specification-first-eda")} for reviewed EDA, or \code{vignette("longitudinal-pseudonymisation")} for one stable pseudonymous identity across related PostgreSQL tables. The longitudinal guide covers database prerequisites, value-free linkage metadata, read-only audits, blockers, apply, recovery and EDA handoff. The installed \code{examples/db-to-report/walkthrough.R} script provides a complete interactive synthetic exercise from duplicate review and database setup through pseudonymisation, EDA, Table 1 and HTML report output.
 
 Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled.
 }
 \seealso{
-\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_intake_run]{epi_eda_intake_run()}}
+\code{\link[=epi_geo_read]{epi_geo_read()}}, \code{\link[=epi_geo_from_coords]{epi_geo_from_coords()}}, \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_intake_run]{epi_eda_intake_run()}}
 }
 \author{
 \strong{Maintainer}: Antonio Berlanga-Taylor \email{antoniojberlanga@gmail.com}

@@ -47,6 +47,7 @@ Suggests:
     openxlsx,
     testthat,
     scales,
+    sf (>= 1.0-17),
     survival,
     grid,
     ggthemes,
