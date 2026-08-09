@@ -1,3 +1,7 @@
+# User files:
+future/scratch/
+archive/
+
 # R files to ignore:
 # History files
 .Rhistory
@@ -38,7 +42,6 @@ Rplots.pdf
 */*/*.dir_bash_history
 */*/*/*.dir_bash_history
 .DS_Store
-archive/
 
 # Vim:
 *~
