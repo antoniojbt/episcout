@@ -24,6 +24,7 @@ Confirm before activation:
 Implementation evidence at the pre-PR branch head:
 
 - Full offline suite: 2,134 passed, 24 expected environment-gated skips, no failures or warnings.
+- Final focused intake suite: 129 passed with no skips, failures or warnings; local `covr` reports 91.95% package coverage and 94.96% coverage for `R/eda_intake.R`.
 - Live PostgreSQL 18 suites: 388 passed across coordinate QA, map collection, catalogue profiling, snapshot/parity, identity-universe and pseudonymisation cases, with no skips.
 - Changed R files parse and lint clean; `git diff --check` passes.
 - `scripts/check-local.sh`: 0 errors, 0 warnings and one reconciled note caused by its test phase creating the ignored top-level `Rplots.pdf` before its build phase. The generated file was removed after the run.
@@ -32,7 +33,7 @@ Implementation evidence at the pre-PR branch head:
 - Representative geometry, numeric, categorical and missing-theme maps were visually inspected. A report containing a failed declared pair showed stable `incomplete_pairs` inventory rows with no files, and an empty report showed `no_rows` plus “No maps were created.” Repeated SVG renders were byte-identical, manifest MD5 values matched the files and HTML embedded only created map paths.
 - Generated roxygen, all affected vignettes, both report paths and the replacement database walkthrough build successfully.
 
-Draft implementation PR #246 is stacked on the contributor branch that contains planning PR #244; because GitHub cannot target a fork-only base branch in an upstream cross-fork PR, #246 targets `master`, declares the dependency and will shed the duplicate planning commits when #244 merges. Required CI and review-thread inspection are pending.
+Draft implementation PR #246 is stacked on the contributor branch that contains planning PR #244; because GitHub cannot target a fork-only base branch in an upstream cross-fork PR, #246 targets `master`, declares the dependency and will shed the duplicate planning commits when #244 merges. At package head `4af3ffc`, macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor are green. The pull request is mergeable/CLEAN and has no reviews or review threads. The first hosted coverage run exposed a narrow fail-closed intake-test gap; commit `4af3ffc` added the missing reconciliation, publication, validation and stage-failure cases and made both coverage gates green.
 
 ## Closeout Review
 

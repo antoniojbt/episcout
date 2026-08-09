@@ -44,7 +44,7 @@ Status: Active
 - [x] `scripts/check-local.sh` passes.
 - [x] `scripts/check-cran.sh` passes with only explicitly reconciled external notes, if any.
 - [x] Online/offline workflow checks pass from normal and fresh real spaced checkout paths at planning commit `1c056b8`.
-- [ ] Required pull-request checks are green with no actionable review feedback.
+- [x] Required pull-request checks are green with no actionable review feedback.
 
 ## Closeout
 
