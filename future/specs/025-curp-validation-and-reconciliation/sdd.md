@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Draft for owner review
+Status: Active
 
 ## Authoritative Basis Reviewed On 2026-08-09
 
@@ -21,11 +21,11 @@ The current instruction establishes the claims this draft may rely on:
 - government online/offline mechanisms—not local parsing—validate a CURP against official records; and
 - BDNCURP information is confidential and subject to applicable personal-data law.
 
-The public instruction reviewed here does not state the complete position-18 algorithm. The later implementation must not claim check-digit validation until an official algorithm or official test-vector set is obtained and independently reconciled. A popular or copied implementation is insufficient evidence.
+The public instruction reviewed here does not state the complete position-18 algorithm. By owner direction on 2026-08-09, checksum evidence is no longer a blocking gate for structural validation: this implementation reports position 18 as `not_verified`, does not calculate it and continues authoritative-evidence research in issue #230. A popular or copied implementation remains insufficient evidence.
 
 ## Proposed Public Boundary
 
-Add one audit-first API after owner acceptance:
+Add one audit-first API:
 
 ```r
 epi_clean_curp_audit(
@@ -48,11 +48,11 @@ Return an `epi_curp_audit` list with:
 
 The original CURP is not echoed in the result. `input_index` provides alignment with caller-controlled data. The custom print and condition methods display only row counts, status counts and fixed guidance. The returned derived fields are still personal data and must be documented as restricted.
 
-Candidate stable statuses are `valid`, `invalid`, `missing` and `not_verified`. `valid` means only the locally defined structural contract passed; it must never be labelled `registered`, `certified`, `authentic` or equivalent.
+Stable record statuses are `valid`, `invalid` and `missing`; checksum status is separately `not_verified` for structurally valid records and unavailable otherwise. `valid` means only the locally defined structural contract passed; it must never be labelled `registered`, `certified`, `authentic` or equivalent.
 
 ## Compatibility Boundary
 
-Retain `epi_clean_curp()` for at least one released compatibility cycle. A later implementation may refactor it over the shared parser if all of these remain explicit:
+Retain `epi_clean_curp()` for at least one released compatibility cycle. This implementation fixes its documented vector interface while retaining the historical 13-column extraction schema and permissive length-only extraction behaviour. It must not be presented as validation. A later release may refactor it over the strict parser after a staged migration if all of these remain explicit:
 
 - the existing 13 Spanish column names and order;
 - one output row per input element, including missing and invalid elements under a reviewed rule;
@@ -64,11 +64,11 @@ The current vector error and stale century rule are defects, but correcting them
 ## Validation Stages
 
 1. **Input shape:** require a character vector; retain length and positions without trimming silently. Missing input is `missing`, not malformed.
-2. **Lexical structure:** require exactly 18 permitted uppercase characters under the official position classes. Case-normalisation, if allowed, must be reported rather than silent.
-3. **Date and century:** parse positions 5–10 as an actual month/day and two-digit year. Position 17 constrains the official century class: numeric for births through 1999 and `A`–`J` from 2000 onward. It does not, by itself, prove that every numeric marker means 19xx in historical data. The owner must approve a supported year domain and explicit pre-1900 behaviour before the parser returns a full date. No rule may depend silently on the current year.
-4. **Encoded fields:** validate `H`/`M` and positions 12–13 against a pinned, provenance-recorded official birthplace catalogue. `NE` remains a birthplace code, not a Mexican state.
+2. **Lexical structure:** require exactly 18 permitted uppercase characters under the official position classes. Lowercase, surrounding whitespace, punctuation and Unicode are rejected without normalisation.
+3. **Date and century:** parse positions 5–10 as an actual month/day and two-digit year. A numeric position 17 maps to the supported 1900–1999 domain and `A`–`J` maps to 2000–2099. Dates later than the local current date are structurally invalid. A possible pre-1900 key is indistinguishable from the corresponding 1900s key using the CURP alone, so the audit cannot support or identify it and documents that limitation rather than guessing.
+4. **Encoded fields:** validate `H`/`M` and positions 12–13 against the catalogue published with the 2021 RENAPO assignment rules and pinned in `inst/extdata`. `NE` remains a birthplace code, not a Mexican state.
 5. **Name-derived segments:** validate character classes only unless the caller provides already reviewed initials. Generating a CURP from names remains out of scope because official exception rules are consequential.
-6. **Check digit:** calculate only after the official algorithm/test vectors pass the activation gate. Until then, report `not_verified`; do not substitute a guessed algorithm.
+6. **Check digit:** report `not_verified` for structurally valid records and do not calculate position 18. Issue #230 owns authoritative evidence and a later separately reviewed implementation.
 7. **Comparison:** compare only supplied reviewed reference values. Each field returns `match`, `mismatch`, `reference_missing`, `curp_unavailable` or `not_requested`.
 
 ## Comparison Semantics
@@ -95,13 +95,6 @@ CURP and its derived birth date, birthplace and encoded sex are personal data. T
 
 No new dependency is expected. Base R can perform fixed-position parsing and exact `Date` validation. Any proposed dependency requires a separate justification and provenance review.
 
-## Activation Gates
+## Activation Decision
 
-Package-code work must not start until the owner reviews and accepts:
-
-1. the proposed audit object and legacy compatibility boundary;
-2. the exact official birthplace catalogue and version to pin;
-3. an official check-digit algorithm or official test vectors sufficient for independent verification;
-4. synthetic/official example provenance and privacy handling;
-5. whether lowercase input is rejected or normalised with an explicit issue; and
-6. the supported year domain and treatment of possible pre-1900 historical keys.
+The owner activated this specification on 2026-08-09 with the audit object, one-cycle legacy boundary, strict uppercase/no-whitespace input, 1900–2099 local date domain, 2021 RENAPO birthplace catalogue and restricted synthetic-fixture policy accepted. Checksum calculation is explicitly deferred: this slice returns `not_verified`, while issue #230 owns any later authoritative-evidence work.

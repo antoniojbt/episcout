@@ -8,7 +8,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 
 ## Features
 
-* **Cleaning** - `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels.
+* **Cleaning** - `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels; `epi_clean_curp_audit()` performs value-free local CURP structural auditing and reviewed-field reconciliation without claiming registry validation.
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
 * **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
