@@ -42,7 +42,7 @@ rejected and no source identifier is inferred from the environment.}
 \value{
 An \code{epi_eda_intake} list with fixed components \code{status}, \code{stage},
 \code{output_dir}, \code{manifest}, \code{input}, \code{spec}, \code{schema_before}, \code{schema_after},
-\code{preparation_audit}, \code{missing}, \code{summary}, \code{stratified}, \code{table1}, \code{report},
+\code{preparation_audit}, \code{missing}, \code{geo}, \code{summary}, \code{stratified}, \code{table1}, \code{report},
 \code{messages}, and \code{metadata}.
 Status is one of \code{review_required}, \code{blocked}, \code{audit_complete}, or
 \code{complete}. Manifest paths and the report path are relative to \code{output_dir}.

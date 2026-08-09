@@ -337,7 +337,7 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   run <- epi_eda_db_run(source, fixture$spec, output_dir, plots = FALSE)
 
   expect_s3_class(run, "epi_eda_db_run")
-  expect_identical(names(run), c("status", "output_dir", "manifest", "source", "spec", "schema", "missing", "summaries", "identifier_qa", "plots", "plot_inventory", "timings", "messages", "metadata"))
+  expect_identical(names(run), c("status", "output_dir", "manifest", "source", "spec", "schema", "missing", "summaries", "identifier_qa", "geo", "plots", "plot_inventory", "timings", "messages", "metadata"))
   expect_identical(run$status, "complete")
   expect_named(run$plots, character())
   expect_identical(sum(run$timings$query_kind == "row_count"), 1L)

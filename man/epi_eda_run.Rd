@@ -27,7 +27,8 @@ epi_eda_run(
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
 }
 \value{
-A named list with \code{metadata}, \code{schema}, \code{missing}, \code{summaries} and \code{plots} components.
+A named list with \code{metadata}, \code{schema}, \code{missing}, \code{geo},
+\code{summaries} and \code{plots} components.
 }
 \description{
 Orchestrate the specification-first EDA helpers for either observed data or deterministic synthetic data. The function validates the specification, runs schema, missingness, summary and plot profiling, optionally writes machine-readable outputs, and returns all results as a named list.

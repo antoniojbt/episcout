@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `029-eda-reviewed-coordinate-roles`
-Status: Draft
+Status: Active
 
 ## Scope And Compatibility
 

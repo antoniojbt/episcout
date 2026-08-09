@@ -15,7 +15,7 @@
 #'
 #' @return An `epi_eda_db_run` list with fixed components `status`,
 #'   `output_dir`, `manifest`, `source`, `spec`, `schema`, `missing`,
-#'   `summaries`, `identifier_qa`, `plots`, `plot_inventory`, `timings`,
+#'   `summaries`, `identifier_qa`, `geo`, `plots`, `plot_inventory`, `timings`,
 #'   `messages`, and `metadata`.
 #'
 #' @details The bundle contains aggregates and the caller-authored reviewed
@@ -67,15 +67,18 @@ epi_eda_db_run <- function(source,
       n_total <- eda_postgres_row_count(source, timing_env)
       schema <- eda_postgres_schema_inside(source, spec, timing_env)
       missing <- eda_postgres_missing_inside(source, spec, timing_env, n_total)
+      geo <- eda_postgres_geo_inside(source, spec, timing_env)
       summaries <- eda_postgres_summaries_inside(source, spec, timing_env, n_total)
       identifier_qa <- eda_pg_identifier_qa_inside(source, spec, timing_env, n_total)
       plot_data <- eda_postgres_plot_data_inside(
         source, spec, summaries, max_plot_levels, timing_env
       )
-      eda_db_reconcile(n_total, spec, missing, summaries, identifier_qa, plot_data)
+      eda_db_reconcile(
+        n_total, spec, missing, summaries, identifier_qa, geo, plot_data
+      )
       list(
         n_total = n_total, schema = schema, missing = missing,
-        summaries = summaries, identifier_qa = identifier_qa,
+        summaries = summaries, identifier_qa = identifier_qa, geo = geo,
         plot_data = plot_data
       )
     },
@@ -103,6 +106,7 @@ epi_eda_db_run <- function(source,
   metadata <- data.frame(
     workflow_contract = "postgres-eda-bundle-1",
     canonical_summary_contract = "canonical-summary-1",
+    geo_qa_contract = "reviewed-coordinate-pair-1",
     plot_data_contract = "compact-plot-data-1",
     package_version = intake_package_version(),
     r_version = paste(R.version$major, R.version$minor, sep = "."),
@@ -156,6 +160,7 @@ epi_eda_db_run <- function(source,
       missing = snapshot$missing,
       summaries = snapshot$summaries,
       identifier_qa = snapshot$identifier_qa,
+      geo = snapshot$geo,
       plots = rendered,
       plot_inventory = plot_inventory,
       timings = timings,
@@ -247,7 +252,8 @@ eda_db_validate_prior_bundle <- function(output_dir,
   invisible(TRUE)
 }
 
-eda_db_reconcile <- function(n_total, spec, missing, summaries, identifier_qa, plot_data) {
+eda_db_reconcile <- function(n_total, spec, missing, summaries, identifier_qa,
+                             geo, plot_data) {
   if (!identical(missing$name, spec$name) || any(!is.na(missing$n) & missing$n != n_total)) stop("Database EDA missingness reconciliation failed.", call. = FALSE)
   present <- !is.na(summaries$variables$n)
   reconciled <- summaries$variables$n_missing[present] + summaries$variables$n_observed[present] == summaries$variables$n[present]
@@ -256,6 +262,7 @@ eda_db_reconcile <- function(n_total, spec, missing, summaries, identifier_qa, p
     ok <- is.na(identifier_qa$duplicate_excess) | identifier_qa$duplicate_excess == identifier_qa$n_observed - identifier_qa$n_distinct
     if (any(!ok)) stop("Database EDA identifier QA did not reconcile.", call. = FALSE)
   }
+  eda_geo_reconcile(geo, n_total)
   plotted <- vapply(plot_data$entries, function(entry) if (is.null(entry$data)) 0L else sum(entry$data$count), integer(1))
   expected <- vapply(plot_data$entries, function(entry) entry$n_plotted, integer(1))
   if (any(plotted != expected)) stop("Database EDA compact plot counts did not reconcile.", call. = FALSE)
@@ -402,6 +409,7 @@ eda_db_write_bundle_tables <- function(staging_dir,
     summary_temporal.csv = snapshot$summaries$temporal,
     summary_skipped.csv = snapshot$summaries$skipped,
     identifier_qa.csv = snapshot$identifier_qa,
+    geo_qa.csv = snapshot$geo,
     plot_inventory.csv = plot_inventory,
     query_timings.csv = timings
   )
@@ -415,25 +423,28 @@ eda_db_create_manifest <- function(staging_dir, plot_inventory) {
     "source_metadata.csv", "schema.csv", "missing.csv", "summary_variables.csv",
     "summary_numeric.csv", "summary_categorical.csv", "summary_text.csv",
     "summary_temporal.csv", "summary_skipped.csv", "identifier_qa.csv",
+    "geo_qa.csv",
     "plot_inventory.csv", "query_timings.csv"
   )
   fixed_artifacts <- c(
     "manifest", "run_metadata", "messages", "spec_reviewed", "source_metadata",
     "schema", "missing", "summary_variables", "summary_numeric",
     "summary_categorical", "summary_text", "summary_temporal",
-    "summary_skipped", "identifier_qa", "plot_inventory", "query_timings"
+    "summary_skipped", "identifier_qa", "geo_qa", "plot_inventory",
+    "query_timings"
   )
   fixed_types <- c(
     "manifest", "metadata", "messages", "specification", "source_metadata",
     "schema", "missingness", rep("canonical_summary", 6L), "identifier_qa",
-    "plot_inventory", "query_timings"
+    "geo_qa", "plot_inventory", "query_timings"
   )
   fixed_sensitivity <- c(
     "internal_review", "internal_review", "internal_review", "specification_review",
     "internal_review", "internal_review", "disclosure_review",
     "disclosure_review", "disclosure_review", "disclosure_review",
     "disclosure_review", "disclosure_review", "disclosure_review",
-    "disclosure_review", "disclosure_review", "internal_review"
+    "disclosure_review", "disclosure_review", "disclosure_review",
+    "internal_review"
   )
   manifest <- data.frame(
     artifact = fixed_artifacts, type = fixed_types, path = fixed_paths,

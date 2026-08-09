@@ -111,8 +111,70 @@ epi_eda_validate_spec <- function(spec) {
     validate_eda_scaffold_counts(spec)
   }
 
+  spec <- validate_eda_geo_spec(spec)
   validate_eda_spec_ranges(spec)
   spec
+}
+
+eda_geo_spec_fields <- function() {
+  c("geo_role", "geo_pair", "geo_crs")
+}
+
+validate_eda_geo_spec <- function(spec) {
+  fields <- eda_geo_spec_fields()
+  present <- fields %in% names(spec)
+  if (!any(present)) {
+    return(spec)
+  }
+  if (!all(present)) {
+    stop(
+      "EDA coordinate metadata requires geo_role, geo_pair and geo_crs together.",
+      call. = FALSE
+    )
+  }
+  for (field in fields) {
+    value <- as.character(spec[[field]])
+    value[is.na(value)] <- ""
+    spec[[field]] <- trimws(value)
+  }
+  spec$geo_role <- tolower(spec$geo_role)
+  invalid_role <- !(spec$geo_role %in% c("", "x", "y"))
+  if (any(invalid_role)) {
+    stop("EDA geo_role must be blank, x or y.", call. = FALSE)
+  }
+  blank_role <- spec$geo_role == ""
+  orphan <- blank_role & (spec$geo_pair != "" | spec$geo_crs != "")
+  incomplete <- !blank_role & (spec$geo_pair == "" | spec$geo_crs == "")
+  if (any(orphan | incomplete)) {
+    stop("EDA coordinate metadata must be blank or complete on each row.", call. = FALSE)
+  }
+  reviewed <- which(!blank_role)
+  if (length(reviewed) == 0L) {
+    return(spec)
+  }
+  if (any(!(spec$type[reviewed] %in% c("numeric", "integer")))) {
+    stop("EDA coordinate roles require numeric or integer declared types.", call. = FALSE)
+  }
+  epi_geo_require("sf")
+  pairs <- unique(spec$geo_pair[reviewed])
+  for (pair in pairs) {
+    rows <- which(spec$geo_pair == pair & !blank_role)
+    roles <- spec$geo_role[rows]
+    if (length(rows) != 2L || !identical(sort(roles), c("x", "y"))) {
+      stop("Each EDA geo_pair must contain exactly one x row and one y row.", call. = FALSE)
+    }
+    crs <- unique(spec$geo_crs[rows])
+    if (length(crs) != 1L) {
+      stop("Rows in an EDA geo_pair must use the same explicit geo_crs.", call. = FALSE)
+    }
+    eda_geo_resolve_crs(crs)
+  }
+  spec
+}
+
+eda_geo_resolve_crs <- function(crs) {
+  value <- if (grepl("^[0-9]+$", crs)) suppressWarnings(as.numeric(crs)) else crs
+  epi_geo_crs(value)
 }
 
 parse_eda_spec_integer <- function(x, name) {

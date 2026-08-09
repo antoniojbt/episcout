@@ -8,7 +8,8 @@
 #' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec` before running the workflow.
 #' @param n Number of synthetic rows to generate when `synthetic = TRUE`.
 #' @param seed Optional random seed passed to [epi_eda_generate_synthetic_data()].
-#' @return A named list with `metadata`, `schema`, `missing`, `summaries` and `plots` components.
+#' @return A named list with `metadata`, `schema`, `missing`, `geo`,
+#'   `summaries` and `plots` components.
 #'
 #' @export
 epi_eda_run <- function(data,
@@ -35,6 +36,7 @@ epi_eda_run <- function(data,
     metadata = run_eda_metadata(data, spec, synthetic = synthetic),
     schema = epi_eda_check_schema(data, spec),
     missing = epi_eda_profile_missing(data, spec),
+    geo = epi_eda_profile_geo(data, spec),
     summaries = epi_eda_profile_summaries(data, spec),
     plots = epi_eda_profile_plots(data, plot_spec)
   )
@@ -89,6 +91,11 @@ write_run_eda_outputs <- function(results, output_dir) {
   utils::write.csv(
     results$missing,
     file.path(output_dir, "missing.csv"),
+    row.names = FALSE
+  )
+  utils::write.csv(
+    results$geo,
+    file.path(output_dir, "geo_qa.csv"),
     row.names = FALSE
   )
   for (name in names(results$summaries)) {

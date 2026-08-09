@@ -45,6 +45,11 @@ eda_identifier_role <- function(role) {
   trimws(tolower(as.character(role))) %in% c("id", "identifier")
 }
 
+eda_coordinate_role <- function(spec, index) {
+  all(eda_geo_spec_fields() %in% names(spec)) &&
+    spec$geo_role[[index]] %in% c("x", "y")
+}
+
 eda_data_frame_plot_data <- function(data, spec, max_plot_levels = 20L) {
   entries <- lapply(seq_len(nrow(spec)), function(index) {
     name <- spec$name[[index]]
@@ -55,6 +60,9 @@ eda_data_frame_plot_data <- function(data, spec, max_plot_levels = 20L) {
     observed <- values[!missing]
     if (eda_identifier_role(spec$role[[index]])) {
       return(eda_plot_entry(name, label, type, "identifier", NULL, length(values), sum(missing), 0L, 0L, "not_created", "Variable was skipped by the explicit identifier-role policy."))
+    }
+    if (eda_coordinate_role(spec, index)) {
+      return(eda_plot_entry(name, label, type, "coordinate", NULL, length(values), sum(missing), 0L, 0L, "not_created", "Variable was skipped by the explicit coordinate-role policy."))
     }
     if (type %in% c("numeric", "integer")) {
       if (!is.numeric(observed)) stop("Observed class is incompatible with declared numeric type.", call. = FALSE)

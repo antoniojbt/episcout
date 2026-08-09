@@ -282,10 +282,18 @@ empty_eda_skipped <- function() {
 eda_summary_exclusions <- function(data, spec) {
   role <- trimws(tolower(as.character(spec$role)))
   identifiers <- spec$name[role %in% c("id", "identifier")]
-  stats::setNames(
+  out <- stats::setNames(
     rep("Variable was skipped by the explicit identifier-role policy.", length(identifiers)),
     identifiers
   )
+  if (all(eda_geo_spec_fields() %in% names(spec))) {
+    coordinates <- spec$name[spec$geo_role %in% c("x", "y")]
+    out[coordinates] <- paste(
+      "Variable was skipped by the explicit coordinate-role policy;",
+      "use aggregate geo QA and separate reviewed feature conversion."
+    )
+  }
+  out
 }
 
 eda_apply_summary_exclusions <- function(canonical, data, spec, exclusions) {

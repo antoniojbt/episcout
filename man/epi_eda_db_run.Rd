@@ -31,7 +31,7 @@ displayed categorical levels. Canonical frequencies remain complete.}
 \value{
 An \code{epi_eda_db_run} list with fixed components \code{status},
 \code{output_dir}, \code{manifest}, \code{source}, \code{spec}, \code{schema}, \code{missing},
-\code{summaries}, \code{identifier_qa}, \code{plots}, \code{plot_inventory}, \code{timings},
+\code{summaries}, \code{identifier_qa}, \code{geo}, \code{plots}, \code{plot_inventory}, \code{timings},
 \code{messages}, and \code{metadata}.
 }
 \description{

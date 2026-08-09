@@ -14,7 +14,7 @@ Start with \code{vignette("introduction_episcout")} for package helpers, \code{v
 Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled.
 }
 \seealso{
-\code{\link[=epi_geo_read]{epi_geo_read()}}, \code{\link[=epi_geo_from_coords]{epi_geo_from_coords()}}, \code{\link[=epi_geo_postgis_source]{epi_geo_postgis_source()}}, \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_intake_run]{epi_eda_intake_run()}}
+\code{\link[=epi_geo_read]{epi_geo_read()}}, \code{\link[=epi_geo_from_coords]{epi_geo_from_coords()}}, \code{\link[=epi_geo_postgis_source]{epi_geo_postgis_source()}}, \code{\link[=epi_eda_profile_geo]{epi_eda_profile_geo()}}, \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_intake_run]{epi_eda_intake_run()}}
 }
 \author{
 \strong{Maintainer}: Antonio Berlanga-Taylor \email{antoniojberlanga@gmail.com}

@@ -839,8 +839,14 @@ eda_postgres_summaries_inside <- function(source, spec, timing_env = NULL, n_tot
       error = function(error) c(n_missing = NA_integer_, n_observed = NA_integer_, n_unique = NA_integer_)
     )
     identifier <- trimws(tolower(role)) %in% c("id", "identifier")
+    coordinate <- eda_coordinate_role(spec, index)
     if (identifier) {
       reason <- "Variable was skipped by the explicit identifier-role policy."
+    } else if (coordinate) {
+      reason <- paste(
+        "Variable was skipped by the explicit coordinate-role policy;",
+        "use aggregate geo QA and separate reviewed feature conversion."
+      )
     }
     if (type == "integer" && is.na(reason) && !eda_postgres_integer_exact(source, column, contract, index, timing_env)) {
       reason <- "PostgreSQL bigint values exceed the exact R double integer range."
@@ -1027,6 +1033,9 @@ eda_postgres_plot_data_inside <- function(source,
     variable <- summaries$variables[summaries$variables$name == name, , drop = FALSE]
     if (eda_identifier_role(spec$role[[index]])) {
       return(eda_plot_entry(name, label, type, "identifier", NULL, variable$n, variable$n_missing, 0L, 0L, "not_created", "Variable was skipped by the explicit identifier-role policy."))
+    }
+    if (eda_coordinate_role(spec, index)) {
+      return(eda_plot_entry(name, label, type, "coordinate", NULL, variable$n, variable$n_missing, 0L, 0L, "not_created", "Variable was skipped by the explicit coordinate-role policy."))
     }
     if (nrow(variable) != 1L || variable$status[[1]] != "summarised") {
       reason <- if (nrow(variable) == 1L) variable$reason[[1]] else "Variable summary was unavailable."
