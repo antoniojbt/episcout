@@ -68,7 +68,7 @@ For tracked GitHub work, run the read-only lifecycle check before starting, at p
 scripts/check-workflow-state.sh
 ```
 
-GitHub roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) is authoritative for the live sequence. The [future-work guide](future/README.md) defines specification states, closeout requirements and the synchronised repository records.
+GitHub roadmap issue [#249](https://github.com/antoniojbt/episcout/issues/249) is authoritative for the live sequence. The [future-work guide](future/README.md) defines specification states, closeout requirements and the synchronised repository records.
 
 Set `EPISCOUT_RSCRIPT=/path/to/Rscript` if you need to use a different R binary.
 
