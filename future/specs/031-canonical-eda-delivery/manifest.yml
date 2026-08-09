@@ -14,7 +14,7 @@ source_issues:
   - 196
   - 249
 pull_request: null
-planning_pull_request: null
+planning_pull_request: 251
 merge_commit: null
 successor_issue: 248
 terminal_reason: null

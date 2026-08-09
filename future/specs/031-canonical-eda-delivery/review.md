@@ -18,6 +18,7 @@ None. Issue #245 and owner direction settle HTML ownership, compatibility and go
 ## Planning Handoff
 
 - Planning base: canonical `master` at `e037512a4474ca6653b0cd079341efffa0a12047`.
+- Draft planning PR #251 is the required green review gate.
 - Package code remains unchanged until this planning PR is green.
 - Implementation will stack on the green planning branch under the owner's instruction without waiting for merge.
 
