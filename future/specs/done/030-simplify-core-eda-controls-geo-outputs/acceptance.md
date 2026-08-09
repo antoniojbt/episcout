@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Active
+Status: Completed
 
 ## Planning And Activation
 
@@ -48,7 +48,7 @@ Status: Active
 
 ## Closeout
 
-- [ ] The implementation PR closes issue #243 only when every issue outcome is delivered.
-- [ ] Canonical merge and issue closure are verified before moving this spec to `future/specs/done/`.
-- [ ] Roadmap, TODO, changelog, acceptance evidence and local/fork master are reconciled.
-- [ ] A successor is recorded or a terminal reason is added.
+- [x] The implementation PR closes issue #243 only when every issue outcome is delivered.
+- [x] Canonical merge and issue closure are verified before moving this spec to `future/specs/done/`.
+- [x] Roadmap, TODO, changelog, acceptance evidence and local/fork master are reconciled.
+- [x] A successor is recorded or a terminal reason is added.

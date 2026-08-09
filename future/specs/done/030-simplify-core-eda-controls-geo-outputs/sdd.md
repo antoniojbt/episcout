@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Active
+Status: Completed
 
 ## Public Runner Contract
 

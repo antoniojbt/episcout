@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Active
+Status: Completed
 
 ## Test Files
 
@@ -14,7 +14,7 @@ Status: Active
 
 - [x] Online and offline workflow checks pass in the canonical checkout.
 - [x] A fresh checkout whose actual path contains spaces passes both modes.
-- [ ] The audit still detects malformed manifests and GitHub lifecycle drift.
+- [x] The audit detects malformed manifests and GitHub lifecycle drift.
 
 ## Breaking Schema Tests
 

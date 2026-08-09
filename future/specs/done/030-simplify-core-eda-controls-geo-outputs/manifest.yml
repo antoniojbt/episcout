@@ -2,7 +2,7 @@ id: "030"
 slug: "simplify-core-eda-controls-geo-outputs"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/implement-simplify-core-eda-geo
@@ -15,9 +15,9 @@ source_issues:
   - 237
 pull_request: 246
 planning_pull_request: 244
-merge_commit: null
+merge_commit: 825215ea0eb2c7aab79768d6174315f1708bec09
 successor_issue: null
-terminal_reason: null
+terminal_reason: "All requested issue #243 outcomes are complete; the remaining roadmap work is separate deferred or owner-action work and no concrete successor is proposed."
 
 dependencies:
   suggests:
@@ -95,4 +95,5 @@ notes:
   - Draft planning/prerequisite PR 244 is the review gate; its first commit passed both workflow modes from a fresh real checkout path containing spaces.
   - After that PR is green, implementation may continue on a stacked draft PR without waiting for merge under the owner's explicit instruction.
   - PostgreSQL aggregate-bundle HTML rendering remains deferred under issue 196.
-  - Release, tagging, publication, merge and ready-for-review transitions remain outside this issue.
+  - Implementation PR #246 merged to canonical master as 825215ea0eb2c7aab79768d6174315f1708bec09 after planning PR #244 merged first as 2d2237b2ee9e8c8181f9ea97fac5a0f34da5fb11.
+  - Issue #243 closed automatically on the implementation merge; no concrete successor is authorised.

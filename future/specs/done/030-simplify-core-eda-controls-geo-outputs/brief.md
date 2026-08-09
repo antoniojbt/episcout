@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Active
+Status: Completed
 Owner: repository-owner
 Tracking issue: #243
 

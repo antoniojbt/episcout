@@ -17,9 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### Active implementation — issue #243 / spec 030
-
-Issue [#243](https://github.com/antoniojbt/episcout/issues/243) is active as `030-simplify-core-eda-controls-geo-outputs`. Planning/prerequisite PR #244 is fully green at `8c4935f`, repairs workflow checks for paths containing spaces and accepts the breaking semantic, mapping, publication and security-separation contracts. Implementation is continuing on a stacked draft branch under the owner's instruction; merge #244 before the implementation PR.
+No package implementation specification is active. Roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) retains only separately tracked owner action and deferred work; a new package implementation requires an explicit tracker and specification.
 
 ## Parallel owner action
 
@@ -46,6 +44,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-09
 
+- [x] Complete issue #243/spec 030 through planning PR #244 (`2d2237b`) and implementation PR #246, merged to canonical `master` as `825215ea0eb2c7aab79768d6174315f1708bec09`; issue #243 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed terminal record moved to `future/specs/done/`. No successor was created because the remaining roadmap work is separately tracked or deferred.
 - [x] Complete issue #237/spec 029 through planning PR #240 (`d97d8bf`) and implementation PR #241, merged to canonical `master` as `308d5442b9c7d0e180343c89f97e9f0fb8668062`; issue #237 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed terminal record moved to `future/specs/done/`. No successor was created: later spatial inference requires a new concrete scientific tracker.
 - [x] Complete issue #233/spec 028 through PR #238, merged to canonical `master` as `460acd0908044e963827ddc4d2a865984ed9fc76`; issue #233 closed automatically, macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor passed, Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%, the completed record moved to `future/specs/done/`, and issue #237 is the ready-next tracker after this closeout becomes canonical.
 - [x] Complete issue #226/spec 027 through PR #234, merged to canonical `master` as `b37b391`; issue #226 closed automatically, all required CI passed, Codecov reported every modified coverable line tested and project coverage at 92.25%, the completed record moved to `future/specs/done/`, and issue #233 is the ready-next tracker after this closeout becomes canonical.
