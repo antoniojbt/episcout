@@ -12,6 +12,54 @@ test_that("PostgreSQL EDA public formals and fixed contracts are stable", {
   expect_identical(names(formals(epi_eda_profile_plots)), c("data", "spec"))
 })
 
+test_that("categorical summaries reuse the supplied relation count", {
+  categorical_summary <- getFromNamespace(
+    "eda_pg_categorical_summary",
+    "episcout"
+  )
+  source <- list(con = NULL)
+  column <- data.frame(name = "group", stringsAsFactors = FALSE)
+  contract <- list(sql = "FALSE", params = list())
+  spec_row <- data.frame(
+    type = "categorical",
+    levels = "A;B",
+    stringsAsFactors = FALSE
+  )
+
+  observed <- with_mocked_bindings(
+    categorical_summary(
+      source,
+      column,
+      contract,
+      spec_row,
+      1L,
+      4L,
+      NULL
+    ),
+    eda_postgres_value_expression = function(...) "value",
+    eda_postgres_table_sql = function(...) "fixture_relation",
+    eda_db_fetch = function(...) {
+      data.frame(
+        level = c("A", "B"),
+        n = c("2", "1"),
+        stringsAsFactors = FALSE
+      )
+    },
+    eda_postgres_row_count = function(...) {
+      stop("REDUNDANT_ROW_COUNT", call. = FALSE)
+    },
+    .package = "episcout"
+  )
+
+  expect_identical(observed$data$n, c(2L, 1L))
+  expect_equal(observed$data$p_total, c(0.5, 0.25), tolerance = 1e-12)
+  expect_equal(observed$data$p_observed, c(2 / 3, 1 / 3), tolerance = 1e-12)
+  expect_identical(
+    observed$counts,
+    list(n_missing = 1L, n_observed = 3L, n_unique = 2L, n_infinite = 0L)
+  )
+})
+
 test_that("identifier and exact count validation refuse ambiguous inputs", {
   identifier <- getFromNamespace("eda_postgres_identifier", "episcout")
   checked_count <- getFromNamespace("eda_checked_count", "episcout")

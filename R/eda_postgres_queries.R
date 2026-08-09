@@ -631,7 +631,7 @@ eda_postgres_numeric_summary <- function(source, column, contract, index, timing
   list(data = data, counts = counts)
 }
 
-eda_pg_categorical_summary <- function(source, column, contract, spec_row, index, timing_env) {
+eda_pg_categorical_summary <- function(source, column, contract, spec_row, index, n_total, timing_env) {
   expression <- eda_postgres_value_expression(source, column, as.character(spec_row$type[[1]]))
   observed <- eda_db_fetch(
     source$con,
@@ -663,7 +663,6 @@ eda_pg_categorical_summary <- function(source, column, contract, spec_row, index
   level_counts <- unname(counts[levels_out])
   level_counts[is.na(level_counts)] <- 0L
   n_observed <- sum(level_counts)
-  n_total <- eda_postgres_row_count(source, timing_env = timing_env)
   is_declared <- if (has_declared) levels_out %in% declared else rep(NA, length(levels_out))
   data <- data.frame(
     level = levels_out,
@@ -859,7 +858,9 @@ eda_postgres_summaries_inside <- function(source, spec, timing_env = NULL, n_tot
     result <- if (type %in% c("numeric", "integer")) {
       eda_postgres_numeric_summary(source, column, contract, index, timing_env)
     } else if (type %in% c("categorical", "binary")) {
-      eda_pg_categorical_summary(source, column, contract, row, index, timing_env)
+      eda_pg_categorical_summary(
+        source, column, contract, row, index, n_total, timing_env
+      )
     } else if (type == "text") {
       eda_postgres_text_summary(source, column, contract, index, timing_env)
     } else {

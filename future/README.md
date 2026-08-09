@@ -51,11 +51,11 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Active
 
-- No numbered implementation specification is active.
+- Issue [#220](https://github.com/antoniojbt/episcout/issues/220) is active as spec `022-postgresql-eda-row-count-reuse`, a bounded internal correction that reuses the transaction-local PostgreSQL EDA row count.
 
 ### Ready Next
 
-- Promote issue [#220](https://github.com/antoniojbt/episcout/issues/220) to spec `022-postgresql-eda-row-count-reuse`, record its baseline and remove only the redundant categorical/binary relation-count query.
+- Review the draft contract for issue [#217](https://github.com/antoniojbt/episcout/issues/217) after spec 022 is handed off; package-code activation remains gated on accepting the authoritative CURP design.
 
 ### Draft
 
