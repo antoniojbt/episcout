@@ -5,7 +5,7 @@ Status: Draft
 
 ## Planning Review
 
-Pending review of the planning/prerequisite pull request.
+Draft planning/prerequisite PR #244 contains only spec 030, synchronised planning records and the quoted R-wrapper repair. At commit `1c056b8`, Bash syntax, online/offline checks in the canonical checkout, online/offline checks in a fresh real checkout path containing spaces and `git diff --check` pass. Required pull-request checks and owner review remain pending.
 
 Confirm before activation:
 

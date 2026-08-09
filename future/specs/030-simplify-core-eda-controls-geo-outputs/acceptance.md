@@ -8,7 +8,7 @@ Status: Draft
 - [x] Live roadmap issue #227, canonical master and completed spec 029 were reconciled before new work.
 - [x] Tracking issue #243 exists and roadmap #227 points to it.
 - [x] The path-with-spaces workflow failure is reproduced independently for online and offline modes.
-- [ ] The planning/prerequisite PR is green and its review gates are accepted before package implementation begins.
+- [ ] Draft planning/prerequisite PR #244 is green and its review gates are accepted before package implementation begins.
 
 ## Public And Schema Contracts
 
@@ -43,7 +43,7 @@ Status: Draft
 - [ ] Changed R-file lint passes.
 - [ ] `scripts/check-local.sh` passes.
 - [ ] `scripts/check-cran.sh` passes with only explicitly reconciled external notes, if any.
-- [ ] Online/offline workflow checks pass from normal and spaced paths.
+- [x] Online/offline workflow checks pass from normal and fresh real spaced checkout paths at planning commit `1c056b8`.
 - [ ] Required pull-request checks are green with no actionable review feedback.
 
 ## Closeout

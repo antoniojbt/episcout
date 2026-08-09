@@ -14,7 +14,7 @@ source_issues:
   - 227
   - 237
 pull_request: null
-planning_pull_request: null
+planning_pull_request: 244
 merge_commit: null
 successor_issue: null
 terminal_reason: null
@@ -90,6 +90,7 @@ baseline:
 
 notes:
   - The planning/prerequisite PR contains no package behaviour changes.
+  - Draft planning/prerequisite PR 244 is the review gate; its first commit passed both workflow modes from a fresh real checkout path containing spaces.
   - After that PR is green, implementation may continue on a stacked draft PR without waiting for merge under the owner's explicit instruction.
   - PostgreSQL aggregate-bundle HTML rendering remains deferred under issue 196.
   - Release, tagging, publication, merge and ready-for-review transitions remain outside this issue.
