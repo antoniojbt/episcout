@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Active
+Status: Review
 
 Tracking issue: [#226](https://github.com/antoniojbt/episcout/issues/226); source design issue #218 and design spec 026 are complete.
 

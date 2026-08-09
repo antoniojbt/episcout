@@ -17,9 +17,9 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### 1. Active phase-A geographic mapping implementation
+### 1. Phase-A geographic mapping implementation in review
 
-- [ ] Complete issue [#226](https://github.com/antoniojbt/episcout/issues/226) under active spec `027-epi-geo-phase-a`:
+- [ ] Review and complete issue [#226](https://github.com/antoniojbt/episcout/issues/226) through draft PR [#234](https://github.com/antoniojbt/episcout/pull/234) and spec `027-epi-geo-phase-a`:
   - retain accepted design-only spec `026-epi-geo-series-plan` as the source contract;
   - implement reviewed file and in-memory `sf` handling, static mapping and the offline primer;
   - keep phase-B successor [#233](https://github.com/antoniojbt/episcout/issues/233) blocked until merge/closeout and phase-C aggregate EDA-coordinate work deferred.

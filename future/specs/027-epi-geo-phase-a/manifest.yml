@@ -2,7 +2,7 @@ id: "027"
 slug: "epi-geo-phase-a"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: feature/phase-a-geo-mapping
@@ -12,7 +12,7 @@ updated: 2026-08-09
 tracking_issue: 226
 source_issues:
   - 218
-pull_request: null
+pull_request: 234
 planning_pull_request: 223
 merge_commit: null
 successor_issue: 233

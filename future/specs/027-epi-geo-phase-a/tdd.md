@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Active
+Status: Review
 
 ## Independent Basis
 

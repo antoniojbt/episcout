@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `027-epi-geo-phase-a`
-Status: Active
+Status: Review
 
 ## Findings
 
@@ -28,7 +28,7 @@ No local implementation question remains. Cross-platform system-library behaviou
 
 ## Closeout Notes
 
-- Pull request and merge commit: pending.
+- Pull request: draft PR #234; merge commit pending.
 - Required checks and material exceptions: focused tests, package lint and local check pass; CRAN-oriented check passes with the recorded external/incoming-feasibility NOTE; pull-request CI pending.
 - Tracking issue and roadmap disposition: pending.
 - Successor issue: #233, blocked until Phase A merge and closeout.
