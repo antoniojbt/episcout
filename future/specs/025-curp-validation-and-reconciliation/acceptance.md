@@ -27,6 +27,6 @@ Tracking issue: [#225](https://github.com/antoniojbt/episcout/issues/225); sourc
 - [x] Legacy compatibility or migration behaviour is documented and tested.
 - [x] Results, conditions, printing, examples and artifacts satisfy the privacy contract.
 - [x] Focused/full tests, lint and the canonical local package check pass.
-- [ ] Required pull-request CI passes.
+- [x] Required pull-request CI passes.
 - [x] Review evidence records sources, exact versions, limitations and unresolved registry-validation boundaries.
 - [ ] Post-merge closeout reconciles issue #225, roadmap #227, this acceptance record, TODOs, changelog and the next tracker or terminal rationale.

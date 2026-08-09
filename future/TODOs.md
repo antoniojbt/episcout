@@ -26,6 +26,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
   - [x] defer checksum verification as `not_verified` to evidence issue [#230](https://github.com/antoniojbt/episcout/issues/230);
   - [x] change the spec from `draft` to `active` before package-code work;
   - [x] implement and locally verify the accepted vector, validation, derivation, comparison and privacy contracts;
+  - [x] pass the required Ubuntu, macOS, PostgreSQL, coverage, Codecov and CodeFactor pull-request checks;
   - [ ] reconcile acceptance and create the next tracker or terminal rationale before closure.
 
 ## Parallel owner action
