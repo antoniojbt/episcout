@@ -113,7 +113,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgis/postgis:17-3.5
         env:
           POSTGRES_DB: synthetic_records
           POSTGRES_HOST_AUTH_METHOD: trust
@@ -142,5 +142,5 @@ jobs:
 
       - name: Run PostgreSQL integration tests
         run: |
-          devtools::test(filter = "eda-postgres|sec-pseudonymise-postgres|sec-identity-universe-postgres", reporter = "summary")
+          devtools::test(filter = "eda-postgres|epi-geo-postgis|sec-pseudonymise-postgres|sec-identity-universe-postgres", reporter = "summary")
         shell: Rscript {0}

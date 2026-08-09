@@ -6,6 +6,6 @@
 #'
 #' Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled.
 #'
-#' @seealso [epi_geo_read()], [epi_geo_from_coords()], [epi_sec_linkage_scaffold()], [epi_sec_identity_registry_init()], [epi_sec_pseudonymise_db()], [epi_eda_intake_run()]
+#' @seealso [epi_geo_read()], [epi_geo_from_coords()], [epi_geo_postgis_source()], [epi_sec_linkage_scaffold()], [epi_sec_identity_registry_init()], [epi_sec_pseudonymise_db()], [epi_eda_intake_run()]
 #' @keywords internal
 "_PACKAGE"

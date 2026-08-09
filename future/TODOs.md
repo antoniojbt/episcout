@@ -19,11 +19,11 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ### 1. Phase-B read-only PostGIS collection
 
-- [ ] Begin issue [#233](https://github.com/antoniojbt/episcout/issues/233) only after this #226/spec 027 closeout commit is canonical:
+- [ ] Complete active issue [#233](https://github.com/antoniojbt/episcout/issues/233) through spec `028-epi-geo-postgis` on a branch stacked on green closeout PR #236 under the owner's explicit activation exception:
   - retain completed design spec `026-epi-geo-series-plan` and completed implementation spec `027-epi-geo-phase-a` as source contracts;
-  - create and activate one separate numbered specification before package-code work;
+  - keep the implementation pull request explicitly dependent on #236 until the closeout is canonical;
   - require disposable PostGIS integration and structural data-locality evidence;
-  - keep phase-C aggregate EDA-coordinate integration and inferential/raster/web-map work deferred.
+  - keep phase-C aggregate EDA-coordinate integration gated in successor issue [#237](https://github.com/antoniojbt/episcout/issues/237), and keep inferential/raster/web-map work deferred.
 
 ## Parallel owner action
 
