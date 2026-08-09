@@ -17,13 +17,9 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### 1. Phase-B read-only PostGIS collection
+### 1. Phase-C reviewed coordinate roles
 
-- [ ] Complete active issue [#233](https://github.com/antoniojbt/episcout/issues/233) through spec `028-epi-geo-postgis` on a branch stacked on green closeout PR #236 under the owner's explicit activation exception:
-  - retain completed design spec `026-epi-geo-series-plan` and completed implementation spec `027-epi-geo-phase-a` as source contracts;
-  - keep the implementation pull request explicitly dependent on #236 until the closeout is canonical;
-  - require disposable PostGIS integration and structural data-locality evidence;
-  - keep phase-C aggregate EDA-coordinate integration gated in successor issue [#237](https://github.com/antoniojbt/episcout/issues/237), and keep inferential/raster/web-map work deferred.
+- [ ] Begin successor issue [#237](https://github.com/antoniojbt/episcout/issues/237) only after the Phase-B closeout is canonical. It must preserve the completed Phase-A and Phase-B source contracts, define reviewed coordinate roles before EDA output, and keep database writes, arbitrary SQL, raster, web mapping and spatial inference deferred.
 
 ## Parallel owner action
 
@@ -50,6 +46,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-09
 
+- [x] Complete issue #233/spec 028 through PR #238, merged to canonical `master` as `460acd0908044e963827ddc4d2a865984ed9fc76`; issue #233 closed automatically, macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor passed, Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%, the completed record moved to `future/specs/done/`, and issue #237 is the ready-next tracker after this closeout becomes canonical.
 - [x] Complete issue #226/spec 027 through PR #234, merged to canonical `master` as `b37b391`; issue #226 closed automatically, all required CI passed, Codecov reported every modified coverable line tested and project coverage at 92.25%, the completed record moved to `future/specs/done/`, and issue #233 is the ready-next tracker after this closeout becomes canonical.
 - [x] Complete issue #225/spec 025 through PR #231, merged to canonical `master` as `7e42f22`; issue #225 closed automatically, all required CI passed, the completed record moved to `future/specs/done/`, and issue #226 is the approved next tracker. Checksum remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.
 - [x] Complete issue #220/spec 022 through merged PR #222 at `b07f9e8`; verify all required checks, reconcile acceptance and move the completed record under `future/specs/done/`.
