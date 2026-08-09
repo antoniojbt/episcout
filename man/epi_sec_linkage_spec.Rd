@@ -4,17 +4,26 @@
 \alias{epi_sec_linkage_spec}
 \title{Validate reviewed longitudinal linkage metadata}
 \usage{
-epi_sec_linkage_spec(tables, record_keys = NULL, crosswalks = NULL)
+epi_sec_linkage_spec(
+  tables,
+  columns = NULL,
+  record_keys = NULL,
+  crosswalks = NULL
+)
 }
 \arguments{
 \item{tables}{A data frame or CSV path with \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace}, \code{can_enrol}, \code{one_row_per_entity}, \code{destination_table}, \code{provenance} and \code{validation_status}.}
+
+\item{columns}{A data frame or CSV path with exact source-column keys,
+\code{privacy_class}, \code{analytic_action} and \code{validation_status}.}
 
 \item{record_keys}{Optional data frame or CSV path with \code{source_schema}, \code{source_table}, \code{key_column} and \code{key_order}. The generated entity token is implicitly prepended to each declared record key.}
 
 \item{crosswalks}{Optional data frame or CSV path with \code{crosswalk_schema}, \code{crosswalk_table}, \code{alias_namespace}, \code{alias_id_column}, \code{canonical_namespace}, \code{canonical_id_column}, \code{provenance} and \code{validation_status}. These fields describe a database relation; identifier values are not accepted.}
 }
 \value{
-A validated, normalised \code{epi_sec_linkage_spec} list containing \code{tables}, \code{record_keys} and \code{crosswalks} data frames. Rows and columns contain metadata only.
+A validated, normalised \code{epi_sec_linkage_spec} list containing
+\code{tables}, \code{columns}, \code{record_keys} and \code{crosswalks} data frames.
 }
 \description{
 Read and validate a metadata-only linkage contract for PostgreSQL pseudonymisation. Each source table declares exactly one identifier column, exactly one table may enrol previously unseen entities, and every review status must be \code{confirmed}. Crosswalk arguments describe a restricted PostgreSQL relation and its columns; they never contain identifier values.

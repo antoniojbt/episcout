@@ -1,11 +1,11 @@
 "name","type","layer_geom","layer_stat"
 "studyName","categorical","GeomCol","StatIdentity"
-"Sample Number","integer",NA,NA
+"Sample Number","integer","GeomCol","StatIdentity"
 "Species","categorical","GeomCol","StatIdentity"
 "Region","categorical","GeomCol","StatIdentity"
 "Island","categorical","GeomCol","StatIdentity"
 "Stage","categorical","GeomCol","StatIdentity"
-"Individual ID","text",NA,NA
+"Individual ID","text","GeomCol","StatIdentity"
 "Clutch Completion","binary","GeomCol","StatIdentity"
 "Date Egg","date","GeomCol","StatIdentity"
 "Culmen Length (mm)","numeric","GeomCol","StatIdentity"

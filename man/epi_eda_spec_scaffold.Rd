@@ -4,19 +4,17 @@
 \alias{epi_eda_spec_scaffold}
 \title{Scaffold an EDA specification from existing data}
 \usage{
-epi_eda_spec_scaffold(data, max_candidate_levels = 20L)
+epi_eda_spec_scaffold(data)
 }
 \arguments{
 \item{data}{A data frame or data-frame subclass. File reading is deliberately outside this function.}
-
-\item{max_candidate_levels}{A positive whole number used to flag non-empty low-cardinality integer and character columns for review. It never changes the initial type or enumerates observed values.}
 }
 \value{
-An ordinary data frame with one row per source column in source order. It contains the core EDA specification fields plus aggregate review evidence. Every row has \code{review_status = "review_required"}; the result is not approved for analysis or sharing until it has been reviewed.
+An ordinary data frame with one row per source column in source order and the lean semantic EDA fields.
 }
 \description{
-Create a conservative, editable EDA specification from the storage classes and aggregate structure of an existing data frame. The result is a draft for human review: it does not infer scientific roles, privacy status, sentinel missing values, units or validation ranges, and it never includes observed values as examples or candidate levels.
+Create an editable semantic EDA specification from the storage classes of an existing data frame. The result does not infer scientific roles, sentinel missing values, units, validation ranges or geographic meaning, and it never includes observed values or aggregate evidence.
 }
 \details{
-Factor levels and fixed logical levels are storage metadata and are copied to the core \code{levels} field. Factor metadata that cannot be represented safely by the package's semicolon-delimited specification format is refused. \code{candidate_levels} is reserved and remains blank so low-cardinality values are not disclosed.
+Factor levels and fixed logical levels are storage metadata and are copied to the core \code{levels} field. Factor metadata that cannot be represented safely by the package's semicolon-delimited specification format is refused. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
 }

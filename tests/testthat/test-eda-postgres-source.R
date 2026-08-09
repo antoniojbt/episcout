@@ -4,7 +4,10 @@ test_that("PostgreSQL EDA public formals and fixed contracts are stable", {
   expect_identical(names(formals(epi_eda_postgres_source)), c("con", "schema", "relation"))
   expect_identical(
     names(formals(epi_eda_db_run)),
-    c("source", "spec", "output_dir", "overwrite", "plots", "max_plot_levels")
+    c(
+      "source", "spec", "output_dir", "overwrite", "plots",
+      "max_plot_levels", "maps", "map_vars", "max_map_points"
+    )
   )
   expect_identical(names(formals(epi_eda_check_schema)), c("data", "spec"))
   expect_identical(names(formals(epi_eda_profile_missing)), c("data", "spec"))
@@ -298,7 +301,7 @@ test_that("profiler dispatch rejects unsupported objects and incompatible plot i
   )
 })
 
-test_that("data-frame identifier and text plotting policies match the backend contract", {
+test_that("data-frame roles do not suppress text summaries or plots", {
   skip_if_not_installed("ggplot2")
   data <- data.frame(
     participant_id = c("ID_CANARY_A", "ID_CANARY_B", NA),
@@ -313,11 +316,11 @@ test_that("data-frame identifier and text plotting policies match the backend co
 
   summaries <- epi_eda_profile_summaries(data, spec)
   plots <- epi_eda_profile_plots(data, spec)
-  expect_identical(summaries$variables$status, c("skipped", "summarised"))
-  expect_false("participant_id" %in% summaries$text$name)
+  expect_identical(summaries$variables$status, c("summarised", "summarised"))
+  expect_true("participant_id" %in% summaries$text$name)
   expect_named(plots, spec$name)
-  expect_null(plots$participant_id)
+  expect_s3_class(plots$participant_id, "ggplot")
   expect_s3_class(plots$note, "ggplot")
   expect_identical(names(plots$note$data), c("bin", "lower", "upper", "midpoint", "count"))
-  expect_false(any(grepl("CANARY", capture.output(str(plots)), fixed = TRUE)))
+  expect_false(any(grepl("ID_CANARY|TEXT_CANARY", capture.output(str(plots)), fixed = TRUE)))
 })

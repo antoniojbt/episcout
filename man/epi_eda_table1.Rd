@@ -11,11 +11,14 @@ epi_eda_table1(result)
 }
 \value{
 An ordinary long-form data frame. \code{denominator} records the numeric
-denominator behind every count/percentage display. Output is not
-disclosure-controlled and must be reviewed before sharing.
+denominator behind every count/percentage display.
 }
 \description{
-Format an \code{\link[=epi_eda_profile_stratified]{epi_eda_profile_stratified()}} calculation as a long, review-ready
+Format an \code{\link[=epi_eda_profile_stratified]{epi_eda_profile_stratified()}} calculation as a long, traceable
 plain data frame. Formatting never replaces the machine-readable source
 fields and adds no p-values or automatic small-cell suppression.
+}
+\details{
+episcout creates the outputs explicitly requested by the analyst
+and does not decide whether they may be shared.
 }

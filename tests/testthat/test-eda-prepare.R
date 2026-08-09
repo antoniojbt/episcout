@@ -162,7 +162,7 @@ test_that("categorical append is deterministic but binary append blocks", {
   expect_identical(spec$levels, c("b;a", "no;yes"))
 })
 
-test_that("presence, extras, duplicates and review gates are explicit", {
+test_that("presence, extras and duplicates are explicit without review gates", {
   data <- data.frame(present = c(1, 1), extra = c("x", "x"))
   spec <- rbind(
     preparation_spec("present", "numeric"),
@@ -185,12 +185,10 @@ test_that("presence, extras, duplicates and review gates are explicit", {
 
   scaffold <- epi_eda_spec_scaffold(data.frame(present = 1:2))
   expect_identical(epi_eda_prepare(data.frame(present = 1:2), scaffold)$metadata$overall_status, "audited")
-  expect_identical(epi_eda_prepare(data.frame(present = 1:2), scaffold, mode = "apply")$metadata$overall_status, "blocked")
-  scaffold$review_status <- "reviewed"
   expect_identical(epi_eda_prepare(data.frame(present = 1:2), scaffold, mode = "apply")$metadata$overall_status, "prepared")
 })
 
-test_that("strict temporal parsing requires reviewed local timezone and rejects DST ambiguity", {
+test_that("strict temporal parsing requires declared local timezone and rejects DST ambiguity", {
   spec <- preparation_spec("when", "datetime")
   local <- data.frame(when = "2024-01-15T12:30:00")
   expect_identical(epi_eda_prepare(local, spec, mode = "apply")$metadata$overall_status, "blocked")

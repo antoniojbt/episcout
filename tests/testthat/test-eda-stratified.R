@@ -143,8 +143,10 @@ test_that("text is aggregate-only and skipped variables remain explicit", {
 
   expect_true(all(c("n_empty", "n_whitespace", "min_length", "max_length") %in% names(observed$text)))
   expect_false(grepl("secret-a", rendered, fixed = TRUE))
-  expect_true(all(c("participant_id", "absent", "payload") %in% observed$skipped$name))
-  expect_match(paste(observed$skipped$reason, collapse = " "), "identifier|not found|not declared", ignore.case = TRUE)
+  expect_true(all(c("absent", "payload") %in% observed$skipped$name))
+  expect_false("participant_id" %in% observed$skipped$name)
+  expect_true("participant_id" %in% observed$numeric$name)
+  expect_match(paste(observed$skipped$reason, collapse = " "), "not found|not declared", ignore.case = TRUE)
 })
 
 test_that("zero rows and invalid strata have deliberate behavior", {
@@ -167,9 +169,12 @@ test_that("zero rows and invalid strata have deliberate behavior", {
   names(duplicate_names)[2] <- "arm"
   expect_error(epi_eda_profile_stratified(duplicate_names, fixture$spec, "arm"), "Duplicate")
 
-  unreviewed <- fixture$spec
-  unreviewed$review_status <- "review_required"
-  expect_error(epi_eda_profile_stratified(fixture$data, unreviewed, "arm"), "reviewed")
+  extra <- fixture$spec
+  extra$custom_state <- "unreviewed"
+  expect_s3_class(
+    epi_eda_profile_stratified(fixture$data, extra, "arm"),
+    "epi_eda_stratified"
+  )
 })
 
 test_that("all-missing strata and local character datetimes remain explicit", {

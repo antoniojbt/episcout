@@ -35,6 +35,7 @@ related_files:
   - R/eda_stratified.R
   - R/eda_plots.R
   - R/eda_geo.R
+  - R/eda_maps.R
   - R/eda_intake.R
   - R/eda_db_run.R
   - R/eda_postgres_queries.R
@@ -42,6 +43,7 @@ related_files:
   - R/run_eda.R
   - R/epi_sec_linkage.R
   - R/epi_sec_pseudonymise_db.R
+  - R/epi_sec_registry.R
   - inst/report-template/eda.qmd
   - inst/examples/db-to-report/walkthrough.R
   - tests/testthat/test-eda-maps.R

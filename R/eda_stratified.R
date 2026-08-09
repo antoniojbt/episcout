@@ -25,10 +25,6 @@ epi_eda_profile_stratified <- function(data,
                                        include_missing_stratum = TRUE) {
   stratified_validate_data(data)
   spec <- epi_eda_spec(spec)
-  if ("review_status" %in% names(spec) &&
-        any(is.na(spec$review_status) | as.character(spec$review_status) != "reviewed")) {
-    stop("Every scaffold specification row must be explicitly reviewed before stratified summaries.", call. = FALSE)
-  }
   stratified_validate_flag(include_overall, "include_overall")
   stratified_validate_flag(include_missing_stratum, "include_missing_stratum")
   if (!is.character(strata) || length(strata) != 1L || is.na(strata) || !nzchar(strata)) {
@@ -217,7 +213,7 @@ stratified_level_universes <- function(data, spec, exclusions) {
 }
 
 stratified_exclusions <- function(data, spec) {
-  reasons <- eda_summary_exclusions(data, spec)
+  reasons <- stats::setNames(character(), character())
   schema <- epi_eda_check_schema(data, spec)
   incompatible <- schema$name[schema$expected_present & schema$observed_present & schema$type_status == "incompatible"]
   reasons[incompatible] <- "Observed storage is incompatible; run epi_eda_prepare() before stratified summaries."

@@ -1,15 +1,13 @@
-# episcout: synthetic longitudinal data from PostgreSQL to an HTML report
+# episcout: synthetic longitudinal data from PostgreSQL to an EDA bundle
 #
 # Run this file one numbered section at a time in an interactive R session.
-# The example uses only neutral synthetic records. Do not copy its privacy classifications or extraction step to real data without qualified review.
+# The example uses only neutral synthetic records. Specialised policy below is illustrative, not inferred by core EDA.
 
 # 1. Load packages and locate the installed example ---------------------------
 
 library(episcout)
 
-required_packages <- c(
-  "DBI", "RPostgres", "data.table", "ggplot2", "rmarkdown"
-)
+required_packages <- c("DBI", "RPostgres", "data.table", "ggplot2")
 missing_packages <- required_packages[
   !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
 ]
@@ -20,13 +18,6 @@ if (length(missing_packages) > 0L) {
     call. = FALSE
   )
 }
-if (!rmarkdown::pandoc_available(version = "1.12.3")) {
-  stop(
-    "Install Pandoc 1.12.3 or later before starting the walkthrough.",
-    call. = FALSE
-  )
-}
-
 example_dir <- system.file(
   "examples", "db-to-report",
   package = "episcout"
@@ -47,7 +38,7 @@ epi_head_and_tail(walkthrough_data, rows = 3, cols = 6)
 
 # 2. Check the intentional duplicate before loading PostgreSQL ----------------
 
-# A person can correctly have several longitudinal visits. The reviewed record key is person plus visit number, so inspect repeated values of that key.
+# A person can correctly have several longitudinal visits. The declared record key is person plus visit number, so inspect repeated values of that key.
 walkthrough_data$visit_key <- paste(
   walkthrough_data$source_person_id,
   walkthrough_data$visit_number,
@@ -138,7 +129,7 @@ for (schema in walkthrough_schemas) {
   )
 }
 
-# Load the reviewed, deduplicated synthetic relations. Source identifiers stay in PostgreSQL after this point in the worked database workflow.
+# Load the declared, deduplicated synthetic relations. Source identifiers stay in PostgreSQL after this point in the worked database workflow.
 DBI::dbWriteTable(
   con,
   DBI::Id(schema = source_schema, table = "participants"),
@@ -150,7 +141,7 @@ DBI::dbWriteTable(
   visits
 )
 
-# 4. Inventory the database and review a reusable dictionary ------------------
+# 4. Inventory the database and define a reusable semantic dictionary ---------
 
 inventory <- epi_db_inventory(
   con,
@@ -164,9 +155,8 @@ inventory$constraints
 
 dictionary <- epi_eda_dictionary_scaffold(inventory)
 
-# These decisions are valid only for the documented synthetic fixture. For real sources, a qualified reviewer must decide every semantic and privacy field.
-dictionary$provenance <- "reviewed_synthetic_walkthrough_v1"
-dictionary$validation_status <- "confirmed"
+# These semantic declarations are valid only for the documented synthetic fixture. Declare them explicitly for every real source.
+dictionary$provenance <- "declared_synthetic_walkthrough_v2"
 
 labels <- c(
   source_person_id = "Source person identifier",
@@ -224,41 +214,26 @@ dictionary$max[dictionary$source_column == "systolic_bp"] <- "250"
 dictionary$missing_codes[dictionary$source_column == "sex"] <- "Not recorded"
 dictionary$missing_codes[dictionary$source_column == "symptom_text"] <- "Not recorded"
 
-identifier_rows <- dictionary$source_column == "source_person_id"
-quasi_rows <- dictionary$source_column %in% c(
-  "sex", "baseline_age", "visit_date", "site"
-)
-sensitive_rows <- dictionary$source_column %in% c(
-  "systolic_bp", "outcome", "symptom_text"
-)
-
-dictionary$privacy_class <- "non_sensitive"
-dictionary$analytic_action <- "retain"
-dictionary$privacy_class[identifier_rows] <- "direct_identifier"
-dictionary$analytic_action[identifier_rows] <- "bridge"
-dictionary$privacy_class[quasi_rows] <- "quasi_identifier"
-dictionary$analytic_action[quasi_rows] <- "retain_restricted"
-dictionary$privacy_class[sensitive_rows] <- "sensitive"
-dictionary$analytic_action[sensitive_rows] <- "retain_restricted"
-
 dictionary$catalog_name[dictionary$source_column == "sex"] <- "sex"
 dictionary$catalog_name[dictionary$source_column == "cohort_group"] <- "cohort_group"
 dictionary$catalog_name[dictionary$source_column == "outcome"] <- "outcome"
 dictionary$catalog_name[dictionary$source_column == "site"] <- "site"
 
-# Profile only fields approved for value counting in this synthetic database.
-dictionary$profile_catalogue <- dictionary$source_column %in% c(
-  "cohort_group", "outcome"
-)
+# Profile only explicitly selected fields in this synthetic database.
+catalogue_columns <- dictionary[
+  dictionary$source_column %in% c("cohort_group", "outcome"),
+  c("source_schema", "source_table", "source_column")
+]
 catalogue_profile <- epi_db_catalogue_profile(
   con,
   dictionary,
+  columns = catalogue_columns,
   max_levels = 5L
 )
 catalogue_profile$values
 catalogue_profile$missing
 
-# Catalogue meaning comes from the known fixture contract, not from guessing at the observed profile. PostgreSQL NULL counts are reviewed separately; missingness is explicit for the synthetic sex field.
+# Catalogue meaning comes from the known fixture contract, not from guessing at the observed profile. PostgreSQL NULL counts are reported separately; missingness is explicit for the synthetic sex field.
 catalogues <- data.frame(
   catalog_name = c(
     "sex", "sex", "sex",
@@ -285,8 +260,7 @@ catalogues <- data.frame(
     FALSE, FALSE,
     FALSE, FALSE, FALSE
   ),
-  provenance = "reviewed_synthetic_walkthrough_v1",
-  validation_status = "confirmed",
+  provenance = "declared_synthetic_walkthrough_v2",
   stringsAsFactors = FALSE
 )
 epi_eda_dictionary_validate(dictionary, catalogues)
@@ -304,6 +278,7 @@ linkage_draft <- epi_sec_linkage_scaffold(
 linkage_draft$tables
 
 linkage_tables <- linkage_draft$tables
+linkage_tables$id_column <- "source_person_id"
 linkage_tables$identity_namespace <- "synthetic_person"
 linkage_tables$can_enrol <- linkage_tables$source_table == "participants"
 linkage_tables$one_row_per_entity <- linkage_tables$source_table == "participants"
@@ -314,6 +289,24 @@ linkage_tables$destination_table <- paste0(
 linkage_tables$provenance <- "reviewed_synthetic_walkthrough_v1"
 linkage_tables$validation_status <- "confirmed"
 
+linkage_columns <- linkage_draft$columns
+linkage_columns$privacy_class <- "non_sensitive"
+linkage_columns$analytic_action <- "retain"
+identifier_policy <- linkage_columns$source_column == "source_person_id"
+quasi_policy <- linkage_columns$source_column %in% c(
+  "sex", "baseline_age", "visit_date", "site"
+)
+sensitive_policy <- linkage_columns$source_column %in% c(
+  "systolic_bp", "outcome", "symptom_text"
+)
+linkage_columns$privacy_class[identifier_policy] <- "direct_identifier"
+linkage_columns$analytic_action[identifier_policy] <- "bridge"
+linkage_columns$privacy_class[quasi_policy] <- "quasi_identifier"
+linkage_columns$analytic_action[quasi_policy] <- "retain_restricted"
+linkage_columns$privacy_class[sensitive_policy] <- "sensitive"
+linkage_columns$analytic_action[sensitive_policy] <- "retain_restricted"
+linkage_columns$validation_status <- "confirmed"
+
 record_keys <- data.frame(
   source_schema = source_schema,
   source_table = "visits",
@@ -323,6 +316,7 @@ record_keys <- data.frame(
 )
 linkage <- epi_sec_linkage_spec(
   tables = linkage_tables,
+  columns = linkage_columns,
   record_keys = record_keys
 )
 
@@ -429,73 +423,16 @@ database_bundle$status
 database_bundle$manifest
 database_bundle$identifier_qa
 
-# 8. Create a Table 1 and report from the explicitly synthetic output ----------
+# episcout creates the outputs explicitly requested by the analyst and does
+# not decide whether they may be shared. PostgreSQL HTML rendering remains a
+# separate in-memory workflow; this example ends at the owned database bundle.
 
-# This row-level extraction is used only because the fixture is entirely synthetic. Real pseudonymised data remain restricted personal data; prefer the aggregate database bundle unless a separate approved extraction is required.
-analysis_visits <- DBI::dbReadTable(
-  con,
-  DBI::Id(schema = output_schema, table = visits_table)
-)
-analysis_visits <- analysis_visits[
-  order(analysis_visits$entity_token, analysis_visits$visit_number), ,
-  drop = FALSE
-]
+# 8. Reconcile outputs, disconnect and optionally remove disposable schemas ----
 
-preparation_audit <- epi_eda_prepare(
-  analysis_visits,
-  visits_spec,
-  mode = "audit"
-)
-preparation_audit$audit
-
-prepared_visits <- epi_eda_prepare(
-  analysis_visits,
-  visits_spec,
-  mode = "apply"
-)
-stopifnot(prepared_visits$metadata$overall_status == "prepared")
-
-stratified <- epi_eda_profile_stratified(
-  prepared_visits$data,
-  visits_spec,
-  strata = "cohort_group"
-)
-table1 <- epi_eda_table1(stratified)
-stratified$groups
-table1
-
-# The lower-level helpers remain useful after the reviewed workflow. Spread the synthetic visits to a wide view and inspect a conventional numeric summary.
-wide_parts <- epi_clean_spread_repeated(
-  prepared_visits$data[c(
-    "entity_token", "visit_number", "systolic_bp", "outcome"
-  )],
-  rep_col = "visit_number",
-  id_col_num = 1L
-)
-wide_visits <- epi_clean_merge_nested_dfs(
-  wide_parts,
-  id_col = "entity_token"
-)
-epi_head_and_tail(wide_visits, rows = 2, cols = 6)
-epi_stats_numeric(prepared_visits$data$systolic_bp)
-
-table_path <- file.path(output_root, "table1.tsv")
-epi_write(table1, table_path)
-
-report_dir <- file.path(output_root, "html-report")
-dir.create(report_dir, showWarnings = FALSE)
-report_path <- epi_eda_render_report(
-  data = prepared_visits$data,
-  spec = visits_spec,
-  output_dir = report_dir,
-  quiet = TRUE
-)
-report_path
-
-# 9. Reconcile outputs, disconnect and optionally remove disposable schemas ----
-
-stopifnot(file.exists(report_path))
-stopifnot(file.exists(table_path))
+stopifnot(identical(
+  names(database_bundle$manifest),
+  c("artifact", "type", "path", "status", "checksum_md5")
+))
 stopifnot(database_bundle$metadata$status == "complete")
 
 cat("\nWalkthrough schemas:\n", paste(walkthrough_schemas, collapse = "\n"), "\n")
@@ -517,4 +454,4 @@ if (cleanup_schemas) {
 
 DBI::dbDisconnect(con)
 
-cat("\nComplete. Open the HTML report shown above in a web browser.\n")
+cat("\nComplete. Inspect the manifest-owned PostgreSQL EDA bundle shown above.\n")

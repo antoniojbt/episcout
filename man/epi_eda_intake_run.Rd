@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda_intake.R
 \name{epi_eda_intake_run}
 \alias{epi_eda_intake_run}
-\title{Run a stage-gated data intake-to-report workflow}
+\title{Run a data intake-to-report workflow}
 \usage{
 epi_eda_intake_run(
   data,
@@ -12,15 +12,19 @@ epi_eda_intake_run(
   strata = NULL,
   render = TRUE,
   overwrite = FALSE,
-  source_id = NULL
+  source_id = NULL,
+  maps = FALSE,
+  map_vars = character(),
+  max_map_points = 10000L
 )
 }
 \arguments{
 \item{data}{An in-memory data frame. Use \code{\link[=epi_read]{epi_read()}} before this function for
 supported delimited files.}
 
-\item{spec}{\code{NULL}, a reviewed EDA specification data frame, or a CSV path
-accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}. \code{NULL} writes a scaffold and stops for review.}
+\item{spec}{\code{NULL}, an EDA specification data frame, or a CSV path accepted
+by \code{\link[=epi_eda_spec]{epi_eda_spec()}}. \code{NULL} generates, saves, and uses a lean semantic
+dictionary based on storage-derived types.}
 
 \item{output_dir}{Directory for the workflow-owned report bundle. It is
 created when absent.}
@@ -38,26 +42,32 @@ directory may be replaced. Unrelated files are never removed.}
 
 \item{source_id}{Optional non-sensitive source identifier. Absolute paths are
 rejected and no source identifier is inferred from the environment.}
+
+\item{maps}{Whether to create one geometry-only point map for every declared
+coordinate pair.}
+
+\item{map_vars}{Unique declared variables for additional thematic maps.}
+
+\item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
 }
 \value{
 An \code{epi_eda_intake} list with fixed components \code{status}, \code{stage},
 \code{output_dir}, \code{manifest}, \code{input}, \code{spec}, \code{schema_before}, \code{schema_after},
-\code{preparation_audit}, \code{missing}, \code{geo}, \code{summary}, \code{stratified}, \code{table1}, \code{report},
-\code{messages}, and \code{metadata}.
-Status is one of \code{review_required}, \code{blocked}, \code{audit_complete}, or
-\code{complete}. Manifest paths and the report path are relative to \code{output_dir}.
+\code{preparation_audit}, \code{missing}, \code{geo}, \code{maps}, \code{map_inventory}, \code{summary},
+\code{stratified}, \code{table1}, \code{report}, \code{messages}, and \code{metadata}.
+Status is one of \code{blocked}, \code{audit_complete}, or \code{complete}. Manifest paths
+and the report path are relative to \code{output_dir}.
 }
 \description{
-Compose specification scaffolding, reviewed preparation, canonical summaries,
-optional stratified summaries, and an aggregate-only report bundle. Expected
-review gates return an object with a non-complete status instead of throwing
-an error. Invalid function arguments and unsafe output collisions remain
-errors.
+Compose semantic specification scaffolding, preparation, canonical summaries,
+optional stratified summaries, and a report bundle. Invalid function
+arguments and unsafe output collisions are errors; factual incompatibilities
+return a blocked result.
 }
 \details{
-The bundle never writes source or prepared row-level data, row
+The bundle never writes a source or prepared row-level table, row
 previews, raw free-text examples, identifier values, or pseudonymisation
-bridge tables. Specification files can contain reviewed level and missing
-code metadata and are marked accordingly in the manifest. Summary outputs
-are not disclosure-controlled and require review before sharing.
+bridge tables. Explicitly requested maps can represent individual point
+locations and thematic values. episcout creates the outputs explicitly
+requested by the analyst and does not decide whether they may be shared.
 }

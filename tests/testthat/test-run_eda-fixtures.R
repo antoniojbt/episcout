@@ -7,7 +7,10 @@ fixture_dir <- file.path("fixtures", "blood_storage")
 data_path <- file.path(fixture_dir, "blood_storage.csv")
 spec_path <- file.path(fixture_dir, "blood_storage_spec.csv")
 
-expected_components <- c("metadata", "schema", "missing", "geo", "summaries", "plots")
+expected_components <- c(
+  "metadata", "schema", "missing", "geo", "summaries", "plots",
+  "maps", "map_inventory"
+)
 
 test_that("epi_eda_run returns expected components for real fixture data", {
   data <- read.csv(data_path, check.names = FALSE)
@@ -23,6 +26,8 @@ test_that("epi_eda_run returns expected components for real fixture data", {
   expect_s3_class(observed$geo, "data.frame")
   expect_type(observed$summaries, "list")
   expect_type(observed$plots, "list")
+  expect_type(observed$maps, "list")
+  expect_s3_class(observed$map_inventory, "data.frame")
 })
 
 test_that("epi_eda_run real-data workflow matches component functions", {

@@ -2,14 +2,17 @@
 % Please edit documentation in R/eda_dictionary.R
 \name{epi_db_catalogue_profile}
 \alias{epi_db_catalogue_profile}
-\title{Profile approved PostgreSQL catalogue columns}
+\title{Profile explicitly selected PostgreSQL catalogue columns}
 \usage{
-epi_db_catalogue_profile(con, dictionary, max_levels = 50)
+epi_db_catalogue_profile(con, dictionary, columns, max_levels = 50)
 }
 \arguments{
 \item{con}{An open DBI connection created with RPostgres.}
 
 \item{dictionary}{A validated extended dictionary.}
+
+\item{columns}{A data frame containing exactly \code{source_schema},
+\code{source_table} and \code{source_column} keys.}
 
 \item{max_levels}{Maximum distinct non-missing values allowed for each
 profiled column.}
@@ -23,15 +26,14 @@ rows but still has one \code{missing} row. When no dictionary row is selected,
 both components are typed zero-row data frames.
 }
 \description{
-Return value counts only for active dictionary rows explicitly marked with
-\code{profile_catalogue = TRUE}. Direct identifiers, quasi-identifiers,
-unclassified fields and columns exceeding \code{max_levels} are rejected before
-value counts are returned.
+Return bounded value counts for an explicit metadata-only selection of active
+dictionary columns.
 }
 \details{
 \code{max_levels} bounds only rows in \code{values}; PostgreSQL \code{NULL} is
 counted separately and is never returned as a catalogue \code{source_value}.
 This makes \code{values} directly usable when drafting the normalised catalogue
 contract, but does not classify any observed value as a missing code.
-Review the \code{missing} component separately.
+The selector requests technical profiling only and makes no privacy,
+approval or sharing decision.
 }

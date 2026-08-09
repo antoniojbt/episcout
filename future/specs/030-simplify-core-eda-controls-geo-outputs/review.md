@@ -21,7 +21,18 @@ Confirm before activation:
 
 ## Implementation Review
 
-Pending. Record focused, live-database, render, lint, local, CRAN, CI and review-thread evidence here before handoff.
+Implementation evidence at the pre-PR branch head:
+
+- Full offline suite: 2,134 passed, 24 expected environment-gated skips, no failures or warnings.
+- Live PostgreSQL 18 suites: 388 passed across coordinate QA, map collection, catalogue profiling, snapshot/parity, identity-universe and pseudonymisation cases, with no skips.
+- Changed R files parse and lint clean; `git diff --check` passes.
+- `scripts/check-local.sh`: 0 errors, 0 warnings and one reconciled note caused by its test phase creating the ignored top-level `Rplots.pdf` before its build phase. The generated file was removed after the run.
+- `scripts/check-cran.sh`: 0 errors, 0 warnings and the existing new-submission/remote-URL note (two Stack Overflow links returned HTTP 403); source, tests, vignettes, PDF manual and HTML manual pass.
+- Online and offline workflow-state checks pass against `antoniojbt/episcout@master`.
+- Representative geometry, numeric, categorical and missing-theme maps were visually inspected. A report containing a failed declared pair showed stable `incomplete_pairs` inventory rows with no files, and an empty report showed `no_rows` plus “No maps were created.” Repeated SVG renders were byte-identical, manifest MD5 values matched the files and HTML embedded only created map paths.
+- Generated roxygen, all affected vignettes, both report paths and the replacement database walkthrough build successfully.
+
+Pending: stacked draft PR publication, required CI and review-thread inspection.
 
 ## Closeout Review
 

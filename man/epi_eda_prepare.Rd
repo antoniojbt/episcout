@@ -2,7 +2,7 @@
 % Please edit documentation in R/eda_prepare.R
 \name{epi_eda_prepare}
 \alias{epi_eda_prepare}
-\title{Prepare data using a reviewed EDA specification}
+\title{Prepare data using an EDA specification}
 \usage{
 epi_eda_prepare(
   data,
@@ -16,8 +16,7 @@ epi_eda_prepare(
 \item{data}{A data frame to assess or prepare.}
 
 \item{spec}{An EDA specification data frame or CSV path accepted by
-\code{\link[=epi_eda_spec]{epi_eda_spec()}}. If scaffold evidence includes \code{review_status}, every row
-must be \code{reviewed} before apply mode can proceed.}
+\code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
 \item{mode}{Either \code{"audit"} (the default) or \code{"apply"}.}
 
@@ -43,7 +42,7 @@ after-schema.
 Character numeric parsing is deliberately unsupported because no
 locale or decimal-mark contract is present. Character dates and datetimes
 use strict ISO forms. Offset or \code{Z} datetimes are normalised to UTC; local
-datetimes require a valid reviewed \code{timezone} field supported by \code{clock}'s
+datetimes require a valid declared \code{timezone} field supported by \code{clock}'s
 packaged IANA timezone database. Ambiguous, nonexistent, unsupported or
 otherwise unclassifiable local wall times block preparation without exposing
 observed values. Optional \code{min} and \code{max} fields are descriptive metadata,

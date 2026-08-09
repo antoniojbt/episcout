@@ -1,4 +1,4 @@
-context("reviewed coordinate-pair EDA")
+context("declared coordinate-pair EDA")
 
 library(testthat)
 library(episcout)
@@ -37,7 +37,7 @@ test_that("coordinate metadata validates exact reviewed pairs", {
       complete_pairs = "integer", missing_x = "integer",
       missing_y = "integer", both_missing = "integer",
       non_finite = "integer", range_failures = "integer",
-      eligible = "logical", status = "character", reason = "character"
+      map_ready = "logical", status = "character", reason = "character"
     )
   )
 
@@ -116,7 +116,7 @@ test_that("data-frame coordinate QA returns independent aggregate counts", {
   expect_identical(names(observed), c(
     "geo_pair", "x_name", "y_name", "geo_crs", "crs_epsg", "n",
     "complete_pairs", "missing_x", "missing_y", "both_missing",
-    "non_finite", "range_failures", "eligible", "status", "reason"
+    "non_finite", "range_failures", "map_ready", "status", "reason"
   ))
   expect_identical(observed$geo_pair, "reviewed_pair")
   expect_identical(observed$x_name, "x_coord")
@@ -129,30 +129,30 @@ test_that("data-frame coordinate QA returns independent aggregate counts", {
   expect_identical(observed$both_missing, 1L)
   expect_identical(observed$non_finite, 2L)
   expect_identical(observed$range_failures, 1L)
-  expect_false(observed$eligible)
-  expect_identical(observed$status, "not_eligible")
+  expect_false(observed$map_ready)
+  expect_identical(observed$status, "not_ready")
   expect_identical(
     observed$reason,
-    "incomplete_pairs;non_finite_coordinates;reviewed_crs_range_failure"
+    "incomplete_pairs;non_finite_coordinates;declared_crs_range_failure"
   )
   expect_identical(data, original)
 })
 
-test_that("eligibility, zero rows and non-geographic ranges are stable", {
-  eligible <- epi_eda_profile_geo(
+test_that("map readiness, zero rows and non-geographic ranges are stable", {
+  ready <- epi_eda_profile_geo(
     data.frame(x_coord = c(-180, 180), y_coord = c(-90, 90), value = 1:2),
     geo_spec()
   )
-  expect_true(eligible$eligible)
-  expect_identical(eligible$status, "eligible")
-  expect_identical(eligible$reason, "all_rows_eligible")
+  expect_true(ready$map_ready)
+  expect_identical(ready$status, "ready")
+  expect_identical(ready$reason, "all_rows_map_ready")
 
   zero <- epi_eda_profile_geo(
     data.frame(x_coord = numeric(), y_coord = numeric(), value = numeric()),
     geo_spec()
   )
   expect_identical(zero$n, 0L)
-  expect_false(zero$eligible)
+  expect_false(zero$map_ready)
   expect_identical(zero$reason, "no_rows")
 
   projected <- epi_eda_profile_geo(
@@ -160,7 +160,7 @@ test_that("eligibility, zero rows and non-geographic ranges are stable", {
     geo_spec("3857")
   )
   expect_identical(projected$range_failures, 0L)
-  expect_true(projected$eligible)
+  expect_true(projected$map_ready)
 })
 
 test_that("multiple reviewed pairs retain specification order", {
@@ -180,7 +180,7 @@ test_that("multiple reviewed pairs retain specification order", {
   observed <- epi_eda_profile_geo(data, spec)
 
   expect_identical(observed$geo_pair, c("reviewed_pair", "second_pair"))
-  expect_true(all(observed$eligible))
+  expect_true(all(observed$map_ready))
   expect_silent(getFromNamespace("eda_geo_reconcile", "episcout")(observed, 1L))
 
   bad_partition <- observed
@@ -190,7 +190,7 @@ test_that("multiple reviewed pairs retain specification order", {
     "did not reconcile"
   )
   bad_status <- observed
-  bad_status$eligible[[1]] <- FALSE
+  bad_status$map_ready[[1]] <- FALSE
   expect_error(
     getFromNamespace("eda_geo_reconcile", "episcout")(bad_status, 1L),
     "did not reconcile"
@@ -216,7 +216,7 @@ test_that("coordinate profiling fails without reproducing values", {
   expect_false(grepl(private, conditionMessage(condition), fixed = TRUE))
 })
 
-test_that("ordinary workflows publish aggregate geo QA without coordinates", {
+test_that("ordinary workflows publish declared summaries and no maps by default", {
   private_x <- 12.34567890123
   private_y <- 45.67890123456
   data <- data.frame(x_coord = private_x, y_coord = private_y, value = 7)
@@ -225,35 +225,26 @@ test_that("ordinary workflows publish aggregate geo QA without coordinates", {
   simple_dir <- tempfile("eda-geo-run-")
   dir.create(simple_dir)
   simple <- epi_eda_run(data, spec, output_dir = simple_dir)
-  expect_identical(simple$geo$status, "eligible")
-  expect_identical(simple$summaries$variables$status[1:2], c("skipped", "skipped"))
-  expect_null(simple$plots$x_coord)
-  expect_null(simple$plots$y_coord)
+  expect_identical(simple$geo$status, "ready")
+  expect_identical(simple$summaries$variables$status[1:2], c("summarised", "summarised"))
+  expect_s3_class(simple$plots$x_coord, "ggplot")
+  expect_s3_class(simple$plots$y_coord, "ggplot")
+  expect_length(simple$maps, 0L)
+  expect_equal(nrow(simple$map_inventory), 0L)
   expect_true(file.exists(file.path(simple_dir, "geo_qa.csv")))
+  expect_false(dir.exists(file.path(simple_dir, "maps")))
 
   intake_dir <- tempfile("eda-geo-intake-")
   intake <- epi_eda_intake_run(
     data, spec, intake_dir, prepare = "none", render = TRUE
   )
   expect_identical(intake$status, "complete")
-  expect_identical(intake$geo$status, "eligible")
+  expect_identical(intake$geo$status, "ready")
   expect_identical(
     intake$manifest$status[intake$manifest$artifact == "geo_qa"],
     "created"
   )
-
-  forbidden <- c(
-    format(private_x, digits = 14), format(private_y, digits = 14),
-    "POINT (", "POLYGON (("
-  )
-  returned <- rawToChar(serialize(list(simple = simple, intake = intake), NULL, ascii = TRUE))
-  files <- c(
-    list.files(simple_dir, full.names = TRUE),
-    list.files(intake_dir, full.names = TRUE)
-  )
-  bytes <- paste(vapply(files, function(path) {
-    paste(readLines(path, warn = FALSE), collapse = "\n")
-  }, character(1)), collapse = "\n")
-  expect_false(any(vapply(forbidden, grepl, logical(1), x = returned, fixed = TRUE)))
-  expect_false(any(vapply(forbidden, grepl, logical(1), x = bytes, fixed = TRUE)))
+  expect_length(intake$maps, 0L)
+  expect_equal(nrow(intake$map_inventory), 0L)
+  expect_false(dir.exists(file.path(intake_dir, "maps")))
 })

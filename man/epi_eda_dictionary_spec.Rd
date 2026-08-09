@@ -11,7 +11,7 @@ epi_eda_dictionary_spec(dictionary, table, catalogues = NULL)
 
 \item{table}{A table name or a \code{schema.table} qualified name.}
 
-\item{catalogues}{Optional normalised catalogue data frame with \code{catalog_name}, \code{source_value}, \code{label}, \code{display_order}, \code{is_missing}, \code{provenance} and \code{validation_status}.}
+\item{catalogues}{Optional normalised catalogue data frame with \code{catalog_name}, \code{source_value}, \code{label}, \code{display_order}, \code{is_missing} and \code{provenance}.}
 }
 \value{
 A validated episcout EDA specification data frame.
@@ -20,7 +20,7 @@ A validated episcout EDA specification data frame.
 Select one active source table from a reusable dictionary and produce a specification accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}. Catalogue values are encoded into \code{levels} and \code{missing_codes} in display order.
 }
 \details{
-A pseudonymisation result's \code{output_dictionary} and \code{output_catalogues} can be passed here after the restricted output has been reviewed. The generated token is analytically restricted; this handoff does not make the data anonymous or disclosure-safe.
+A pseudonymisation result's semantic \code{output_dictionary} and \code{output_catalogues} can be passed here directly.
 }
 \seealso{
 \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_dictionary_validate]{epi_eda_dictionary_validate()}}

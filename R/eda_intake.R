@@ -1,15 +1,15 @@
-#' Run a stage-gated data intake-to-report workflow
+#' Run a data intake-to-report workflow
 #'
-#' Compose specification scaffolding, reviewed preparation, canonical summaries,
-#' optional stratified summaries, and an aggregate-only report bundle. Expected
-#' review gates return an object with a non-complete status instead of throwing
-#' an error. Invalid function arguments and unsafe output collisions remain
-#' errors.
+#' Compose semantic specification scaffolding, preparation, canonical summaries,
+#' optional stratified summaries, and a report bundle. Invalid function
+#' arguments and unsafe output collisions are errors; factual incompatibilities
+#' return a blocked result.
 #'
 #' @param data An in-memory data frame. Use [epi_read()] before this function for
 #'   supported delimited files.
-#' @param spec `NULL`, a reviewed EDA specification data frame, or a CSV path
-#'   accepted by [epi_eda_spec()]. `NULL` writes a scaffold and stops for review.
+#' @param spec `NULL`, an EDA specification data frame, or a CSV path accepted
+#'   by [epi_eda_spec()]. `NULL` generates, saves, and uses a lean semantic
+#'   dictionary based on storage-derived types.
 #' @param output_dir Directory for the workflow-owned report bundle. It is
 #'   created when absent.
 #' @param prepare One of `"none"`, `"audit"`, or `"apply"`. `"none"` proceeds
@@ -21,19 +21,23 @@
 #'   directory may be replaced. Unrelated files are never removed.
 #' @param source_id Optional non-sensitive source identifier. Absolute paths are
 #'   rejected and no source identifier is inferred from the environment.
+#' @param maps Whether to create one geometry-only point map for every declared
+#'   coordinate pair.
+#' @param map_vars Unique declared variables for additional thematic maps.
+#' @param max_map_points Inclusive maximum number of rows allowed for mapping.
 #'
 #' @return An `epi_eda_intake` list with fixed components `status`, `stage`,
 #'   `output_dir`, `manifest`, `input`, `spec`, `schema_before`, `schema_after`,
-#'   `preparation_audit`, `missing`, `geo`, `summary`, `stratified`, `table1`, `report`,
-#'   `messages`, and `metadata`.
-#'   Status is one of `review_required`, `blocked`, `audit_complete`, or
-#'   `complete`. Manifest paths and the report path are relative to `output_dir`.
+#'   `preparation_audit`, `missing`, `geo`, `maps`, `map_inventory`, `summary`,
+#'   `stratified`, `table1`, `report`, `messages`, and `metadata`.
+#'   Status is one of `blocked`, `audit_complete`, or `complete`. Manifest paths
+#'   and the report path are relative to `output_dir`.
 #'
-#' @details The bundle never writes source or prepared row-level data, row
+#' @details The bundle never writes a source or prepared row-level table, row
 #'   previews, raw free-text examples, identifier values, or pseudonymisation
-#'   bridge tables. Specification files can contain reviewed level and missing
-#'   code metadata and are marked accordingly in the manifest. Summary outputs
-#'   are not disclosure-controlled and require review before sharing.
+#'   bridge tables. Explicitly requested maps can represent individual point
+#'   locations and thematic values. episcout creates the outputs explicitly
+#'   requested by the analyst and does not decide whether they may be shared.
 #'
 #' @export
 epi_eda_intake_run <- function(data,
@@ -43,8 +47,12 @@ epi_eda_intake_run <- function(data,
                                strata = NULL,
                                render = TRUE,
                                overwrite = FALSE,
-                               source_id = NULL) {
+                               source_id = NULL,
+                               maps = FALSE,
+                               map_vars = character(),
+                               max_map_points = 10000L) {
   prepare <- match.arg(prepare)
+  map_values <- eda_map_option_values(maps, map_vars, max_map_points)
   intake_validate_data(data)
   strata <- intake_validate_strata(strata)
   render <- intake_validate_flag(render, "render")
@@ -61,19 +69,21 @@ epi_eda_intake_run <- function(data,
   state <- intake_state(bundle$staging_dir, bundle$output_dir)
   started_at <- intake_timestamp()
   input <- intake_metadata(
-    data, source_id, prepare, strata, render, overwrite, started_at
+    data, source_id, prepare, strata, render, overwrite, started_at,
+    map_values
   )
   messages <- intake_empty_messages()
   result <- intake_empty_result(bundle$output_dir, state, input, render)
 
   intake_write_csv(state, "intake_metadata", input)
 
-  if (is.null(spec)) {
-    scaffold <- tryCatch(epi_eda_spec_scaffold(data), error = identity)
-    if (inherits(scaffold, "error")) {
+  generated_spec <- is.null(spec)
+  if (generated_spec) {
+    parsed_spec <- tryCatch(epi_eda_spec_scaffold(data), error = identity)
+    if (inherits(parsed_spec, "error")) {
       messages <- intake_add_message(
         messages, "intake", "blocker", "spec_scaffold",
-        conditionMessage(scaffold),
+        conditionMessage(parsed_spec),
         "Resolve the reported source structure before generating a specification scaffold."
       )
       result$status <- "blocked"
@@ -81,59 +91,35 @@ epi_eda_intake_run <- function(data,
       result$spec <- intake_spec_state("invalid", NULL, "generated", "")
       return(intake_finish(result, state, input, messages, render))
     }
-    intake_write_csv(state, "spec_scaffold", scaffold)
-    intake_write_text(state, "review_guide", intake_review_guide())
-    messages <- intake_add_message(
-      messages, "intake", "warning", "specification",
-      "The generated specification is a scaffold and has not been reviewed.",
-      "Review every specification field, set each review_status to reviewed, and rerun with the reviewed specification."
-    )
-    result$status <- "review_required"
-    result$stage <- "intake"
-    result$spec <- intake_spec_state(
-      "review_required", scaffold, "generated", intake_spec_fingerprint(scaffold)
-    )
-    return(intake_finish(
-      result, state, input, messages, render,
-      intake_spec_fingerprint(scaffold)
-    ))
-  }
-
-  parsed_spec <- tryCatch(epi_eda_spec(spec), error = identity)
-  if (inherits(parsed_spec, "error")) {
-    messages <- intake_add_message(
-      messages, "specification", "blocker", "specification",
-      "The supplied specification did not satisfy the EDA specification contract.",
-      "Correct the specification contract or CSV syntax and rerun the workflow."
-    )
-    result$status <- "blocked"
-    result$stage <- "intake"
-    result$spec <- intake_spec_state(
-      "invalid", NULL, intake_spec_source(spec), "", intake_spec_source_name(spec)
-    )
-    return(intake_finish(result, state, input, messages, render))
+  } else {
+    parsed_spec <- tryCatch(epi_eda_spec(spec), error = identity)
+    if (inherits(parsed_spec, "error")) {
+      messages <- intake_add_message(
+        messages, "specification", "blocker", "specification",
+        conditionMessage(parsed_spec),
+        "Migrate the specification to the lean semantic schema and rerun the workflow."
+      )
+      result$status <- "blocked"
+      result$stage <- "intake"
+      result$spec <- intake_spec_state(
+        "invalid", NULL, intake_spec_source(spec), "", intake_spec_source_name(spec)
+      )
+      return(intake_finish(result, state, input, messages, render))
+    }
   }
 
   fingerprint <- intake_spec_fingerprint(parsed_spec)
-  review_state <- if (is_eda_scaffold_spec(parsed_spec)) {
-    reviewed <- !is.na(parsed_spec$review_status) &
-      as.character(parsed_spec$review_status) == "reviewed"
-    if (all(reviewed)) "reviewed" else "review_required"
-  } else {
-    "caller_asserted"
-  }
-  result$spec <- intake_spec_state(
-    review_state, parsed_spec, intake_spec_source(spec), fingerprint,
-    intake_spec_source_name(spec)
+  map_options <- eda_map_options(
+    parsed_spec, maps, map_vars, max_map_points
   )
-  if (review_state == "caller_asserted") {
-    messages <- intake_add_message(
-      messages, "specification", "warning", "specification",
-      "The supplied specification has no scaffold review evidence and is treated as caller-asserted.",
-      "Confirm that scientific roles, types, levels, missing codes and privacy handling were reviewed before analysis."
-    )
-  }
-  intake_write_csv(state, "spec_reviewed", parsed_spec)
+  eda_validate_map_columns(names(data), map_options)
+  spec_state <- if (generated_spec) "generated" else "supplied"
+  spec_source <- if (generated_spec) "generated" else intake_spec_source(spec)
+  result$spec <- intake_spec_state(
+    spec_state, parsed_spec, spec_source, fingerprint,
+    if (generated_spec) NA_character_ else intake_spec_source_name(spec)
+  )
+  intake_write_csv(state, "specification", parsed_spec)
 
   audit_result <- tryCatch(
     epi_eda_prepare(data, parsed_spec, mode = "audit"),
@@ -143,7 +129,7 @@ epi_eda_intake_run <- function(data,
     messages <- intake_add_message(
       messages, "audit", "blocker", "preparation_audit",
       conditionMessage(audit_result),
-      "Correct the data or reviewed specification before rerunning the audit."
+      "Correct the data or specification before rerunning the audit."
     )
     result$status <- "blocked"
     result$stage <- "intake"
@@ -217,7 +203,6 @@ epi_eda_intake_run <- function(data,
   }
 
   analysis_frame <- as.data.frame(analysis_data, stringsAsFactors = FALSE)
-  exclusions <- eda_summary_exclusions(analysis_frame, parsed_spec)
   missing <- epi_eda_profile_missing(analysis_frame, parsed_spec)
   result$missing <- missing
   intake_write_csv(state, "missing", missing)
@@ -229,7 +214,7 @@ epi_eda_intake_run <- function(data,
     messages <- intake_add_message(
       messages, "analysis", "blocker", "geo_qa",
       conditionMessage(geo),
-      "Resolve the reviewed coordinate-pair contract before rerunning the workflow."
+      "Resolve the declared coordinate-pair contract before rerunning the workflow."
     )
     result$status <- "blocked"
     return(intake_finish(result, state, input, messages, render, fingerprint))
@@ -237,6 +222,16 @@ epi_eda_intake_run <- function(data,
   eda_geo_reconcile(geo, nrow(analysis_frame))
   result$geo <- geo
   intake_write_csv(state, "geo_qa", geo)
+  map_result <- eda_data_frame_maps(
+    analysis_frame, parsed_spec, geo, map_options
+  )
+  result$maps <- map_result$maps
+  result$map_inventory <- map_result$map_inventory
+  intake_write_csv(state, "map_inventory", result$map_inventory)
+  eda_write_maps(
+    result$maps, result$map_inventory, state$output_dir, "intake EDA"
+  )
+  intake_register_map_artifacts(state, result$map_inventory)
   summaries <- tryCatch(
     epi_eda_profile_summaries(analysis_frame, parsed_spec),
     error = identity
@@ -250,9 +245,6 @@ epi_eda_intake_run <- function(data,
     result$status <- "blocked"
     return(intake_finish(result, state, input, messages, render, fingerprint))
   }
-  summaries <- eda_apply_summary_exclusions(
-    summaries, analysis_frame, parsed_spec, exclusions
-  )
   reconciliation <- intake_reconcile_canonical(
     summaries, missing, analysis_frame, parsed_spec
   )
@@ -269,37 +261,9 @@ epi_eda_intake_run <- function(data,
   for (name in names(result$summary)) {
     intake_write_csv(state, paste0("summary_", name), result$summary[[name]])
   }
-  identifier_names <- names(exclusions)
-  if (length(identifier_names) > 0L) {
-    messages <- intake_add_message(
-      messages, "analysis", "warning", paste(identifier_names, collapse = ", "),
-      "Explicit identifier-role variables were excluded from analytical missingness and type-specific summaries.",
-      "Review identifier handling separately; no observed values read from those data columns entered analytical artifacts."
-    )
-  }
-  if (nrow(geo) > 0L) {
-    messages <- intake_add_message(
-      messages, "analysis", "warning", "geo_qa",
-      "Coordinate-pair eligibility is aggregate structural QA, not disclosure approval or scientific validation.",
-      "Use feature-level conversion or mapping only after separate privacy and scientific review."
-    )
-  }
   result$stage <- "canonical_summary"
 
   if (!is.null(strata)) {
-    strata_role <- trimws(tolower(as.character(
-      parsed_spec$role[match(strata, parsed_spec$name)]
-    )))
-    if (length(strata_role) == 1L && !is.na(strata_role) &&
-          strata_role %in% c("id", "identifier")) {
-      messages <- intake_add_message(
-        messages, "analysis", "blocker", strata,
-        "A variable with an explicit identifier role cannot be used as an intake stratifier.",
-        "Choose a reviewed non-identifier categorical or binary stratifier."
-      )
-      result$status <- "blocked"
-      return(intake_finish(result, state, input, messages, render, fingerprint))
-    }
     stratified <- tryCatch(
       epi_eda_profile_stratified(analysis_frame, parsed_spec, strata),
       error = identity
@@ -308,7 +272,7 @@ epi_eda_intake_run <- function(data,
       messages <- intake_add_message(
         messages, "analysis", "blocker", strata,
         conditionMessage(stratified),
-        "Choose one reviewed categorical or binary stratifier and rerun."
+        "Choose one declared categorical or binary stratifier and rerun."
       )
       result$status <- "blocked"
       return(intake_finish(result, state, input, messages, render, fingerprint))
@@ -335,18 +299,13 @@ epi_eda_intake_run <- function(data,
       messages <- intake_add_message(
         messages, "analysis", "blocker", "table1.csv",
         "Table 1 could not be created from the reconciled stratified summaries.",
-        "Use the retained stratified machine components and review the Table 1 contract before rerunning."
+        "Use the retained stratified machine components to verify the Table 1 contract before rerunning."
       )
       result$status <- "blocked"
       return(intake_finish(result, state, input, messages, render, fingerprint))
     }
     result$table1 <- table1
     intake_write_csv(state, "table1", table1)
-    messages <- intake_add_message(
-      messages, "analysis", "warning", "stratified_outputs",
-      "Stratified summaries and Table 1 are not disclosure-controlled.",
-      "Review small cells and sharing risk before distributing these artifacts."
-    )
   }
 
   result$status <- "complete"
@@ -366,6 +325,8 @@ intake_empty_result <- function(output_dir, state, input, render) {
     preparation_audit = NULL,
     missing = NULL,
     geo = NULL,
+    maps = stats::setNames(vector("list", 0L), character()),
+    map_inventory = eda_map_empty_inventory(),
     summary = NULL,
     stratified = NULL,
     table1 = NULL,
@@ -559,13 +520,28 @@ intake_validate_owned_bundle <- function(output_dir, entries) {
   if (!file.exists(manifest_path) || dir.exists(manifest_path)) {
     stop("overwrite = TRUE requires a valid prior episcout intake manifest in a non-empty output_dir.", call. = FALSE)
   }
-  entry_paths <- file.path(output_dir, entries)
-  entry_links <- Sys.readlink(entry_paths)
-  if (any(file.info(entry_paths)$isdir, na.rm = TRUE) ||
-        any(!is.na(entry_links) & nzchar(entry_links))) {
-    stop("A non-empty output_dir containing directories or symbolic links cannot be overwritten safely.", call. = FALSE)
+  all_entries <- list.files(
+    output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE,
+    include.dirs = TRUE, full.names = TRUE
+  )
+  if (any(nzchar(Sys.readlink(all_entries)))) {
+    stop("A non-empty output_dir containing symbolic links cannot be overwritten safely.", call. = FALSE)
   }
-  if (!all(utils::file_test("-f", entry_paths))) {
+  info <- file.info(all_entries)
+  directories <- all_entries[!is.na(info$isdir) & info$isdir]
+  relative_directories <- substring(
+    directories, nchar(normalizePath(output_dir, winslash = "/")) + 2L
+  )
+  if (length(relative_directories) > 0L &&
+        !all(relative_directories == "maps")) {
+    stop("A non-empty output_dir contains an unowned directory and cannot be overwritten safely.", call. = FALSE)
+  }
+  files <- list.files(
+    output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE,
+    include.dirs = FALSE
+  )
+  file_paths <- file.path(output_dir, files)
+  if (!all(utils::file_test("-f", file_paths))) {
     stop("A non-empty output_dir containing non-regular files cannot be overwritten safely.", call. = FALSE)
   }
   prior <- tryCatch(
@@ -576,14 +552,38 @@ intake_validate_owned_bundle <- function(output_dir, entries) {
     ),
     error = identity
   )
+  if (!inherits(prior, "error") && "sensitivity" %in% names(prior)) {
+    stop(
+      "The prior intake manifest uses the removed sensitivity schema; regenerate the bundle with the five-column core manifest before using overwrite = TRUE.",
+      call. = FALSE
+    )
+  }
+  static_index <- if (!inherits(prior, "error")) {
+    match(registry$artifact, prior$artifact)
+  } else {
+    rep(NA_integer_, nrow(registry))
+  }
+  dynamic <- if (!inherits(prior, "error")) {
+    !prior$artifact %in% registry$artifact
+  } else {
+    logical()
+  }
+  dynamic_valid <- length(dynamic) == 0L || all(
+    prior$type[dynamic] == "map" &
+      prior$status[dynamic] == "created" &
+      grepl("^maps/map-p[0-9]{3,}-(geometry|v[0-9]{3,})\\.svg$", prior$path[dynamic]) &
+      prior$artifact[dynamic] == sub(
+        "\\.svg$", "", sub("^maps/", "", prior$path[dynamic])
+      )
+  )
   valid <- !inherits(prior, "error") &&
     identical(names(prior), names(registry)) &&
-    identical(as.character(prior$artifact), as.character(registry$artifact)) &&
-    identical(as.character(prior$type), as.character(registry$type)) &&
-    identical(as.character(prior$path), as.character(registry$path)) &&
-    identical(
-      as.character(prior$sensitivity), as.character(registry$sensitivity)
-    ) &&
+    !anyDuplicated(prior$artifact) && !anyDuplicated(prior$path) &&
+    !anyNA(static_index) &&
+    identical(as.character(prior$artifact[static_index]), as.character(registry$artifact)) &&
+    identical(as.character(prior$type[static_index]), as.character(registry$type)) &&
+    identical(as.character(prior$path[static_index]), as.character(registry$path)) &&
+    dynamic_valid &&
     all(prior$status %in% c("created", "not_created")) &&
     identical(prior$status[prior$artifact == "manifest"], "created") &&
     identical(prior$checksum_md5[prior$artifact == "manifest"], "") &&
@@ -592,7 +592,7 @@ intake_validate_owned_bundle <- function(output_dir, entries) {
     stop("overwrite = TRUE requires a valid prior episcout intake manifest.", call. = FALSE)
   }
   expected <- sort(as.character(prior$path[prior$status == "created"]))
-  if (!identical(sort(entries), expected)) {
+  if (!identical(sort(files), expected)) {
     stop("output_dir contents do not match the prior intake manifest and cannot be overwritten safely.", call. = FALSE)
   }
   checked <- prior$artifact != "manifest" & prior$status == "created"
@@ -611,14 +611,13 @@ intake_manifest_registry <- function() {
     manifest = "manifest.csv",
     intake_metadata = "intake_metadata.csv",
     messages = "messages.csv",
-    spec_scaffold = "spec_scaffold.csv",
-    review_guide = "review_guide.md",
-    spec_reviewed = "spec_reviewed.csv",
+    specification = "specification.csv",
     schema_before = "schema_before.csv",
     schema_after = "schema_after.csv",
     preparation_audit = "preparation_audit.csv",
     missing = "missing.csv",
     geo_qa = "geo_qa.csv",
+    map_inventory = "map_inventory.csv",
     summary_variables = "summary_variables.csv",
     summary_numeric = "summary_numeric.csv",
     summary_categorical = "summary_categorical.csv",
@@ -637,25 +636,16 @@ intake_manifest_registry <- function() {
     report = "report.html"
   )
   types <- c(
-    "manifest", "metadata", "messages", "specification", "guide",
-    "specification", "schema", "schema", "audit", "missingness", "geo_qa",
+    "manifest", "metadata", "messages", "specification", "schema", "schema",
+    "audit", "missingness", "geo_qa", "map_inventory",
     rep("canonical_summary", 6L), rep("stratified_summary", 8L),
     "presentation", "report"
-  )
-  sensitivity <- c(
-    "internal_review", "internal_review", "internal_review", "specification_review",
-    "internal_review", "specification_review", "internal_review",
-    "internal_review", "internal_review", "disclosure_review",
-    "disclosure_review",
-    rep("disclosure_review", 6L), rep("disclosure_review", 8L),
-    "disclosure_review", "disclosure_review"
   )
   data.frame(
     artifact = names(paths),
     type = types,
     path = unname(paths),
     status = "not_created",
-    sensitivity = sensitivity,
     checksum_md5 = "",
     stringsAsFactors = FALSE
   )
@@ -749,6 +739,28 @@ intake_register_existing <- function(state, artifact) {
   invisible(path)
 }
 
+intake_register_map_artifacts <- function(state, inventory) {
+  created <- inventory[inventory$status == "created", , drop = FALSE]
+  if (nrow(created) == 0L) {
+    return(invisible(TRUE))
+  }
+  dynamic <- data.frame(
+    artifact = created$map_id,
+    type = "map",
+    path = created$path,
+    status = "created",
+    checksum_md5 = "",
+    stringsAsFactors = FALSE
+  )
+  if (anyDuplicated(c(state$manifest$artifact, dynamic$artifact)) ||
+        anyDuplicated(c(state$manifest$path, dynamic$path))) {
+    stop("EDA map artifacts did not have unique deterministic identifiers and paths.", call. = FALSE)
+  }
+  state$manifest <- rbind(state$manifest, dynamic)
+  intake_refresh_manifest(state)
+  invisible(TRUE)
+}
+
 intake_artifact_path <- function(state, artifact) {
   index <- match(artifact, state$manifest$artifact)
   if (is.na(index)) {
@@ -821,7 +833,7 @@ intake_audit_messages <- function(messages, audit) {
       messages, "audit", severity, as.character(row$name[[1]]),
       as.character(row$reason[[1]]),
       if (severity == "blocker") {
-        "Resolve this finding in the source data or reviewed specification before preparation."
+        "Resolve this finding in the source data or specification before preparation."
       } else {
         "Review this finding and document whether it is acceptable for the analysis."
       }
@@ -870,12 +882,14 @@ intake_metadata <- function(data,
                             strata,
                             render,
                             overwrite,
-                            started_at) {
+                            started_at,
+                            map_options) {
   rows <- data.frame(
     field = c(
       "workflow_contract", "n_rows", "n_columns", "source_id",
       "prepare", "strata", "include_missing_stratum", "render", "overwrite",
-      "spec_review_state", "spec_source", "spec_source_name", "package_version",
+      "maps", "map_vars", "max_map_points",
+      "spec_state", "spec_source", "spec_source_name", "package_version",
       "r_version", "dependency.openssl", "dependency.rmarkdown",
       "started_at_utc", "finished_at_utc", "status", "stage",
       "spec_fingerprint_sha256"
@@ -884,7 +898,9 @@ intake_metadata <- function(data,
       "intake-1", as.character(nrow(data)), as.character(ncol(data)),
       if (is.null(source_id)) "" else source_id,
       prepare, if (is.null(strata)) "" else strata,
-      "TRUE", as.character(render), as.character(overwrite), "", "", "",
+      "TRUE", as.character(render), as.character(overwrite),
+      as.character(map_options$maps), paste(map_options$map_vars, collapse = ";"),
+      as.character(map_options$max_map_points), "", "", "",
       intake_package_version(),
       paste(R.version$major, R.version$minor, sep = "."),
       intake_dependency_version("openssl"),
@@ -925,7 +941,7 @@ intake_complete_metadata <- function(input, status, stage, fingerprint, finished
 
 intake_complete_spec_metadata <- function(input, spec) {
   values <- c(
-    spec_review_state = spec$state,
+    spec_state = spec$state,
     spec_source = spec$source,
     spec_source_name = if (is.na(spec$source_name)) "" else spec$source_name
   )
@@ -939,7 +955,8 @@ intake_run_metadata <- function(input) {
   fields <- c(
     "workflow_contract", "package_version", "r_version",
     "dependency.openssl", "dependency.rmarkdown", "prepare", "strata",
-    "include_missing_stratum", "render", "overwrite", "spec_review_state",
+    "include_missing_stratum", "render", "overwrite", "maps", "map_vars",
+    "max_map_points", "spec_state",
     "spec_source", "spec_source_name", "started_at_utc", "finished_at_utc", "status",
     "stage", "spec_fingerprint_sha256"
   )
@@ -965,23 +982,6 @@ intake_timestamp <- function() {
   format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
 }
 
-intake_review_guide <- function() {
-  c(
-    "# EDA specification review required",
-    "",
-    "The generated scaffold is not approval. Review every row before preparation or analysis.",
-    "",
-    "For each variable, confirm `name`, `label`, `type`, `role`, `units`, declared `levels`, `missing_codes`, `required`, `group`, and `description`.",
-    "Coordinate fields remain blank unless a reviewer explicitly assigns one x row, one y row, a shared pair identifier and the same resolvable CRS.",
-    "Treat observed class and count fields as aggregate evidence only. `candidate_type` is a prompt for review, not a semantic decision.",
-    "Set `review_status` to `reviewed` only after resolving `review_reason`; do not add raw observations, identifiers, or free-text examples to the specification.",
-    "Column names and copied factor-level metadata may themselves be sensitive; review the scaffold before storing or sharing it.",
-    "Rerun `epi_eda_intake_run()` with the reviewed CSV and `prepare = 'audit'` before applying transformations.",
-    "",
-    "The eventual summary bundle is not disclosure-controlled or automatically de-identified. Pseudonymisation and bridge-table handling are separate explicit actions."
-  )
-}
-
 intake_reconcile_canonical <- function(summaries, missing, data, spec) {
   required <- c("variables", "numeric", "categorical", "text", "temporal", "skipped")
   if (!identical(names(summaries), required)) {
@@ -989,7 +989,7 @@ intake_reconcile_canonical <- function(summaries, missing, data, spec) {
   }
   variables <- summaries$variables
   if (!identical(as.character(variables$name), as.character(spec$name))) {
-    return("Canonical variable membership does not match the reviewed specification.")
+    return("Canonical variable membership does not match the specification.")
   }
   expected_components <- list(
     numeric = variables$name[
@@ -1096,9 +1096,7 @@ intake_reconcile_stratified <- function(summaries, stratified, data) {
   )) {
     return("Stratified Overall variable counts do not reconcile with canonical summaries.")
   }
-  identifier <- trimws(tolower(as.character(summaries$variables$role))) %in%
-    c("id", "identifier")
-  expected_variables <- summaries$variables[!identifier, , drop = FALSE]
+  expected_variables <- summaries$variables
   observed_variables <- overall_variables[
     overall_variables$name %in% expected_variables$name,
     names(expected_variables), drop = FALSE
@@ -1285,28 +1283,27 @@ intake_render_report <- function(output_dir, manifest, status, stage) {
   links <- vapply(seq_len(nrow(created)), function(index) {
     paste0(
       "<li><a href=\"", intake_html_escape(created$path[[index]]), "\">",
-      intake_html_escape(created$path[[index]]), "</a> - ",
-      intake_html_escape(created$sensitivity[[index]]), "</li>"
+      intake_html_escape(created$path[[index]]), "</a></li>"
     )
   }, character(1))
   sections <- intake_report_sections(output_dir, created$path)
   banner_class <- if (status == "complete") "complete" else "incomplete"
   banner <- if (status == "complete") {
-    "Analysis completed. Outputs remain subject to disclosure review."
+    "Analysis completed."
   } else {
-    paste0("INCOMPLETE: workflow status is ", status, ". Follow messages.csv before analysis or sharing.")
+    paste0("INCOMPLETE: workflow status is ", status, ". Follow messages.csv before rerunning or interpreting outputs.")
   }
   html <- c(
     "<!doctype html>",
     "<html lang=\"en\"><head><meta charset=\"utf-8\">",
     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
     "<title>episcout data intake report</title>",
-    "<style>body{font-family:system-ui,sans-serif;max-width:1100px;margin:2rem auto;padding:0 1rem;color:#202124} .banner{padding:1rem;border-radius:.3rem;font-weight:700}.complete{background:#e6f4ea}.incomplete{background:#fce8e6} table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;margin-bottom:2rem}th,td{border:1px solid #dadce0;padding:.35rem;text-align:left;vertical-align:top}th{background:#f1f3f4}code{background:#f1f3f4;padding:.1rem .25rem}</style>",
+    "<style>body{font-family:system-ui,sans-serif;max-width:1100px;margin:2rem auto;padding:0 1rem;color:#202124} .banner{padding:1rem;border-radius:.3rem;font-weight:700}.complete{background:#e6f4ea}.incomplete{background:#fce8e6} table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;margin-bottom:2rem}th,td{border:1px solid #dadce0;padding:.35rem;text-align:left;vertical-align:top}th{background:#f1f3f4}code{background:#f1f3f4;padding:.1rem .25rem}img.map{display:block;max-width:100%;height:auto;margin-bottom:2rem}</style>",
     "</head><body>",
     "<h1>episcout data intake report</h1>",
     paste0("<div class=\"banner ", banner_class, "\">", intake_html_escape(banner), "</div>"),
     paste0("<p><strong>Status:</strong> ", intake_html_escape(status), "<br><strong>Last completed stage:</strong> ", intake_html_escape(stage), "</p>"),
-    "<p>This report is a view of saved machine-readable artifacts. It does not recalculate statistics, write row-level data, or perform pseudonymisation. The bundle is not disclosure-controlled or automatically de-identified.</p>",
+    "<p>This report is a view of saved machine-readable artifacts. It does not recalculate statistics, write row-level data, or perform pseudonymisation. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.</p>",
     "<h2>Artifacts</h2><ul>", links, "</ul>", sections,
     "</body></html>"
   )
@@ -1322,7 +1319,8 @@ intake_report_sections <- function(output_dir, created_paths) {
     "schema_after.csv" = "Schema after preparation",
     "preparation_audit.csv" = "Preparation audit",
     "missing.csv" = "Canonical missingness",
-    "geo_qa.csv" = "Reviewed coordinate-pair aggregate QA",
+    "geo_qa.csv" = "Declared coordinate-pair aggregate QA",
+    "map_inventory.csv" = "Map inventory",
     "summary_variables.csv" = "Canonical variable summaries",
     "summary_numeric.csv" = "Canonical numeric summaries",
     "summary_categorical.csv" = "Canonical categorical summaries",
@@ -1338,10 +1336,7 @@ intake_report_sections <- function(output_dir, created_paths) {
     "table1.csv" = "Table 1"
   )
   available <- intersect(names(display), created_paths)
-  if (length(available) == 0L) {
-    return("<p>No calculation tables were created at this review stage.</p>")
-  }
-  unlist(lapply(available, function(relative_path) {
+  tables <- unlist(lapply(available, function(relative_path) {
     table <- utils::read.csv(
       file.path(output_dir, relative_path),
       check.names = FALSE, stringsAsFactors = FALSE,
@@ -1352,6 +1347,25 @@ intake_report_sections <- function(output_dir, created_paths) {
       intake_html_table(table)
     )
   }), use.names = FALSE)
+  map_paths <- grep(
+    "^maps/map-p[0-9]{3,}-(geometry|v[0-9]{3,})\\.svg$",
+    created_paths,
+    value = TRUE
+  )
+  maps <- unlist(lapply(map_paths, function(relative_path) {
+    map_id <- sub("\\.svg$", "", sub("^maps/", "", relative_path))
+    c(
+      paste0("<h3>", intake_html_escape(map_id), "</h3>"),
+      paste0(
+        "<img class=\"map\" src=\"", intake_html_escape(relative_path),
+        "\" alt=\"", intake_html_escape(map_id), " point map\">"
+      )
+    )
+  }), use.names = FALSE)
+  if (length(tables) == 0L && length(maps) == 0L) {
+    return("<p>No calculation tables or maps were created.</p>")
+  }
+  c(tables, if (length(maps) > 0L) c("<h2>Maps</h2>", maps) else character())
 }
 
 intake_html_table <- function(data) {

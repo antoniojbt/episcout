@@ -15,6 +15,8 @@ mode_label <- if (isTRUE(params$synthetic)) "Synthetic" else "Real"
 
 Mode: `r mode_label`
 
+episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
+
 ```{r metadata, echo=FALSE}
 knitr::kable(results$metadata, caption = "Workflow metadata")
 ```
@@ -59,6 +61,20 @@ if (length(results$plots) == 0L) {
 for (name in names(results$plots)) {
   cat("### ", name, "\n\n", sep = "")
   print(results$plots[[name]])
+  cat("\n\n")
+}
+```
+
+## Maps
+
+```{r maps, echo=FALSE, fig.width=7, fig.height=5}
+knitr::kable(results$map_inventory, caption = "Map inventory")
+if (length(results$maps) == 0L) {
+  cat("No maps were created.\n\n")
+}
+for (map_id in names(results$maps)) {
+  cat("### ", map_id, "\n\n", sep = "")
+  print(results$maps[[map_id]])
   cat("\n\n")
 }
 ```

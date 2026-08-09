@@ -10,7 +10,10 @@ epi_eda_run(
   output_dir = NULL,
   synthetic = FALSE,
   n = 100,
-  seed = NULL
+  seed = NULL,
+  maps = FALSE,
+  map_vars = character(),
+  max_map_points = 10000L
 )
 }
 \arguments{
@@ -25,10 +28,17 @@ epi_eda_run(
 \item{n}{Number of synthetic rows to generate when \code{synthetic = TRUE}.}
 
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
+
+\item{maps}{Whether to create one geometry-only point map for every declared
+coordinate pair.}
+
+\item{map_vars}{Unique declared variables for additional thematic maps.}
+
+\item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
 }
 \value{
 A named list with \code{metadata}, \code{schema}, \code{missing}, \code{geo},
-\code{summaries} and \code{plots} components.
+\code{summaries}, \code{plots}, \code{maps}, and \code{map_inventory} components.
 }
 \description{
 Orchestrate the specification-first EDA helpers for either observed data or deterministic synthetic data. The function validates the specification, runs schema, missingness, summary and plot profiling, optionally writes machine-readable outputs, and returns all results as a named list.

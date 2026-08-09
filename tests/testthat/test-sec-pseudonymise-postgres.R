@@ -95,16 +95,21 @@ pg_pseudonym_dictionary <- function(connection, source_schema) {
     row_counts = "none"
   )
   dictionary <- epi_eda_dictionary_scaffold(inventory)
-  identifier <- dictionary$source_column %in% c("entity_code", "event_entity_code")
-  dictionary$privacy_class[identifier] <- "direct_identifier"
-  dictionary$analytic_action[identifier] <- "bridge"
-  dictionary$privacy_class[!identifier] <- "non_sensitive"
-  dictionary$analytic_action[!identifier] <- "retain"
   dictionary$type[dictionary$source_column == "entity_kind"] <- "categorical"
   dictionary$catalog_name[dictionary$source_column == "entity_kind"] <- "entity_kinds"
   dictionary$provenance <- "reviewed_synthetic_fixture"
-  dictionary$validation_status <- "confirmed"
   dictionary
+}
+
+pg_pseudonym_columns <- function(dictionary, id_columns) {
+  identifier <- dictionary$source_column %in% id_columns
+  data.frame(
+    dictionary[c("source_schema", "source_table", "source_column")],
+    privacy_class = ifelse(identifier, "direct_identifier", "non_sensitive"),
+    analytic_action = ifelse(identifier, "bridge", "retain"),
+    validation_status = "confirmed",
+    stringsAsFactors = FALSE
+  )
 }
 
 pg_pseudonym_catalogues <- function() {
@@ -115,7 +120,6 @@ pg_pseudonym_catalogues <- function() {
     display_order = c(1L, 2L, 1L),
     is_missing = c(FALSE, FALSE, FALSE),
     provenance = rep("reviewed_synthetic_fixture", 3L),
-    validation_status = rep("confirmed", 3L),
     stringsAsFactors = FALSE
   )
 }
@@ -128,13 +132,7 @@ pg_family_dictionary <- function(connection, source_schema, tables, id_columns) 
     row_counts = "none"
   )
   dictionary <- epi_eda_dictionary_scaffold(inventory)
-  identifier <- dictionary$source_column %in% id_columns
-  dictionary$privacy_class[identifier] <- "direct_identifier"
-  dictionary$analytic_action[identifier] <- "bridge"
-  dictionary$privacy_class[!identifier] <- "non_sensitive"
-  dictionary$analytic_action[!identifier] <- "retain"
   dictionary$provenance <- "reviewed_runtime_fixture"
-  dictionary$validation_status <- "confirmed"
   dictionary
 }
 
@@ -354,6 +352,9 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       validation_status = rep("confirmed", 2L),
       stringsAsFactors = FALSE
     ),
+    columns = pg_pseudonym_columns(
+      dictionary, c("entity_code", "event_entity_code")
+    ),
     record_keys = data.frame(
       source_schema = schemas[["source"]],
       source_table = "events",
@@ -496,15 +497,15 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     params = list(source_ids[["unmatched"]])
   )
 
-  pending_dictionary <- dictionary
-  pending_dictionary$validation_status[
-    pending_dictionary$source_table == "events" &
-      pending_dictionary$source_column == "event_value"
+  pending_linkage <- linkage
+  pending_linkage$columns$validation_status[
+    pending_linkage$columns$source_table == "events" &
+      pending_linkage$columns$source_column == "event_value"
   ] <- "pending"
   pending_audit <- epi_sec_pseudonymise_db(
     connection,
-    pending_dictionary,
-    linkage,
+    dictionary,
+    pending_linkage,
     schemas[["registry"]],
     schemas[["output"]],
     catalogues = catalogues,
@@ -512,9 +513,9 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
   expect_identical(pending_audit$status, "blocked")
   expect_false(pending_audit$metadata$writes[[1]])
-  expect_true("dictionary_not_confirmed" %in% pending_audit$issues$issue_code)
+  expect_true("column_policy_not_confirmed" %in% pending_audit$issues$issue_code)
   expect_true(all(
-    pending_audit$issues$stage[pending_audit$issues$issue_code == "dictionary_not_confirmed"] == "dictionary"
+    pending_audit$issues$stage[pending_audit$issues$issue_code == "column_policy_not_confirmed"] == "dictionary"
   ))
   expect_equal(DBI::dbGetQuery(
     connection,
@@ -622,6 +623,11 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     applied_report$output_dictionary,
     applied_report$output_catalogues
   ))
+  expect_false(any(c(
+    "privacy_class", "analytic_action", "validation_status",
+    "profile_catalogue"
+  ) %in% names(applied_report$output_dictionary)))
+  expect_false("validation_status" %in% names(applied_report$output_catalogues))
   expect_identical(unique(applied_report$output_catalogues$catalog_name), "entity_kinds")
   output_spec <- epi_eda_dictionary_spec(
     applied_report$output_dictionary,
@@ -1221,6 +1227,9 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
       validation_status = rep("confirmed", 4L),
       stringsAsFactors = FALSE
     ),
+    columns = pg_pseudonym_columns(
+      dictionary, c("entity_code", "event_code", "integer_code", "uuid_code")
+    ),
     record_keys = data.frame(
       source_schema = rep(schemas[["source"]], 3L),
       source_table = c("text_events", "integer_events", "uuid_events"),
@@ -1254,18 +1263,21 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
     tables = "fixed_ids",
     id_columns = "fixed_code"
   )
-  fixed_linkage <- epi_sec_linkage_spec(data.frame(
-    source_schema = schemas[["source"]],
-    source_table = "fixed_ids",
-    id_column = "fixed_code",
-    identity_namespace = "fixed_codes",
-    can_enrol = TRUE,
-    one_row_per_entity = TRUE,
-    destination_table = "fixed_ids",
-    provenance = "reviewed_runtime_fixture",
-    validation_status = "confirmed",
-    stringsAsFactors = FALSE
-  ))
+  fixed_linkage <- epi_sec_linkage_spec(
+    data.frame(
+      source_schema = schemas[["source"]],
+      source_table = "fixed_ids",
+      id_column = "fixed_code",
+      identity_namespace = "fixed_codes",
+      can_enrol = TRUE,
+      one_row_per_entity = TRUE,
+      destination_table = "fixed_ids",
+      provenance = "reviewed_runtime_fixture",
+      validation_status = "confirmed",
+      stringsAsFactors = FALSE
+    ),
+    pg_pseudonym_columns(fixed_dictionary, "fixed_code")
+  )
   expect_error(
     epi_sec_pseudonymise_db(
       connection,
@@ -1321,18 +1333,21 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
       tables = "nondeterministic_ids",
       id_columns = "identifier"
     )
-    nondeterministic_linkage <- epi_sec_linkage_spec(data.frame(
-      source_schema = schemas[["source"]],
-      source_table = "nondeterministic_ids",
-      id_column = "identifier",
-      identity_namespace = "nondeterministic_codes",
-      can_enrol = TRUE,
-      one_row_per_entity = TRUE,
-      destination_table = "nondeterministic_ids",
-      provenance = "reviewed_runtime_fixture",
-      validation_status = "confirmed",
-      stringsAsFactors = FALSE
-    ))
+    nondeterministic_linkage <- epi_sec_linkage_spec(
+      data.frame(
+        source_schema = schemas[["source"]],
+        source_table = "nondeterministic_ids",
+        id_column = "identifier",
+        identity_namespace = "nondeterministic_codes",
+        can_enrol = TRUE,
+        one_row_per_entity = TRUE,
+        destination_table = "nondeterministic_ids",
+        provenance = "reviewed_runtime_fixture",
+        validation_status = "confirmed",
+        stringsAsFactors = FALSE
+      ),
+      pg_pseudonym_columns(nondeterministic_dictionary, "identifier")
+    )
     expect_error(
       epi_sec_pseudonymise_db(
         connection,

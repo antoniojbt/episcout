@@ -84,7 +84,7 @@ test_that("penguins_raw preserves the upstream dimensions and raw names", {
   expect_equal(sum(is.na(data$Comments)), 290L)
 })
 
-test_that("penguins_raw specification has the reviewed contracts", {
+test_that("penguins_raw specification has the declared semantic contracts", {
   skip_if_penguins_missing()
   spec <- epi_eda_spec(spec_path)
 
@@ -169,12 +169,9 @@ test_that("penguins_raw canonical summaries cover every specified variable", {
   observed <- epi_eda_profile_summaries(data, spec)
 
   expect_equal(observed$variables$name, spec$name)
-  identifier <- spec$role %in% c("id", "identifier")
-  expect_true(all(observed$variables$status[!identifier] == "summarised"))
-  expect_true(all(observed$variables$status[identifier] == "skipped"))
-  expect_equal(nrow(observed$skipped), 2L)
-  expect_setequal(observed$skipped$name, c("Sample Number", "Individual ID"))
-  expect_equal(observed$text$name, "Comments")
+  expect_true(all(observed$variables$status == "summarised"))
+  expect_equal(nrow(observed$skipped), 0L)
+  expect_equal(observed$text$name, c("Individual ID", "Comments"))
   expect_equal(observed$temporal$name, "Date Egg")
   expect_equal(observed$temporal$min, "2007-11-09")
   expect_equal(observed$temporal$max, "2009-12-01")

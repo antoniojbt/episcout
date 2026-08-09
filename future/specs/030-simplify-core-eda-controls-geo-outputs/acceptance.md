@@ -12,37 +12,37 @@ Status: Active
 
 ## Public And Schema Contracts
 
-- [ ] The four runner signatures and documented defaults match the SDD.
-- [ ] Lean scaffold, extended dictionary, catalogue, linkage and manifest schemas are exact.
-- [ ] Deprecated schemas fail with actionable migration guidance.
-- [ ] Intake-generated specifications are saved, returned and processed without approval states.
-- [ ] Geo fields round-trip from both scaffold families into EDA specs without inference.
+- [x] The four runner signatures and documented defaults match the SDD.
+- [x] Lean scaffold, extended dictionary, catalogue, linkage and manifest schemas are exact.
+- [x] Deprecated schemas fail with actionable migration guidance.
+- [x] Intake-generated specifications are saved, returned and processed without approval states.
+- [x] Geo fields round-trip from both scaffold families into EDA specs without inference.
 
 ## Core And Map Behaviour
 
-- [ ] Roles no longer suppress summaries, plots or stratification.
-- [ ] Technical schema, missingness, preparation, identifier QA and coordinate QA remain correct.
-- [ ] Data-frame map fixtures pass all boundaries, missingness, non-finite, empty, pair, theme and bound cases.
-- [ ] PostgreSQL collection is requested-only, within-snapshot, inclusive-bounded and fail-not-truncate.
-- [ ] Map objects, inventory rows, point counts, thematic values, IDs and paths reconcile independently.
-- [ ] Core bundles publish only complete maps under `maps/` and retain atomic/checksum/overwrite guarantees.
+- [x] Roles no longer suppress summaries, plots or stratification.
+- [x] Technical schema, missingness, preparation, identifier QA and coordinate QA remain correct.
+- [x] Data-frame map fixtures pass all boundaries, missingness, non-finite, empty, pair, theme and bound cases.
+- [x] PostgreSQL collection is requested-only, within-snapshot, inclusive-bounded and fail-not-truncate.
+- [x] Map objects, inventory rows, point counts, thematic values, IDs and paths reconcile independently.
+- [x] Core bundles publish only complete maps under `maps/` and retain atomic/checksum/overwrite guarantees.
 
 ## Security And Documentation
 
-- [ ] Linkage column policy replaces combined dictionary policy without reducing security test coverage.
-- [ ] Pseudonymisation output dictionaries/catalogues are semantic and EDA-ready.
-- [ ] Specialised security manifests and restricted-data safeguards remain unchanged.
-- [ ] Roxygen, README, NEWS, both EDA guides, geospatial primer, security guide, templates and database walkthrough are consistent.
-- [ ] Migration documentation covers every immediate break and the replacement database-to-report workflow.
+- [x] Linkage column policy replaces combined dictionary policy without reducing security test coverage.
+- [x] Pseudonymisation output dictionaries/catalogues are semantic and EDA-ready.
+- [x] Specialised security manifests and restricted-data safeguards remain unchanged.
+- [x] Roxygen, README, NEWS, both EDA guides, geospatial primer, security guide, templates and database walkthrough are consistent.
+- [x] Migration documentation covers every immediate break and the replacement database-to-report workflow.
 
 ## Verification Evidence
 
-- [ ] Focused offline suites pass.
-- [ ] Live PostgreSQL 18 integration passes.
-- [ ] Representative SVG and HTML artifacts are rendered and visually inspected.
-- [ ] Changed R-file lint passes.
-- [ ] `scripts/check-local.sh` passes.
-- [ ] `scripts/check-cran.sh` passes with only explicitly reconciled external notes, if any.
+- [x] Focused offline suites pass.
+- [x] Live PostgreSQL 18 integration passes.
+- [x] Representative SVG and HTML artifacts are rendered and visually inspected.
+- [x] Changed R-file lint passes.
+- [x] `scripts/check-local.sh` passes.
+- [x] `scripts/check-cran.sh` passes with only explicitly reconciled external notes, if any.
 - [x] Online/offline workflow checks pass from normal and fresh real spaced checkout paths at planning commit `1c056b8`.
 - [ ] Required pull-request checks are green with no actionable review feedback.
 

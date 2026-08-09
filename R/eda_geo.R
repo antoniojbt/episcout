@@ -1,20 +1,20 @@
-#' Profile reviewed coordinate pairs without collecting geometry
+#' Profile declared coordinate pairs without collecting geometry
 #'
-#' Calculate aggregate eligibility QA for coordinate pairs declared explicitly
+#' Calculate aggregate map-readiness QA for coordinate pairs declared explicitly
 #' in an EDA specification. Coordinate values, row identifiers, geometry,
 #' bounds and maps are never returned.
 #'
 #' @param data A data frame or an [epi_eda_postgres_source()].
 #' @param spec An EDA specification data frame or CSV path.
 #'
-#' @return A data frame with one aggregate row per reviewed coordinate pair.
+#' @return A data frame with one aggregate row per declared coordinate pair.
 #'   A specification without coordinate metadata returns a typed zero-row data
 #'   frame.
 #'
-#' @details Eligibility confirms only that every row has a complete, finite
-#'   pair and, for EPSG:4326, lies within the reviewed longitude/latitude
-#'   limits. It is not disclosure approval, geometry construction or evidence
-#'   that coordinates represent the intended place, person, time or unit.
+#' @details Map readiness confirms only that every row has a complete, finite
+#'   pair and, for EPSG:4326, lies within the declared longitude/latitude
+#'   limits. It is not geometry construction or evidence that coordinates
+#'   represent the intended place, person, time or unit.
 #'
 #' @export
 epi_eda_profile_geo <- function(data, spec) {
@@ -37,7 +37,7 @@ eda_geo_empty <- function() {
     geo_crs = character(), crs_epsg = integer(), n = integer(),
     complete_pairs = integer(), missing_x = integer(), missing_y = integer(),
     both_missing = integer(), non_finite = integer(),
-    range_failures = integer(), eligible = logical(), status = character(),
+    range_failures = integer(), map_ready = logical(), status = character(),
     reason = character(), stringsAsFactors = FALSE
   )
 }
@@ -46,13 +46,13 @@ eda_geo_pair_rows <- function(spec) {
   if (!all(eda_geo_spec_fields() %in% names(spec))) {
     return(list())
   }
-  reviewed <- which(spec$geo_role %in% c("x", "y"))
-  if (length(reviewed) == 0L) {
+  declared <- which(spec$geo_role %in% c("x", "y"))
+  if (length(declared) == 0L) {
     return(list())
   }
-  pairs <- unique(spec$geo_pair[reviewed])
+  pairs <- unique(spec$geo_pair[declared])
   lapply(pairs, function(pair) {
-    rows <- reviewed[spec$geo_pair[reviewed] == pair]
+    rows <- declared[spec$geo_pair[declared] == pair]
     list(
       pair = pair,
       x_row = rows[spec$geo_role[rows] == "x"][[1L]],
@@ -74,7 +74,7 @@ eda_geo_missing_mask <- function(values, missing_codes) {
 eda_geo_status <- function(n, missing_x, missing_y, both_missing,
                            non_finite, range_failures) {
   if (n == 0L) {
-    return(list(eligible = FALSE, status = "not_eligible", reason = "no_rows"))
+    return(list(map_ready = FALSE, status = "not_ready", reason = "no_rows"))
   }
   reasons <- character()
   if (missing_x + missing_y + both_missing > 0L) {
@@ -84,15 +84,15 @@ eda_geo_status <- function(n, missing_x, missing_y, both_missing,
     reasons <- c(reasons, "non_finite_coordinates")
   }
   if (range_failures > 0L) {
-    reasons <- c(reasons, "reviewed_crs_range_failure")
+    reasons <- c(reasons, "declared_crs_range_failure")
   }
   if (length(reasons) == 0L) {
     return(list(
-      eligible = TRUE, status = "eligible", reason = "all_rows_eligible"
+      map_ready = TRUE, status = "ready", reason = "all_rows_map_ready"
     ))
   }
   list(
-    eligible = FALSE, status = "not_eligible",
+    map_ready = FALSE, status = "not_ready",
     reason = paste(reasons, collapse = ";")
   )
 }
@@ -116,7 +116,7 @@ eda_geo_result_row <- function(pair, x_name, y_name, crs, counts) {
     both_missing = as.integer(counts$both_missing),
     non_finite = as.integer(counts$non_finite),
     range_failures = as.integer(counts$range_failures),
-    eligible = status$eligible,
+    map_ready = status$map_ready,
     status = status$status,
     reason = status$reason,
     stringsAsFactors = FALSE
@@ -132,7 +132,7 @@ eda_geo_profile_frame <- function(data, spec) {
     x_name <- spec$name[[pair$x_row]]
     y_name <- spec$name[[pair$y_row]]
     if (!all(c(x_name, y_name) %in% names(data))) {
-      stop("Reviewed coordinate variables are missing from the data.", call. = FALSE)
+      stop("Declared coordinate variables are missing from the data.", call. = FALSE)
     }
     x <- data[[x_name]]
     y <- data[[y_name]]
@@ -140,7 +140,7 @@ eda_geo_profile_frame <- function(data, spec) {
       !inherits(x, c("Date", "POSIXt", "IDate")) &&
       !inherits(y, c("Date", "POSIXt", "IDate"))
     if (!numeric_storage) {
-      stop("Reviewed coordinate variables require numeric storage.", call. = FALSE)
+      stop("Declared coordinate variables require numeric storage.", call. = FALSE)
     }
     x_missing <- eda_geo_missing_mask(x, eda_missing_codes(spec, x_name))
     y_missing <- eda_geo_missing_mask(y, eda_missing_codes(spec, y_name))
@@ -206,14 +206,14 @@ eda_postgres_geo_pair <- function(source, spec, pair, timing_env) {
   x_column <- eda_postgres_column(source, x_name)
   y_column <- eda_postgres_column(source, y_name)
   if (is.null(x_column) || is.null(y_column)) {
-    stop("Reviewed coordinate variables are missing from the PostgreSQL source.", call. = FALSE)
+    stop("Declared coordinate variables are missing from the PostgreSQL source.", call. = FALSE)
   }
   x_type <- spec$type[[pair$x_row]]
   y_type <- spec$type[[pair$y_row]]
   compatible <- eda_pg_type_compatibility(x_column, x_type)$status != "incompatible" &&
     eda_pg_type_compatibility(y_column, y_type)$status != "incompatible"
   if (!compatible) {
-    stop("Reviewed coordinate variables require compatible PostgreSQL numeric storage.", call. = FALSE)
+    stop("Declared coordinate variables require compatible PostgreSQL numeric storage.", call. = FALSE)
   }
   x_missing <- eda_geo_pg_missing_contract(
     source, x_column, x_type, eda_missing_codes(spec, x_name)
@@ -223,7 +223,7 @@ eda_postgres_geo_pair <- function(source, spec, pair, timing_env) {
     length(x_missing$params)
   )
   if (!x_missing$valid || !y_missing$valid) {
-    stop("A reviewed coordinate missing sentinel cannot be represented safely in PostgreSQL.", call. = FALSE)
+    stop("A declared coordinate missing sentinel cannot be represented safely in PostgreSQL.", call. = FALSE)
   }
   x_sql <- eda_postgres_value_expression(source, x_column, "numeric")
   y_sql <- eda_postgres_value_expression(source, y_column, "numeric")
@@ -308,7 +308,7 @@ eda_geo_reconcile <- function(geo, n_total) {
     all(missing_total <= geo$n) &&
     all(geo$complete_pairs <= geo$n - missing_total) &&
     all(geo$range_failures <= geo$complete_pairs) &&
-    identical(geo$eligible, vapply(expected_status, `[[`, logical(1), "eligible")) &&
+    identical(geo$map_ready, vapply(expected_status, `[[`, logical(1), "map_ready")) &&
     identical(geo$status, vapply(expected_status, `[[`, character(1), "status")) &&
     identical(geo$reason, vapply(expected_status, `[[`, character(1), "reason"))
   if (!isTRUE(valid)) {

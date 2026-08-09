@@ -11,7 +11,10 @@ epi_eda_render_report(
   synthetic = FALSE,
   n = 100,
   seed = NULL,
-  quiet = TRUE
+  quiet = TRUE,
+  maps = FALSE,
+  map_vars = character(),
+  max_map_points = 10000L
 )
 }
 \arguments{
@@ -28,6 +31,13 @@ epi_eda_render_report(
 \item{seed}{Optional random seed passed to \code{\link[=epi_eda_generate_synthetic_data]{epi_eda_generate_synthetic_data()}}.}
 
 \item{quiet}{Logical; passed to \code{\link[rmarkdown:render]{rmarkdown::render()}} to control render output.}
+
+\item{maps}{Whether to create one geometry-only point map for every declared
+coordinate pair.}
+
+\item{map_vars}{Unique declared variables for additional thematic maps.}
+
+\item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
 }
 \value{
 A single character string containing the rendered HTML report path.
