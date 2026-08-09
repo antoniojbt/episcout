@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Review
+Status: Completed and accepted through PR #231
 
 ## Authoritative Basis Reviewed On 2026-08-09
 
@@ -21,7 +21,7 @@ The current instruction establishes the claims this draft may rely on:
 - government online/offline mechanisms—not local parsing—validate a CURP against official records; and
 - BDNCURP information is confidential and subject to applicable personal-data law.
 
-The public instruction reviewed here does not state the complete position-18 algorithm. By owner direction on 2026-08-09, checksum evidence is no longer a blocking gate for structural validation: this implementation reports position 18 as `not_verified`, does not calculate it and continues authoritative-evidence research in issue #230. A popular or copied implementation remains insufficient evidence.
+The public instruction reviewed here does not state the complete position-18 algorithm. By owner direction on 2026-08-09, checksum evidence is no longer a blocking gate for structural validation: this implementation reports position 18 as `not_verified` and does not calculate it. Issue #230 closed through that explicit rescope without adopting an unofficial algorithm; a future checksum change requires new authoritative evidence and a separately reviewed tracker.
 
 ## Proposed Public Boundary
 
@@ -68,7 +68,7 @@ The current vector error and stale century rule are defects, but correcting them
 3. **Date and century:** parse positions 5–10 as an actual month/day and two-digit year. A numeric position 17 maps to the supported 1900–1999 domain and `A`–`J` maps to 2000–2099. Dates later than the local current date are structurally invalid. A possible pre-1900 key is indistinguishable from the corresponding 1900s key using the CURP alone, so the audit cannot support or identify it and documents that limitation rather than guessing.
 4. **Encoded fields:** validate `H`/`M` and positions 12–13 against the catalogue published with the 2021 RENAPO assignment rules and pinned in `inst/extdata`. `NE` remains a birthplace code, not a Mexican state.
 5. **Name-derived segments:** validate character classes only unless the caller provides already reviewed initials. Generating a CURP from names remains out of scope because official exception rules are consequential.
-6. **Check digit:** report `not_verified` for structurally valid records and do not calculate position 18. Issue #230 owns authoritative evidence and a later separately reviewed implementation.
+6. **Check digit:** report `not_verified` for structurally valid records and do not calculate position 18. Issue #230 closed through owner rescope; a later implementation requires new authoritative evidence and a separately reviewed tracker.
 7. **Comparison:** compare only supplied reviewed reference values. Each field returns `match`, `mismatch`, `reference_missing`, `curp_unavailable` or `not_requested`.
 
 ## Comparison Semantics
@@ -97,4 +97,4 @@ No new dependency is expected. Base R can perform fixed-position parsing and exa
 
 ## Activation Decision
 
-The owner activated this specification on 2026-08-09 with the audit object, one-cycle legacy boundary, strict uppercase/no-whitespace input, 1900–2099 local date domain, 2021 RENAPO birthplace catalogue and restricted synthetic-fixture policy accepted. Checksum calculation is explicitly deferred: this slice returns `not_verified`, while issue #230 owns any later authoritative-evidence work.
+The owner activated this specification on 2026-08-09 with the audit object, one-cycle legacy boundary, strict uppercase/no-whitespace input, 1900–2099 local date domain, 2021 RENAPO birthplace catalogue and restricted synthetic-fixture policy accepted. PR #231 merged the resulting implementation to canonical `master` as `7e42f228969dbc62060f0660c43119882140052f`. Checksum calculation remains explicitly deferred as `not_verified`; issue #230 closed through owner rescope without authorising an unofficial algorithm.

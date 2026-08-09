@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Review
+Status: Completed and accepted through PR #231
 
 Tracking issue: [#225](https://github.com/antoniojbt/episcout/issues/225); source planning issue #217 and PR #224 are complete.
 
@@ -16,7 +16,7 @@ Tracking issue: [#225](https://github.com/antoniojbt/episcout/issues/225); sourc
 - [x] Owner selects strict rejection of lowercase and whitespace without silent normalisation.
 - [x] Owner accepts the 1900–2099 local domain and the explicit inability to distinguish possible pre-1900 keys.
 - [x] The catalogue published with the 2021 RENAPO assignment rules is approved for pinning.
-- [x] Checksum verification is deferred as `not_verified`; issue #230 owns authoritative evidence and any later implementation.
+- [x] Checksum verification is deferred as `not_verified`; issue #230 closed through owner rescope without adopting an unofficial algorithm.
 - [x] Fixture provenance excludes the missing photo, government-service generation and real personal data.
 
 ## Later Implementation Acceptance
@@ -29,4 +29,5 @@ Tracking issue: [#225](https://github.com/antoniojbt/episcout/issues/225); sourc
 - [x] Focused/full tests, lint and the canonical local package check pass.
 - [x] Required pull-request CI passes.
 - [x] Review evidence records sources, exact versions, limitations and unresolved registry-validation boundaries.
-- [ ] Post-merge closeout reconciles issue #225, roadmap #227, this acceptance record, TODOs, changelog and the next tracker or terminal rationale.
+- [x] PR #231 merged to canonical `master` as `7e42f228969dbc62060f0660c43119882140052f`; issue #225 closed automatically.
+- [x] Post-merge closeout reconciles issue #225, roadmap #227, this acceptance record, TODOs, changelog and approved next tracker #226.

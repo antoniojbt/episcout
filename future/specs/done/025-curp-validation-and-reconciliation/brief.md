@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `025-curp-validation-and-reconciliation`
-Status: Review
+Status: Completed and accepted through PR #231
 Owner: repository-owner
 
 ## Problem
@@ -24,7 +24,7 @@ Define an authoritative, vector-safe and privacy-aware contract for CURP structu
 
 ## Non-goals
 
-- Calculating or claiming verification of position 18 without an authoritative published algorithm or sufficient official vectors; checksum status is `not_verified` in this slice and evidence research continues in issue #230.
+- Calculating or claiming verification of position 18 without an authoritative published algorithm or sufficient official vectors; checksum status is `not_verified` in this slice. Issue #230 closed through owner rescope without adopting an unofficial algorithm.
 - Generating or assigning CURPs.
 - Calling public or restricted government services.
 - Claiming that syntactic/check-digit validity proves assignment, certification or identity.

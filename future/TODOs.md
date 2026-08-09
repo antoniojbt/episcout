@@ -17,17 +17,12 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### 1. CURP structural audit implementation
+### 1. Phase-A geographic mapping implementation
 
-- [ ] Complete issue [#225](https://github.com/antoniojbt/episcout/issues/225) through review spec `025-curp-validation-and-reconciliation` and draft PR [#231](https://github.com/antoniojbt/episcout/pull/231):
-  - [x] accept the public audit-result and one-cycle legacy compatibility contract;
-  - [x] reject silent normalisation and accept the explicit 1900–2099 local domain;
-  - [x] pin the reviewed 2021 RENAPO birthplace catalogue and restricted synthetic-fixture provenance;
-  - [x] defer checksum verification as `not_verified` to evidence issue [#230](https://github.com/antoniojbt/episcout/issues/230);
-  - [x] change the spec from `draft` to `active` before package-code work;
-  - [x] implement and locally verify the accepted vector, validation, derivation, comparison and privacy contracts;
-  - [x] pass the required Ubuntu, macOS, PostgreSQL, coverage, Codecov and CodeFactor pull-request checks;
-  - [ ] reconcile acceptance and create the next tracker or terminal rationale before closure.
+- [ ] Begin issue [#226](https://github.com/antoniojbt/episcout/issues/226) only after this #225/spec 025 closeout commit is canonical:
+  - retain accepted design-only spec `026-epi-geo-series-plan` as the source contract;
+  - activate one scoped implementation specification before package-code work;
+  - keep the phase-B PostGIS and phase-C aggregate EDA-coordinate work deferred.
 
 ## Parallel owner action
 
@@ -56,6 +51,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-09
 
+- [x] Complete issue #225/spec 025 through PR #231, merged to canonical `master` as `7e42f22`; issue #225 closed automatically, all required CI passed, the completed record moved to `future/specs/done/`, and issue #226 is the approved next tracker. Checksum remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.
 - [x] Complete issue #220/spec 022 through merged PR #222 at `b07f9e8`; verify all required checks, reconcile acceptance and move the completed record under `future/specs/done/`.
 - [x] Complete planning issue #217 through merged PR #224, retain spec 025 as a gated draft and create implementation successor #225.
 - [x] Replace completed roadmap #204 with authoritative roadmap #227 and preserve deferred geo phase-A implementation in successor #226.

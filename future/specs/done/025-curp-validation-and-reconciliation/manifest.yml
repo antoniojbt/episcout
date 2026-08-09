@@ -2,7 +2,7 @@ id: "025"
 slug: "curp-validation-and-reconciliation"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/curp-structural-audit
@@ -14,8 +14,8 @@ source_issues:
   - 217
 pull_request: 231
 planning_pull_request: 224
-merge_commit: null
-successor_issue: 230
+merge_commit: 7e42f228969dbc62060f0660c43119882140052f
+successor_issue: 226
 terminal_reason: null
 
 dependencies: []
@@ -72,12 +72,13 @@ activation_gates:
   - accepted: Reject lowercase and whitespace without silent normalisation.
   - accepted: Local structural date support is limited to 1900-2099; pre-1900 keys cannot be distinguished locally.
   - accepted: Pin the birthplace catalogue published with the 2021 RENAPO assignment rules.
-  - accepted: Report checksum status as not_verified; authoritative checksum research continues in issue 230.
+  - accepted: Report checksum status as not_verified; owner-resolved evidence issue 230 remains closed unless new authoritative evidence appears.
   - accepted: Use no missing-photo, generated-service or real personal-data fixtures.
 
 notes:
   - Local structural validity never proves registry assignment, certification or identity.
   - CURP and derived fields are restricted personal data.
   - Planning PR 224 changes no package behaviour and closed source issue 217.
-  - Draft PR 231 carries the implementation; tracking issue 225 remains open through review and implementation closeout.
-  - Owner direction on 2026-08-09 removed checksum evidence as a blocking gate and deferred it to issue 230.
+  - PR 231 merged to canonical master as 7e42f228969dbc62060f0660c43119882140052f; tracking issue 225 closed automatically.
+  - Owner direction on 2026-08-09 removed checksum evidence as a blocking gate; issue 230 closed with the explicit rescope and no unofficial algorithm was adopted.
+  - Issue 226 is the approved next implementation tracker after this closeout becomes canonical.
