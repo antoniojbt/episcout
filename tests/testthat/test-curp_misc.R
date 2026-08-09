@@ -32,6 +32,15 @@ test_that("epi_clean_curp errors on wrong length", {
   expect_error(epi_clean_curp("SHORT"))
 })
 
+test_that("epi_clean_curp rejects non-character input without echoing it", {
+  private_value <- 987654321
+  condition <- tryCatch(epi_clean_curp(private_value), error = identity)
+
+  expect_s3_class(condition, "error")
+  expect_match(conditionMessage(condition), "vector de texto", fixed = TRUE)
+  expect_false(grepl(as.character(private_value), conditionMessage(condition), fixed = TRUE))
+})
+
 test_that("epi_clean_curp preserves its documented vector schema", {
   curps <- c("XEXX900514HDFXXX00", "XEXX020715MASXXXA0")
   result <- epi_clean_curp(curps)

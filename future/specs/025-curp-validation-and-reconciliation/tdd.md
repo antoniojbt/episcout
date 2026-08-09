@@ -63,7 +63,7 @@ No test may infer that a mismatch identifies which source is correct.
 ## Implementation Evidence On 2026-08-09
 
 - The pre-implementation focused run failed because the documented legacy vector path evaluated a vector in a scalar condition and because `epi_clean_curp_audit()` did not exist.
-- The post-implementation focused run passed 30 compatibility expectations and 69 structural, comparison and privacy expectations.
+- The post-implementation focused run passed 31 compatibility expectations and 69 structural, comparison and privacy expectations.
 - Package lint reported no findings.
 - The complete `devtools::test()` run passed with only the repository's documented opt-in PostgreSQL and graphics skips.
 - `scripts/check-local.sh` completed documentation generation, lint, the complete tests and `R CMD check` with 0 errors, 0 warnings and 0 notes.

@@ -85,35 +85,12 @@ epi_clean_curp <- function(curp) {
   dplyr::bind_rows(rows)
 }
 
-.curp_empty_records <- function() {
-  tibble::tibble(
-    input_index = integer(),
-    status = character(),
-    birth_date = as.Date(character()),
-    sex_code = character(),
-    birthplace_code = character(),
-    initials = character(),
-    century_marker_class = character(),
-    checksum_status = character()
-  )
-}
-
 .curp_empty_issues <- function() {
   tibble::tibble(
     input_index = integer(),
     issue_code = character(),
     stage = character(),
     severity = character()
-  )
-}
-
-.curp_empty_comparison <- function() {
-  tibble::tibble(
-    input_index = integer(),
-    birth_date = character(),
-    sex_code = character(),
-    birthplace_code = character(),
-    initials = character()
   )
 }
 
