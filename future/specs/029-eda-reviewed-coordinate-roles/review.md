@@ -16,7 +16,7 @@ None. The issue contract and completed source designs resolve the implementation
 
 ## Planning Handoff
 
-- Planning PR and checks: pending.
+- Planning PR: draft PR #240; required checks are pending.
 - Implementation base: the green planning PR head, under the owner's stacking instruction.
 - No package source, test, dependency, namespace, generated help or public behaviour changes belong in the planning PR.
 

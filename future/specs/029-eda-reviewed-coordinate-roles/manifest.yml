@@ -15,7 +15,7 @@ source_issues:
   - 226
   - 233
 pull_request: null
-planning_pull_request: null
+planning_pull_request: 240
 merge_commit: null
 successor_issue: null
 terminal_reason: null
@@ -79,5 +79,6 @@ baseline:
 
 notes:
   - Planning PR records the contract only; package behaviour changes begin on the stacked implementation branch after planning CI is green.
+  - Draft planning PR 240 is the review gate for the contract; it references issue 237 without closing it.
   - The implementation is the terminal bounded Phase-C slice of the current geospatial programme; later inferential spatial work requires a separate concrete scientific question and tracker.
   - PostgreSQL 17 is the supported CI service; local PostgreSQL 18.4 evidence will be recorded separately.
