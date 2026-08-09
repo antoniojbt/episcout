@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `029-eda-reviewed-coordinate-roles`
-Status: Active
+Status: Review
 
 - [x] Phase-B implementation and closeout are canonical and every required check passed.
 - [x] Coordinate roles remain optional reviewed metadata, not an inferred eighth EDA type.

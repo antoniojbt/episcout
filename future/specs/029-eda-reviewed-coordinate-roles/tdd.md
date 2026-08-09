@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `029-eda-reviewed-coordinate-roles`
-Status: Active
+Status: Review
 
 ## Test Files
 

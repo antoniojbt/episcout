@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `029-eda-reviewed-coordinate-roles`
-Status: Active
+Status: Review
 
 ## Findings
 
@@ -31,7 +31,7 @@ None. The issue contract and completed source designs resolve the implementation
 
 ## Closeout Notes
 
-- Implementation PR and merge commit: pending.
+- Implementation PR: #241; merge commit pending.
 - Required local checks: passed; pull-request checks pending.
 - Tracking issue and roadmap disposition: pending.
 - Terminal reason: bounded Phase-C completes the current geospatial programme; future inference requires a separate concrete scientific tracker.

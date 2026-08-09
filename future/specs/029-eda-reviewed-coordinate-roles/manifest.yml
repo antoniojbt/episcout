@@ -2,7 +2,7 @@ id: "029"
 slug: "eda-reviewed-coordinate-roles"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: feature/eda-reviewed-coordinate-roles
@@ -14,7 +14,7 @@ source_issues:
   - 218
   - 226
   - 233
-pull_request: null
+pull_request: 241
 planning_pull_request: 240
 merge_commit: null
 successor_issue: null
