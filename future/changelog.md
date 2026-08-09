@@ -1,5 +1,10 @@
 # Future Workspace Changelog
 
+## 2026-08-09
+
+- Accepted completed issue #215/spec `021-postgresql-identity-universe` after PR #219 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor and merged as `ec6134b`; moved the specification to `future/specs/done/` and reconciled its acceptance, review and planning records.
+- Promoted the reserved spec-022 scratch finding to issue #220, a deliberately narrow reuse of the transaction-local PostgreSQL EDA row count. Issue #217 is queued as the following planning candidate because its referenced photo is absent and the existing CURP parser needs authoritative validity, century, vector and privacy contracts before implementation.
+
 ## 2026-08-08
 
 - Implemented issue #215 under active spec `021-postgresql-identity-universe`: reviewed value-free metadata now declares one namespace across multiple PostgreSQL sources; audit reconciles quality, distinct membership and pairwise overlap in a read-only repeatable-read snapshot; and guarded materialisation can publish one restricted unique canonical universe atomically without generating pseudonyms. Independently derived unit expectations, a live PostgreSQL success/blocking/redaction/empty/lock/rollback suite, generated help and a synthetic audit-to-enrolment guide are included. Focused compatibility tests, package lint, the complete PostgreSQL 17 integration suite and R CMD check pass locally with `0/0/0`; CI and review acceptance remain open.

@@ -55,11 +55,11 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Ready Next
 
-- Promote issue [#215](https://github.com/antoniojbt/episcout/issues/215) to spec `021-postgresql-identity-universe`, record its baseline and implement the audit-first PostgreSQL identifier-universe contract.
+- Promote issue [#220](https://github.com/antoniojbt/episcout/issues/220) to spec `022-postgresql-eda-row-count-reuse`, record its baseline and remove only the redundant categorical/binary relation-count query.
 
 ### Draft
 
-- The narrow redundant PostgreSQL EDA row-count finding remains a scratch input until it is promoted after the identifier-universe work as spec `022-postgresql-eda-row-count-reuse`.
+- Issue [#217](https://github.com/antoniojbt/episcout/issues/217) is the next planning candidate after spec 022. It needs an authoritative CURP validation, derivation, quality and privacy contract before becoming spec `025-curp-validation-and-reconciliation`; the issue's referenced photo is not present in the repository or its Git history.
 
 ### Deferred
 
@@ -69,4 +69,4 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 
 ### Completed
 
-GitHub release `0.3.0` is published from commit `40ef702`. Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness`, `020-data-frame-writer-delimiter-contract`, `023-package-source-hygiene` and `024-external-fixture-provenance`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+GitHub release `0.3.0` is published from commit `40ef702`. Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness`, `020-data-frame-writer-delimiter-contract`, `021-postgresql-identity-universe`, `023-package-source-hygiene` and `024-external-fixture-provenance`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

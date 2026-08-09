@@ -2,7 +2,7 @@
 
 Spec ID: `021-postgresql-identity-universe`
 
-Status: Implemented; CI and review acceptance pending
+Status: Completed
 
 - [x] SDD and TDD define the detailed contract before package-code changes.
 - [x] Reviewed metadata declares at least two compatible PostgreSQL relations in one namespace.
@@ -15,3 +15,4 @@ Status: Implemented; CI and review acceptance pending
 - [x] Unit and gated live PostgreSQL tests cover success, blockers, rollback, timeout/lock, empty sources and redaction.
 - [x] Synthetic user documentation covers audit, blocked review, corrected contract, materialisation and the registry boundary.
 - [x] Focused/full tests, PostgreSQL 17 integration, lint, R CMD check and `git diff --check` pass locally.
+- [x] PR #219 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor, then was accepted and merged into `master` on 2026-08-08, closing issue #215.

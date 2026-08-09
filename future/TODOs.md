@@ -19,28 +19,30 @@ to return for the approved sequence.
 
 ## Current sequence
 
-### 1. Multi-table PostgreSQL identifier universe
+### 1. Narrow PostgreSQL EDA row-count reuse
 
 - [ ] Complete issue
-  [#215](https://github.com/antoniojbt/episcout/issues/215) through spec
-  `021-postgresql-identity-universe`:
-  - create the spec and record the package/PostgreSQL baseline before code;
-  - implement an audit-first, PostgreSQL-resident, value-free-by-default
-    identifier-universe workflow;
-  - materialise only an explicitly confirmed blocker-free restricted universe;
-  - preserve existing linkage, registry and pseudonymisation behaviour;
-  - use synthetic unit/live PostgreSQL evidence for success, blocking,
-    redaction, rollback, timeout and lock behaviour.
-
-### 2. Narrow PostgreSQL EDA row-count reuse
-
-- [ ] After #215, promote
-  `future/scratch/episcout_postgres_eda_performance_issue.md` to a dedicated
-  issue and spec `022-postgresql-eda-row-count-reuse`:
+  [#220](https://github.com/antoniojbt/episcout/issues/220) through spec
+  `022-postgresql-eda-row-count-reuse`:
+  - promote the existing scratch investigation and record the current
+    PostgreSQL query-count baseline before code;
   - reuse the existing transaction-local relation row count in categorical and
     binary summaries;
   - remove exactly one redundant query per affected variable;
   - do not broaden snapshot, privacy, bundle or reconciliation behaviour.
+
+### 2. CURP validation and reconciliation planning
+
+- [ ] After #220, plan issue
+  [#217](https://github.com/antoniojbt/episcout/issues/217) as candidate spec
+  `025-curp-validation-and-reconciliation`:
+  - base validity, field derivation and check-digit behaviour on current
+    authoritative sources rather than the missing photo reference;
+  - replace the hard-coded birth-century cutoff with a reviewed deterministic
+    rule and define vector, missing and invalid-input behaviour;
+  - separate parsing from validation and from comparisons against collected
+    demographic fields;
+  - define how direct identifiers and row-level mismatches remain restricted.
 
 ## Parallel owner action
 
@@ -76,6 +78,9 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-08
 
+- [x] Complete issue #215 through merged PR #219, accept spec
+  `021-postgresql-identity-universe`, and move its record to
+  `future/specs/done/` after all required checks passed.
 - [x] Merge the post-release documentation and planning reconciliation through PR #216, pin the released installation command, align the workspace and move accepted specs 023/024 to `future/specs/done/` without claiming the unperformed owner walkthrough.
 - [x] Publish GitHub release `0.3.0` from commit `40ef702` after exact package
   build/check/install and installed-package smoke validation.
