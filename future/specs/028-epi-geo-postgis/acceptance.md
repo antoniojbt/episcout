@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `028-epi-geo-postgis`
-Status: Active
+Status: Review
 
 - [x] Issue #233, completed spec 026 and completed spec 027 define the required outcome.
 - [x] SDD and TDD were completed before package-code changes.
@@ -9,7 +9,7 @@ Status: Active
 - [x] Executable unit, structural and disposable PostGIS tests pass.
 - [x] Generated documentation and the observed primer workflow agree with the implementation.
 - [x] Package lint, local check and CRAN-oriented check pass with the recorded external NOTE.
-- [ ] A draft pull request links and closes issue #233, records its dependency on #236 and reaches green CI.
+- [ ] Draft PR #238 links and closes issue #233, records its dependency on #236 and reaches green CI.
 - [x] Phase-C successor issue #237 is recorded and remains gated on Phase-B merge and closeout.
 - [ ] Post-merge closeout records the canonical merge and moves this spec to `done/`.
 

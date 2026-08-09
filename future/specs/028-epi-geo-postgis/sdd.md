@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `028-epi-geo-postgis`
-Status: Active
+Status: Review
 
 ## Public API
 

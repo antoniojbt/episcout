@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `028-epi-geo-postgis`
-Status: Active
+Status: Review
 
 ## Unit And Structural Tests
 

@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `028-epi-geo-postgis`
-Status: Active
+Status: Review
 Owner: repository-owner
 Tracking issue: [#233](https://github.com/antoniojbt/episcout/issues/233)
 

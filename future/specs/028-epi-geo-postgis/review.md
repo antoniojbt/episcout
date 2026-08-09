@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `028-epi-geo-postgis`
-Status: Active
+Status: Review
 
 ## Findings
 
@@ -23,6 +23,6 @@ No unresolved implementation blocker after focused self-review.
 
 ## Closeout Notes
 
-- Pull request and checks: pending.
+- Pull request: draft PR #238; required checks pending.
 - Stacked dependency: closeout PR #236 must merge before this implementation can merge cleanly.
 - Successor: Phase-C issue #237 exists and remains unstarted until Phase-B merge and closeout.
