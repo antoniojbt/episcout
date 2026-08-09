@@ -1,5 +1,7 @@
 # PostgreSQL EDA repeats relation-wide aggregate queries, including one `count(*)` per categorical variable
 
+Status: Promoted to issue [#220](https://github.com/antoniojbt/episcout/issues/220); next step is spec `022-postgresql-eda-row-count-reuse`.
+
 ## Issue summary
 
 `epi_eda_db_run()` produces correct, reconciled aggregate bundles, but its PostgreSQL backend sends many separate statements that repeatedly query the same relation. One narrow case is clearly redundant: the run obtains the relation row count once and passes it into the summary workflow, yet every categorical variable calls `eda_postgres_row_count()` again.
