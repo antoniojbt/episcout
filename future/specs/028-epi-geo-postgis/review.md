@@ -23,6 +23,7 @@ No unresolved implementation blocker after focused self-review.
 
 ## Closeout Notes
 
-- Pull request: draft PR #238; required checks pending.
+- Pull request: draft PR #238; macOS, Ubuntu, PostgreSQL 17/PostGIS integration, coverage, CodeFactor and both Codecov gates passed on implementation head `6811f9d`.
+- Coverage: Codecov measured 96.31% patch coverage (17 defensive lines unexercised) and 92.43% project coverage, up 0.17 percentage points from the stacked base.
 - Stacked dependency: closeout PR #236 must merge before this implementation can merge cleanly.
 - Successor: Phase-C issue #237 exists and remains unstarted until Phase-B merge and closeout.

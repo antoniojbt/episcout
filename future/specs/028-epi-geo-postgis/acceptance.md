@@ -9,7 +9,7 @@ Status: Review
 - [x] Executable unit, structural and disposable PostGIS tests pass.
 - [x] Generated documentation and the observed primer workflow agree with the implementation.
 - [x] Package lint, local check and CRAN-oriented check pass with the recorded external NOTE.
-- [ ] Draft PR #238 links and closes issue #233, records its dependency on #236 and reaches green CI.
+- [x] Draft PR #238 links and closes issue #233, records its dependency on #236 and reached green CI on the implementation head.
 - [x] Phase-C successor issue #237 is recorded and remains gated on Phase-B merge and closeout.
 - [ ] Post-merge closeout records the canonical merge and moves this spec to `done/`.
 
@@ -26,3 +26,4 @@ Status: Review
 - Structural tests inspect the query inventory: description returns at most two grouped aggregate rows per metadata dimension, one validity/count row and one extent row, and contains no feature geometry, WKT/WKB or ordinary attribute selection. Collection binds bbox and limit values, quotes exact identifiers and fetches at most `max_features + 1` rows.
 - Package-loaded lint reports no findings. `scripts/check-local.sh` completed at 0 errors, 0 warnings and 0 notes, including vignette rebuild. `scripts/check-cran.sh` completed with one existing incoming-feasibility NOTE for new-submission/vignette-index state and two external Stack Overflow 403 responses; package checks, manual and vignette rebuild passed.
 - The full live database filter passes all geospatial, EDA and identity-universe cases. Two pre-existing longitudinal registry cases fail only on the local PostgreSQL 18.4 metadata shape; the supported PostgreSQL 17 CI service remains authoritative and is unchanged in version.
+- Draft PR #238 passed macOS, Ubuntu, PostgreSQL 17/PostGIS integration, coverage, CodeFactor and both Codecov gates. Codecov measured 96.31% patch coverage, increased project coverage from 92.25% to 92.43%, and identified 17 unexercised defensive lines without failing the configured gate.

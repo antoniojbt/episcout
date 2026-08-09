@@ -81,3 +81,4 @@ notes:
   - Phase-C successor issue 237 exists and remains gated on Phase-B merge and closeout.
   - Disposable PostGIS 3.6.1/PostgreSQL 18.4 Phase-B tests, package lint and the complete local check pass; the CRAN-oriented check retains its existing external incoming-feasibility NOTE.
   - The complete local database filter retains two pre-existing PostgreSQL 18.4 registry-metadata errors outside this change; the supported CI service remains PostgreSQL 17.
+  - Draft PR 238 passed all required implementation checks at 6811f9d; Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%.
