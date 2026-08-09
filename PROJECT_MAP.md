@@ -40,12 +40,12 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 ## Planning Status
 
 - GitHub release `0.3.0` is published from commit `40ef702`; CRAN work remains deferred under issue #81.
-- GitHub roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) is the authoritative live sequence. `future/TODOs.md` is its synchronised repository index, `future/README.md` defines the lifecycle and `future/changelog.md` records completed outcomes.
+- GitHub roadmap issue [#249](https://github.com/antoniojbt/episcout/issues/249) is the authoritative live sequence. `future/TODOs.md` is its synchronised repository index, `future/README.md` defines the lifecycle and `future/changelog.md` records completed outcomes.
 - Completed spec `025-curp-validation-and-reconciliation` records issue #225 and PR #231, merged to canonical `master` as `7e42f22`. Checksum verification remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.
 - Completed design spec `026-epi-geo-series-plan` and implementation specs `027-epi-geo-phase-a`, `028-epi-geo-postgis` and `029-eda-reviewed-coordinate-roles` are preserved under `future/specs/done/`; issue #226 closed through PR #234, merged as `b37b391`, issue #233 through PR #238, merged as `460acd0`, and terminal Phase-C issue #237 through planning PR #240 and implementation PR #241, merged as `308d544`. Later spatial inference requires a new concrete scientific tracker.
-- Issue #243 is active as spec `030-simplify-core-eda-controls-geo-outputs`. Fully green prerequisite/planning PR #244 repairs workflow checks for checkout paths containing spaces and accepts the breaking semantic EDA, explicit point-map and specialised security-policy contracts; implementation is stacked on #244.
+- Completed spec `030-simplify-core-eda-controls-geo-outputs` records issue #243, planning PR #244 and implementation PR #246, merged as `825215e`. Issue #245 is the ready-next canonical EDA-delivery tracker; it includes aggregate-bundle HTML reporting without PostgreSQL or row-level extraction, while #248 follows with explicit count and denominator work.
 - Completed spec `022-postgresql-eda-row-count-reuse` is under `future/specs/done/` after issue #220 and PR #222 merged. Historical completed manifests remain authoritative records of their own accepted work.
-- Security issue #213 remains a parallel owner action. CRAN issue #81, PostgreSQL report-rendering issue #196 and clarification issues #61/#62/#65/#212 remain deferred unless roadmap #227 is explicitly revised.
+- Security issue #213, CRAN issue #81 and clarification issues #61/#62/#65/#212 are deferred under roadmap #249. Issue #196 is superseded by #245 and #235 is closed as not planned.
 
 ## Verification Entry Points
 

@@ -1,6 +1,6 @@
 # TODOs
 
-This is the repository's synchronised task index. GitHub roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) and its linked issues are authoritative for live state and sequence.
+This is the repository's synchronised task index. GitHub roadmap issue [#249](https://github.com/antoniojbt/episcout/issues/249) and its linked issues are authoritative for live state and sequence.
 
 ## Working rules
 
@@ -17,9 +17,9 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-No package implementation specification is active. Roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) retains only separately tracked owner action and deferred work; a new package implementation requires an explicit tracker and specification.
+No package implementation specification is active. Roadmap issue [#249](https://github.com/antoniojbt/episcout/issues/249) makes [#245](https://github.com/antoniojbt/episcout/issues/245) the ready-next canonical EDA-delivery tracker: an opt-in dated output layout with a portable aggregate-bundle HTML entry point, no PostgreSQL connection or row-level extraction, and no governance decisions. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
 
-## Parallel owner action
+## Deferred owner action
 
 - [ ] Finish security issue [#213](https://github.com/antoniojbt/episcout/issues/213):
   - revoke/rotate the exposed Codecov credential as appropriate;
@@ -33,7 +33,6 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 ## Deferred
 
 - [ ] CRAN readiness/submission under [#81](https://github.com/antoniojbt/episcout/issues/81). The GitHub release is complete; no CRAN submission is currently authorised.
-- [ ] PostgreSQL aggregate-bundle HTML rendering under [#196](https://github.com/antoniojbt/episcout/issues/196) and future spec `018-database-eda-report-rendering`.
 - [ ] Clarify issue [#212](https://github.com/antoniojbt/episcout/issues/212) before treating “code complexity” as implementable work.
 - [ ] Resolve the scope questions in issues [#61](https://github.com/antoniojbt/episcout/issues/61), [#62](https://github.com/antoniojbt/episcout/issues/62) and [#65](https://github.com/antoniojbt/episcout/issues/65) before creating specs.
 - [ ] Define explicit contracts before adding cross-tool dictionary
@@ -44,6 +43,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-09
 
+- [x] Replace completed roadmap #227 with authoritative roadmap #249. Promote issue #245 as ready next, place issue #248 directly after it, defer #213/#81/#61/#62/#65/#212, close #196 as superseded by #245 and close #235 as not planned. The #245 contract makes HTML the normal human entry point for validated aggregate bundles while CSV/SVG/manifests remain canonical evidence and no governance decision is added.
 - [x] Complete issue #243/spec 030 through planning PR #244 (`2d2237b`) and implementation PR #246, merged to canonical `master` as `825215ea0eb2c7aab79768d6174315f1708bec09`; issue #243 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed terminal record moved to `future/specs/done/`. No successor was created because the remaining roadmap work is separately tracked or deferred.
 - [x] Complete issue #237/spec 029 through planning PR #240 (`d97d8bf`) and implementation PR #241, merged to canonical `master` as `308d5442b9c7d0e180343c89f97e9f0fb8668062`; issue #237 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed terminal record moved to `future/specs/done/`. No successor was created: later spatial inference requires a new concrete scientific tracker.
 - [x] Complete issue #233/spec 028 through PR #238, merged to canonical `master` as `460acd0908044e963827ddc4d2a865984ed9fc76`; issue #233 closed automatically, macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor passed, Codecov reported 96.31% patch coverage and project coverage increased from 92.25% to 92.43%, the completed record moved to `future/specs/done/`, and issue #237 is the ready-next tracker after this closeout becomes canonical.
