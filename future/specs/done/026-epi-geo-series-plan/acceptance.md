@@ -22,4 +22,5 @@
 - [x] New and changed Markdown files pass repository whitespace and link review.
 - [x] `scripts/check-local.sh` completed with 0 errors, 0 warnings and one worktree-only NOTE because the worktree `.git` pointer file entered the check directory; the suite passed with 15 expected PostgreSQL/parallel/visual skips.
 - [x] Final diff contains only issue-218 planning records and planning-index reconciliation; check-generated Rd and disabled-snapshot churn was restored unchanged.
-- [x] Initial draft pull-request checks were inspected after publication; CodeFactor passed and the macOS, Ubuntu, PostgreSQL and coverage jobs entered progress with no immediate failure.
+- [x] PR #223 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor and merged to canonical `master` as `0c9120d`.
+- [x] Planning issue #218 closed and deferred phase-A successor issue #226 preserves the next implementation slice without activating package code.

@@ -61,6 +61,14 @@ scripts/check-local.sh
 scripts/check-cran.sh
 ```
 
+For tracked GitHub work, run the read-only lifecycle check before starting, at pull-request handoff and during post-merge closeout:
+
+``` bash
+scripts/check-workflow-state.sh
+```
+
+GitHub roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) is authoritative for the live sequence. The [future-work guide](future/README.md) defines specification states, closeout requirements and the synchronised repository records.
+
 Set `EPISCOUT_RSCRIPT=/path/to/Rscript` if you need to use a different R binary.
 
 CRAN does not require `renv`; it requires a source tarball from `R CMD build` that passes `R CMD check --as-cran` without errors, warnings or significant notes. Strong dependencies should be available from CRAN or Bioconductor, suggested packages should be used conditionally in examples and tests, and tests/examples should avoid internet requirements, unwanted filesystem writes and excessive runtime or parallelism. See the CRAN Repository Policy, CRAN submission checklist and Writing R Extensions for the current source of truth:

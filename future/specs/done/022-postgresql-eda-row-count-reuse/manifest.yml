@@ -1,15 +1,21 @@
 id: "022"
 slug: "postgresql-eda-row-count-reuse"
-status: implemented
+workflow_version: 1
+deliverable: implementation
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/postgresql-eda-row-count-reuse
 created: 2026-08-09
 updated: 2026-08-09
 
-issues:
-  - 220
+tracking_issue: 220
+source_issues:
   - 204
+pull_request: 222
+merge_commit: b07f9e8924fc94fb693274fcf810a1cd41bcf225
+successor_issue: 225
+terminal_reason: null
 
 dependencies:
   - 003-large-data-backend-strategy
@@ -58,3 +64,4 @@ notes:
   - Red/green unit and live tests proved the fixed two-variable fixture falls from three row-count queries to one.
   - Focused tests, PostgreSQL 18.4 EDA parity and benchmark, lint and the complete local package check pass.
   - The unrelated longitudinal pseudonymisation suite retains two registry-metadata errors on PostgreSQL 18.4; required upstream CI uses PostgreSQL 17.
+  - PR 222 passed macOS, Ubuntu, PostgreSQL integration, coverage, both Codecov gates and CodeFactor, then merged as b07f9e8.

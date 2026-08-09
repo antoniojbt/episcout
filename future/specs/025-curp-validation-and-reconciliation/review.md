@@ -7,7 +7,7 @@ Status: Draft for owner review
 
 The repository baseline does not satisfy its documented vector contract and does not implement CURP validity. The hard-coded `YY <= 22` rule conflicts with the official position-17 century discriminator. Length-only acceptance allows malformed values to be sliced, and coercion can emit input-dependent warnings. Existing evidence is therefore extraction smoke coverage, not authoritative validation.
 
-The current official instruction is sufficient to design position classes, date/century behavior, the distinction between local structure and registry validation, and the confidentiality boundary. It is not sufficient by itself to implement the verification-digit algorithm because it refers to an algorithm without publishing its complete calculation.
+The current official instruction is sufficient to design position classes, date/century behaviour, the distinction between local structure and registry validation, and the confidentiality boundary. It is not sufficient by itself to implement the verification-digit algorithm because it refers to an algorithm without publishing its complete calculation.
 
 ## Open Questions For Owner Review
 
@@ -21,4 +21,4 @@ The current official instruction is sufficient to design position classes, date/
 
 ## Closeout Notes
 
-Planning only. No package code, tests, generated documentation, API or behavior changed. The draft is intentionally blocked from activation until the source and owner gates in `acceptance.md` are resolved.
+Planning only. No package code, tests, generated documentation, API or behaviour changed. PR #224 merged and source planning issue #217 closed. Tracking issue #225 now owns the remaining gates and implementation under roadmap #227; the draft remains blocked from activation until the source and owner gates in `acceptance.md` are resolved.

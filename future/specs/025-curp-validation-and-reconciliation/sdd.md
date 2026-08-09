@@ -57,7 +57,7 @@ Retain `epi_clean_curp()` for at least one released compatibility cycle. A later
 - the existing 13 Spanish column names and order;
 - one output row per input element, including missing and invalid elements under a reviewed rule;
 - the documented sensitivity of the returned `CURP` column; and
-- a staged deprecation or migration note if stricter invalid-input behavior changes historical output.
+- a staged deprecation or migration note if stricter invalid-input behaviour changes historical output.
 
 The current vector error and stale century rule are defects, but correcting them must not silently redefine the legacy schema in the same commit as the new audit API without owner approval.
 
@@ -65,7 +65,7 @@ The current vector error and stale century rule are defects, but correcting them
 
 1. **Input shape:** require a character vector; retain length and positions without trimming silently. Missing input is `missing`, not malformed.
 2. **Lexical structure:** require exactly 18 permitted uppercase characters under the official position classes. Case-normalisation, if allowed, must be reported rather than silent.
-3. **Date and century:** parse positions 5–10 as an actual month/day and two-digit year. Position 17 constrains the official century class: numeric for births through 1999 and `A`–`J` from 2000 onward. It does not, by itself, prove that every numeric marker means 19xx in historical data. The owner must approve a supported year domain and explicit pre-1900 behavior before the parser returns a full date. No rule may depend silently on the current year.
+3. **Date and century:** parse positions 5–10 as an actual month/day and two-digit year. Position 17 constrains the official century class: numeric for births through 1999 and `A`–`J` from 2000 onward. It does not, by itself, prove that every numeric marker means 19xx in historical data. The owner must approve a supported year domain and explicit pre-1900 behaviour before the parser returns a full date. No rule may depend silently on the current year.
 4. **Encoded fields:** validate `H`/`M` and positions 12–13 against a pinned, provenance-recorded official birthplace catalogue. `NE` remains a birthplace code, not a Mexican state.
 5. **Name-derived segments:** validate character classes only unless the caller provides already reviewed initials. Generating a CURP from names remains out of scope because official exception rules are consequential.
 6. **Check digit:** calculate only after the official algorithm/test vectors pass the activation gate. Until then, report `not_verified`; do not substitute a guessed algorithm.

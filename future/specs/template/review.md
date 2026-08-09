@@ -13,4 +13,7 @@ None yet.
 
 ## Closeout Notes
 
-TBD.
+- Pull request and merge commit: TBD.
+- Required checks and material exceptions: TBD.
+- Tracking issue and roadmap disposition: TBD.
+- Successor issue or terminal reason: TBD.

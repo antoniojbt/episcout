@@ -8,9 +8,9 @@ Owner: repository-owner
 
 The exported `epi_clean_curp()` is described as accepting one or more CURPs, but its scalar `if` condition errors for vectors longer than one. It checks only character count, slices fields by position, accepts structurally invalid values, warns while coercing a non-numeric birth-year segment and assigns the century with a hard-coded `YY <= 22` rule. It does not validate calendar dates, official codes, the position-17 century marker or the verification digit.
 
-The function also returns the original direct identifier without a documented restricted-data boundary. Existing tests cover two examples and length rejection but do not cite the governing instruction or establish boundary, vector, validity or privacy behavior.
+The function also returns the original direct identifier without a documented restricted-data boundary. Existing tests cover two examples and length rejection but do not cite the governing instruction or establish boundary, vector, validity or privacy behaviour.
 
-Issue #217 additionally requests quality comparisons between CURP-derived fields and separately collected birth date, registered sex/gender, birthplace and initials. Those comparisons need explicit missing, mismatch and confidentiality semantics before code.
+Source planning issue #217 requested quality comparisons between CURP-derived fields and separately collected birth date, registered sex/gender, birthplace and initials. Tracking issue #225 now owns the remaining activation gates and implementation. Those comparisons need explicit missing, mismatch and confidentiality semantics before code.
 
 ## Goal
 
@@ -24,7 +24,7 @@ Define an authoritative, vector-safe and privacy-aware contract for CURP structu
 
 ## Non-goals
 
-- Implementing package code in this planning PR.
+- Implementing package code before every activation gate is accepted and this specification becomes `active`.
 - Generating or assigning CURPs.
 - Calling public or restricted government services.
 - Claiming that syntactic/check-digit validity proves assignment, certification or identity.

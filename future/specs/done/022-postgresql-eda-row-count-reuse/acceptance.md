@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `022-postgresql-eda-row-count-reuse`
-Status: Implemented; CI and review acceptance pending
+Status: Completed and accepted through PR #222
 
 - [x] SDD is complete before implementation.
 - [x] TDD plan is complete before implementation.
@@ -12,4 +12,6 @@ Status: Implemented; CI and review acceptance pending
 - [x] No broader PostgreSQL query consolidation is included.
 - [x] Focused tests, live PostgreSQL parity, package lint, local checks and `git diff --check` pass.
 - [x] Review notes and planning records are reconciled before handoff.
-- [ ] Required pull-request checks pass and the repository owner accepts the change.
+- [x] Required macOS, Ubuntu, PostgreSQL integration, coverage, Codecov and CodeFactor pull-request checks pass.
+- [x] PR #222 merged to canonical `master` as `b07f9e8`; issue #220 closed and successor issue #225 is recorded.
+- [x] Post-merge closeout reconciles the roadmap, TODOs, changelog and completed specification location.

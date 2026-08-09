@@ -1,11 +1,20 @@
 id: "<id>"
 slug: "<slug>"
+workflow_version: 1
+deliverable: implementation
 status: draft
 owner: TBD
 base_branch: master
 working_branch: TBD
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+
+tracking_issue: null
+source_issues: []
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
 
 related_files:
   - R/<file>.R
@@ -27,3 +36,5 @@ check_commands:
 notes:
   - Keep executable tests under tests/testthat/.
   - Keep this spec directory for planning and review only.
+  - Use only draft, active, review or completed as committed lifecycle states.
+  - Before completion, set successor_issue or explain the terminal outcome in terminal_reason.
