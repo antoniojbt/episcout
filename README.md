@@ -11,7 +11,7 @@ episcout provides helper functions for cleaning, exploring and visualising large
 * **Cleaning** - `epi_clean_*` functions tidy raw data and detect issues such as duplicates or inconsistent labels; `epi_clean_curp_audit()` performs value-free local CURP structural auditing and reviewed-field reconciliation without claiming registry validation.
 * **Statistics** - `epi_stats_*` functions create summary tables and descriptive statistics in a single call.
 * **Plotting** - `epi_plot_*` wrappers produce common graphs with *ggplot2* and *cowplot*.
-* **Reviewed geospatial mapping** - `epi_geo_*` functions convert explicit coordinates, read GeoPackage or Shapefile layers, describe and transform `sf` objects, create extensible static maps and stage safe GeoPackage output. Start with the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd).
+* **Reviewed geospatial mapping** - `epi_geo_*` functions convert explicit coordinates, read local or explicitly bounded PostGIS geometry, describe and transform `sf` objects, create extensible static maps and stage safe GeoPackage output. Start with the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd).
 * **Specification-first EDA** - `epi_eda_*` functions use a data dictionary to run repeatable EDA on synthetic or real data.
 * **PostgreSQL-backed EDA** - `epi_eda_postgres_source()` and the existing profilers run aggregate-only specification-first EDA against PostgreSQL 17 relations, while `epi_eda_db_run()` publishes a manifest-owned bundle.
 * **Longitudinal pseudonymisation** - `epi_sec_*` functions audit and transactionally pseudonymise related PostgreSQL tables through a stable restricted identity registry. Start with the [longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd).
@@ -152,6 +152,8 @@ epi_geo_map(converted$data, value = "group")
 ```
 
 Conversion is all-or-nothing: missing, non-finite or EPSG:4326 out-of-range rows return aggregate blockers and no partial geometry. Bounds and feature maps remain value-bearing and may disclose location. The interface does not infer coordinates, repair geometry, add basemaps, perform spatial inference or publish feature-level locations through ordinary EDA bundles.
+
+For PostGIS, construct `epi_geo_postgis_source()` from an open caller-owned RPostgres connection and exact schema/relation identifiers. `epi_geo_postgis_describe()` returns only catalogue and aggregate geometry QA from one read-only snapshot. `epi_geo_postgis_collect()` is the sole feature-materialisation path: it requires an explicit ordinary-column allow-list, accepts only a typed `sf` bounding box in the source CRS, and refuses rather than truncates a selection above `max_features`. episcout never accepts credentials or arbitrary SQL through this interface and never installs or modifies PostGIS.
 
 ### Specification-first EDA quickstart
 

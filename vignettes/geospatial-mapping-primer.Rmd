@@ -179,12 +179,45 @@ epi_geo_describe(reconciled)$dataset[c("features", "crs_epsg", "bounding_box")]
 unlink(gpkg)
 ```
 
-## 11. Deferred PostGIS and EDA integration
+## 11. Describe and collect PostGIS deliberately
 
-A later, separately reviewed phase may describe a caller-owned PostGIS relation and collect an explicitly bounded set of features. It will not accept credentials or arbitrary SQL, create database objects, install extensions or collect unbounded geometry automatically. The current phase has no PostGIS interface.
+The PostGIS path starts from an open caller-owned RPostgres connection and exact separate identifiers. The constructor validates a table, view or materialized view and chooses its only spatial column; relations with several geometry/geography columns require `geometry_column`. Printing and structure display redact the connection, relation and column identities.
+
+```{r postgis-workflow, eval = FALSE}
+spatial_source <- epi_geo_postgis_source(
+  con,
+  schema = "reviewed_schema",
+  relation = "reviewed_features",
+  geometry_column = "geom"
+)
+
+aggregate_qa <- epi_geo_postgis_describe(spatial_source)
+aggregate_qa$dataset
+aggregate_qa$validity
+aggregate_qa$bounding_box
+
+reviewed_extent <- sf::st_bbox(
+  c(xmin = 0, ymin = 0, xmax = 1, ymax = 1),
+  crs = 4326
+)
+selected_features <- epi_geo_postgis_collect(
+  spatial_source,
+  columns = c("reviewed_group", "reviewed_rate"),
+  bbox = reviewed_extent,
+  max_features = 1000L
+)
+```
+
+Description runs catalogue, type, SRID, dimension, validity and bound aggregates inside one read-only repeatable-read snapshot. It does not select feature geometry or ordinary attributes. Its bounds and rare aggregate combinations may still disclose sensitive locations and require review before they are printed, logged or shared.
+
+Collection is a separate explicit act. Identifiers are quoted, bbox ordinates are bound as values in the source CRS, and the complete selection is counted before at most `max_features + 1` rows can be fetched in the same snapshot. An over-limit selection fails rather than truncates. Null geometry in the selected rows also fails because it cannot satisfy the Phase-A `sf` contract. The connection remains caller-owned and usable after handled success or failure.
+
+episcout does not accept credentials, connection strings, predicates, ordering or SQL fragments through these functions. It does not install PostGIS, create or modify database objects, create indexes or collect automatically from `epi_geo_map()`. Large reviewed selections may need a database-administered spatial index, but index design and tuning are outside this interface.
+
+## 12. Deferred EDA integration
 
 Another later phase may add reviewed x/y roles to the specification-first EDA dictionary and return aggregate eligibility counts only. Ordinary EDA bundles will not contain coordinates, WKT/WKB, feature maps or bounds. Use the explicit workflow in this guide when feature-level mapping is approved.
 
-## 12. Descriptive maps are not spatial inference
+## 13. Descriptive maps are not spatial inference
 
 These maps display reviewed geometries and attributes. They do not test clustering, estimate spatial risk, select neighbours, define denominators, handle spatial dependence, quantify uncertainty or support causal claims. Any inferential method requires a concrete epidemiological question, authoritative method, explicit population and spatial/temporal unit, denominator, distance or adjacency definition, null hypothesis, multiplicity policy and independent numerical validation. Those decisions are outside this mapping foundation.

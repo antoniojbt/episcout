@@ -5,6 +5,7 @@ dependencies:
   - r-base
   - pandoc
   - postgresql=18
+  - postgis=3.6
   - qpdf
   - ghostscript
   - r-broom
