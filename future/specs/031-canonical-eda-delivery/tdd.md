@@ -21,7 +21,9 @@ scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-proje
 - [ ] Exact new formals/defaults are documented; current data-frame renderer formals remain unchanged.
 - [ ] Default database runs retain their existing result, manifest and relative-path schemas.
 - [ ] Delivery mode returns the same analytical tables/counts and the exact canonical tree.
-- [ ] Layout and render settings participate in overwrite fingerprints.
+- [ ] Layout and render settings participate in overwrite fingerprints;
+  default bundle metadata schemas remain exact while delivery metadata records
+  the new contract separately.
 
 ## Validation And Atomicity Tests
 

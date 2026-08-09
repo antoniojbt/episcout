@@ -13,7 +13,9 @@ The implementation covers completed PostgreSQL EDA bundles. It adds an opt-in de
    - `layout = "bundle"` is the default and is byte/schema/path compatible with the current contract; `quiet` is ignored.
    - `layout = "delivery"` publishes the canonical tree and renders HTML before the staged bundle is atomically published.
    - Delivery mode validates that `rmarkdown`, `knitr`, the bundled template and Pandoc are available before opening the PostgreSQL snapshot.
-   - The selected layout is included in metadata and overwrite fingerprints.
+   - The selected layout is included in overwrite fingerprints. Default bundle
+     metadata keeps its existing schema; delivery mode records its additional
+     contract in `run_manifests/delivery_metadata.csv`.
 2. Add `epi_eda_render_db_report(bundle, overwrite = FALSE, quiet = TRUE)`.
    - `bundle` is either one `epi_eda_db_run` result or one local bundle-directory path.
    - A result object contributes only its normalized `output_dir`; all content is re-read and validated from disk.
@@ -37,7 +39,10 @@ output_dir/
 ```
 
 - `QA_QC/` contains schema, missingness, six canonical summary components, identifier QA, geo QA and plot/map inventories.
-- `run_manifests/` contains the five-column manifest, run metadata, messages, specification, source metadata and query timings.
+- `run_manifests/` contains the five-column manifest, existing run metadata,
+  delivery-only metadata, messages, specification, source metadata and query
+  timings. Delivery metadata records the layout, report path and contract
+  version without changing the default bundle's metadata schema.
 - `plot_data/` contains only compact aggregate data already derived for ordinary PostgreSQL plots. It never contains coordinate/theme collections used for maps.
 - Each regular file has exactly one manifest-owned relative path. The manifest's own checksum remains blank; every other created file has an MD5 checksum.
 - README points to `reports/eda-report.html` first and explains the retained folders in plain language.
@@ -59,7 +64,8 @@ The report and README use one ownership statement: episcout creates the requeste
 
 ## Compatibility
 
-- Existing calls, result components, flat paths and five-column manifests under `layout = "bundle"` do not change.
+- Existing calls, result components, metadata schemas, flat paths and
+  five-column manifests under `layout = "bundle"` do not change.
 - `epi_eda_render_report()` remains unchanged.
 - The new renderer accepts current valid flat bundles and new delivery bundles. Rendering a flat bundle adds only owned `README.md` and `reports/eda-report.html` rows; it does not reorganize existing files.
 - Delivery manifests retain the same five columns; layout-specific paths are explicit in the rows.
