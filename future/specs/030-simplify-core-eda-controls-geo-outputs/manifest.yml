@@ -2,7 +2,7 @@ id: "030"
 slug: "simplify-core-eda-controls-geo-outputs"
 workflow_version: 1
 deliverable: implementation
-status: draft
+status: active
 owner: repository-owner
 base_branch: master
 working_branch: agent/implement-simplify-core-eda-geo
@@ -75,11 +75,11 @@ check_commands:
   - git diff --check
 
 activation_gates:
-  - pending: Planning/prerequisite pull request is green and the owner-authored issue contract is represented exactly by this specification.
-  - pending: Both workflow-state modes pass from a real checkout path containing spaces.
-  - pending: Breaking schema migrations have explicit rejection and replacement examples rather than warnings or compatibility shims.
-  - pending: PostgreSQL map collection is proven minimal, bounded, non-truncating and contained in the profiling snapshot.
-  - pending: Security column policy is fully separated from semantic EDA dictionaries without weakening pseudonymisation safeguards.
+  - accepted: Planning/prerequisite pull request 244 is fully green and the owner-authored issue contract is represented by this specification.
+  - accepted: Both workflow-state modes pass from a fresh real checkout path containing spaces.
+  - accepted: Breaking schema migrations will use explicit rejection and replacement examples rather than warnings or compatibility shims.
+  - accepted: PostgreSQL map collection must be minimal, bounded, non-truncating and contained in the profiling snapshot.
+  - accepted: Security column policy must be fully separated from semantic EDA dictionaries without weakening pseudonymisation safeguards.
 
 baseline:
   canonical_master: "bdcb64c9b386f3e5c8d8450c20b4a7f0d3acea12"

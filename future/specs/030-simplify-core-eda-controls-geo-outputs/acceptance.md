@@ -1,14 +1,14 @@
 # Acceptance
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Draft
+Status: Active
 
 ## Planning And Activation
 
 - [x] Live roadmap issue #227, canonical master and completed spec 029 were reconciled before new work.
 - [x] Tracking issue #243 exists and roadmap #227 points to it.
 - [x] The path-with-spaces workflow failure is reproduced independently for online and offline modes.
-- [ ] Draft planning/prerequisite PR #244 is green and its review gates are accepted before package implementation begins.
+- [x] Draft planning/prerequisite PR #244 is fully green and its review gates are accepted before package implementation begins.
 
 ## Public And Schema Contracts
 
