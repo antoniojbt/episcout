@@ -1,0 +1,83 @@
+id: "029"
+slug: "eda-reviewed-coordinate-roles"
+workflow_version: 1
+deliverable: implementation
+status: draft
+owner: repository-owner
+base_branch: master
+working_branch: feature/eda-reviewed-coordinate-roles
+created: 2026-08-09
+updated: 2026-08-09
+
+tracking_issue: 237
+source_issues:
+  - 218
+  - 226
+  - 233
+pull_request: null
+planning_pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+dependencies:
+  suggests:
+    - sf (>= 1.0-17)
+    - RPostgres
+
+related_files:
+  - R/eda_spec.R
+  - R/eda_spec_scaffold.R
+  - R/eda_geo.R
+  - R/eda_intake.R
+  - R/eda_db_run.R
+  - R/eda_postgres_queries.R
+  - R/run_eda.R
+  - tests/testthat/test-eda-geo.R
+  - tests/testthat/test-eda-geo-postgres.R
+  - vignettes/specification-first-eda.Rmd
+  - vignettes/geospatial-mapping-primer.Rmd
+  - NEWS.md
+  - PROJECT_MAP.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/analysis-and-statistics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-geo', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=synthetic_records PGUSER=postgres scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-geo-postgres', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+activation_gates:
+  - accepted: Phase-B PR 238 and closeout PR 239 are merged to canonical master with all required checks green.
+  - accepted: Coordinate meaning remains optional reviewed metadata orthogonal to the existing seven EDA types.
+  - accepted: Scaffolds leave every coordinate field blank and validation requires exact x/y pair membership plus one shared resolvable CRS.
+  - accepted: Pair QA returns aggregates and reviewed metadata only; feature values, geometry, bounds and maps remain absent from ordinary EDA results and bundles.
+  - accepted: PostgreSQL computes one bounded aggregate row per pair in the existing read-only snapshot without PostGIS or coordinate collection.
+
+baseline:
+  workflow_state: "Canonical master, closed issue 233 and completed specs 026-028 match GitHub; issue 237 is open and its activation gate is satisfied."
+  compatibility: "Existing EDA specifications may omit all three coordinate fields and retain their existing seven-type analysis semantics."
+  privacy: "Existing EDA workflows do not interpret coordinate roles or publish coordinate-pair QA."
+  stack_authority: "The owner authorised implementation to continue on a branch stacked on the green planning PR without waiting for its merge."
+
+notes:
+  - Planning PR records the contract only; package behaviour changes begin on the stacked implementation branch after planning CI is green.
+  - The implementation is the terminal bounded Phase-C slice of the current geospatial programme; later inferential spatial work requires a separate concrete scientific question and tracker.
+  - PostgreSQL 17 is the supported CI service; local PostgreSQL 18.4 evidence will be recorded separately.
