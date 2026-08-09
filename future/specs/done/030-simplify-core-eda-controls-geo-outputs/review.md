@@ -1,7 +1,7 @@
 # Review
 
 Spec ID: `030-simplify-core-eda-controls-geo-outputs`
-Status: Active
+Status: Completed
 
 ## Planning Review
 
@@ -37,4 +37,4 @@ Draft implementation PR #246 is stacked on the contributor branch that contains 
 
 ## Closeout Review
 
-Pending canonical merge verification and repository reconciliation.
+Planning PR #244 merged to canonical `master` as `2d2237b2ee9e8c8181f9ea97fac5a0f34da5fb11`; implementation PR #246 then merged as `825215ea0eb2c7aab79768d6174315f1708bec09`. All seven required checks passed at the final implementation head `f4d4972`, and #246 had no reviews or review threads. Issue #243 closed automatically. Before this closeout, the online workflow audit correctly identified the closed issue attached to an unfinished active spec; this closeout moves the record under `future/specs/done/`, completes the manifest and records the terminal reason. Local and fork `master` synchronization follows the closeout merge. No concrete successor is authorised because the remaining roadmap work is separately tracked or deferred.
