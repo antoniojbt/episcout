@@ -8,7 +8,7 @@ Status: Draft for owner review
 - `devtools::test(filter = "curp_misc")` passed 20 existing expectations on 2026-08-09.
 - A direct two-element call to the documented vector interface failed with `the condition has length > 1`.
 - An 18-character non-numeric value passed the length gate, emitted a coercion warning and returned sliced fields with an unavailable year.
-- Existing tests cover only two example extractions and one short-input error. They do not establish official structure, check digit, vector behavior, impossible dates, century boundaries, missing values or value-free diagnostics.
+- Existing tests cover only two example extractions and one short-input error. They do not establish official structure, check digit, vector behaviour, impossible dates, century boundaries, missing values or value-free diagnostics.
 
 ## Proposed Test Files
 
@@ -27,9 +27,9 @@ Status: Draft for owner review
 - [ ] Public formals and fixed result component/column schemas are exact.
 - [ ] Scalar, empty, length-one and vector inputs preserve one output record per element and stable `input_index` alignment.
 - [ ] Missing input is distinct from malformed input.
-- [ ] Lowercase, whitespace, punctuation, Unicode and wrong-length behavior matches the owner-approved normalisation rule.
+- [ ] Lowercase, whitespace, punctuation, Unicode and wrong-length behaviour matches the owner-approved normalisation rule.
 - [ ] Every position class is tested independently without reusing production validation logic.
-- [ ] Position 17 follows the approved year-domain contract, including 1999/2000 boundaries and explicit pre-1900 behavior.
+- [ ] Position 17 follows the approved year-domain contract, including 1999/2000 boundaries and explicit pre-1900 behaviour.
 - [ ] Impossible dates, leap-year boundaries and future dates follow the accepted contract.
 - [ ] `H`, `M`, `NE` and every pinned birthplace code reconcile to the official source; unknown codes fail deterministically.
 - [ ] The accepted official check-digit vectors pass and single-position mutations fail.
@@ -50,7 +50,7 @@ No test may infer that a mismatch identifies which source is correct.
 
 - [ ] Existing valid scalar `epi_clean_curp()` output retains the exact 13-column Spanish schema.
 - [ ] The documented vector interface returns one row per element or follows an explicitly approved migration path.
-- [ ] Any stricter legacy invalid-input behavior is documented in NEWS and help with an explicit compatibility rationale.
+- [ ] Any stricter legacy invalid-input behaviour is documented in NEWS and help with an explicit compatibility rationale.
 
 ## Privacy And Failure Tests
 

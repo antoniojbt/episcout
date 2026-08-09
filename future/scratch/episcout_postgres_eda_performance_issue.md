@@ -1,6 +1,6 @@
 # PostgreSQL EDA repeats relation-wide aggregate queries, including one `count(*)` per categorical variable
 
-Status: Promoted to issue [#220](https://github.com/antoniojbt/episcout/issues/220); next step is spec `022-postgresql-eda-row-count-reuse`.
+Status: Completed through issue [#220](https://github.com/antoniojbt/episcout/issues/220), spec `022-postgresql-eda-row-count-reuse` and merged PR #222; retained as the original investigation record.
 
 ## Issue summary
 

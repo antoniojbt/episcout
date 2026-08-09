@@ -38,12 +38,11 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 ## Planning Status
 
 - GitHub release `0.3.0` is published from commit `40ef702`; CRAN work remains deferred under issue #81.
-- Issue #220/spec `022-postgresql-eda-row-count-reuse` is active for a narrow internal PostgreSQL query-reuse correction.
-- Issue #217 is the following planning candidate for CURP validation and reconciliation after its missing source reference and authoritative contract are resolved.
-- Issue #218's mapping-only `epi_geo_*` architecture is recorded as completed design-only spec `026-epi-geo-series-plan`; file/in-memory mapping, read-only PostGIS collection and aggregate EDA coordinate integration require separate later implementation specs and do not displace the current sequence.
-- Completed spec records `001`–`010` except reserved `011`, `012`–`017`, `019`–`021`, `023`–`024` and `026` are under `future/specs/done/`; specs `007` and `026` are design-only records and the others record implemented package work.
-- Roadmap issue #204 is the return point for the approved sequence. Security issue #213 tracks the remaining owner-only Codecov credential/cache actions in parallel.
-- `future/TODOs.md` is the only task backlog. `future/README.md` defines the specification lifecycle, and `future/changelog.md` records material planning and implementation outcomes.
+- GitHub roadmap issue [#227](https://github.com/antoniojbt/episcout/issues/227) is the authoritative live sequence. `future/TODOs.md` is its synchronised repository index, `future/README.md` defines the lifecycle and `future/changelog.md` records completed outcomes.
+- Draft spec `025-curp-validation-and-reconciliation` and issue #225 are ready next for activation-gate resolution; package-code work remains blocked until the reviewed contract is accepted and the spec becomes active.
+- Completed design-only spec `026-epi-geo-series-plan` is preserved under `future/specs/done/`; issue #226 tracks its deferred phase-A file/in-memory implementation, while later PostGIS and aggregate EDA-coordinate phases remain in the design record.
+- Completed spec `022-postgresql-eda-row-count-reuse` is under `future/specs/done/` after issue #220 and PR #222 merged. Historical completed manifests remain authoritative records of their own accepted work.
+- Security issue #213 remains a parallel owner action. CRAN issue #81, PostgreSQL report-rendering issue #196 and clarification issues #61/#62/#65/#212 remain deferred unless roadmap #227 is explicitly revised.
 
 ## Verification Entry Points
 
@@ -51,6 +50,7 @@ Use the repository R wrapper and existing scripts:
 
 ```bash
 scripts/rscript_env_caller.R -e "R.home(); .libPaths()"
+scripts/check-workflow-state.sh
 scripts/check-local.sh
 scripts/check-cran.sh
 ```

@@ -138,6 +138,22 @@ Passing tests and successful execution do not establish that analytical behaviou
 - If there are no findings, say so and identify residual risks or checks that were not run.
 - State whether the review was independent of the implementation.
 
+## Work lifecycle and continuity
+
+GitHub issues and the current roadmap issue are the authoritative live task state. `future/TODOs.md`, specification manifests, `future/changelog.md` and `PROJECT_MAP.md` are synchronised repository records; when they disagree with GitHub, stop new work and reconcile them first.
+
+Use this lifecycle for tracked work: `candidate` (issue only), `draft` (specification unresolved), `active` (accepted contract and implementation in progress), `review` (pull request open), `merged/pending-closeout` (derived transient state) and `completed` (default branch verified and all closeout conditions satisfied). Commit only `draft`, `active`, `review` or `completed` in versioned manifests. Record blocked or deferred scheduling in the tracking issue and roadmap rather than inventing additional manifest states.
+
+- Run `scripts/check-workflow-state.sh` at the start of tracked work, before pull-request handoff and during post-merge closeout. Use `--offline` only when GitHub access is genuinely unavailable and report that limitation.
+- Keep at most one implementation specification in `active` or `review`. Draft design research may coexist, but it must not overtake the active lane, rewrite shared status files independently or merge ahead without explicit owner approval.
+- Give every non-trivial change one tracking issue. Use a numbered specification when required by the core approach, then use one scoped branch and one pull request for the accepted slice.
+- Use `Closes #<issue>` only when the pull request completes the issue's stated outcome. Before closing a planning-only issue, create and link its next implementation issue or record an explicit terminal reason.
+- Treat pull-request creation as `review`, not completion. At handoff, state the tracking issue, specification, checks, compatibility impact, unresolved limits, successor disposition and that merge/closeout remains pending.
+- After merge, verify the canonical `upstream/master` commit and required checks; close or update the tracking issue and roadmap; finalize acceptance/review evidence; set the manifest to `completed`; move the spec to `future/specs/done/`; update `future/TODOs.md` and `future/changelog.md`; update `PROJECT_MAP.md` only when architecture or durable pointers changed; and create or confirm the successor tracker.
+- Use a focused closeout pull request when default-branch files require merge-derived evidence. A closeout-only pull request is terminal maintenance and does not recursively require another documentation pull request.
+- Do not begin the successor task until prior closeout passes the workflow-state check. If a merge occurs after a session ends, the next session must perform closeout before any new planning or implementation.
+- After closeout merges, synchronize local and fork `master` with canonical `upstream/master`. Remove only clean, fully merged worktrees and branches, and delete remote branches only when the owner has authorized that cleanup.
+
 ## Git and GitHub
 
 - The current origin is a public GitHub repository; recheck its visibility when publication or disclosure decisions depend on it. Treat ignored data, outputs, secrets and agent state as private by default.
@@ -158,6 +174,8 @@ A PR description should state:
 3. Backward-compatibility impact.
 4. Material coverage change, if measured.
 5. Unresolved limitations or failures, explicitly stating when none remain.
+
+It should also identify the tracking issue, specification when present, current lifecycle state, successor or terminal disposition and post-merge closeout owner. A PR that only plans later implementation must not close the implementation tracker.
 
 Before requesting review, run `scripts/check-local.sh`. Run `scripts/check-cran.sh` for release-oriented changes or when CRAN behaviour is in scope.
 

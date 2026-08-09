@@ -88,4 +88,4 @@ These questions do not block completion of the design plan because each is confi
 
 ## Closeout
 
-The plan satisfies issue #218 by defining the series, beginner vignette, file formats, terms, libraries, basic descriptive mapping, PostGIS path and EDA coordinate integration while preserving a simple first implementation. It does not implement or promise inferential spatial analysis, raster support, web mapping or automatic coordinate discovery.
+The plan satisfies issue #218 by defining the series, beginner vignette, file formats, terms, libraries, basic descriptive mapping, PostGIS path and EDA coordinate integration while preserving a simple first implementation. It does not implement or promise inferential spatial analysis, raster support, web mapping or automatic coordinate discovery. PR #223 passed all required checks and merged as `0c9120d`; issue #218 closed, and deferred issue #226 now preserves the phase-A implementation slice under roadmap #227.

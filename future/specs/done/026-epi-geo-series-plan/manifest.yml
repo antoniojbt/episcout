@@ -1,11 +1,21 @@
 id: "026"
 slug: "epi-geo-series-plan"
+workflow_version: 1
+deliverable: design
 status: completed
 owner: Antonio Berlanga-Taylor
 base_branch: master
 working_branch: feature/plan-epi-geo-series
 created: 2026-08-09
 updated: 2026-08-09
+
+tracking_issue: 218
+source_issues:
+  - 218
+pull_request: 223
+merge_commit: 0c9120de7ed7c6f26811d5cf304ba45a782d8b11
+successor_issue: 226
+terminal_reason: null
 
 related_files:
   - DESCRIPTION
