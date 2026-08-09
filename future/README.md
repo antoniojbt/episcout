@@ -66,7 +66,8 @@ There are no untriaged candidates under `future/ideas/`. Add new candidate work 
 - Issue [#213](https://github.com/antoniojbt/episcout/issues/213) retains only the owner-side Codecov credential and eligible cache/hidden-ref cleanup. Rewritten branches/tags and a protected-`master` upload are complete.
 - CRAN readiness and submission remain deferred under issue [#81](https://github.com/antoniojbt/episcout/issues/81).
 - Issue [#196](https://github.com/antoniojbt/episcout/issues/196) and spec `018-database-eda-report-rendering` are deferred until the roadmap is explicitly revised.
+- Implementation from completed design-only spec `026-epi-geo-series-plan` is deferred to separately approved phase-A file/in-memory mapping, phase-B read-only PostGIS and phase-C aggregate EDA-coordinate specifications.
 
 ### Completed
 
-GitHub release `0.3.0` is published from commit `40ef702`. Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness`, `020-data-frame-writer-delimiter-contract`, `021-postgresql-identity-universe`, `023-package-source-hygiene` and `024-external-fixture-provenance`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.
+GitHub release `0.3.0` is published from commit `40ef702`. Completed specs, including accepted specs `003-large-data-backend-strategy`, `019-postgresql-catalogue-missingness`, `020-data-frame-writer-delimiter-contract`, `021-postgresql-identity-universe`, `023-package-source-hygiene`, `024-external-fixture-provenance` and design-only `026-epi-geo-series-plan`, are under `future/specs/done/`. Each spec's `manifest.yml` remains the authoritative detailed status record.

@@ -73,8 +73,13 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 - [ ] Define explicit contracts before adding cross-tool dictionary
   interoperability, database loading/connection helpers, visual-regression
   redesign or biomedical extensions.
+- [ ] Implement completed design-only spec `026-epi-geo-series-plan` only through separately approved issues/specs for the phase-A vector file/in-memory foundation, phase-B read-only PostGIS source and bounded collection, and phase-C aggregate-only EDA coordinate integration. Inferential spatial analysis, raster and web mapping remain outside that programme.
 
 ## Done
+
+### 2026-08-09
+
+- [x] Complete issue #218's mapping-only `epi_geo_*` architecture as design-only spec `026-epi-geo-series-plan`, defining a GeoPackage/Shapefile primer, explicit CRS and coordinate-pair contracts, static `sf`/`ggplot2` mapping, a read-only bounded PostGIS path and aggregate-only EDA integration without changing package behaviour or the current roadmap sequence.
 
 ### 2026-08-08
 
