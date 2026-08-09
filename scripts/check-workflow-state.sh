@@ -35,7 +35,7 @@ if [[ ! -x $rscript ]]; then
   exit 2
 fi
 
-manifest_output="$($rscript --vanilla - "$repo_root" <<'RSCRIPT'
+manifest_output="$("$rscript" --vanilla - "$repo_root" <<'RSCRIPT'
 args <- commandArgs(trailingOnly = TRUE)
 root <- normalizePath(args[[1L]], winslash = "/", mustWork = TRUE)
 

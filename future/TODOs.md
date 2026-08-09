@@ -17,9 +17,9 @@ This is the repository's synchronised task index. GitHub roadmap issue [#227](ht
 
 ## Current sequence
 
-### No active implementation specification
+### Planning gate — issue #243 / draft spec 030
 
-Issue #237/spec 029 is complete. The bounded three-phase geospatial programme has no automatic successor; any later spatial inference requires a new concrete scientific tracker. Roadmap #227 remains open for its parallel owner action and deferred work.
+Issue [#243](https://github.com/antoniojbt/episcout/issues/243) is the active planning target for `030-simplify-core-eda-controls-geo-outputs`. Its planning/prerequisite PR must repair the workflow-state path-with-spaces failure and accept the breaking semantic, mapping, publication and security-separation contracts before package implementation begins. Once that PR is green, the owner has authorised implementation to continue on a stacked draft PR without waiting for merge.
 
 ## Parallel owner action
 
