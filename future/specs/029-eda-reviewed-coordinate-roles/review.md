@@ -28,10 +28,11 @@ None. The issue contract and completed source designs resolve the implementation
 - `scripts/check-cran.sh` passed with no errors or warnings and the one recorded incoming-feasibility NOTE for a new submission, its absent prebuilt vignette index and two existing Stack Overflow 403 responses.
 - Focused data-frame and live PostgreSQL geo suites, `scripts/check-workflow-state.sh` and `git diff --check` passed after the final reconciliation hardening.
 - Ordinary summaries and plots policy-skip reviewed coordinate variables; serialized returns and every bundle artifact were checked for distinctive coordinate tokens and geometry markers.
+- Pull-request head `2a668d4` passed PostgreSQL integration, Ubuntu, macOS, coverage, Codecov project/patch and CodeFactor checks.
 
 ## Closeout Notes
 
 - Implementation PR: #241; merge commit pending.
-- Required local checks: passed; pull-request checks pending.
+- Required local and pull-request checks: passed at `2a668d4`; final evidence-only head checks pending.
 - Tracking issue and roadmap disposition: pending.
 - Terminal reason: bounded Phase-C completes the current geospatial programme; future inference requires a separate concrete scientific tracker.
