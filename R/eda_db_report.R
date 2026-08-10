@@ -157,8 +157,10 @@ eda_db_read_bundle <- function(bundle) {
         !identical(as.character(manifest$checksum_md5[self]), "")) {
     stop("The database-EDA manifest does not identify itself correctly.", call. = FALSE)
   }
-  if (any(manifest$status == "not_created" &
-            nzchar(as.character(manifest$checksum_md5)))) {
+  if (any(
+    manifest$status == "not_created" &
+      nzchar(as.character(manifest$checksum_md5))
+  )) {
     stop("Not-created database-EDA artifacts must not have checksums.", call. = FALSE)
   }
 
@@ -514,8 +516,123 @@ eda_db_report_params <- function(bundle) {
     tables = bundle$tables,
     manifest = evidence_manifest,
     plots = plot_rows,
-    maps = map_rows
+    maps = map_rows,
+    frequency_companions = eda_db_report_cat_companions(bundle)
   )
+}
+
+eda_db_report_cat_companions <- function(bundle) {
+  rows <- bundle$manifest[
+    bundle$manifest$type == "plot_data" &
+      bundle$manifest$status == "created" &
+      grepl("^plot_data/[0-9]{3,}-frequency\\.csv$", bundle$manifest$path),
+    c("artifact", "path"),
+    drop = FALSE
+  ]
+  if (nrow(rows) == 0L) {
+    return(stats::setNames(vector("list", 0L), character()))
+  }
+  metadata <- bundle$tables$run_metadata
+  contract <- if ("plot_data_contract" %in% names(metadata)) {
+    as.character(metadata$plot_data_contract[[1]])
+  } else {
+    "compact-plot-data-1"
+  }
+  if (!contract %in% c("compact-plot-data-1", "compact-plot-data-2") ||
+        !"max_plot_levels" %in% names(metadata)) {
+    stop("A database-EDA frequency companion contract is incompatible.", call. = FALSE)
+  }
+  max_levels <- suppressWarnings(as.integer(metadata$max_plot_levels[[1]]))
+  if (is.na(max_levels) || max_levels < 2L || max_levels > 100L) {
+    stop("A database-EDA frequency companion contract is incompatible.", call. = FALSE)
+  }
+
+  companions <- lapply(seq_len(nrow(rows)), function(row_index) {
+    path <- rows$path[[row_index]]
+    variable_index <- suppressWarnings(as.integer(sub(
+      "^plot_data/([0-9]{3,})-frequency\\.csv$", "\\1", path
+    )))
+    specification <- bundle$tables$specification
+    inventory <- bundle$tables$plot_inventory
+    inventory_row <- inventory[
+      inventory$variable_index == variable_index &
+        inventory$plot_type == "frequency" &
+        inventory$status == "created", ,
+      drop = FALSE
+    ]
+    valid_index <- !is.na(variable_index) && variable_index >= 1L &&
+      variable_index <= nrow(specification) && nrow(inventory_row) == 1L
+    if (!valid_index) {
+      stop("A database-EDA frequency companion is inconsistent.", call. = FALSE)
+    }
+    variable <- specification[variable_index, , drop = FALSE]
+    summary_variable <- bundle$tables$summary_variables[
+      bundle$tables$summary_variables$name == variable$name[[1]], ,
+      drop = FALSE
+    ]
+    frequencies <- bundle$tables$summary_categorical[
+      bundle$tables$summary_categorical$name == variable$name[[1]], ,
+      drop = FALSE
+    ]
+    valid_variable <- nrow(summary_variable) == 1L &&
+      variable$type[[1]] %in% c("categorical", "binary") &&
+      identical(as.character(inventory_row$name[[1]]), as.character(variable$name[[1]]))
+    if (!valid_variable) {
+      stop("A database-EDA frequency companion is inconsistent.", call. = FALSE)
+    }
+    expected <- eda_cat_display_frequency(
+      frequencies[, setdiff(names(frequencies), "name"), drop = FALSE],
+      name = variable$name[[1]], label = variable$label[[1]],
+      type = variable$type[[1]], n_total = summary_variable$n[[1]],
+      n_missing = summary_variable$n_missing[[1]]
+    )
+    expected <- eda_collapse_frequencies(expected, max_levels)
+    observed <- tryCatch(
+      utils::read.csv(
+        file.path(bundle$output_dir, path),
+        check.names = FALSE,
+        stringsAsFactors = FALSE, na.strings = character()
+      ),
+      error = function(error) {
+        stop("A database-EDA frequency companion could not be read.", call. = FALSE)
+      }
+    )
+    compared <- if (contract == "compact-plot-data-1") {
+      expected[, c("level", "count", "display_order", "remainder"), drop = FALSE]
+    } else {
+      expected
+    }
+    if (!eda_db_report_companion_equal(observed, compared)) {
+      stop("A database-EDA frequency companion is inconsistent.", call. = FALSE)
+    }
+    expected
+  })
+  names(companions) <- vapply(rows$path, function(path) {
+    variable_index <- as.integer(sub(
+      "^plot_data/([0-9]{3,})-frequency\\.csv$", "\\1", path
+    ))
+    variable <- bundle$tables$specification[variable_index, , drop = FALSE]
+    eda_categorical_display_label(variable$label[[1]], variable$name[[1]])
+  }, character(1))
+  companions
+}
+
+eda_db_report_companion_equal <- function(observed, expected) {
+  if (!is.data.frame(observed) || !identical(names(observed), names(expected)) ||
+        nrow(observed) != nrow(expected)) {
+    return(FALSE)
+  }
+  isTRUE(all(vapply(names(expected), function(name) {
+    left <- observed[[name]]
+    right <- expected[[name]]
+    missing <- is.na(left) & is.na(right)
+    if (is.numeric(left) && is.numeric(right)) {
+      equal <- is.finite(left) & is.finite(right) & abs(left - right) < 1e-12
+    } else {
+      equal <- as.character(left) == as.character(right)
+    }
+    all(missing | (!is.na(equal) & equal))
+  }, logical(1))))
 }
 
 eda_db_report_readme <- function() {

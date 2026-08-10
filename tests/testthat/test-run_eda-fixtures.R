@@ -8,7 +8,7 @@ data_path <- file.path(fixture_dir, "blood_storage.csv")
 spec_path <- file.path(fixture_dir, "blood_storage_spec.csv")
 
 expected_components <- c(
-  "metadata", "schema", "missing", "geo", "summaries", "plots",
+  "metadata", "schema", "missing", "geo", "summaries", "categorical_display", "plots",
   "maps", "map_inventory"
 )
 
@@ -25,6 +25,7 @@ test_that("epi_eda_run returns expected components for real fixture data", {
   expect_s3_class(observed$missing, "data.frame")
   expect_s3_class(observed$geo, "data.frame")
   expect_type(observed$summaries, "list")
+  expect_s3_class(observed$categorical_display, "data.frame")
   expect_type(observed$plots, "list")
   expect_type(observed$maps, "list")
   expect_s3_class(observed$map_inventory, "data.frame")
@@ -43,6 +44,11 @@ test_that("epi_eda_run real-data workflow matches component functions", {
     epi_eda_profile_summaries(data, spec),
     tolerance = 1e-12,
     ignore_attr = TRUE
+  )
+  expect_equal(
+    observed$categorical_display,
+    epi_eda_categorical_display(observed$summaries),
+    tolerance = 1e-12
   )
   expect_named(observed$plots, spec$name)
 })
@@ -81,6 +87,7 @@ test_that("epi_eda_run writes workflow outputs to a temporary output directory",
   expect_true(file.exists(file.path(output_dir, "geo_qa.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_numeric.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
+  expect_true(file.exists(file.path(output_dir, "categorical_display.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_variables.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_text.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_temporal.csv")))

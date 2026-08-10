@@ -35,17 +35,19 @@ test_that("public intake and return contracts include map components", {
   )
   fixture <- make_intake_fixture()
   observed <- epi_eda_intake_run(
-    fixture$data, fixture$spec, tempfile("intake-contract-"), render = FALSE
+    fixture$data, fixture$spec, tempfile("intake-contract-"),
+    render = FALSE
   )
 
   expect_s3_class(observed, "epi_eda_intake")
   expect_named(observed, c(
     "status", "stage", "output_dir", "manifest", "input", "spec",
     "schema_before", "schema_after", "preparation_audit", "missing", "geo",
-    "maps", "map_inventory", "summary", "stratified", "table1", "report",
+    "maps", "map_inventory", "summary", "categorical_display", "stratified", "table1", "report",
     "messages", "metadata"
   ))
   expect_identical(observed$status, "complete")
+  expect_s3_class(observed$categorical_display, "data.frame")
   expect_identical(observed$spec$state, "supplied")
   expect_named(
     observed$manifest,
@@ -60,7 +62,8 @@ test_that("spec NULL generates, saves, returns and uses a semantic dictionary", 
   original <- fixture$data
   output_dir <- tempfile("intake-generated-")
   observed <- epi_eda_intake_run(
-    fixture$data, output_dir = output_dir, render = TRUE
+    fixture$data,
+    output_dir = output_dir, render = TRUE
   )
 
   expect_identical(observed$status, "complete")
@@ -89,7 +92,8 @@ test_that("removed and malformed specifications return actionable blocked bundle
   removed$review_status <- "reviewed"
   output_dir <- tempfile("intake-old-spec-")
   old <- epi_eda_intake_run(
-    fixture$data, removed, output_dir, render = FALSE
+    fixture$data, removed, output_dir,
+    render = FALSE
   )
   expect_identical(old$status, "blocked")
   expect_match(old$messages$reason, "removed evidence/review scaffold")
@@ -97,7 +101,8 @@ test_that("removed and malformed specifications return actionable blocked bundle
 
   malformed <- fixture$spec[, setdiff(names(fixture$spec), "type"), drop = FALSE]
   invalid <- epi_eda_intake_run(
-    fixture$data, malformed, tempfile("intake-invalid-spec-"), render = FALSE
+    fixture$data, malformed, tempfile("intake-invalid-spec-"),
+    render = FALSE
   )
   expect_identical(invalid$status, "blocked")
   expect_match(invalid$messages$reason, "missing required columns")
@@ -128,7 +133,8 @@ test_that("audit, blockers and apply retain factual processing outcomes", {
   changed$data$value <- c(1L, 2L, NA_integer_, 4L)
   changed$spec$type[changed$spec$name == "value"] <- "numeric"
   none <- epi_eda_intake_run(
-    changed$data, changed$spec, tempfile("intake-none-"), render = FALSE
+    changed$data, changed$spec, tempfile("intake-none-"),
+    render = FALSE
   )
   expect_identical(none$status, "blocked")
   applied <- epi_eda_intake_run(
@@ -166,7 +172,8 @@ test_that("manifest and checksums cover every regular bundle artifact", {
   fixture <- make_intake_fixture()
   output_dir <- tempfile("intake-manifest-")
   observed <- epi_eda_intake_run(
-    fixture$data, fixture$spec, output_dir, strata = "arm"
+    fixture$data, fixture$spec, output_dir,
+    strata = "arm"
   )
   created <- sort(observed$manifest$path[observed$manifest$status == "created"])
 
@@ -184,10 +191,12 @@ test_that("owned overwrite is conservative, transactional and rejects old manife
   fixture <- make_intake_fixture()
   owned <- tempfile("intake-owned-")
   first <- epi_eda_intake_run(
-    fixture$data, fixture$spec, owned, render = FALSE
+    fixture$data, fixture$spec, owned,
+    render = FALSE
   )
   second <- epi_eda_intake_run(
-    fixture$data, fixture$spec, owned, overwrite = TRUE, render = FALSE
+    fixture$data, fixture$spec, owned,
+    overwrite = TRUE, render = FALSE
   )
   expect_identical(second$status, "complete")
   before_files <- bundle_files(owned)
@@ -212,7 +221,8 @@ test_that("owned overwrite is conservative, transactional and rejects old manife
 
   manifest_path <- file.path(owned, "manifest.csv")
   manifest <- utils::read.csv(
-    manifest_path, stringsAsFactors = FALSE, na.strings = character()
+    manifest_path,
+    stringsAsFactors = FALSE, na.strings = character()
   )
   manifest$sensitivity <- "internal_review"
   utils::write.csv(manifest, manifest_path, row.names = FALSE, na = "")
@@ -243,7 +253,8 @@ test_that("unowned output and report failures preserve safe artifacts", {
     .package = "episcout"
   )
   observed <- epi_eda_intake_run(
-    fixture$data, fixture$spec, output_dir, render = TRUE
+    fixture$data, fixture$spec, output_dir,
+    render = TRUE
   )
   expect_identical(observed$status, "blocked")
   expect_true(file.exists(file.path(output_dir, "summary_variables.csv")))
@@ -373,11 +384,13 @@ test_that("overwrite rejects corrupted ownership and restores failed swaps", {
   fixture <- make_intake_fixture()
   malformed <- tempfile("intake-malformed-manifest-")
   epi_eda_intake_run(
-    fixture$data, fixture$spec, malformed, render = FALSE
+    fixture$data, fixture$spec, malformed,
+    render = FALSE
   )
   manifest_path <- file.path(malformed, "manifest.csv")
   manifest <- utils::read.csv(
-    manifest_path, stringsAsFactors = FALSE, na.strings = character()
+    manifest_path,
+    stringsAsFactors = FALSE, na.strings = character()
   )
   manifest$type[manifest$artifact == "summary_numeric"] <- "untrusted"
   utils::write.csv(manifest, manifest_path, row.names = FALSE, na = "")
@@ -391,7 +404,8 @@ test_that("overwrite rejects corrupted ownership and restores failed swaps", {
 
   owned <- tempfile("intake-failed-swap-")
   epi_eda_intake_run(
-    fixture$data, fixture$spec, owned, render = FALSE
+    fixture$data, fixture$spec, owned,
+    render = FALSE
   )
   before_files <- bundle_files(owned)
   before_checksums <- unname(tools::md5sum(file.path(owned, before_files)))
@@ -466,7 +480,8 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   audit <- with_mocked_bindings(
     epi_eda_intake_run(
       fixture$data, fixture$spec,
-      tempfile("intake-audit-failure-"), render = FALSE
+      tempfile("intake-audit-failure-"),
+      render = FALSE
     ),
     epi_eda_prepare = function(...) stop("simulated audit failure"),
     .package = "episcout"
@@ -477,7 +492,8 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   geo <- with_mocked_bindings(
     epi_eda_intake_run(
       fixture$data, fixture$spec,
-      tempfile("intake-geo-failure-"), render = FALSE
+      tempfile("intake-geo-failure-"),
+      render = FALSE
     ),
     epi_eda_profile_geo = function(...) stop("simulated geo failure"),
     .package = "episcout"
@@ -488,7 +504,8 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   summary <- with_mocked_bindings(
     epi_eda_intake_run(
       fixture$data, fixture$spec,
-      tempfile("intake-summary-failure-"), render = FALSE
+      tempfile("intake-summary-failure-"),
+      render = FALSE
     ),
     epi_eda_profile_summaries = function(...) {
       stop("simulated summary failure")
@@ -501,7 +518,8 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   canonical <- with_mocked_bindings(
     epi_eda_intake_run(
       fixture$data, fixture$spec,
-      tempfile("intake-canonical-failure-"), render = FALSE
+      tempfile("intake-canonical-failure-"),
+      render = FALSE
     ),
     intake_reconcile_canonical = function(...) {
       "simulated canonical reconciliation failure"
@@ -510,6 +528,24 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   )
   expect_identical(canonical$status, "blocked")
   expect_match(canonical$messages$reason, "simulated canonical")
+
+  categorical_display <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-categorical-display-failure-"),
+      render = FALSE
+    ),
+    epi_eda_categorical_display = function(...) {
+      stop("simulated categorical display failure")
+    },
+    .package = "episcout"
+  )
+  expect_identical(categorical_display$status, "blocked")
+  expect_match(
+    categorical_display$messages$reason,
+    "simulated categorical display failure"
+  )
+  expect_null(categorical_display$categorical_display)
 
   invalid_strata <- epi_eda_intake_run(
     fixture$data, fixture$spec,
@@ -550,6 +586,30 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
     "simulated stratified reconciliation"
   )
 
+  display_calls <- 0L
+  actual_display <- epi_eda_categorical_display
+  stratified_display <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-stratified-display-failure-"),
+      strata = "arm", render = FALSE
+    ),
+    epi_eda_categorical_display = function(result, ...) {
+      display_calls <<- display_calls + 1L
+      if (display_calls == 2L) {
+        stop("simulated stratified display failure")
+      }
+      actual_display(result, ...)
+    },
+    .package = "episcout"
+  )
+  expect_identical(stratified_display$status, "blocked")
+  expect_s3_class(stratified_display$stratified, "epi_eda_stratified")
+  expect_match(
+    stratified_display$messages$reason,
+    "simulated stratified display failure"
+  )
+
   table1 <- with_mocked_bindings(
     epi_eda_intake_run(
       fixture$data, fixture$spec,
@@ -578,7 +638,8 @@ test_that("intake bundles maps, checksums and portable HTML", {
   spec$missing_codes[[3]] <- "MISSING"
   output_dir <- tempfile("intake-maps-")
   observed <- epi_eda_intake_run(
-    data, spec, output_dir, prepare = "apply", render = TRUE,
+    data, spec, output_dir,
+    prepare = "apply", render = TRUE,
     maps = TRUE, map_vars = "theme"
   )
 
@@ -619,25 +680,29 @@ test_that("argument validation happens before publication", {
   )
   expect_error(
     epi_eda_intake_run(
-      fixture$data, fixture$spec, tempfile(), render = NA
+      fixture$data, fixture$spec, tempfile(),
+      render = NA
     ),
     "render"
   )
   expect_error(
     epi_eda_intake_run(
-      fixture$data, fixture$spec, tempfile(), strata = c("arm", "status")
+      fixture$data, fixture$spec, tempfile(),
+      strata = c("arm", "status")
     ),
     "strata"
   )
   expect_error(
     epi_eda_intake_run(
-      fixture$data, fixture$spec, tempfile(), map_vars = "value"
+      fixture$data, fixture$spec, tempfile(),
+      map_vars = "value"
     ),
     "requires maps = TRUE"
   )
   expect_error(
     epi_eda_intake_run(
-      fixture$data, fixture$spec, tempfile(), source_id = "/private/source.csv"
+      fixture$data, fixture$spec, tempfile(),
+      source_id = "/private/source.csv"
     ),
     "absolute"
   )
@@ -650,7 +715,8 @@ test_that("argument validation happens before publication", {
   )
   expect_error(
     epi_eda_intake_run(
-      fixture$data, fixture$spec, tempfile(), source_id = "\n"
+      fixture$data, fixture$spec, tempfile(),
+      source_id = "\n"
     ),
     "source_id"
   )
@@ -692,7 +758,8 @@ test_that("zero-row inputs retain summary and map inventory schemas", {
   data <- fixture$data[0, , drop = FALSE]
   spec <- epi_eda_spec_scaffold(data)
   observed <- epi_eda_intake_run(
-    data, spec, tempfile("intake-zero-row-"), maps = TRUE, render = FALSE
+    data, spec, tempfile("intake-zero-row-"),
+    maps = TRUE, render = FALSE
   )
 
   expect_identical(observed$status, "complete")

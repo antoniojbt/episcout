@@ -94,6 +94,7 @@ intake <- epi_eda_intake_run(
 )
 intake$status
 intake$stratified$groups
+intake$categorical_display
 intake$table1
 ```
 
@@ -137,6 +138,19 @@ stratified <- epi_eda_profile_stratified(
 epi_eda_table1(stratified)
 ```
 
+`epi_eda_categorical_display()` is the shared aggregate calculation behind categorical presentation. It combines standard and declared-code missing values in one explicit missing row and retains zero denominators as integer zero with `NA_real_` proportion.
+
+```{r}
+compatibility <- epi_eda_categorical_display(stratified)
+column <- epi_eda_categorical_display(stratified, basis = "column")
+row <- epi_eda_categorical_display(stratified, basis = "row")
+overall <- epi_eda_categorical_display(stratified, basis = "overall")
+
+epi_eda_table1(stratified, basis = "column")
+```
+
+The default `compatibility` basis uses observed non-missing values for ordinary levels and all group rows for the missing level. `column` uses all rows within each group, `row` distributes each level across non-Overall strata, and `overall` uses the included analysis population. Row percentages require a stratified result. `epi_eda_run()` and intake publish the compatibility table as `categorical_display.csv`; the HTML reports show the same numeric fields.
+
 ## PostgreSQL-backed EDA
 
 The caller owns an open idle RPostgres connection and supplies schema and relation identifiers separately. Arbitrary SQL, dotted relation names, generic DBI connections and caller-managed transactions are not accepted.
@@ -165,7 +179,7 @@ DBI::dbDisconnect(con)
 
 All profiling reads and the map bound check occur in one read-only repeatable-read snapshot. Coordinates and thematic observations are collected only for requested, map-ready, within-limit pairs. The query projects only ready-pair coordinates and explicitly selected themes, uses a defensive `max_map_points + 1` bound, and fails rather than truncates or silently drops rows. Rendering and atomic filesystem publication happen after the snapshot ends.
 
-`layout = "delivery"` makes `README.md` and `reports/eda-report.html` the human entry points. `QA_QC/` retains aggregate checks and summaries, `plot_data/` retains compact aggregate plot inputs but never map coordinates/themes or source rows, `plots/` and `maps/` retain deterministic SVGs, and `run_manifests/` retains provenance, timings and the five-column checksum manifest. The caller supplies the exact root; a `YYYYMMDD_eda_cycle` name is recommended rather than inferred. The default `layout = "bundle"` preserves the flat bundle and its metadata schemas.
+`layout = "delivery"` makes `README.md` and `reports/eda-report.html` the human entry points. `QA_QC/` retains aggregate checks and summaries, `plot_data/` retains compact aggregate plot inputs but never map coordinates/themes or source rows, `plots/` and `maps/` retain deterministic SVGs, and `run_manifests/` retains provenance, timings and the five-column checksum manifest. Frequency companions use `compact-plot-data-2`: their established plot columns come first, followed by the shared categorical display fields. Valid legacy four-column `compact-plot-data-1` companions are reconstructed from validated summary aggregates in memory and are not rewritten. The caller supplies the exact root; a `YYYYMMDD_eda_cycle` name is recommended rather than inferred. The default `layout = "bundle"` preserves the flat bundle and its metadata schemas.
 
 Existing flat and delivery bundles can be rendered without a live connection. The renderer re-reads and validates the on-disk bundle; a result object contributes only its output directory.
 

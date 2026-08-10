@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Draft
+Status: Review
 
 ## Public Calculation
 

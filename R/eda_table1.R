@@ -5,6 +5,9 @@
 #' fields and adds no p-values or automatic small-cell suppression.
 #'
 #' @param result An `epi_eda_stratified` result.
+#' @param basis Categorical percentage basis passed to
+#'   [epi_eda_categorical_display()]. The default preserves the established
+#'   Table 1 display.
 #'
 #' @return An ordinary long-form data frame. `denominator` records the numeric
 #'   denominator behind every count/percentage display.
@@ -13,8 +16,13 @@
 #'   and does not decide whether they may be shared.
 #'
 #' @export
-epi_eda_table1 <- function(result) {
+epi_eda_table1 <- function(result,
+                           basis = c(
+                             "compatibility", "column", "row", "overall"
+                           )) {
   stratified_validate_table(result)
+  basis <- match.arg(basis)
+  categorical_display <- epi_eda_categorical_display(result, basis)
   variable_info <- result$variables[!duplicated(result$variables$name), c(
     "name", "label", "type"
   ), drop = FALSE]
@@ -40,8 +48,9 @@ epi_eda_table1 <- function(result) {
       for (index in seq_len(nrow(source))) {
         row <- source[index, , drop = FALSE]
         level_order <- sum(source$group_id[[index]] == source$group_id[seq_len(index)])
+        display_row <- stratified_table_display_row(categorical_display, row)
         rows[[length(rows) + 1L]] <- stratified_table_categorical(
-          row, info, variable_order, level_order
+          row, info, variable_order, level_order, display_row, basis
         )
       }
     } else if (type %in% c("date", "datetime")) {
@@ -90,23 +99,58 @@ stratified_table_numeric <- function(row, info, variable_order) {
   )
 }
 
-stratified_table_categorical <- function(row, info, variable_order, row_order) {
+stratified_table_categorical <- function(row,
+                                         info,
+                                         variable_order,
+                                         row_order,
+                                         display_row,
+                                         basis) {
   missing <- row$is_missing_level[[1]]
-  percentage <- if (missing) row$p_total[[1]] else row$p_observed[[1]]
-  denominator <- if (missing) row$n_total[[1]] else row$n_observed[[1]]
+  percentage <- display_row$proportion[[1]]
+  denominator <- display_row$denominator[[1]]
   level_label <- if (missing) "Missing" else as.character(row$level[[1]])
   note <- stratified_table_note(row)
   if (isTRUE(row$is_unexpected[[1]])) {
     note <- paste(note, "Unexpected level.")
   }
-  note <- paste(
-    note,
-    if (missing) "Missing percentages use all rows in the group." else "Level percentages use observed non-missing values."
-  )
+  note <- paste(note, stratified_table_basis_note(basis, missing))
   stratified_table_row(
     variable_order, row_order, info, row$level[[1]], level_label,
     if (missing) "missing" else "level", row, denominator,
-    stratified_count_proportion(row$n[[1]], percentage), note
+    stratified_count_proportion(display_row$numerator[[1]], percentage), note
+  )
+}
+
+stratified_table_display_row <- function(display, row) {
+  same_level <- if (row$is_missing_level[[1]]) {
+    display$is_missing_level
+  } else {
+    !display$is_missing_level & !is.na(display$level) &
+      display$level == as.character(row$level[[1]])
+  }
+  index <- which(
+    display$name == row$name[[1]] &
+      display$group_id == row$group_id[[1]] & same_level
+  )
+  if (length(index) != 1L) {
+    stop("Categorical Table 1 cells did not reconcile with the display contract.", call. = FALSE)
+  }
+  display[index, , drop = FALSE]
+}
+
+stratified_table_basis_note <- function(basis, missing) {
+  if (basis == "compatibility") {
+    return(if (missing) {
+      "Missing percentages use all rows in the group."
+    } else {
+      "Level percentages use observed non-missing values."
+    })
+  }
+  switch(
+    basis,
+    column = "Column percentages use all rows in the group, including the missing level.",
+    row = "Row percentages distribute this level across non-Overall strata; Overall is excluded from the denominator.",
+    overall = "Overall percentages use the included analysis population."
   )
 }
 

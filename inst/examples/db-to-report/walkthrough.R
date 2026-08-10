@@ -403,6 +403,8 @@ missing_profile
 summary_profile$variables
 summary_profile$numeric
 summary_profile$categorical
+categorical_display <- epi_eda_categorical_display(summary_profile)
+categorical_display
 plot_profile$systolic_bp
 
 output_root <- Sys.getenv(
@@ -430,6 +432,17 @@ database_bundle <- epi_eda_db_run(
 database_bundle$status
 database_bundle$manifest
 database_bundle$identifier_qa
+frequency_companion_paths <- database_bundle$manifest$path[
+  database_bundle$manifest$type == "plot_data" &
+    grepl("-frequency\\.csv$", database_bundle$manifest$path)
+]
+frequency_companions <- lapply(
+  file.path(delivery_dir, frequency_companion_paths),
+  read.csv,
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+frequency_companions
 database_report <- file.path(delivery_dir, "reports", "eda-report.html")
 stopifnot(file.exists(database_report))
 

@@ -4,10 +4,14 @@
 \alias{epi_eda_table1}
 \title{Render a traceable Table 1 data frame}
 \usage{
-epi_eda_table1(result)
+epi_eda_table1(result, basis = c("compatibility", "column", "row", "overall"))
 }
 \arguments{
 \item{result}{An \code{epi_eda_stratified} result.}
+
+\item{basis}{Categorical percentage basis passed to
+\code{\link[=epi_eda_categorical_display]{epi_eda_categorical_display()}}. The default preserves the established
+Table 1 display.}
 }
 \value{
 An ordinary long-form data frame. \code{denominator} records the numeric

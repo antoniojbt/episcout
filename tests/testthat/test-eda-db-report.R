@@ -16,7 +16,9 @@ db_report_empty <- function(columns) {
 
 db_report_fixture <- function(layout = "bundle",
                               with_plot = TRUE,
-                              with_skipped_map = FALSE) {
+                              with_skipped_map = FALSE,
+                              categorical = FALSE,
+                              plot_data_contract = "compact-plot-data-2") {
   root <- tempfile("eda-db-report-bundle-")
   dir.create(root)
   metadata <- data.frame(
@@ -24,6 +26,12 @@ db_report_fixture <- function(layout = "bundle",
     status = "complete",
     n_rows = 42L,
     n_spec_variables = 1L,
+    plot_data_contract = if (layout == "delivery") {
+      plot_data_contract
+    } else {
+      "compact-plot-data-1"
+    },
+    max_plot_levels = 2L,
     stringsAsFactors = FALSE
   )
   messages <- data.frame(
@@ -31,8 +39,11 @@ db_report_fixture <- function(layout = "bundle",
     reason = character(), recommended_action = character(),
     stringsAsFactors = FALSE
   )
+  variable_name <- if (categorical) "status" else "measurement"
+  variable_label <- if (categorical) "Status" else "Measurement"
+  variable_type <- if (categorical) "categorical" else "numeric"
   spec <- data.frame(
-    name = "measurement", label = "Measurement", type = "numeric",
+    name = variable_name, label = variable_label, type = variable_type,
     role = "measure", stringsAsFactors = FALSE
   )
   source <- data.frame(
@@ -42,22 +53,34 @@ db_report_fixture <- function(layout = "bundle",
     stringsAsFactors = FALSE
   )
   snapshot <- list(
-    schema = data.frame(name = "measurement", status = "compatible", stringsAsFactors = FALSE),
+    schema = data.frame(name = variable_name, status = "compatible", stringsAsFactors = FALSE),
     missing = data.frame(
-      name = "measurement", n = 42L, n_missing = 2L,
+      name = variable_name, n = 42L, n_missing = 2L,
       p_missing = 2 / 42, stringsAsFactors = FALSE
     ),
     summaries = list(
       variables = data.frame(
-        name = "measurement", n = 42L, n_missing = 2L,
+        name = variable_name, n = 42L, n_missing = 2L,
         n_observed = 40L, status = "summarised", reason = NA_character_,
         stringsAsFactors = FALSE
       ),
-      numeric = data.frame(
-        name = "measurement", n_finite = 40L, min = 1,
-        mean = 3.5, max = 6, stringsAsFactors = FALSE
-      ),
-      categorical = db_report_empty(c("name", "level", "n", "p_total", "p_observed")),
+      numeric = if (categorical) {
+        db_report_empty(c("name", "n_finite", "min", "mean", "max"))
+      } else {
+        data.frame(
+          name = "measurement", n_finite = 40L, min = 1,
+          mean = 3.5, max = 6, stringsAsFactors = FALSE
+        )
+      },
+      categorical = if (categorical) {
+        data.frame(
+          name = c("status", "status"), level = c("no", "yes"),
+          n = c(15L, 25L), p_total = c(15 / 42, 25 / 42),
+          p_observed = c(15 / 40, 25 / 40), stringsAsFactors = FALSE
+        )
+      } else {
+        db_report_empty(c("name", "level", "n", "p_total", "p_observed"))
+      },
       text = db_report_empty(c("name", "n", "n_missing", "n_observed", "n_unique")),
       temporal = db_report_empty(c("name", "n", "n_missing", "n_observed", "range_unit")),
       skipped = db_report_empty(c("name", "type", "reason"))
@@ -66,13 +89,19 @@ db_report_fixture <- function(layout = "bundle",
     geo = db_report_empty(c("geo_pair", "status", "reason"))
   )
   plot_inventory <- data.frame(
-    variable_index = 1L, name = "measurement", type = "numeric",
-    plot_type = "histogram", n_total = 42L, n_missing = 2L,
+    variable_index = 1L, name = variable_name, type = variable_type,
+    plot_type = if (categorical) "frequency" else "histogram",
+    n_total = 42L, n_missing = 2L,
     n_plotted = 40L, n_excluded_non_finite = 0L,
-    n_displayed_levels = NA_integer_, n_collapsed_levels = NA_integer_,
+    n_displayed_levels = if (categorical) 2L else NA_integer_,
+    n_collapsed_levels = if (categorical) 0L else NA_integer_,
     status = if (with_plot) "created" else "not_created",
     reason = if (with_plot) NA_character_ else "Plot creation was disabled by the caller.",
-    path = if (with_plot) "plots/001-histogram.svg" else NA_character_,
+    path = if (with_plot) {
+      paste0("plots/001-", if (categorical) "frequency" else "histogram", ".svg")
+    } else {
+      NA_character_
+    },
     stringsAsFactors = FALSE
   )
   map_inventory <- if (with_skipped_map) {
@@ -101,19 +130,39 @@ db_report_fixture <- function(layout = "bundle",
     dir.create(file.path(root, "plots"))
     writeLines(
       '<svg xmlns="http://www.w3.org/2000/svg"><text>aggregate plot</text></svg>',
-      file.path(root, "plots", "001-histogram.svg")
+      file.path(
+        root, "plots",
+        paste0("001-", if (categorical) "frequency" else "histogram", ".svg")
+      )
     )
   }
   plot_data_registry <- db_report_empty(c(
     "artifact", "type", "path", "status", "checksum_md5"
   ))
   if (layout == "delivery") {
-    entry <- list(
-      data = data.frame(
+    data <- if (categorical) {
+      display <- getFromNamespace("eda_cat_display_frequency", "episcout")(
+        data.frame(level = c("no", "yes"), n = c(15L, 25L)),
+        "status", "Status", "categorical", 42L, 2L
+      )
+      compact <- getFromNamespace("eda_collapse_frequencies", "episcout")(
+        display, 2L
+      )
+      if (plot_data_contract == "compact-plot-data-1") {
+        compact[, c("level", "count", "display_order", "remainder"), drop = FALSE]
+      } else {
+        compact
+      }
+    } else {
+      data.frame(
         bin = 1:2, lower = c(0, 1), upper = c(1, 2),
         midpoint = c(0.5, 1.5), count = c(20L, 20L)
-      ),
-      plot_type = "histogram", box_data = NULL
+      )
+    }
+    entry <- list(
+      data = data,
+      plot_type = if (categorical) "frequency" else "histogram",
+      box_data = NULL
     )
     plot_data_registry <- getFromNamespace("eda_db_write_plot_data", "episcout")(
       root, list(entry), layout
@@ -145,7 +194,8 @@ db_report_refresh_checksum <- function(root, artifact) {
     file.path(root, "run_manifests", "manifest.csv")
   }
   manifest <- utils::read.csv(
-    manifest_path, check.names = FALSE, stringsAsFactors = FALSE,
+    manifest_path,
+    check.names = FALSE, stringsAsFactors = FALSE,
     na.strings = character()
   )
   index <- match(artifact, manifest$artifact)
@@ -195,7 +245,8 @@ test_that("delivery dependencies are checked before PostgreSQL preflight", {
   expect_error(
     with_mocked_bindings(
       epi_eda_db_run(
-        source, spec, tempfile("delivery-preflight-"), layout = "delivery"
+        source, spec, tempfile("delivery-preflight-"),
+        layout = "delivery"
       ),
       eda_db_report_dependencies = function() {
         stop("DEPENDENCY_PRECHECK", call. = FALSE)
@@ -210,7 +261,8 @@ test_that("delivery dependencies are checked before PostgreSQL preflight", {
   expect_error(
     with_mocked_bindings(
       epi_eda_db_run(
-        source, spec, tempfile("bundle-preflight-"), quiet = NA
+        source, spec, tempfile("bundle-preflight-"),
+        quiet = NA
       ),
       eda_validate_postgres_source = function(...) {
         stop("DATABASE_PREFLIGHT", call. = FALSE)
@@ -227,11 +279,13 @@ test_that("a validated flat bundle renders atomically and remains relocatable", 
   report <- epi_eda_render_db_report(root)
 
   expect_identical(report, normalizePath(
-    file.path(root, "reports", "eda-report.html"), winslash = "/"
+    file.path(root, "reports", "eda-report.html"),
+    winslash = "/"
   ))
   expect_true(file.exists(file.path(root, "README.md")))
   manifest <- utils::read.csv(
-    file.path(root, "manifest.csv"), check.names = FALSE,
+    file.path(root, "manifest.csv"),
+    check.names = FALSE,
     stringsAsFactors = FALSE, na.strings = character()
   )
   expect_identical(names(manifest), c(
@@ -368,7 +422,8 @@ test_that("unsafe and ambiguous manifest paths fail before artifact access", {
     root <- db_report_fixture()
     manifest_path <- file.path(root, "manifest.csv")
     manifest <- utils::read.csv(
-      manifest_path, check.names = FALSE, stringsAsFactors = FALSE,
+      manifest_path,
+      check.names = FALSE, stringsAsFactors = FALSE,
       na.strings = character()
     )
     manifest$path[manifest$artifact == "missing"] <- path
@@ -379,7 +434,8 @@ test_that("unsafe and ambiguous manifest paths fail before artifact access", {
   root <- db_report_fixture()
   manifest_path <- file.path(root, "manifest.csv")
   manifest <- utils::read.csv(
-    manifest_path, check.names = FALSE, stringsAsFactors = FALSE,
+    manifest_path,
+    check.names = FALSE, stringsAsFactors = FALSE,
     na.strings = character()
   )
   manifest$path[manifest$artifact == "messages"] <- "MISSING.csv"
@@ -401,7 +457,8 @@ test_that("checksum-valid but inconsistent aggregates fail closed", {
   root <- db_report_fixture()
   inventory_path <- file.path(root, "plot_inventory.csv")
   inventory <- utils::read.csv(
-    inventory_path, check.names = FALSE, stringsAsFactors = FALSE
+    inventory_path,
+    check.names = FALSE, stringsAsFactors = FALSE
   )
   inventory$status <- "not_created"
   inventory$path <- NA_character_
@@ -420,7 +477,9 @@ test_that("a failed publication swap restores every original byte", {
       epi_eda_render_db_report(root),
       intake_rename = function(from, to) {
         calls <<- calls + 1L
-        if (calls == 2L) return(FALSE)
+        if (calls == 2L) {
+          return(FALSE)
+        }
         file.rename(from, to)
       },
       .package = "episcout"
@@ -457,7 +516,8 @@ test_that("delivery registry separates QA, manifests, and compact plot data", {
     root, "run_manifests", "delivery_metadata.csv"
   )))
   plot_data <- parsed$manifest[
-    parsed$manifest$type == "plot_data", "path", drop = TRUE
+    parsed$manifest$type == "plot_data", "path",
+    drop = TRUE
   ]
   expect_identical(plot_data, "plot_data/001-histogram.csv")
   compact <- utils::read.csv(file.path(root, plot_data), check.names = FALSE)
@@ -470,4 +530,68 @@ test_that("delivery registry separates QA, manifests, and compact plot data", {
     rendered$manifest$path[rendered$manifest$artifact == "manifest"],
     "run_manifests/manifest.csv"
   )
+})
+
+test_that("delivery reports validate and display enriched frequency companions", {
+  db_report_skip()
+  root <- db_report_fixture(layout = "delivery", categorical = TRUE)
+  parsed <- getFromNamespace("eda_db_read_bundle", "episcout")(root)
+  params <- getFromNamespace("eda_db_report_params", "episcout")(parsed)
+
+  expect_named(params$frequency_companions, "Status")
+  companion <- params$frequency_companions$Status
+  expect_named(
+    companion,
+    getFromNamespace("eda_frequency_companion_names", "episcout")()
+  )
+  expect_identical(companion$count, c(25L, 15L))
+  expect_identical(companion$numerator, companion$count)
+  expect_identical(companion$denominator, c(40L, 40L))
+  expect_equal(companion$proportion, c(25 / 40, 15 / 40))
+
+  report <- epi_eda_render_db_report(root)
+  html <- paste(readLines(report, warn = FALSE), collapse = "\n")
+  expect_match(html, "Categorical percentage companions", fixed = TRUE)
+  expect_match(html, "compatibility", fixed = TRUE)
+  expect_match(html, "0.625", fixed = TRUE)
+  expect_false(grepl("SOURCE_ROW_CANARY|SELECT |postgresql://", html))
+})
+
+test_that("legacy frequency companions are enriched in memory only", {
+  db_report_skip()
+  root <- db_report_fixture(
+    layout = "delivery", categorical = TRUE,
+    plot_data_contract = "compact-plot-data-1"
+  )
+  path <- file.path(root, "plot_data", "001-frequency.csv")
+  before <- readBin(path, "raw", n = file.info(path)$size)
+  parsed <- getFromNamespace("eda_db_read_bundle", "episcout")(root)
+  params <- getFromNamespace("eda_db_report_params", "episcout")(parsed)
+
+  expect_identical(names(utils::read.csv(path)), c(
+    "level", "count", "display_order", "remainder"
+  ))
+  expect_named(
+    params$frequency_companions$Status,
+    getFromNamespace("eda_frequency_companion_names", "episcout")()
+  )
+  report <- epi_eda_render_db_report(root)
+  expect_true(file.exists(report))
+  expect_identical(readBin(path, "raw", n = file.info(path)$size), before)
+})
+
+test_that("inconsistent frequency companions fail before publication", {
+  root <- db_report_fixture(layout = "delivery", categorical = TRUE)
+  path <- file.path(root, "plot_data", "001-frequency.csv")
+  companion <- utils::read.csv(path, check.names = FALSE)
+  companion$denominator[[1]] <- 999L
+  utils::write.csv(companion, path, row.names = FALSE, na = "")
+  db_report_refresh_checksum(root, "plot_data_001_frequency")
+  before <- db_report_bytes(root)
+
+  error <- tryCatch(epi_eda_render_db_report(root), error = identity)
+  expect_match(conditionMessage(error), "frequency companion is inconsistent")
+  expect_false(grepl("999", conditionMessage(error), fixed = TRUE))
+  expect_identical(db_report_bytes(root), before)
+  expect_false(file.exists(file.path(root, "reports", "eda-report.html")))
 })

@@ -38,7 +38,8 @@ coordinate pair.}
 }
 \value{
 A named list with \code{metadata}, \code{schema}, \code{missing}, \code{geo},
-\code{summaries}, \code{plots}, \code{maps}, and \code{map_inventory} components.
+\code{summaries}, \code{categorical_display}, \code{plots}, \code{maps}, and \code{map_inventory}
+components.
 }
 \description{
 Orchestrate the specification-first EDA helpers for either observed data or deterministic synthetic data. The function validates the specification, runs schema, missingness, summary and plot profiling, optionally writes machine-readable outputs, and returns all results as a named list.

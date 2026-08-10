@@ -102,6 +102,24 @@ show_table(tables$geo_qa, "Coordinate-pair QA")
 show_table(tables$messages, "Workflow messages")
 ```
 
+## Categorical percentage companions
+
+Frequency companions use the compatibility basis: ordinary levels are shown over observed values, while standard and declared-code missing values form one separate level over all rows. The plots remain count plots.
+
+```{r categorical-companions, echo=FALSE, results='asis'}
+if (length(bundle$frequency_companions) == 0L) {
+  cat("No manifest-owned categorical frequency companions were produced.\n\n")
+} else {
+  for (label in names(bundle$frequency_companions)) {
+    cat("### ", label, "\n\n", sep = "")
+    show_table(
+      bundle$frequency_companions[[label]],
+      paste(label, "categorical numerator, denominator and proportion")
+    )
+  }
+}
+```
+
 ## Plot inventory
 
 ```{r plot-inventory, echo=FALSE, results='asis'}

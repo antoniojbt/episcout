@@ -34,6 +34,7 @@ test_that("EDA report template is bundled with report sections", {
   expect_match(template_text, "schema|Schema")
   expect_match(template_text, "missing|Missing")
   expect_match(template_text, "summar|Summar")
+  expect_match(template_text, "categorical numerator|Categorical numerator")
   expect_match(template_text, "plot|Plot")
   expect_match(template_text, "map|Map")
   expect_match(
@@ -100,6 +101,7 @@ test_that("epi_eda_render_report writes machine-readable workflow outputs", {
   expect_true(file.exists(file.path(output_dir, "missing.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_numeric.csv")))
   expect_true(file.exists(file.path(output_dir, "summary_categorical.csv")))
+  expect_true(file.exists(file.path(output_dir, "categorical_display.csv")))
 })
 
 test_that("epi_eda_render_report renders complete canonical summary sections", {

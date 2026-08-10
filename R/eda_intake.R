@@ -29,7 +29,8 @@
 #' @return An `epi_eda_intake` list with fixed components `status`, `stage`,
 #'   `output_dir`, `manifest`, `input`, `spec`, `schema_before`, `schema_after`,
 #'   `preparation_audit`, `missing`, `geo`, `maps`, `map_inventory`, `summary`,
-#'   `stratified`, `table1`, `report`, `messages`, and `metadata`.
+#'   `categorical_display`, `stratified`, `table1`, `report`, `messages`, and
+#'   `metadata`.
 #'   Status is one of `blocked`, `audit_complete`, or `complete`. Manifest paths
 #'   and the report path are relative to `output_dir`.
 #'
@@ -60,12 +61,15 @@ epi_eda_intake_run <- function(data,
   source_id <- intake_validate_source_id(source_id)
   intake_validate_spec_argument(spec)
   bundle <- intake_prepare_output_dir(output_dir, overwrite)
-  on.exit({
-    unpublished <- !exists("state", inherits = FALSE) || !isTRUE(state$published)
-    if (unpublished && dir.exists(bundle$staging_dir)) {
-      unlink(bundle$staging_dir, recursive = TRUE, force = TRUE)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      unpublished <- !exists("state", inherits = FALSE) || !isTRUE(state$published)
+      if (unpublished && dir.exists(bundle$staging_dir)) {
+        unlink(bundle$staging_dir, recursive = TRUE, force = TRUE)
+      }
+    },
+    add = TRUE
+  )
   state <- intake_state(bundle$staging_dir, bundle$output_dir)
   started_at <- intake_timestamp()
   input <- intake_metadata(
@@ -261,6 +265,21 @@ epi_eda_intake_run <- function(data,
   for (name in names(result$summary)) {
     intake_write_csv(state, paste0("summary_", name), result$summary[[name]])
   }
+  categorical_display <- tryCatch(
+    epi_eda_categorical_display(summaries),
+    error = identity
+  )
+  if (inherits(categorical_display, "error")) {
+    messages <- intake_add_message(
+      messages, "analysis", "blocker", "categorical_display.csv",
+      conditionMessage(categorical_display),
+      "Inspect the canonical categorical aggregate counts before rerunning."
+    )
+    result$status <- "blocked"
+    return(intake_finish(result, state, input, messages, render, fingerprint))
+  }
+  result$categorical_display <- categorical_display
+  intake_write_csv(state, "categorical_display", categorical_display)
   result$stage <- "canonical_summary"
 
   if (!is.null(strata)) {
@@ -293,6 +312,21 @@ epi_eda_intake_run <- function(data,
     for (name in names(stratified)) {
       intake_write_csv(state, paste0("stratified_", name), stratified[[name]])
     }
+    categorical_display <- tryCatch(
+      epi_eda_categorical_display(stratified),
+      error = identity
+    )
+    if (inherits(categorical_display, "error")) {
+      messages <- intake_add_message(
+        messages, "analysis", "blocker", "categorical_display.csv",
+        conditionMessage(categorical_display),
+        "Inspect the stratified categorical aggregate counts before rerunning."
+      )
+      result$status <- "blocked"
+      return(intake_finish(result, state, input, messages, render, fingerprint))
+    }
+    result$categorical_display <- categorical_display
+    intake_write_csv(state, "categorical_display", categorical_display)
     result$stage <- "stratified_summary"
     table1 <- tryCatch(epi_eda_table1(stratified), error = identity)
     if (inherits(table1, "error")) {
@@ -328,6 +362,7 @@ intake_empty_result <- function(output_dir, state, input, render) {
     maps = stats::setNames(vector("list", 0L), character()),
     map_inventory = eda_map_empty_inventory(),
     summary = NULL,
+    categorical_display = NULL,
     stratified = NULL,
     table1 = NULL,
     report = list(
@@ -503,7 +538,8 @@ intake_prepare_output_dir <- function(output_dir, overwrite) {
     }
   }
   staging_dir <- tempfile(
-    paste0(".", basename(output_dir), "-staging-"), tmpdir = parent
+    paste0(".", basename(output_dir), "-staging-"),
+    tmpdir = parent
   )
   if (!dir.create(staging_dir, showWarnings = FALSE)) {
     stop("A staging directory could not be created beside output_dir.", call. = FALSE)
@@ -521,7 +557,8 @@ intake_validate_owned_bundle <- function(output_dir, entries) {
     stop("overwrite = TRUE requires a valid prior episcout intake manifest in a non-empty output_dir.", call. = FALSE)
   }
   all_entries <- list.files(
-    output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE,
+    output_dir,
+    all.files = TRUE, no.. = TRUE, recursive = TRUE,
     include.dirs = TRUE, full.names = TRUE
   )
   if (any(nzchar(Sys.readlink(all_entries)))) {
@@ -537,7 +574,8 @@ intake_validate_owned_bundle <- function(output_dir, entries) {
     stop("A non-empty output_dir contains an unowned directory and cannot be overwritten safely.", call. = FALSE)
   }
   files <- list.files(
-    output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE,
+    output_dir,
+    all.files = TRUE, no.. = TRUE, recursive = TRUE,
     include.dirs = FALSE
   )
   file_paths <- file.path(output_dir, files)
@@ -624,6 +662,7 @@ intake_manifest_registry <- function() {
     summary_text = "summary_text.csv",
     summary_temporal = "summary_temporal.csv",
     summary_skipped = "summary_skipped.csv",
+    categorical_display = "categorical_display.csv",
     stratified_groups = "stratified_groups.csv",
     stratified_variables = "stratified_variables.csv",
     stratified_numeric = "stratified_numeric.csv",
@@ -638,7 +677,8 @@ intake_manifest_registry <- function() {
   types <- c(
     "manifest", "metadata", "messages", "specification", "schema", "schema",
     "audit", "missingness", "geo_qa", "map_inventory",
-    rep("canonical_summary", 6L), rep("stratified_summary", 8L),
+    rep("canonical_summary", 6L), "presentation",
+    rep("stratified_summary", 8L),
     "presentation", "report"
   )
   data.frame(
@@ -668,7 +708,8 @@ intake_publish_bundle <- function(state) {
   backup <- NA_character_
   if (dir.exists(target)) {
     backup <- tempfile(
-      paste0(".", basename(target), "-backup-"), tmpdir = dirname(target)
+      paste0(".", basename(target), "-backup-"),
+      tmpdir = dirname(target)
     )
     if (!intake_rename(target, backup)) {
       stop("The existing output bundle could not be moved to a recovery backup.", call. = FALSE)
@@ -1084,7 +1125,8 @@ intake_reconcile_stratified <- function(summaries, stratified, data) {
     return(group_components)
   }
   overall_variables <- stratified$variables[
-    stratified$variables$group_id == overall$group_id[[1]], , drop = FALSE
+    stratified$variables$group_id == overall$group_id[[1]], ,
+    drop = FALSE
   ]
   common <- intersect(summaries$variables$name, overall_variables$name)
   summary_index <- match(common, summaries$variables$name)
@@ -1099,13 +1141,15 @@ intake_reconcile_stratified <- function(summaries, stratified, data) {
   expected_variables <- summaries$variables
   observed_variables <- overall_variables[
     overall_variables$name %in% expected_variables$name,
-    names(expected_variables), drop = FALSE
+    names(expected_variables),
+    drop = FALSE
   ]
   if (!intake_frames_equal(expected_variables, observed_variables)) {
     return("Stratified Overall variable summaries do not agree with canonical summaries.")
   }
   overall_numeric <- stratified$numeric[
-    stratified$numeric$group_id == overall$group_id[[1]], , drop = FALSE
+    stratified$numeric$group_id == overall$group_id[[1]], ,
+    drop = FALSE
   ]
   if (nrow(overall_numeric) > 0L) {
     variable_index <- match(overall_numeric$name, summaries$variables$name)
@@ -1122,7 +1166,8 @@ intake_reconcile_stratified <- function(summaries, stratified, data) {
     expected <- summaries[[component]]
     observed <- stratified[[component]][
       stratified[[component]]$group_id == overall$group_id[[1]],
-      names(expected), drop = FALSE
+      names(expected),
+      drop = FALSE
     ]
     if (!intake_frames_equal(expected, observed)) {
       return(paste0(
@@ -1133,11 +1178,13 @@ intake_reconcile_stratified <- function(summaries, stratified, data) {
   }
   expected_categorical <- summaries$categorical
   overall_categorical <- stratified$categorical[
-    stratified$categorical$group_id == overall$group_id[[1]], , drop = FALSE
+    stratified$categorical$group_id == overall$group_id[[1]], ,
+    drop = FALSE
   ]
   observed_categorical <- overall_categorical[
     !overall_categorical$is_missing_level,
-    names(expected_categorical), drop = FALSE
+    names(expected_categorical),
+    drop = FALSE
   ]
   if (!intake_frames_equal(expected_categorical, observed_categorical)) {
     return("Stratified Overall categorical summaries do not agree with canonical summaries.")
@@ -1175,7 +1222,8 @@ intake_frames_equal <- function(expected, observed) {
 
 intake_reconcile_groups <- function(stratified) {
   variable_key <- paste(
-    stratified$variables$group_id, stratified$variables$name, sep = "\r"
+    stratified$variables$group_id, stratified$variables$name,
+    sep = "\r"
   )
   if (anyDuplicated(stratified$groups$group_id) || anyDuplicated(variable_key)) {
     return("Stratified group or group-variable membership contains duplicates.")
@@ -1264,7 +1312,8 @@ intake_reconcile_groups <- function(stratified) {
     }
   }
   skipped_key <- paste(
-    stratified$skipped$group_id, stratified$skipped$name, sep = "\r"
+    stratified$skipped$group_id, stratified$skipped$name,
+    sep = "\r"
   )
   if (anyDuplicated(skipped_key) ||
         !identical(skipped_key, expected_components$skipped)) {
@@ -1304,6 +1353,7 @@ intake_render_report <- function(output_dir, manifest, status, stage) {
     paste0("<div class=\"banner ", banner_class, "\">", intake_html_escape(banner), "</div>"),
     paste0("<p><strong>Status:</strong> ", intake_html_escape(status), "<br><strong>Last completed stage:</strong> ", intake_html_escape(stage), "</p>"),
     "<p>This report is a view of saved machine-readable artifacts. It does not recalculate statistics, write row-level data, or perform pseudonymisation. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.</p>",
+    "<p>The categorical display uses observed non-missing values for ordinary levels and all group rows for the explicit missing level. Standard missing values and declared missing codes share that missing level. Zero denominators retain an unavailable numeric proportion.</p>",
     "<h2>Artifacts</h2><ul>", links, "</ul>", sections,
     "</body></html>"
   )
@@ -1327,6 +1377,7 @@ intake_report_sections <- function(output_dir, created_paths) {
     "summary_text.csv" = "Canonical text summaries",
     "summary_temporal.csv" = "Canonical temporal summaries",
     "summary_skipped.csv" = "Canonical skipped variables",
+    "categorical_display.csv" = "Categorical numerators, denominators and proportions",
     "stratified_groups.csv" = "Stratified groups",
     "stratified_numeric.csv" = "Stratified numeric summaries",
     "stratified_categorical.csv" = "Stratified categorical summaries",

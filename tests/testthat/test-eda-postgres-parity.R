@@ -70,12 +70,15 @@ expect_numeric_contract <- function(observed, expected) {
 test_that("live PostgreSQL profiles reproduce independently stated aggregate expectations", {
   con <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)
-  on.exit({
-    if (DBI::dbIsValid(con)) {
-      DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
 
   expect_identical(names(source), c("con", "schema", "relation", "relation_kind", "columns", "source_version"))
@@ -157,7 +160,8 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
     stringsAsFactors = FALSE
   ))
   participant_text <- summaries$text[
-    summaries$text$name == "participant_id", , drop = FALSE
+    summaries$text$name == "participant_id", ,
+    drop = FALSE
   ]
   expect_identical(participant_text, data.frame(
     name = "participant_id", n = 6L, n_missing = 1L, n_observed = 5L,
@@ -229,13 +233,16 @@ test_that("authorised relation kinds work and temporary/catalogue drift fail clo
   server <- paste0("epi_eda_server_", Sys.getpid(), "_", sample.int(1000000L, 1L))
   schema_sql <- as.character(DBI::dbQuoteIdentifier(con, schema))
   server_sql <- as.character(DBI::dbQuoteIdentifier(con, server))
-  on.exit({
-    if (DBI::dbIsValid(con)) {
-      DBI::dbExecute(con, paste0("DROP SERVER IF EXISTS ", server_sql, " CASCADE"))
-      DBI::dbExecute(con, paste0("DROP SCHEMA ", schema_sql, " CASCADE"))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SERVER IF EXISTS ", server_sql, " CASCADE"))
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", schema_sql, " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   DBI::dbExecute(con, paste0("CREATE SCHEMA ", schema_sql))
   DBI::dbExecute(con, paste0("CREATE TABLE ", schema_sql, ".base_table (value integer)"))
   DBI::dbExecute(con, paste0("INSERT INTO ", schema_sql, ".base_table VALUES (1), (2)"))
@@ -278,12 +285,15 @@ test_that("live PostgreSQL storage matrix preserves zero-row schemas", {
   schema_sql <- as.character(DBI::dbQuoteIdentifier(con, schema))
   table_sql <- paste0(schema_sql, ".", DBI::dbQuoteIdentifier(con, "type matrix"))
   enum_sql <- paste0(schema_sql, ".", DBI::dbQuoteIdentifier(con, "reviewed mood"))
-  on.exit({
-    if (DBI::dbIsValid(con)) {
-      DBI::dbExecute(con, paste0("DROP SCHEMA ", schema_sql, " CASCADE"))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", schema_sql, " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   DBI::dbExecute(con, paste0("CREATE SCHEMA ", schema_sql))
   DBI::dbExecute(con, paste0("CREATE TYPE ", enum_sql, " AS ENUM ('A', 'B')"))
   DBI::dbExecute(con, paste0(
@@ -334,12 +344,15 @@ test_that("live PostgreSQL storage matrix preserves zero-row schemas", {
 test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", {
   con <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)
-  on.exit({
-    if (DBI::dbIsValid(con)) {
-      DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
   output_dir <- tempfile("postgres-eda-bundle-")
   run <- epi_eda_db_run(source, fixture$spec, output_dir, plots = FALSE)
@@ -393,21 +406,25 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
 test_that("live PostgreSQL delivery mode renders only after aggregate collection", {
   con <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)
-  on.exit({
-    if (DBI::dbIsValid(con)) {
-      DBI::dbExecute(con, paste0(
-        "DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"
-      ))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0(
+          "DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"
+        ))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
   flat_dir <- tempfile("postgres-eda-flat-compatible-")
   delivery_dir <- tempfile("postgres-eda-delivery-")
 
   flat <- epi_eda_db_run(source, fixture$spec, flat_dir, plots = FALSE)
   delivery <- epi_eda_db_run(
-    source, fixture$spec, delivery_dir, plots = TRUE,
+    source, fixture$spec, delivery_dir,
+    plots = TRUE,
     layout = "delivery", quiet = TRUE
   )
 
@@ -415,6 +432,8 @@ test_that("live PostgreSQL delivery mode renders only after aggregate collection
   expect_false("layout" %in% names(flat$metadata))
   expect_identical(flat$missing, delivery$missing)
   expect_identical(flat$summaries, delivery$summaries)
+  expect_identical(flat$metadata$plot_data_contract[[1]], "compact-plot-data-1")
+  expect_identical(delivery$metadata$plot_data_contract[[1]], "compact-plot-data-2")
   expect_true(file.exists(file.path(
     delivery_dir, "reports", "eda-report.html"
   )))
@@ -427,8 +446,41 @@ test_that("live PostgreSQL delivery mode renders only after aggregate collection
   expect_false(any(grepl("coordinate|theme", delivery$manifest$path[
     delivery$manifest$type == "plot_data"
   ])))
+  frequency_paths <- delivery$manifest$path[
+    delivery$manifest$type == "plot_data" &
+      grepl("-frequency\\.csv$", delivery$manifest$path)
+  ]
+  expect_identical(
+    frequency_paths,
+    c("plot_data/004-frequency.csv", "plot_data/005-frequency.csv")
+  )
+  treatment_companion <- utils::read.csv(
+    file.path(delivery_dir, frequency_paths[[1]]),
+    check.names = FALSE,
+    stringsAsFactors = FALSE
+  )
+  expect_named(
+    treatment_companion,
+    getFromNamespace("eda_frequency_companion_names", "episcout")()
+  )
+  expect_identical(treatment_companion$count, treatment_companion$numerator)
+  expect_identical(
+    treatment_companion$denominator,
+    rep(4L, nrow(treatment_companion))
+  )
+  expect_equal(
+    treatment_companion$proportion,
+    treatment_companion$numerator / 4
+  )
+  report_html <- paste(readLines(
+    file.path(delivery_dir, "reports", "eda-report.html"),
+    warn = FALSE
+  ), collapse = "\n")
+  expect_match(report_html, "Categorical percentage companions", fixed = TRUE)
+  expect_match(report_html, "Treatment", fixed = TRUE)
   replaced <- epi_eda_db_run(
-    source, fixture$spec, delivery_dir, overwrite = TRUE, plots = TRUE,
+    source, fixture$spec, delivery_dir,
+    overwrite = TRUE, plots = TRUE,
     layout = "delivery", quiet = TRUE
   )
   expect_true(file.exists(file.path(
@@ -436,7 +488,8 @@ test_that("live PostgreSQL delivery mode renders only after aggregate collection
   )))
   expect_error(
     epi_eda_db_run(
-      source, fixture$spec, delivery_dir, overwrite = TRUE, plots = TRUE,
+      source, fixture$spec, delivery_dir,
+      overwrite = TRUE, plots = TRUE,
       layout = "bundle"
     ),
     "layout does not match"
@@ -454,13 +507,16 @@ test_that("live PostgreSQL delivery mode renders only after aggregate collection
 test_that("live PostgreSQL calls reject caller transactions without disturbing them", {
   con <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)
-  on.exit({
-    if (DBI::dbIsValid(con)) {
-      if (getFromNamespace("eda_pg_is_transacting", "episcout")(con)) try(DBI::dbRollback(con), silent = TRUE)
-      DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        if (getFromNamespace("eda_pg_is_transacting", "episcout")(con)) try(DBI::dbRollback(con), silent = TRUE)
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
   DBI::dbBegin(con)
   expect_error(epi_eda_profile_missing(source, fixture$spec), "caller-managed transaction")
@@ -472,13 +528,16 @@ test_that("repeatable-read wrapper holds one snapshot and cleans up failures", {
   con <- postgres_eda_connection()
   writer <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)
-  on.exit({
-    if (DBI::dbIsValid(writer)) DBI::dbDisconnect(writer)
-    if (DBI::dbIsValid(con)) {
-      DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
-      DBI::dbDisconnect(con)
-    }
-  }, add = TRUE)
+  on.exit(
+    {
+      if (DBI::dbIsValid(writer)) DBI::dbDisconnect(writer)
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
   source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
   transaction <- getFromNamespace("eda_postgres_transaction", "episcout")
   row_count <- getFromNamespace("eda_postgres_row_count", "episcout")

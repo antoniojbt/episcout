@@ -8,7 +8,7 @@ test_that("Table 1 is stable, traceable and contains no inferential fields", {
   result <- epi_eda_profile_stratified(fixture$data, fixture$spec, "arm")
   table1 <- epi_eda_table1(result)
 
-  expect_named(formals(epi_eda_table1), "result")
+  expect_named(formals(epi_eda_table1), c("result", "basis"))
   expect_s3_class(table1, "data.frame")
   expect_named(table1, c(
     "variable_order", "row_order", "name", "label", "type", "level",
@@ -34,6 +34,27 @@ test_that("Table 1 is stable, traceable and contains no inferential fields", {
     paste(unique(table1$note), collapse = " "),
     ignore.case = TRUE
   ))
+})
+
+test_that("Table 1 categorical bases trace to the shared display contract", {
+  fixture <- make_stratified_fixture()
+  result <- epi_eda_profile_stratified(fixture$data, fixture$spec, "arm")
+  compatibility <- epi_eda_table1(result)
+  explicit <- epi_eda_table1(result, "compatibility")
+  column <- epi_eda_table1(result, "column")
+
+  expect_identical(compatibility, explicit)
+  categorical <- compatibility$type %in% c("categorical", "binary")
+  expect_identical(
+    compatibility[!categorical, , drop = FALSE],
+    column[!categorical, , drop = FALSE]
+  )
+  yes_a <- column$name == "status" & column$group_label == "A" &
+    !is.na(column$level) &
+    column$level == "yes"
+  expect_identical(column$denominator[yes_a], 2L)
+  expect_identical(column$display[yes_a], "1 (50.0%)")
+  expect_match(column$note[yes_a], "Column percentages")
 })
 
 test_that("Table 1 never reproduces text observations and validates input", {
