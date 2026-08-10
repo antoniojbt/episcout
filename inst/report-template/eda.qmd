@@ -52,6 +52,21 @@ for (name in component_names) {
 }
 ```
 
+## Categorical display denominators
+
+The compatibility display uses observed non-missing values for ordinary categorical levels and all rows for the explicit missing level. Standard missing values and declared missing codes share that missing level. Each row retains its numerator, denominator and numeric proportion; a zero denominator has an unavailable proportion.
+
+```{r categorical-display, echo=FALSE}
+if (nrow(results$categorical_display) == 0L) {
+  cat("No categorical display rows were produced.\n\n")
+} else {
+  knitr::kable(
+    results$categorical_display,
+    caption = "Categorical numerators, denominators and proportions"
+  )
+}
+```
+
 ## Plots
 
 ```{r plots, echo=FALSE, fig.width=7, fig.height=4}

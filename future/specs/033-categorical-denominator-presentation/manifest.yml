@@ -2,10 +2,10 @@ id: "033"
 slug: "categorical-denominator-presentation"
 workflow_version: 1
 deliverable: implementation
-status: draft
+status: active
 owner: repository-owner
 base_branch: master
-working_branch: feature/plan-categorical-denominator-contract
+working_branch: feature/categorical-denominator-contract
 created: 2026-08-10
 updated: 2026-08-10
 
@@ -19,7 +19,7 @@ pull_request: null
 planning_pull_request: 257
 merge_commit: null
 successor_issue: null
-terminal_reason: null
+terminal_reason: "Issue #253 completes the bounded denominator-presentation slice; remaining roadmap work is separately tracked or deferred."
 
 dependencies:
   suggests:
@@ -74,7 +74,7 @@ check_commands:
   - git diff --check
 
 activation_gates:
-  - pending: Planning PR is green and the four percentage-basis definitions plus compatibility contract are accepted before package changes.
+  - accepted: Planning PR #257 is green at 362a94d and the four percentage-basis definitions plus compatibility contract are accepted before package changes.
   - accepted: Counts and populations come only from canonical or stratified aggregate components; no raw-row presentation calculation is added.
   - accepted: Existing canonical/stratified schemas, default Table 1 schema/display, ordinary plots and the default flat PostgreSQL bundle remain compatible.
   - accepted: PostgreSQL categorical companions add no query or observation collection and delivery rendering remains aggregate-only.
@@ -91,3 +91,4 @@ notes:
   - No package implementation begins until the planning PR is green.
   - A successor or explicit terminal reason will be recorded before issue 253 closes.
   - Draft planning PR #257 contains no package behaviour changes.
+  - Implementation is stacked on the fully green planning head under the owner's explicit instruction without waiting for merge.

@@ -217,6 +217,19 @@ table1
 
 Declared empty groups and levels remain visible, unexpected and missing strata are flagged, and numeric percentages retain their denominators. If missing strata are excluded, Overall describes only the included rows and metadata accounts for the omission. Table 1 contains no p-values or automatic role-based suppression.
 
+Categorical percentages are calculated once through an aggregate-only display contract. The default compatibility basis keeps ordinary levels over observed non-missing values and shows the combined standard/declared-code missing level over all rows. Choose another basis explicitly when needed:
+
+``` r
+compatibility <- epi_eda_categorical_display(stratified)
+column <- epi_eda_categorical_display(stratified, basis = "column")
+row <- epi_eda_categorical_display(stratified, basis = "row")
+overall <- epi_eda_categorical_display(stratified, basis = "overall")
+
+column_table1 <- epi_eda_table1(stratified, basis = "column")
+```
+
+`column` uses every row within each displayed group, `row` distributes each level across non-Overall strata, and `overall` uses the included analysis population. Row percentages require a stratified result. Every row retains its integer numerator and denominator; a zero denominator produces `NA_real_` proportion without dropping the row.
+
 For a guided new-dataset run, let intake generate, save and use the semantic dictionary:
 
 ``` r
@@ -284,7 +297,7 @@ results <- epi_eda_run(
 )
 ```
 
-The workflow writes `summary_variables.csv`, `summary_numeric.csv`, `summary_categorical.csv`, `summary_text.csv`, `summary_temporal.csv` and `summary_skipped.csv`. The `variables` table accounts for every specification row, including unavailable counts and reasons for absent or incompatible variables. Numeric summaries distinguish observed infinities from finite analytical values, categorical summaries expose total-row and observed-value denominators, and temporal summaries state their range units. The active lower-level statistics path uses the same univariate calculation cores; `epi_stats_summary(data, output = "typed")` returns the corresponding typed components without requiring an EDA specification.
+The workflow writes `summary_variables.csv`, `summary_numeric.csv`, `summary_categorical.csv`, `summary_text.csv`, `summary_temporal.csv`, `summary_skipped.csv` and `categorical_display.csv`. The `variables` table accounts for every specification row, including unavailable counts and reasons for absent or incompatible variables. Numeric summaries distinguish observed infinities from finite analytical values, categorical summaries expose total-row and observed-value denominators, and temporal summaries state their range units. The active lower-level statistics path uses the same univariate calculation cores; `epi_stats_summary(data, output = "typed")` returns the corresponding typed components without requiring an EDA specification.
 
 Numeric, text and temporal plots use compact 30-bin aggregate data. Text plots show Unicode character lengths rather than raw strings. Roles describe variables and do not authorise or suppress plots.
 
@@ -328,7 +341,7 @@ DBI::dbDisconnect(con)
 
 Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db_run()` uses one such snapshot for all database reads, including map QC, the row bound and any requested coordinate/theme collection. It collects only ready-pair coordinates and explicit themes, never truncates, ends the snapshot before rendering, and publishes through a sibling staging directory. Overwrite fingerprints source, specification, plot, map and layout settings.
 
-`layout = "delivery"` adds a README and portable `reports/eda-report.html` as the normal human entry point. Aggregate checks and summaries live under `QA_QC/`, compact plot inputs under `plot_data/`, provenance under `run_manifests/`, and deterministic SVGs under `plots/` and `maps/`. The caller supplies the exact output root; a name such as `YYYYMMDD_eda_cycle` is recommended. The default `layout = "bundle"` retains the existing flat bundle and metadata schemas.
+`layout = "delivery"` adds a README and portable `reports/eda-report.html` as the normal human entry point. Aggregate checks and summaries live under `QA_QC/`, compact plot inputs under `plot_data/`, provenance under `run_manifests/`, and deterministic SVGs under `plots/` and `maps/`. Categorical frequency companions retain their four established plot fields and add the shared numerator, denominator and proportion fields under `compact-plot-data-2`; the report validates and displays them. Valid legacy `compact-plot-data-1` frequency files remain renderable and are enriched in memory only. The caller supplies the exact output root; a name such as `YYYYMMDD_eda_cycle` is recommended. The default `layout = "bundle"` retains the existing flat bundle and metadata schemas.
 
 An existing valid flat or delivery bundle can be rendered or re-rendered later without a PostgreSQL connection:
 

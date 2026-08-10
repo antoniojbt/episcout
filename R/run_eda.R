@@ -13,7 +13,8 @@
 #' @param map_vars Unique declared variables for additional thematic maps.
 #' @param max_map_points Inclusive maximum number of rows allowed for mapping.
 #' @return A named list with `metadata`, `schema`, `missing`, `geo`,
-#'   `summaries`, `plots`, `maps`, and `map_inventory` components.
+#'   `summaries`, `categorical_display`, `plots`, `maps`, and `map_inventory`
+#'   components.
 #'
 #' @export
 epi_eda_run <- function(data,
@@ -43,14 +44,17 @@ epi_eda_run <- function(data,
   plot_spec <- spec[spec$name %in% names(data), , drop = FALSE]
   geo <- epi_eda_profile_geo(data, spec)
   map_result <- eda_data_frame_maps(data, spec, geo, map_options)
+  summaries <- epi_eda_profile_summaries(data, spec)
   results <- c(list(
     metadata = run_eda_metadata(
-      data, spec, synthetic = synthetic, map_options = map_options
+      data, spec,
+      synthetic = synthetic, map_options = map_options
     ),
     schema = epi_eda_check_schema(data, spec),
     missing = epi_eda_profile_missing(data, spec),
     geo = geo,
-    summaries = epi_eda_profile_summaries(data, spec),
+    summaries = summaries,
+    categorical_display = epi_eda_categorical_display(summaries),
     plots = epi_eda_profile_plots(data, plot_spec)
   ), map_result)
 
@@ -126,6 +130,11 @@ write_run_eda_outputs <- function(results, output_dir) {
       row.names = FALSE
     )
   }
+  utils::write.csv(
+    results$categorical_display,
+    file.path(output_dir, "categorical_display.csv"),
+    row.names = FALSE
+  )
   eda_write_maps(results$maps, results$map_inventory, output_dir)
 
   invisible(TRUE)

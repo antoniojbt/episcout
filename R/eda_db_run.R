@@ -138,7 +138,11 @@ epi_eda_db_run <- function(source,
     workflow_contract = "postgres-eda-bundle-2",
     canonical_summary_contract = "canonical-summary-1",
     geo_qa_contract = "declared-coordinate-pair-2",
-    plot_data_contract = "compact-plot-data-1",
+    plot_data_contract = if (layout == "delivery") {
+      "compact-plot-data-2"
+    } else {
+      "compact-plot-data-1"
+    },
     package_version = intake_package_version(),
     r_version = paste(R.version$major, R.version$minor, sep = "."),
     dependency_DBI = intake_dependency_version("DBI"),

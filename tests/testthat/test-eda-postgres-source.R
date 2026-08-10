@@ -64,6 +64,40 @@ test_that("categorical summaries reuse the supplied relation count", {
   )
 })
 
+test_that("categorical plot companions reuse summaries without a database fetch", {
+  plot_data <- getFromNamespace("eda_postgres_plot_data_inside", "episcout")
+  spec <- data.frame(
+    name = "status", label = "Status", type = "categorical", role = "measure",
+    stringsAsFactors = FALSE
+  )
+  summaries <- list(
+    variables = data.frame(
+      name = "status", status = "summarised", reason = NA_character_,
+      n = 7L, n_missing = 2L, n_observed = 5L, stringsAsFactors = FALSE
+    ),
+    categorical = data.frame(
+      name = c("status", "status"), level = c("no", "yes"),
+      n = c(2L, 3L), stringsAsFactors = FALSE
+    )
+  )
+  observed <- with_mocked_bindings(
+    plot_data(list(), spec, summaries, 20L),
+    eda_postgres_column = function(...) data.frame(name = "status"),
+    eda_postgres_missing_contract = function(...) list(),
+    eda_db_fetch = function(...) stop("UNEXPECTED_DATABASE_FETCH", call. = FALSE),
+    .package = "episcout"
+  )
+  companion <- observed$entries$status$data
+
+  expect_named(
+    companion,
+    getFromNamespace("eda_frequency_companion_names", "episcout")()
+  )
+  expect_identical(companion$count, companion$numerator)
+  expect_identical(companion$denominator, c(5L, 5L))
+  expect_equal(companion$proportion, c(3 / 5, 2 / 5))
+})
+
 test_that("identifier and exact count validation refuse ambiguous inputs", {
   identifier <- getFromNamespace("eda_postgres_identifier", "episcout")
   checked_count <- getFromNamespace("eda_checked_count", "episcout")
@@ -275,9 +309,12 @@ test_that("profiler dispatch rejects unsupported objects and incompatible plot i
   expect_error(epi_eda_profile_plots(data.frame(x = 1), text_spec), "incompatible")
 
   collapse <- getFromNamespace("eda_collapse_frequencies", "episcout")
-  empty <- collapse(data.frame(level = character(), n = integer()), 20L)
+  empty <- collapse(getFromNamespace("eda_empty_categorical_display", "episcout")(), 20L)
   expect_equal(nrow(empty), 0L)
-  expect_identical(names(empty), c("level", "count", "display_order", "remainder"))
+  expect_identical(
+    names(empty),
+    getFromNamespace("eda_frequency_companion_names", "episcout")()
+  )
 
   histogram <- getFromNamespace("eda_histogram_from_counts", "episcout")
   empty_histogram <- histogram(

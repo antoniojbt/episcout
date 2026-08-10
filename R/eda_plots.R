@@ -57,7 +57,10 @@ eda_data_frame_plot_data <- function(data, spec, max_plot_levels = 20L) {
     if (type %in% c("categorical", "binary")) {
       levels <- if ("levels" %in% names(spec)) eda_spec_levels(spec$levels[[index]]) else character()
       frequencies <- summary_categorical_core(values, eda_missing_codes(spec, name), if (length(levels) > 0L) levels else NULL)
-      compact <- eda_collapse_frequencies(frequencies, max_plot_levels)
+      display <- eda_cat_display_frequency(
+        frequencies, name, label, type, length(values), sum(missing)
+      )
+      compact <- eda_collapse_frequencies(display, max_plot_levels)
       entry <- eda_plot_entry(name, label, type, "frequency", compact, length(values), sum(missing), length(observed), 0L)
       entry$n_displayed_levels <- nrow(compact)
       entry$n_collapsed_levels <- max(0L, nrow(frequencies) - min(nrow(frequencies), max_plot_levels))
@@ -143,25 +146,68 @@ eda_histogram_from_counts <- function(minimum, maximum, counts, bins = 30L) {
 
 eda_collapse_frequencies <- function(frequencies, max_plot_levels) {
   if (nrow(frequencies) == 0L) {
-    return(data.frame(level = character(), count = integer(), display_order = integer(), remainder = logical(), stringsAsFactors = FALSE))
+    empty <- eda_empty_categorical_display()
+    return(cbind(
+      data.frame(
+        level = character(), count = integer(), display_order = integer(),
+        remainder = logical(), stringsAsFactors = FALSE
+      ),
+      empty[setdiff(names(empty), "level")]
+    ))
+  }
+  required <- eda_categorical_display_names()
+  if (!all(required %in% names(frequencies)) ||
+        any(frequencies$is_missing_level) ||
+        !eda_cat_counts_valid(frequencies$numerator)) {
+    stop("Categorical plot display rows are incompatible.", call. = FALSE)
   }
   frequencies$canonical_order <- seq_len(nrow(frequencies))
-  ordered <- frequencies[order(-frequencies$n, frequencies$canonical_order), , drop = FALSE]
+  ordered <- frequencies[order(-frequencies$numerator, frequencies$canonical_order), , drop = FALSE]
   keep_n <- min(nrow(ordered), max_plot_levels)
   kept <- ordered[seq_len(keep_n), , drop = FALSE]
   out <- data.frame(
-    level = kept$level, count = as.integer(kept$n), display_order = seq_len(keep_n),
+    level = kept$level, count = as.integer(kept$numerator), display_order = seq_len(keep_n),
     remainder = FALSE, stringsAsFactors = FALSE
+  )
+  out <- cbind(
+    out,
+    kept[, setdiff(required, "level"), drop = FALSE]
   )
   if (nrow(ordered) > keep_n) {
     collapsed <- nrow(ordered) - keep_n
-    out <- rbind(out, data.frame(
-      level = paste0("Other (", collapsed, " levels)"),
-      count = as.integer(sum(ordered$n[(keep_n + 1L):nrow(ordered)])),
-      display_order = nrow(out) + 1L, remainder = TRUE, stringsAsFactors = FALSE
+    remainder_rows <- ordered[(keep_n + 1L):nrow(ordered), , drop = FALSE]
+    if (length(unique(remainder_rows$denominator)) != 1L ||
+          length(unique(remainder_rows$percentage_basis)) != 1L) {
+      stop("Collapsed categorical plot denominators did not reconcile.", call. = FALSE)
+    }
+    remainder <- remainder_rows[1L, required, drop = FALSE]
+    remainder$level <- paste0("Other (", collapsed, " levels)")
+    remainder$level_order <- NA_integer_
+    remainder$numerator <- as.integer(sum(as.numeric(remainder_rows$numerator)))
+    remainder$proportion <- summary_safe_proportion(
+      remainder$numerator[[1]], remainder$denominator[[1]]
+    )
+    remainder$is_missing_level <- FALSE
+    out <- rbind(out, cbind(
+      data.frame(
+        level = remainder$level,
+        count = remainder$numerator,
+        display_order = nrow(out) + 1L,
+        remainder = TRUE,
+        stringsAsFactors = FALSE
+      ),
+      remainder[, setdiff(required, "level"), drop = FALSE]
     ))
   }
+  row.names(out) <- NULL
   out
+}
+
+eda_frequency_companion_names <- function() {
+  c(
+    "level", "count", "display_order", "remainder",
+    setdiff(eda_categorical_display_names(), "level")
+  )
 }
 
 eda_render_plot_entries <- function(entries) {

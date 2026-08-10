@@ -236,7 +236,9 @@ eda_postgres_observed_type <- function(column) {
     enum = "categorical", boolean = "binary", date = "date",
     datetime = "datetime", local_datetime = "datetime"
   )
-  if (family %in% names(mapped)) return(unname(mapped[[family]]))
+  if (family %in% names(mapped)) {
+    return(unname(mapped[[family]]))
+  }
   as.character(column$formatted_type[[1]])
 }
 
@@ -1033,7 +1035,11 @@ eda_postgres_plot_data_inside <- function(source,
     contract <- eda_postgres_missing_contract(source, column, type, eda_missing_codes(spec, name))
     if (type %in% c("categorical", "binary")) {
       frequency <- summaries$categorical[summaries$categorical$name == name, , drop = FALSE]
-      compact <- eda_collapse_frequencies(frequency[, setdiff(names(frequency), "name"), drop = FALSE], max_plot_levels)
+      display <- eda_cat_display_frequency(
+        frequency[, setdiff(names(frequency), "name"), drop = FALSE],
+        name, label, type, variable$n[[1]], variable$n_missing[[1]]
+      )
+      compact <- eda_collapse_frequencies(display, max_plot_levels)
       entry <- eda_plot_entry(name, label, type, "frequency", compact, variable$n, variable$n_missing, variable$n_observed, 0L)
       entry$n_displayed_levels <- nrow(compact)
       entry$n_collapsed_levels <- max(0L, nrow(frequency) - min(nrow(frequency), max_plot_levels))

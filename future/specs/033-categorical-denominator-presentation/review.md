@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Draft
+Status: Active
 
 ## Planning Findings
 
@@ -23,3 +23,19 @@ None. Issue #253 and completed spec 032 settle the bounded outcome; this specifi
 - Source, callers, report templates, bundle registries and exact compatibility assertions were inspected directly.
 - No package source, tests, generated documentation, dependencies or runtime behaviour change in the planning contribution.
 - Draft planning PR #257 is the package-implementation activation gate.
+
+## Activation Handoff
+
+- Planning PR #257 passed PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates at `362a94d` with no actionable review feedback.
+- Implementation is active on `feature/categorical-denominator-contract`, stacked on that exact planning head under the owner's instruction.
+
+## Implementation Self-Review
+
+- The public calculation uses only canonical or stratified aggregate components and validates group partitions, count identities, group metadata and the common categorical level universe before calculating.
+- Literal seven-row expectations independently establish compatibility, column, row and overall cells, including the combined missing level and zero-denominator `NA_real_` result.
+- The default Table 1 CSV is byte-identical to the accepted planning head (`0c00543ecf2ea13a4b23604a77e1b97a` for both files); count-plot order and heights remain unchanged.
+- A live UTF-8 PostgreSQL 18 run passes the parity and database-report suite. Categorical companion enrichment is also guarded by a no-fetch unit test, and the renderer validates both new and legacy companions from canonical aggregates.
+- Package lint, `git diff --check` and `scripts/check-local.sh` pass; the latter reports 0 errors, 0 warnings and 0 notes. `scripts/check-cran.sh` completes with the inherited incoming-feasibility NOTE for new-submission/vignette-index and two Stack Overflow 403 checks.
+- The exact rendered categorical CSV reconciles to `1/5`, `2/5`, `1/5`, `0/5`, `1/5` and missing `2/7`; the HTML plain rendering contains those fields, and the 1280 x 800 count plot was visually inspected for its `2, 1, 1, 1, 0` heights and labels.
+
+No actionable self-review finding remains. GitHub CI and independent owner review are pending.

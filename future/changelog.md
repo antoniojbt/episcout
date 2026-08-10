@@ -2,6 +2,7 @@
 
 ## 2026-08-10
 
+- Activated issue #253/spec 033 after planning PR #257 passed PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates at `362a94d`. Implementation is stacked on the accepted aggregate-only denominator contract under the owner's instruction; no PostgreSQL query, raw-row presentation calculation or default flat-bundle change is authorised.
 - Opened draft planning PR #257 with implementation spec `033-categorical-denominator-presentation` for issue #253. The plan adds one aggregate-only public display calculation, defines compatibility/column/row/overall bases with explicit Overall and missing-level rules, preserves default Table 1 and count plots, enriches compact frequency companions and all report families, keeps default flat PostgreSQL bundles exact and requires no new database query or observation collection. Package implementation remains gated on green planning CI.
 - Completed the ordered #245/#248 stack and reconciled its closeout. Planning PR #251 merged as `5e2a52c`, implementation PR #252 merged as `74aeb0a`, and design PR #254 merged as `4110a82`; GitHub closed issues #245 and #248 automatically. PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed for the final implementation and assessment heads. Specs 031 and 032 are completed under `future/specs/done/`; #253 is the single ready-next implementation tracker and has not begun package work.
 
