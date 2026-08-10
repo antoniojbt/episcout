@@ -16,7 +16,7 @@ source_issues:
   - 248
   - 249
 pull_request: null
-planning_pull_request: null
+planning_pull_request: 257
 merge_commit: null
 successor_issue: null
 terminal_reason: null
@@ -90,3 +90,4 @@ notes:
   - Spec 032 independently assessed the gap and bounded issue 253 before this implementation specification.
   - No package implementation begins until the planning PR is green.
   - A successor or explicit terminal reason will be recorded before issue 253 closes.
+  - Draft planning PR #257 contains no package behaviour changes.

@@ -22,3 +22,4 @@ None. Issue #253 and completed spec 032 settle the bounded outcome; this specifi
 - Focused canonical summary, stratified, Table 1 and PostgreSQL-source tests pass before specification edits.
 - Source, callers, report templates, bundle registries and exact compatibility assertions were inspected directly.
 - No package source, tests, generated documentation, dependencies or runtime behaviour change in the planning contribution.
+- Draft planning PR #257 is the package-implementation activation gate.
