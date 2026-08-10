@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Issue [#253](https://github.com/antoniojbt/episcout/issues/253) is in review through draft implementation PR [#258](https://github.com/antoniojbt/episcout/pull/258), stacked on fully green planning PR [#257](https://github.com/antoniojbt/episcout/pull/257) at `362a94d`. Merge #257 first so GitHub reduces #258 to the implementation-only diff. The accepted contract defines aggregate-only compatibility, column, row and overall bases; preserves default Table 1 and plotting behaviour; and enriches frequency companions and report families without new PostgreSQL queries.
+There is no active or ready-next package implementation. Issue [#253](https://github.com/antoniojbt/episcout/issues/253) completed the bounded categorical-denominator presentation slice through planning PR [#257](https://github.com/antoniojbt/episcout/pull/257) and implementation PR [#258](https://github.com/antoniojbt/episcout/pull/258). Roadmap [#249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for separately tracked or deferred work.
 
 ## Deferred owner action
 
@@ -43,8 +43,9 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-10
 
+- [x] Complete issue #253/spec 033 through planning PR #257 (`49bf7c4`) and implementation PR #258, merged to canonical `master` as `074f13aef3e93a92ef51abe079e353f5c3567139`; issue #253 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed record moved to `future/specs/done/`. No successor is created because the bounded denominator-presentation slice is complete and remaining roadmap work is separately tracked or deferred.
 - [x] Complete issue #245/spec 031 through planning PR #251 (`5e2a52c`) and implementation PR #252, merged to canonical `master` as `74aeb0ad5568a43969b1efeb337f6204afcf4b5a`; issue #245 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed record moved to `future/specs/done/`. The default flat bundle remains compatible; opt-in delivery creates a validated aggregate-only HTML/README entry point without database or row-level access.
-- [x] Complete issue #248/spec 032 through planning-only PR #254, merged to canonical `master` as `4110a82a87267823088a1ac46ca1b8a015c4c4bf`; issue #248 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed assessment moved to `future/specs/done/`. Issue #253 is the ready-next bounded implementation tracker.
+- [x] Complete issue #248/spec 032 through planning-only PR #254, merged to canonical `master` as `4110a82a87267823088a1ac46ca1b8a015c4c4bf`; issue #248 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed assessment moved to `future/specs/done/`. Its bounded successor #253 subsequently completed under spec 033.
 
 ### 2026-08-09
 

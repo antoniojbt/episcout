@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Review
+Status: Completed
 Owner: repository-owner
 Tracking issue: #253
 
@@ -39,4 +39,4 @@ Add one public aggregate-only categorical display calculation with explicit nume
 
 ## Successor Or Terminal Outcome
 
-Issue #253 completes the bounded denominator-presentation slice. No successor is needed because remaining roadmap work is already separately tracked or deferred; closeout will record this as the terminal reason after canonical merge verification.
+Issue #253 completes the bounded denominator-presentation slice. No successor is needed because remaining roadmap work is already separately tracked or deferred; canonical merge verification records this as the terminal reason.

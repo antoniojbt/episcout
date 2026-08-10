@@ -2,7 +2,7 @@ id: "033"
 slug: "categorical-denominator-presentation"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/categorical-denominator-contract
@@ -17,7 +17,7 @@ source_issues:
   - 249
 pull_request: 258
 planning_pull_request: 257
-merge_commit: null
+merge_commit: 074f13aef3e93a92ef51abe079e353f5c3567139
 successor_issue: null
 terminal_reason: "Issue #253 completes the bounded denominator-presentation slice; remaining roadmap work is separately tracked or deferred."
 
@@ -93,3 +93,5 @@ notes:
   - Draft planning PR #257 contains no package behaviour changes.
   - Implementation is stacked on the fully green planning head under the owner's explicit instruction without waiting for merge.
   - Draft implementation PR #258 targets master because GitHub cannot use the fork-only planning branch as an upstream PR base; merge #257 first so the diff reduces to implementation-only.
+  - Planning PR #257 merged first as 49bf7c4de283ac6fdbbf7d99a78f67f1ad078d81; implementation PR #258 then merged as 074f13aef3e93a92ef51abe079e353f5c3567139 and closed issue #253 automatically.
+  - The final implementation head d4f03d3 passed PostgreSQL integration, Ubuntu, macOS, test coverage, CodeFactor and both Codecov gates; patch coverage was 95.00% and project coverage was 93.20%.
