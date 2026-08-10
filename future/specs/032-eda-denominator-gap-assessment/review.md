@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `032-eda-denominator-gap-assessment`
-Status: Active design assessment
+Status: Review
 
 ## Findings
 
@@ -20,4 +20,4 @@ Use one shared aggregate categorical display calculation in successor #253 and m
 - Assessment base: fully green #245 implementation/evidence head `a3136a3` in draft PR #252.
 - Issue #253 was created before this design contribution can close #248.
 - This planning branch must not merge before PR #252 and its post-merge closeout.
-- Pull request, checks and merge commit: pending.
+- Draft design PR #254 is open; checks and merge commit are pending.

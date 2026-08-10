@@ -2,7 +2,7 @@ id: "032"
 slug: "eda-denominator-gap-assessment"
 workflow_version: 1
 deliverable: design
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: agent/assess-eda-denominators
@@ -14,7 +14,7 @@ source_issues:
   - 183
   - 245
   - 249
-pull_request: null
+pull_request: 254
 merge_commit: null
 successor_issue: 253
 terminal_reason: null

@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `032-eda-denominator-gap-assessment`
-Status: Active design assessment
+Status: Review
 
 - [x] Current count, denominator, proportion, group-size and population metadata are inventoried from source and tests.
 - [x] Completed #183 capabilities are preserved rather than reimplemented.

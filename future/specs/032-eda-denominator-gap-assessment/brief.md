@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `032-eda-denominator-gap-assessment`
-Status: Active design assessment
+Status: Review
 
 ## Problem
 
