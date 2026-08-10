@@ -1,0 +1,92 @@
+id: "033"
+slug: "categorical-denominator-presentation"
+workflow_version: 1
+deliverable: implementation
+status: draft
+owner: repository-owner
+base_branch: master
+working_branch: feature/plan-categorical-denominator-contract
+created: 2026-08-10
+updated: 2026-08-10
+
+tracking_issue: 253
+source_issues:
+  - 183
+  - 245
+  - 248
+  - 249
+pull_request: null
+planning_pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+dependencies:
+  suggests:
+    - ggplot2
+    - rmarkdown
+    - knitr
+
+related_files:
+  - R/eda_categorical_display.R
+  - R/eda_table1.R
+  - R/eda_plots.R
+  - R/run_eda.R
+  - R/eda_report.R
+  - R/eda_intake.R
+  - R/eda_postgres_queries.R
+  - R/eda_db_run.R
+  - R/eda_db_report.R
+  - inst/report-template/eda.qmd
+  - inst/report-template/eda-db.qmd
+  - tests/testthat/test-eda-categorical-display.R
+  - tests/testthat/test-eda-table1.R
+  - tests/testthat/test-eda-intake.R
+  - tests/testthat/test-eda-db-report.R
+  - tests/testthat/test-eda-postgres-parity.R
+  - README.md
+  - NEWS.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/analysis-and-statistics.md
+  - checklists/figures.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-(categorical-display|summaries|stratified|table1|postgres-source|intake|report|db-report|postgres-parity)', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-(postgres-parity|db-report)', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+activation_gates:
+  - pending: Planning PR is green and the four percentage-basis definitions plus compatibility contract are accepted before package changes.
+  - accepted: Counts and populations come only from canonical or stratified aggregate components; no raw-row presentation calculation is added.
+  - accepted: Existing canonical/stratified schemas, default Table 1 schema/display, ordinary plots and the default flat PostgreSQL bundle remain compatible.
+  - accepted: PostgreSQL categorical companions add no query or observation collection and delivery rendering remains aggregate-only.
+
+baseline:
+  canonical_master: "26fabdf0a12b46b1c76f4643c878002bc90ce246"
+  roadmap: "Issue 249 is authoritative and issue 253 is its sole ready-next package tracker."
+  calculation: "Canonical and stratified categorical components expose counts plus total and observed denominators, but no reusable display basis."
+  presentation: "Table 1 selects its compatibility basis internally; compact frequency rows expose count/order/remainder only."
+  reporting: "Data-frame, intake and PostgreSQL delivery reports do not consume one shared categorical display table."
+
+notes:
+  - Spec 032 independently assessed the gap and bounded issue 253 before this implementation specification.
+  - No package implementation begins until the planning PR is green.
+  - A successor or explicit terminal reason will be recorded before issue 253 closes.
