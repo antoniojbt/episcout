@@ -19,5 +19,5 @@ Use one shared aggregate categorical display calculation in successor #253 and m
 
 - Assessment base: fully green #245 implementation/evidence head `a3136a3` in draft PR #252.
 - Issue #253 was created before this design contribution can close #248.
-- This planning branch must not merge before PR #252 and its post-merge closeout.
+- This planning branch must not merge before PR #252; the owner-requested combined closeout follows the ordered stack before #253 can activate.
 - Draft design PR #254 is open. PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed at assessment head `d312de7`; the merge commit is pending.

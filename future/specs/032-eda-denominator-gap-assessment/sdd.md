@@ -31,7 +31,7 @@ The successor must derive from existing canonical or stratified components and r
 
 ## Sequence
 
-1. Merge and close out #245/PR #252.
-2. Merge this assessment and close #248, leaving #253 as the ready-next package tracker.
-3. Write and accept a separate implementation specification for #253 before package changes.
+1. Merge planning PR #251, implementation PR #252 and this assessment PR #254 in dependency order; no stacked PR may merge ahead of its base.
+2. Perform the owner-requested combined post-merge reconciliation for issues #245/#248, both specifications, roadmap records and local/fork state.
+3. Leave #253 as the ready-next package tracker and write/accept its separate implementation specification before package changes.
 4. Verify calculation fixtures first, then Table 1, plot companion, report, PostgreSQL no-new-query, manifest and compatibility behaviour.
