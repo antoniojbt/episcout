@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Review
+Status: Completed
 
 ## Planning And Activation
 
@@ -28,7 +28,7 @@ Status: Review
 
 - [x] Focused, live PostgreSQL, lint and local checks pass; the CRAN-oriented check retains only its inherited incoming-feasibility NOTE.
 - [x] Delivered CSV and HTML values are independently reconciled, report structure is inspected from the rendered HTML, and the exact categorical count plot is visually inspected at 1280 x 800.
-- [ ] Required PR checks are green with no actionable review feedback.
-- [ ] Canonical merge, issue closure, roadmap/TODO/changelog and local/fork state are reconciled.
-- [ ] Manifest is completed and spec 033 is moved under `future/specs/done/`.
-- [ ] A successor or explicit terminal reason is recorded.
+- [x] Required PR checks are green with no actionable review feedback.
+- [x] Planning PR #257 merged as `49bf7c4`, implementation PR #258 merged as `074f13a`, issue #253 closed automatically, and local/fork `master` were synchronized to canonical history.
+- [x] Roadmap/TODO/changelog records are reconciled, the manifest is completed, and spec 033 is moved under `future/specs/done/`.
+- [x] The explicit terminal reason records that #253 completes this bounded slice; remaining roadmap work is separately tracked or deferred.
