@@ -153,16 +153,26 @@ source <- epi_eda_postgres_source(con, "eda_fixture", "observations")
 db_results <- epi_eda_db_run(
   source,
   spec,
-  output_dir = "postgres-eda-bundle",
+  output_dir = "20260809_eda_cycle",
   plots = TRUE,
   maps = TRUE,
   map_vars = "study_group",
-  max_map_points = 10000L
+  max_map_points = 10000L,
+  layout = "delivery"
 )
 DBI::dbDisconnect(con)
 ```
 
 All profiling reads and the map bound check occur in one read-only repeatable-read snapshot. Coordinates and thematic observations are collected only for requested, map-ready, within-limit pairs. The query projects only ready-pair coordinates and explicitly selected themes, uses a defensive `max_map_points + 1` bound, and fails rather than truncates or silently drops rows. Rendering and atomic filesystem publication happen after the snapshot ends.
+
+`layout = "delivery"` makes `README.md` and `reports/eda-report.html` the human entry points. `QA_QC/` retains aggregate checks and summaries, `plot_data/` retains compact aggregate plot inputs but never map coordinates/themes or source rows, `plots/` and `maps/` retain deterministic SVGs, and `run_manifests/` retains provenance, timings and the five-column checksum manifest. The caller supplies the exact root; a `YYYYMMDD_eda_cycle` name is recommended rather than inferred. The default `layout = "bundle"` preserves the flat bundle and its metadata schemas.
+
+Existing flat and delivery bundles can be rendered without a live connection. The renderer re-reads and validates the on-disk bundle; a result object contributes only its output directory.
+
+```{r eval = FALSE}
+report <- epi_eda_render_db_report("postgres-eda-bundle")
+# Use overwrite = TRUE only to replace an already owned README/report.
+```
 
 The extended PostgreSQL dictionary is technical and semantic. Catalogue profiling uses an explicit three-key selector:
 
@@ -187,11 +197,11 @@ This release intentionally rejects old contracts:
 - Pass an exact `source_schema`, `source_table`, `source_column` selector to `epi_db_catalogue_profile()`.
 - Replace core six-column sensitivity manifests with the five-column manifest contract.
 - Regenerate old three-component linkage objects with `tables`, `columns`, `record_keys` and `crosswalks`.
-- Replace database-to-report examples that extract rows with `epi_eda_db_run()` and optional bounded map arguments. Direct in-memory reporting remains available through `epi_eda_render_report()`.
+- Replace database-to-report examples that extract rows with `epi_eda_db_run(layout = "delivery")` or render an existing aggregate bundle with `epi_eda_render_db_report()`. Direct in-memory reporting remains available through `epi_eda_render_report()`.
 
 Old objects fail with concise migration guidance; no warning-only compatibility shim is provided.
 
-## Write outputs and render HTML
+## Write in-memory outputs and render HTML
 
 ```{r eval = FALSE}
 output_dir <- file.path(tempdir(), "episcout-eda")

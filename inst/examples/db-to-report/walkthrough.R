@@ -1,4 +1,4 @@
-# episcout: synthetic longitudinal data from PostgreSQL to an EDA bundle
+# episcout: synthetic longitudinal data from PostgreSQL to an EDA delivery
 #
 # Run this file one numbered section at a time in an interactive R session.
 # The example uses only neutral synthetic records. Specialised policy below is illustrative, not inferred by core EDA.
@@ -7,7 +7,9 @@
 
 library(episcout)
 
-required_packages <- c("DBI", "RPostgres", "data.table", "ggplot2")
+required_packages <- c(
+  "DBI", "RPostgres", "data.table", "ggplot2", "rmarkdown", "knitr"
+)
 missing_packages <- required_packages[
   !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
 ]
@@ -412,20 +414,29 @@ output_root <- Sys.getenv(
 )
 dir.create(output_root, recursive = TRUE, showWarnings = FALSE)
 
+delivery_dir <- file.path(
+  output_root,
+  paste0(format(Sys.Date(), "%Y%m%d"), "_eda_cycle")
+)
 database_bundle <- epi_eda_db_run(
   postgres_source,
   visits_spec,
-  output_dir = file.path(output_root, "postgres-eda-bundle"),
+  output_dir = delivery_dir,
   plots = TRUE,
-  max_plot_levels = 10L
+  max_plot_levels = 10L,
+  layout = "delivery",
+  quiet = TRUE
 )
 database_bundle$status
 database_bundle$manifest
 database_bundle$identifier_qa
+database_report <- file.path(delivery_dir, "reports", "eda-report.html")
+stopifnot(file.exists(database_report))
 
 # episcout creates the outputs explicitly requested by the analyst and does
-# not decide whether they may be shared. PostgreSQL HTML rendering remains a
-# separate in-memory workflow; this example ends at the owned database bundle.
+# not decide whether they may be shared. The HTML renderer ran after the
+# repeatable-read snapshot closed and consumed only the validated aggregate
+# bundle; it did not receive this connection or source observations.
 
 # 8. Reconcile outputs, disconnect and optionally remove disposable schemas ----
 
@@ -437,6 +448,7 @@ stopifnot(database_bundle$metadata$status == "complete")
 
 cat("\nWalkthrough schemas:\n", paste(walkthrough_schemas, collapse = "\n"), "\n")
 cat("\nWalkthrough outputs:\n", normalizePath(output_root), "\n")
+cat("\nOpen the EDA report:\n", normalizePath(database_report), "\n")
 
 cleanup_schemas <- identical(
   Sys.getenv("EPISCOUT_WALKTHROUGH_CLEANUP", unset = "0"),
@@ -454,4 +466,4 @@ if (cleanup_schemas) {
 
 DBI::dbDisconnect(con)
 
-cat("\nComplete. Inspect the manifest-owned PostgreSQL EDA bundle shown above.\n")
+cat("\nComplete. Open the report and retain its manifest-owned delivery root.\n")

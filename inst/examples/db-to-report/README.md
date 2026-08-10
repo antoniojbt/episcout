@@ -1,6 +1,6 @@
-# Database-to-EDA-bundle walkthrough
+# Database-to-EDA-delivery walkthrough
 
-This installed example is a step-by-step R script for a disposable PostgreSQL 17 or later database. It starts with a deliberately duplicated synthetic longitudinal CSV, creates related PostgreSQL source tables, builds a semantic dictionary, declares separate linkage column policy, pseudonymises both tables through one stable identity registry, and finishes with a manifest-owned PostgreSQL EDA bundle.
+This installed example is a step-by-step R script for a disposable PostgreSQL 17 or later database. It starts with a deliberately duplicated synthetic longitudinal CSV, creates related PostgreSQL source tables, builds a semantic dictionary, declares separate linkage column policy, pseudonymises both tables through one stable identity registry, and finishes with a manifest-owned PostgreSQL EDA delivery whose HTML report is rendered only from aggregate bundle artifacts.
 
 The files are:
 
@@ -23,7 +23,7 @@ export PGUSER=your_learning_role
 # Use an appropriate password store or a temporary PGPASSWORD only when required.
 ```
 
-Install the suggested packages used by the walkthrough: `RPostgres`, `data.table`, `compare`, `ggplot2` and their dependencies.
+Install the suggested packages used by the walkthrough: `RPostgres`, `data.table`, `compare`, `ggplot2`, `rmarkdown`, `knitr` and their dependencies. Pandoc must also be available for the HTML report.
 
 ## Run it
 
@@ -40,4 +40,4 @@ Set `EPISCOUT_WALKTHROUGH_CLEANUP=1` before running only when the disposable sch
 
 ## Output ownership
 
-The walkthrough does not extract pseudonymised rows into R for reporting. Its semantic output dictionary passes directly into `epi_eda_dictionary_spec()`, and `epi_eda_db_run()` publishes the requested summaries and plots. Core manifests use `artifact`, `type`, `path`, `status` and `checksum_md5`. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared. Specialised security manifests and restricted-data safeguards remain unchanged.
+The walkthrough does not extract pseudonymised rows into R for reporting. Its semantic output dictionary passes directly into `epi_eda_dictionary_spec()`, and `epi_eda_db_run(layout = "delivery")` publishes the requested aggregate summaries, compact plot data, plots, README and portable HTML after the database snapshot closes. Core manifests use `artifact`, `type`, `path`, `status` and `checksum_md5`. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared. Specialised security manifests and restricted-data safeguards remain unchanged.

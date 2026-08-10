@@ -16,6 +16,11 @@
 #'   coordinate pair.
 #' @param map_vars Unique declared variables for additional thematic maps.
 #' @param max_map_points Inclusive maximum number of rows allowed for mapping.
+#' @param layout Output layout. `"bundle"` preserves the existing flat
+#'   aggregate bundle; `"delivery"` adds the canonical directory tree and
+#'   portable HTML entry point.
+#' @param quiet Logical passed to the delivery report renderer. It is ignored
+#'   when `layout = "bundle"`.
 #'
 #' @return An `epi_eda_db_run` list with fixed components `status`,
 #'   `output_dir`, `manifest`, `source`, `spec`, `schema`, `missing`,
@@ -38,12 +43,19 @@ epi_eda_db_run <- function(source,
                            max_plot_levels = 20L,
                            maps = FALSE,
                            map_vars = character(),
-                           max_map_points = 10000L) {
+                           max_map_points = 10000L,
+                           layout = c("bundle", "delivery"),
+                           quiet = TRUE) {
   if (!inherits(source, "epi_eda_postgres_source")) {
     stop("source must be an epi_eda_postgres_source.", call. = FALSE)
   }
+  layout <- match.arg(layout)
   intake_validate_flag(overwrite, "overwrite")
   intake_validate_flag(plots, "plots")
+  if (layout == "delivery") {
+    intake_validate_flag(quiet, "quiet")
+    eda_db_report_dependencies()
+  }
   max_plot_levels <- eda_db_whole_number(max_plot_levels, "max_plot_levels", 2L, 100L)
   spec <- epi_eda_spec(spec)
   map_options <- eda_map_options(spec, maps, map_vars, max_map_points)
@@ -53,7 +65,7 @@ epi_eda_db_run <- function(source,
   spec_fingerprint <- eda_postgres_fingerprint(spec)
   paths <- eda_db_prepare_output_dir(
     output_dir, overwrite, source_fingerprint, spec_fingerprint, plots,
-    max_plot_levels, map_options
+    max_plot_levels, map_options, layout
   )
   published <- FALSE
   on.exit(
@@ -159,13 +171,27 @@ epi_eda_db_run <- function(source,
 
   eda_db_write_bundle_tables(
     paths$staging_dir, metadata, messages, spec, source_metadata,
-    snapshot, plot_inventory, map_result$map_inventory, timings
+    snapshot, plot_inventory, map_result$map_inventory, timings, layout
+  )
+  plot_data_registry <- eda_db_write_plot_data(
+    paths$staging_dir, snapshot$plot_data$entries, layout
   )
   manifest <- eda_db_create_manifest(
-    paths$staging_dir, plot_inventory, map_result$map_inventory
+    paths$staging_dir, plot_inventory, map_result$map_inventory, layout,
+    plot_data_registry
   )
-  intake_atomic_csv(manifest, file.path(paths$staging_dir, "manifest.csv"))
+  manifest_path <- file.path(
+    paths$staging_dir, eda_db_manifest_relative_path(layout)
+  )
+  intake_atomic_csv(manifest, manifest_path)
   eda_db_validate_staged_bundle(paths$staging_dir, manifest)
+  if (layout == "delivery") {
+    rendered_bundle <- eda_db_render_staged_bundle(
+      paths$staging_dir,
+      quiet = quiet
+    )
+    manifest <- rendered_bundle$manifest
+  }
 
   state <- new.env(parent = emptyenv())
   state$target_dir <- paths$output_dir
@@ -222,7 +248,8 @@ eda_db_prepare_output_dir <- function(output_dir,
                                       spec_fingerprint,
                                       plots,
                                       max_plot_levels,
-                                      map_options) {
+                                      map_options,
+                                      layout) {
   if (!is.character(output_dir) || length(output_dir) != 1L || is.na(output_dir) || !nzchar(trimws(output_dir))) {
     stop("output_dir must be one non-empty local directory path.", call. = FALSE)
   }
@@ -242,7 +269,7 @@ eda_db_prepare_output_dir <- function(output_dir,
     if (length(entries) > 0L) {
       eda_db_validate_prior_bundle(
         output_dir, source_fingerprint, spec_fingerprint, plots,
-        max_plot_levels, map_options
+        max_plot_levels, map_options, layout
       )
     }
   }
@@ -256,30 +283,18 @@ eda_db_validate_prior_bundle <- function(output_dir,
                                          spec_fingerprint,
                                          plots,
                                          max_plot_levels,
-                                         map_options) {
-  manifest_path <- file.path(output_dir, "manifest.csv")
-  metadata_path <- file.path(output_dir, "run_metadata.csv")
-  if (!file.exists(manifest_path) || !file.exists(metadata_path)) stop("overwrite = TRUE requires a valid prior database-EDA manifest and metadata.", call. = FALSE)
-  all_entries <- list.files(output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE, include.dirs = TRUE, full.names = TRUE)
-  if (any(nzchar(Sys.readlink(all_entries)))) stop("A prior bundle containing symbolic links cannot be overwritten safely.", call. = FALSE)
-  manifest <- tryCatch(utils::read.csv(manifest_path, check.names = FALSE, stringsAsFactors = FALSE, na.strings = character()), error = identity)
-  if (!inherits(manifest, "error") && "sensitivity" %in% names(manifest)) {
-    stop(
-      "The prior database-EDA manifest uses the removed sensitivity schema; regenerate the bundle with the five-column core manifest before using overwrite = TRUE.",
-      call. = FALSE
-    )
+                                         map_options,
+                                         layout) {
+  bundle <- tryCatch(
+    eda_db_read_bundle(output_dir),
+    error = function(error) {
+      stop(conditionMessage(error), call. = FALSE)
+    }
+  )
+  if (!identical(bundle$layout, layout)) {
+    stop("Prior bundle layout does not match this run.", call. = FALSE)
   }
-  valid_names <- c("artifact", "type", "path", "status", "checksum_md5")
-  if (inherits(manifest, "error") || !identical(names(manifest), valid_names) || anyDuplicated(manifest$artifact) || anyDuplicated(manifest$path) || !all(manifest$status %in% c("created", "not_created"))) stop("overwrite = TRUE requires a valid prior database-EDA manifest.", call. = FALSE)
-  created <- manifest$status == "created"
-  expected <- sort(manifest$path[created])
-  actual <- sort(list.files(output_dir, all.files = TRUE, no.. = TRUE, recursive = TRUE, include.dirs = FALSE))
-  if (!identical(expected, actual)) stop("Prior bundle contents do not exactly match its manifest.", call. = FALSE)
-  paths <- file.path(output_dir, manifest$path[created])
-  if (any(!utils::file_test("-f", paths))) stop("Prior bundle artifacts must all be regular files.", call. = FALSE)
-  checked <- created & manifest$artifact != "manifest"
-  if (!identical(as.character(manifest$checksum_md5[checked]), unname(tools::md5sum(file.path(output_dir, manifest$path[checked]))))) stop("Prior bundle checksums do not match its manifest.", call. = FALSE)
-  metadata <- tryCatch(utils::read.csv(metadata_path, check.names = FALSE, stringsAsFactors = FALSE, na.strings = character()), error = identity)
+  metadata <- bundle$tables$run_metadata
   identity_fields <- c(
     "workflow_contract", "source_fingerprint_sha256",
     "spec_fingerprint_sha256", "plots", "max_plot_levels", "maps",
@@ -445,55 +460,136 @@ eda_db_write_bundle_tables <- function(staging_dir,
                                        snapshot,
                                        plot_inventory,
                                        map_inventory,
-                                       timings) {
+                                       timings,
+                                       layout) {
   tables <- list(
-    run_metadata.csv = metadata,
-    messages.csv = messages,
-    specification.csv = spec,
-    source_metadata.csv = source_metadata,
-    schema.csv = snapshot$schema,
-    missing.csv = snapshot$missing,
-    summary_variables.csv = snapshot$summaries$variables,
-    summary_numeric.csv = snapshot$summaries$numeric,
-    summary_categorical.csv = snapshot$summaries$categorical,
-    summary_text.csv = snapshot$summaries$text,
-    summary_temporal.csv = snapshot$summaries$temporal,
-    summary_skipped.csv = snapshot$summaries$skipped,
-    identifier_qa.csv = snapshot$identifier_qa,
-    geo_qa.csv = snapshot$geo,
-    plot_inventory.csv = plot_inventory,
-    map_inventory.csv = map_inventory,
-    query_timings.csv = timings
+    run_metadata = metadata,
+    messages = messages,
+    specification = spec,
+    source_metadata = source_metadata,
+    schema = snapshot$schema,
+    missing = snapshot$missing,
+    summary_variables = snapshot$summaries$variables,
+    summary_numeric = snapshot$summaries$numeric,
+    summary_categorical = snapshot$summaries$categorical,
+    summary_text = snapshot$summaries$text,
+    summary_temporal = snapshot$summaries$temporal,
+    summary_skipped = snapshot$summaries$skipped,
+    identifier_qa = snapshot$identifier_qa,
+    geo_qa = snapshot$geo,
+    plot_inventory = plot_inventory,
+    map_inventory = map_inventory,
+    query_timings = timings
   )
-  for (name in names(tables)) intake_atomic_csv(tables[[name]], file.path(staging_dir, name))
+  if (layout == "delivery") {
+    tables$delivery_metadata <- data.frame(
+      delivery_contract = "postgres-eda-delivery-1",
+      layout = "delivery",
+      report_path = "reports/eda-report.html",
+      root_contract = "canonical-output-root-1",
+      stringsAsFactors = FALSE
+    )
+  }
+  registry <- eda_db_artifact_registry(layout)
+  for (artifact in names(tables)) {
+    relative_path <- registry$path[match(artifact, registry$artifact)]
+    directory <- dirname(file.path(staging_dir, relative_path))
+    directory_ready <- dir.exists(directory) ||
+      dir.create(directory, recursive = TRUE, showWarnings = FALSE)
+    if (!directory_ready) {
+      stop("A database-EDA artifact directory could not be created.", call. = FALSE)
+    }
+    intake_atomic_csv(tables[[artifact]], file.path(staging_dir, relative_path))
+  }
   invisible(TRUE)
 }
 
-eda_db_create_manifest <- function(staging_dir, plot_inventory, map_inventory) {
-  fixed_paths <- c(
-    "manifest.csv", "run_metadata.csv", "messages.csv", "specification.csv",
-    "source_metadata.csv", "schema.csv", "missing.csv", "summary_variables.csv",
-    "summary_numeric.csv", "summary_categorical.csv", "summary_text.csv",
-    "summary_temporal.csv", "summary_skipped.csv", "identifier_qa.csv",
-    "geo_qa.csv", "plot_inventory.csv", "map_inventory.csv",
-    "query_timings.csv"
-  )
-  fixed_artifacts <- c(
+eda_db_artifact_registry <- function(layout = c("bundle", "delivery")) {
+  layout <- match.arg(layout)
+  artifacts <- c(
     "manifest", "run_metadata", "messages", "specification", "source_metadata",
     "schema", "missing", "summary_variables", "summary_numeric",
     "summary_categorical", "summary_text", "summary_temporal",
     "summary_skipped", "identifier_qa", "geo_qa", "plot_inventory",
     "map_inventory", "query_timings"
   )
-  fixed_types <- c(
+  types <- c(
     "manifest", "metadata", "messages", "specification", "source_metadata",
     "schema", "missingness", rep("canonical_summary", 6L), "identifier_qa",
     "geo_qa", "plot_inventory", "map_inventory", "query_timings"
   )
-  manifest <- data.frame(
-    artifact = fixed_artifacts, type = fixed_types, path = fixed_paths,
+  paths <- paste0(artifacts, ".csv")
+  paths[artifacts == "manifest"] <- "manifest.csv"
+  if (layout == "delivery") {
+    qa <- artifacts %in% c(
+      "schema", "missing", "summary_variables", "summary_numeric",
+      "summary_categorical", "summary_text", "summary_temporal",
+      "summary_skipped", "identifier_qa", "geo_qa", "plot_inventory",
+      "map_inventory"
+    )
+    paths[qa] <- file.path("QA_QC", paths[qa])
+    paths[!qa] <- file.path("run_manifests", paths[!qa])
+    artifacts <- c(artifacts, "delivery_metadata")
+    types <- c(types, "delivery_metadata")
+    paths <- c(paths, "run_manifests/delivery_metadata.csv")
+  }
+  data.frame(
+    artifact = artifacts, type = types, path = paths,
     status = "created", checksum_md5 = "", stringsAsFactors = FALSE
   )
+}
+
+eda_db_manifest_relative_path <- function(layout = c("bundle", "delivery")) {
+  layout <- match.arg(layout)
+  if (layout == "delivery") "run_manifests/manifest.csv" else "manifest.csv"
+}
+
+eda_db_write_plot_data <- function(staging_dir, entries, layout) {
+  empty <- data.frame(
+    artifact = character(), type = character(), path = character(),
+    status = character(), checksum_md5 = character(), stringsAsFactors = FALSE
+  )
+  if (layout != "delivery") {
+    return(empty)
+  }
+  rows <- list()
+  for (index in seq_along(entries)) {
+    entry <- entries[[index]]
+    components <- list()
+    if (!is.null(entry$data)) components[[entry$plot_type]] <- entry$data
+    if (!is.null(entry$box_data)) components[["quantile-box"]] <- entry$box_data
+    for (component in names(components)) {
+      relative_path <- sprintf("plot_data/%03d-%s.csv", index, component)
+      directory <- file.path(staging_dir, "plot_data")
+      if (!dir.exists(directory) && !dir.create(directory, showWarnings = FALSE)) {
+        stop("The database-EDA plot-data directory could not be created.", call. = FALSE)
+      }
+      intake_atomic_csv(components[[component]], file.path(staging_dir, relative_path))
+      rows[[length(rows) + 1L]] <- data.frame(
+        artifact = sprintf("plot_data_%03d_%s", index, gsub("-", "_", component)),
+        type = "plot_data", path = relative_path, status = "created",
+        checksum_md5 = "", stringsAsFactors = FALSE
+      )
+    }
+  }
+  if (length(rows) == 0L) {
+    return(empty)
+  }
+  out <- do.call(rbind, rows)
+  row.names(out) <- NULL
+  out
+}
+
+eda_db_create_manifest <- function(staging_dir,
+                                   plot_inventory,
+                                   map_inventory,
+                                   layout = c("bundle", "delivery"),
+                                   plot_data_registry = NULL) {
+  layout <- match.arg(layout)
+  manifest <- eda_db_artifact_registry(layout)
+  if (!is.null(plot_data_registry) && nrow(plot_data_registry) > 0L) {
+    manifest <- rbind(manifest, plot_data_registry)
+  }
   created_plots <- plot_inventory[plot_inventory$status == "created", , drop = FALSE]
   if (nrow(created_plots) > 0L) {
     dynamic <- data.frame(
@@ -505,7 +601,8 @@ eda_db_create_manifest <- function(staging_dir, plot_inventory, map_inventory) {
     manifest <- rbind(manifest, dynamic)
   }
   created_maps <- map_inventory[
-    map_inventory$status == "created", , drop = FALSE
+    map_inventory$status == "created", ,
+    drop = FALSE
   ]
   if (nrow(created_maps) > 0L) {
     dynamic <- data.frame(
@@ -517,6 +614,9 @@ eda_db_create_manifest <- function(staging_dir, plot_inventory, map_inventory) {
       stringsAsFactors = FALSE
     )
     manifest <- rbind(manifest, dynamic)
+  }
+  if (anyDuplicated(manifest$artifact) || anyDuplicated(manifest$path)) {
+    stop("Database-EDA artifacts did not have unique deterministic identifiers and paths.", call. = FALSE)
   }
   checked <- manifest$artifact != "manifest"
   manifest$checksum_md5[checked] <- unname(tools::md5sum(file.path(staging_dir, manifest$path[checked])))
