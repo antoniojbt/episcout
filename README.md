@@ -40,7 +40,7 @@ deliberately want the current development version from `master`.
 
 ## Development
 
-See the [project map](PROJECT_MAP.md) for the package architecture, implemented workflows, source/test/documentation locations and planning lifecycle.
+See the [project map](PROJECT_MAP.md) for the package architecture, implemented workflows, source, test, and documentation locations, and the planning lifecycle.
 
 Use the repository development environment so local checks run with the same R tooling in Positron, Codex and shell sessions. Create it once with:
 
