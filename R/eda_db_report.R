@@ -304,7 +304,7 @@ eda_db_validate_bundle_tables <- function(tables, manifest, layout) {
     messages = c("stage", "severity", "subject", "reason", "recommended_action"),
     specification = c("name", "label", "type", "role"),
     source_metadata = c("relation_kind", "column_count", "source_contract"),
-    schema = c("name"),
+    schema = "name",
     missing = c("name", "n", "n_missing", "p_missing"),
     summary_variables = c("name", "n", "n_missing", "n_observed", "status", "reason"),
     summary_numeric = c("name", "n_finite", "min", "mean", "max"),
