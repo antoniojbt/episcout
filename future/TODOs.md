@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is review-stage spec `031-canonical-eda-delivery`. Draft implementation PR [#252](https://github.com/antoniojbt/episcout/pull/252) is stacked on green planning PR #251; focused/offline/live PostgreSQL tests, package lint, local and CRAN-oriented checks, the installed walkthrough, exact artifact inspection and all seven required PR checks passed at implementation head `c997742`. Merge and closeout remain pending. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
+Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is review-stage spec `031-canonical-eda-delivery`. Draft implementation PR [#252](https://github.com/antoniojbt/episcout/pull/252) is fully green and clean/mergeable at final evidence head `a3136a3`; merge and closeout remain pending. Under the owner's stacking instruction, issue [#248](https://github.com/antoniojbt/episcout/issues/248) is now design-only gap-assessment spec `032-eda-denominator-gap-assessment` on top of that exact head and must not merge ahead. The assessment preserves existing categorical/stratified calculation schemas and identifies issue [#253](https://github.com/antoniojbt/episcout/issues/253) as the sole bounded package implementation successor for a shared denominator presentation contract.
 
 ## Deferred owner action
 
