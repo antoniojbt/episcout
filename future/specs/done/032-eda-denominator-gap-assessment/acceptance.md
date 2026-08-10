@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `032-eda-denominator-gap-assessment`
-Status: Review
+Status: Completed
 
 - [x] Current count, denominator, proportion, group-size and population metadata are inventoried from source and tests.
 - [x] Completed #183 capabilities are preserved rather than reimplemented.
@@ -12,4 +12,6 @@ Status: Review
 - [x] The design defines independently authored fixture expectations and cross-output reconciliation tests for the successor.
 - [x] No package behaviour, source, tests, dependencies, generated documentation or release state changed.
 - [x] The assessment PR passes all required checks with no actionable feedback.
-- [ ] Canonical merge, issue #248 closure, roadmap/TODO/changelog reconciliation and #253 activation are verified.
+- [x] PR #254 merged to canonical `master` as `4110a82` after PRs #251 and #252, closing issue #248 automatically.
+- [x] Repository roadmap mirrors, TODO, changelog and project map record #253 as the ready-next implementation tracker; no package-code specification is active.
+- [x] Manifest is completed and spec 032 is moved under `future/specs/done/`.

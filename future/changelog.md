@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-10
+
+- Completed the ordered #245/#248 stack and reconciled its closeout. Planning PR #251 merged as `5e2a52c`, implementation PR #252 merged as `74aeb0a`, and design PR #254 merged as `4110a82`; GitHub closed issues #245 and #248 automatically. PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed for the final implementation and assessment heads. Specs 031 and 032 are completed under `future/specs/done/`; #253 is the single ready-next implementation tracker and has not begun package work.
+
 ## 2026-08-09
 
 - Opened stacked draft design PR #254 for issue #248/spec 032 on fully green #245 head `a3136a3` under the owner's stacking instruction and created bounded implementation successor #253. The gap assessment finds that canonical and stratified calculations already expose counts, total/observed denominators, proportions, group sizes and included/omitted population counts; the remaining gap is one shared categorical display contract for selectable bases across Table 1, frequency companions and reports. PostgreSQL, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed at assessment head `d312de7`. No package behaviour changes in this assessment, PR #254 must not merge ahead of #252, and #253 cannot activate until the preceding closeout gates are satisfied.

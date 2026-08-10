@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `032-eda-denominator-gap-assessment`
-Status: Review
+Status: Completed
 
 ## Findings
 
@@ -20,4 +20,8 @@ Use one shared aggregate categorical display calculation in successor #253 and m
 - Assessment base: fully green #245 implementation/evidence head `a3136a3` in draft PR #252.
 - Issue #253 was created before this design contribution can close #248.
 - This planning branch must not merge before PR #252; the owner-requested combined closeout follows the ordered stack before #253 can activate.
-- Draft design PR #254 is open. PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed at assessment head `d312de7`; the merge commit is pending.
+- Draft design PR #254 passed PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates at assessment head `d312de7`; the merge commit was pending at review handoff.
+
+## Closeout
+
+PR #254 merged as `4110a82` on 2026-08-10 after #251 and #252, and GitHub closed issue #248 automatically. PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov checks were green at its final head `a1ee7ea`. The closeout records #253 as ready for its separate implementation specification; no package work has begun on that successor.

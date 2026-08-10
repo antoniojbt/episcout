@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Review
+Status: Completed
 
 ## Findings
 
@@ -42,8 +42,12 @@ None. Issue #245 and owner direction settle HTML ownership, compatibility and go
 - The installed database walkthrough completed end to end, removed its three uniquely owned schemas and published exactly 41 manifest-owned files; every non-manifest checksum reconciled independently.
 - Representative geometry-only, numeric-theme, categorical-theme, missing-theme and skipped-map states were inspected in generated SVG/HTML. Report links were relative, the self-contained HTML had no network or absolute local asset path, and deterministic re-rendering preserved report bytes.
 
-## Closeout Notes
+## Review Handoff
 
 - Draft implementation PR #252 is open and stacked on green planning PR #251; merge commit is pending.
 - PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed on implementation head `c997742`; the PR was clean/mergeable and had no actionable review feedback. The local material exception is the inherited CRAN incoming-feasibility NOTE recorded above.
-- Tracking issue and roadmap disposition: #245 ready next under #249; #248 is successor.
+- Tracking issue and roadmap disposition at review: #245 ready next under #249; #248 is successor.
+
+## Closeout
+
+Planning PR #251 merged first as `5e2a52c`, then implementation PR #252 merged as `74aeb0a` on 2026-08-10. GitHub closed issue #245 automatically. The required PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov checks were green at the final implementation head `a3136a3`. Issue #248 completed next as the planned gap assessment, and #253 is its ready-next package implementation tracker.

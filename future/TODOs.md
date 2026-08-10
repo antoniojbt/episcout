@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is review-stage spec `031-canonical-eda-delivery`. Draft implementation PR [#252](https://github.com/antoniojbt/episcout/pull/252) is fully green and clean/mergeable at final evidence head `a3136a3`; merge and closeout remain pending. Under the owner's stacking instruction, issue [#248](https://github.com/antoniojbt/episcout/issues/248) is design-only gap-assessment spec `032-eda-denominator-gap-assessment` in stacked draft PR [#254](https://github.com/antoniojbt/episcout/pull/254), whose seven required checks passed at assessment head `d312de7`; it must not merge ahead. The assessment preserves existing categorical/stratified calculation schemas and identifies issue [#253](https://github.com/antoniojbt/episcout/issues/253) as the sole bounded package implementation successor for a shared denominator presentation contract.
+Issue [#253](https://github.com/antoniojbt/episcout/issues/253) is the ready-next package tracker for a shared categorical denominator presentation contract. It requires its own accepted implementation specification before package changes. No package-code specification is active or in review.
 
 ## Deferred owner action
 
@@ -40,6 +40,11 @@ protected-`master` coverage upload passed for release commit `40ef702`.
   redesign or biomedical extensions.
 
 ## Done
+
+### 2026-08-10
+
+- [x] Complete issue #245/spec 031 through planning PR #251 (`5e2a52c`) and implementation PR #252, merged to canonical `master` as `74aeb0ad5568a43969b1efeb337f6204afcf4b5a`; issue #245 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed record moved to `future/specs/done/`. The default flat bundle remains compatible; opt-in delivery creates a validated aggregate-only HTML/README entry point without database or row-level access.
+- [x] Complete issue #248/spec 032 through planning-only PR #254, merged to canonical `master` as `4110a82a87267823088a1ac46ca1b8a015c4c4bf`; issue #248 closed automatically, PostgreSQL integration, Ubuntu, macOS, coverage, both Codecov gates and CodeFactor passed, and the completed assessment moved to `future/specs/done/`. Issue #253 is the ready-next bounded implementation tracker.
 
 ### 2026-08-09
 

@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Review
+Status: Completed
 
 ## Planning
 
@@ -27,5 +27,6 @@ Status: Review
 - [x] Exact generated HTML/SVG/CSV artifacts are independently reconciled and visually inspected.
 - [x] Required PR checks are green with no actionable review feedback.
 - [x] Implementation PR closes #245 and records #248 as successor only after all outcomes are delivered.
-- [ ] Canonical merge, issue closure, roadmap, TODO, changelog and local/fork master are reconciled.
-- [ ] Manifest is completed and spec 031 is moved under `future/specs/done/`.
+- [x] Planning PR #251 merged first as `5e2a52c`; implementation PR #252 merged to canonical `master` as `74aeb0a` and closed issue #245 automatically.
+- [x] Repository roadmap mirrors, TODO, changelog and project map reconcile the completed delivery with #248's completed assessment and ready-next successor #253.
+- [x] Manifest is completed and spec 031 is moved under `future/specs/done/`.
