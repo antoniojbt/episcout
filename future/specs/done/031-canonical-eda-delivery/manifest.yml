@@ -2,12 +2,12 @@ id: "031"
 slug: "canonical-eda-delivery"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/implement-canonical-eda-delivery
 created: 2026-08-09
-updated: 2026-08-09
+updated: 2026-08-10
 
 tracking_issue: 245
 source_issues:
@@ -15,7 +15,7 @@ source_issues:
   - 249
 pull_request: 252
 planning_pull_request: 251
-merge_commit: null
+merge_commit: 74aeb0ad5568a43969b1efeb337f6204afcf4b5a
 successor_issue: 248
 terminal_reason: null
 
@@ -74,3 +74,4 @@ notes:
   - Issue 196 closed as superseded after its technical renderer requirements moved into issue 245.
   - No package implementation begins until the planning PR is green.
   - Issue 248 is the explicit successor after issue 245 closeout.
+  - Planning PR #251 merged first as 5e2a52cc3e21ce5a8d808387ba546b311453da54; implementation PR #252 then merged to canonical master as 74aeb0ad5568a43969b1efeb337f6204afcf4b5a. Issue #245 closed automatically.
