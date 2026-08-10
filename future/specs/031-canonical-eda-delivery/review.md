@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Active
+Status: Review
 
 ## Findings
 
@@ -44,6 +44,6 @@ None. Issue #245 and owner direction settle HTML ownership, compatibility and go
 
 ## Closeout Notes
 
-- Pull request and merge commit: pending.
+- Draft implementation PR #252 is open and stacked on green planning PR #251; merge commit is pending.
 - Required pull-request checks: pending. Local material exception: the inherited CRAN incoming-feasibility NOTE recorded above.
 - Tracking issue and roadmap disposition: #245 ready next under #249; #248 is successor.

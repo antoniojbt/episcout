@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Active
+Status: Review
 
 ## Test Files
 

@@ -2,7 +2,7 @@ id: "031"
 slug: "canonical-eda-delivery"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: agent/implement-canonical-eda-delivery
@@ -13,7 +13,7 @@ tracking_issue: 245
 source_issues:
   - 196
   - 249
-pull_request: null
+pull_request: 252
 planning_pull_request: 251
 merge_commit: null
 successor_issue: 248
