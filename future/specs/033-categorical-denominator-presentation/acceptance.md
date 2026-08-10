@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Active
+Status: Review
 
 ## Planning And Activation
 

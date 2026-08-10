@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Active
+Status: Review
 Owner: repository-owner
 Tracking issue: #253
 

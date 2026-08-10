@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Active
+Status: Review
 
 ## Planning Findings
 
@@ -38,4 +38,4 @@ None. Issue #253 and completed spec 032 settle the bounded outcome; this specifi
 - Package lint, `git diff --check` and `scripts/check-local.sh` pass; the latter reports 0 errors, 0 warnings and 0 notes. `scripts/check-cran.sh` completes with the inherited incoming-feasibility NOTE for new-submission/vignette-index and two Stack Overflow 403 checks.
 - The exact rendered categorical CSV reconciles to `1/5`, `2/5`, `1/5`, `0/5`, `1/5` and missing `2/7`; the HTML plain rendering contains those fields, and the 1280 x 800 count plot was visually inspected for its `2, 1, 1, 1, 0` heights and labels.
 
-No actionable self-review finding remains. GitHub CI and independent owner review are pending.
+No actionable self-review finding remains. Draft implementation PR #258 is open; GitHub CI and independent owner review are pending.

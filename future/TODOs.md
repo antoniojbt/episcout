@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Issue [#253](https://github.com/antoniojbt/episcout/issues/253) is active implementation spec `033-categorical-denominator-presentation`, stacked on fully green planning PR [#257](https://github.com/antoniojbt/episcout/pull/257) at `362a94d`. The accepted contract defines aggregate-only compatibility, column, row and overall bases; preserves default Table 1 and plotting behaviour; and enriches frequency companions and report families without new PostgreSQL queries.
+Issue [#253](https://github.com/antoniojbt/episcout/issues/253) is in review through draft implementation PR [#258](https://github.com/antoniojbt/episcout/pull/258), stacked on fully green planning PR [#257](https://github.com/antoniojbt/episcout/pull/257) at `362a94d`. Merge #257 first so GitHub reduces #258 to the implementation-only diff. The accepted contract defines aggregate-only compatibility, column, row and overall bases; preserves default Table 1 and plotting behaviour; and enriches frequency companions and report families without new PostgreSQL queries.
 
 ## Deferred owner action
 

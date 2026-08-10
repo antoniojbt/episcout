@@ -2,7 +2,7 @@ id: "033"
 slug: "categorical-denominator-presentation"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: feature/categorical-denominator-contract
@@ -15,7 +15,7 @@ source_issues:
   - 245
   - 248
   - 249
-pull_request: null
+pull_request: 258
 planning_pull_request: 257
 merge_commit: null
 successor_issue: null
@@ -92,3 +92,4 @@ notes:
   - A successor or explicit terminal reason will be recorded before issue 253 closes.
   - Draft planning PR #257 contains no package behaviour changes.
   - Implementation is stacked on the fully green planning head under the owner's explicit instruction without waiting for merge.
+  - Draft implementation PR #258 targets master because GitHub cannot use the fork-only planning branch as an upstream PR base; merge #257 first so the diff reduces to implementation-only.

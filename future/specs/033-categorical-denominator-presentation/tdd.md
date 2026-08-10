@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `033-categorical-denominator-presentation`
-Status: Active
+Status: Review
 
 ## Independent Fixture
 
