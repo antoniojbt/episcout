@@ -45,5 +45,5 @@ None. Issue #245 and owner direction settle HTML ownership, compatibility and go
 ## Closeout Notes
 
 - Draft implementation PR #252 is open and stacked on green planning PR #251; merge commit is pending.
-- Required pull-request checks: pending. Local material exception: the inherited CRAN incoming-feasibility NOTE recorded above.
+- PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates passed on implementation head `c997742`; the PR was clean/mergeable and had no actionable review feedback. The local material exception is the inherited CRAN incoming-feasibility NOTE recorded above.
 - Tracking issue and roadmap disposition: #245 ready next under #249; #248 is successor.

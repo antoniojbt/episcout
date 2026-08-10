@@ -25,7 +25,7 @@ Status: Review
 - [x] Focused offline and live PostgreSQL tests pass.
 - [x] Lint, local, CRAN-oriented and workflow checks pass with reconciled notes only.
 - [x] Exact generated HTML/SVG/CSV artifacts are independently reconciled and visually inspected.
-- [ ] Required PR checks are green with no actionable review feedback.
+- [x] Required PR checks are green with no actionable review feedback.
 - [x] Implementation PR closes #245 and records #248 as successor only after all outcomes are delivered.
 - [ ] Canonical merge, issue closure, roadmap, TODO, changelog and local/fork master are reconciled.
 - [ ] Manifest is completed and spec 031 is moved under `future/specs/done/`.

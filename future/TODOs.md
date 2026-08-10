@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is review-stage spec `031-canonical-eda-delivery`. Draft implementation PR [#252](https://github.com/antoniojbt/episcout/pull/252) is stacked on green planning PR #251 after focused/offline/live PostgreSQL tests, package lint, local and CRAN-oriented checks, an installed walkthrough and exact artifact inspection passed; PR checks and merge/closeout remain pending. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
+Issue [#245](https://github.com/antoniojbt/episcout/issues/245) is review-stage spec `031-canonical-eda-delivery`. Draft implementation PR [#252](https://github.com/antoniojbt/episcout/pull/252) is stacked on green planning PR #251; focused/offline/live PostgreSQL tests, package lint, local and CRAN-oriented checks, the installed walkthrough, exact artifact inspection and all seven required PR checks passed at implementation head `c997742`. Merge and closeout remain pending. [#248](https://github.com/antoniojbt/episcout/issues/248) follows #245 with explicit counts, denominators, percentages and subgroup sizes.
 
 ## Deferred owner action
 
