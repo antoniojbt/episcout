@@ -390,6 +390,67 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   expect_true(any(plotted$plot_inventory$plot_type == "quantile_box"))
 })
 
+test_that("live PostgreSQL delivery mode renders only after aggregate collection", {
+  con <- postgres_eda_connection()
+  fixture <- postgres_eda_fixture(con)
+  on.exit({
+    if (DBI::dbIsValid(con)) {
+      DBI::dbExecute(con, paste0(
+        "DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"
+      ))
+      DBI::dbDisconnect(con)
+    }
+  }, add = TRUE)
+  source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
+  flat_dir <- tempfile("postgres-eda-flat-compatible-")
+  delivery_dir <- tempfile("postgres-eda-delivery-")
+
+  flat <- epi_eda_db_run(source, fixture$spec, flat_dir, plots = FALSE)
+  delivery <- epi_eda_db_run(
+    source, fixture$spec, delivery_dir, plots = TRUE,
+    layout = "delivery", quiet = TRUE
+  )
+
+  expect_identical(names(flat$metadata), names(delivery$metadata))
+  expect_false("layout" %in% names(flat$metadata))
+  expect_identical(flat$missing, delivery$missing)
+  expect_identical(flat$summaries, delivery$summaries)
+  expect_true(file.exists(file.path(
+    delivery_dir, "reports", "eda-report.html"
+  )))
+  expect_true(file.exists(file.path(delivery_dir, "README.md")))
+  expect_true(file.exists(file.path(
+    delivery_dir, "run_manifests", "manifest.csv"
+  )))
+  expect_true(file.exists(file.path(delivery_dir, "QA_QC", "missing.csv")))
+  expect_true(any(delivery$manifest$type == "plot_data"))
+  expect_false(any(grepl("coordinate|theme", delivery$manifest$path[
+    delivery$manifest$type == "plot_data"
+  ])))
+  replaced <- epi_eda_db_run(
+    source, fixture$spec, delivery_dir, overwrite = TRUE, plots = TRUE,
+    layout = "delivery", quiet = TRUE
+  )
+  expect_true(file.exists(file.path(
+    replaced$output_dir, "reports", "eda-report.html"
+  )))
+  expect_error(
+    epi_eda_db_run(
+      source, fixture$spec, delivery_dir, overwrite = TRUE, plots = TRUE,
+      layout = "bundle"
+    ),
+    "layout does not match"
+  )
+
+  DBI::dbExecute(con, paste0(
+    "DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"
+  ))
+  DBI::dbDisconnect(con)
+  flat_report <- epi_eda_render_db_report(flat)
+  expect_true(file.exists(flat_report))
+  expect_false(DBI::dbIsValid(source$con))
+})
+
 test_that("live PostgreSQL calls reject caller transactions without disturbing them", {
   con <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)

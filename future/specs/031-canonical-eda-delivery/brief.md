@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `031-canonical-eda-delivery`  
-Status: Draft  
+Status: Active
 Owner: repository-owner  
 Tracking issue: #245
 

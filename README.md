@@ -87,7 +87,7 @@ There are four main ways to use episcout:
 * For related restricted PostgreSQL tables, follow the [audit-first longitudinal pseudonymisation guide](vignettes/longitudinal-pseudonymisation.Rmd) to create value-free linkage metadata, initialise a stable registry and inspect blockers before any write.
 * For explicit vector data or declared coordinate pairs, follow the [geospatial mapping guide](vignettes/geospatial-mapping-primer.Rmd) to inspect CRS and geometry, create a static map and publish GeoPackage output safely.
 
-For a complete runnable learning path, use the [database-to-EDA-bundle walkthrough](inst/examples/db-to-report/README.md). Its commented R script starts with a duplicated synthetic longitudinal CSV, creates disposable PostgreSQL relations, separates semantic and linkage policy metadata, pseudonymises the relations and finishes with a manifest-owned database EDA bundle.
+For a complete runnable learning path, use the [database-to-EDA-delivery walkthrough](inst/examples/db-to-report/README.md). Its commented R script starts with a duplicated synthetic longitudinal CSV, creates disposable PostgreSQL relations, separates semantic and linkage policy metadata, pseudonymises the relations and finishes with a manifest-owned database EDA delivery and aggregate-derived HTML report.
 
 Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled. The guide explains database-administrator prerequisites, duplicate handling, recovery and the semantic handoff into EDA.
 
@@ -314,22 +314,36 @@ plot_profile <- epi_eda_profile_plots(source, spec)
 bundle <- epi_eda_db_run(
   source,
   spec,
-  output_dir = "postgres-eda-bundle",
+  output_dir = "20260809_eda_cycle",
   plots = TRUE,
   max_plot_levels = 20L,
   maps = TRUE,
   map_vars = "sex",
-  max_map_points = 10000L
+  max_map_points = 10000L,
+  layout = "delivery"
 )
 
 DBI::dbDisconnect(con)
 ```
 
-Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db_run()` uses one such snapshot for all database reads, including map QC, the row bound and any requested coordinate/theme collection. It collects only ready-pair coordinates and explicit themes, never truncates, ends the snapshot before rendering, and publishes through a sibling staging directory. Overwrite fingerprints source, specification, plot and map settings.
+Each direct profiler owns one read-only repeatable-read transaction. `epi_eda_db_run()` uses one such snapshot for all database reads, including map QC, the row bound and any requested coordinate/theme collection. It collects only ready-pair coordinates and explicit themes, never truncates, ends the snapshot before rendering, and publishes through a sibling staging directory. Overwrite fingerprints source, specification, plot, map and layout settings.
+
+`layout = "delivery"` adds a README and portable `reports/eda-report.html` as the normal human entry point. Aggregate checks and summaries live under `QA_QC/`, compact plot inputs under `plot_data/`, provenance under `run_manifests/`, and deterministic SVGs under `plots/` and `maps/`. The caller supplies the exact output root; a name such as `YYYYMMDD_eda_cycle` is recommended. The default `layout = "bundle"` retains the existing flat bundle and metadata schemas.
+
+An existing valid flat or delivery bundle can be rendered or re-rendered later without a PostgreSQL connection:
+
+``` r
+report <- epi_eda_render_db_report(
+  "postgres-eda-bundle",
+  overwrite = FALSE
+)
+```
+
+The renderer re-reads the on-disk manifest and aggregate artifacts, rejects ownership or checksum drift, and atomically adds only `README.md` and `reports/eda-report.html`. A complete root can be moved before rendering or viewing; report links remain relative.
 
 episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared. It does not control PostgreSQL, RPostgres, administrator, backup or server logging. Unsupported storage, especially `timestamp without time zone`, requires an explicit view cast; episcout does not infer local-time or DST meaning.
 
-The PostgreSQL bundle does not render HTML. `epi_eda_render_report()` accepts an in-memory data frame and supports the same map options when `rmarkdown` and Pandoc are installed:
+The separate `epi_eda_render_report()` API remains the in-memory data-frame report path and supports the same map options when `rmarkdown` and Pandoc are installed:
 
 ``` r
 epi_eda_render_report(

@@ -13,7 +13,9 @@ epi_eda_db_run(
   max_plot_levels = 20L,
   maps = FALSE,
   map_vars = character(),
-  max_map_points = 10000L
+  max_map_points = 10000L,
+  layout = c("bundle", "delivery"),
+  quiet = TRUE
 )
 }
 \arguments{
@@ -37,6 +39,13 @@ coordinate pair.}
 \item{map_vars}{Unique declared variables for additional thematic maps.}
 
 \item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
+
+\item{layout}{Output layout. \code{"bundle"} preserves the existing flat
+aggregate bundle; \code{"delivery"} adds the canonical directory tree and
+portable HTML entry point.}
+
+\item{quiet}{Logical passed to the delivery report renderer. It is ignored
+when \code{layout = "bundle"}.}
 }
 \value{
 An \code{epi_eda_db_run} list with fixed components \code{status},

@@ -234,7 +234,7 @@ epi_eda_profile_geo(locations, coordinate_spec)
 
 The result contains one aggregate row with total, complete, missing-axis, both-missing, non-finite and EPSG:4326 range-failure counts plus a stable map-readiness reason. The same call accepts an `epi_eda_postgres_source()` and computes one aggregate SQL row per pair without PostGIS or coordinate collection. Coordinate roles do not suppress ordinary summaries or plots.
 
-All EDA runners accept `maps`, `map_vars` and `max_map_points`. Mapping remains off by default. When requested, complete within-limit pairs create coordinate-derived point maps, with one additional thematic map per explicit theme. Failed pairs record `not_created`; PostgreSQL does not collect coordinate or theme observations for failed or over-limit pairs. Existing `sf`, line, polygon and PostGIS geometry remain explicit `epi_geo_*` workflows.
+All EDA runners accept `maps`, `map_vars` and `max_map_points`. Mapping remains off by default. When requested, complete within-limit pairs create coordinate-derived point maps, with one additional thematic map per explicit theme. Failed pairs record `not_created`; PostgreSQL does not collect coordinate or theme observations for failed or over-limit pairs. `epi_eda_db_run(layout = "delivery")` keeps the created SVGs once under `maps/` and presents them through relative links in the bundle-derived HTML report; compact `plot_data/` never retains the collected coordinate or thematic observations. Existing `sf`, line, polygon and PostGIS geometry remain explicit `epi_geo_*` workflows.
 
 ## 13. Descriptive maps are not spatial inference
 

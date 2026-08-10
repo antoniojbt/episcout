@@ -1,0 +1,139 @@
+---
+title: "PostgreSQL EDA Report"
+output: html_document
+params:
+  bundle: null
+---
+
+```{r setup, include=FALSE}
+bundle <- params$bundle
+tables <- bundle$tables
+show_table <- function(value, caption) {
+  if (nrow(value) == 0L) {
+    cat("No rows were produced for this component.\n\n")
+  } else {
+    print(knitr::kable(value, caption = caption, escape = TRUE))
+    cat("\n\n")
+  }
+}
+show_gallery <- function(value, label) {
+  if (nrow(value) == 0L) {
+    cat("No ", tolower(label), " SVGs were created.\n\n", sep = "")
+    return(invisible(NULL))
+  }
+  for (index in seq_len(nrow(value))) {
+    path <- paste0("../", value$path[[index]])
+    cat("### ", label, " ", index, "\n\n", sep = "")
+    cat("<object data=\"", path,
+        "\" type=\"image/svg+xml\" style=\"max-width:100%;width:100%;height:32rem\">",
+        "<a href=\"", path, "\">Open SVG</a></object>\n\n", sep = "")
+  }
+}
+show_artifacts <- function(value) {
+  created <- value[value$status == "created", , drop = FALSE]
+  cat("<ul>\n")
+  for (index in seq_len(nrow(created))) {
+    path <- paste0("../", created$path[[index]])
+    cat("<li><a href=\"", path, "\">", created$path[[index]],
+        "</a> (", created$type[[index]], ")</li>\n", sep = "")
+  }
+  cat("</ul>\n")
+}
+```
+
+# EDA delivery
+
+This report is a human-facing view of the validated aggregate bundle. CSV,
+SVG, checksums, and provenance remain the canonical evidence.
+
+episcout creates the outputs explicitly requested by the analyst and does not
+decide whether they may be shared.
+
+## Run metadata
+
+```{r metadata, echo=FALSE, results='asis'}
+show_table(tables$run_metadata, "Run metadata")
+```
+
+## Source metadata
+
+```{r source, echo=FALSE, results='asis'}
+show_table(tables$source_metadata, "Source metadata")
+```
+
+## Specification and schema
+
+```{r specification, echo=FALSE, results='asis'}
+show_table(tables$specification, "Semantic specification")
+show_table(tables$schema, "Schema checks")
+```
+
+## Missingness
+
+```{r missing, echo=FALSE, results='asis'}
+show_table(tables$missing, "Missing-value profile")
+```
+
+## Canonical summaries
+
+```{r summaries, echo=FALSE, results='asis'}
+components <- c("variables", "numeric", "categorical", "text", "temporal", "skipped")
+for (component in components) {
+  cat("### ", tools::toTitleCase(component), "\n\n", sep = "")
+  show_table(tables[[paste0("summary_", component)]], paste(tools::toTitleCase(component), "summary"))
+}
+```
+
+## Identifier QA
+
+```{r identifier, echo=FALSE, results='asis'}
+show_table(tables$identifier_qa, "Identifier QA")
+```
+
+## Declared coordinate-pair QA
+
+```{r geo, echo=FALSE, results='asis'}
+show_table(tables$geo_qa, "Coordinate-pair QA")
+```
+
+## Messages
+
+```{r messages, echo=FALSE, results='asis'}
+show_table(tables$messages, "Workflow messages")
+```
+
+## Plot inventory
+
+```{r plot-inventory, echo=FALSE, results='asis'}
+show_table(tables$plot_inventory, "Plot inventory")
+```
+
+```{r plot-gallery, echo=FALSE, results='asis'}
+show_gallery(bundle$plots, "Plot")
+```
+
+## Map inventory
+
+```{r map-inventory, echo=FALSE, results='asis'}
+show_table(tables$map_inventory, "Map inventory")
+```
+
+```{r map-gallery, echo=FALSE, results='asis'}
+show_gallery(bundle$maps, "Map")
+```
+
+## Query timings
+
+```{r timings, echo=FALSE, results='asis'}
+show_table(tables$query_timings, "Query timings")
+```
+
+## Manifest
+
+```{r artifact-index, echo=FALSE, results='asis'}
+show_artifacts(bundle$manifest)
+```
+
+```{r manifest, echo=FALSE, results='asis'}
+show_table(bundle$manifest, "Owned artifacts and checksums")
+```
