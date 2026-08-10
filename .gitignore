@@ -1,6 +1,6 @@
 # User files:
-future/scratch/
-archive/
+future/scratch/**
+archive/**
 
 # R files to ignore:
 # History files
