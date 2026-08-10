@@ -529,6 +529,24 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   expect_identical(canonical$status, "blocked")
   expect_match(canonical$messages$reason, "simulated canonical")
 
+  categorical_display <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-categorical-display-failure-"),
+      render = FALSE
+    ),
+    epi_eda_categorical_display = function(...) {
+      stop("simulated categorical display failure")
+    },
+    .package = "episcout"
+  )
+  expect_identical(categorical_display$status, "blocked")
+  expect_match(
+    categorical_display$messages$reason,
+    "simulated categorical display failure"
+  )
+  expect_null(categorical_display$categorical_display)
+
   invalid_strata <- epi_eda_intake_run(
     fixture$data, fixture$spec,
     tempfile("intake-invalid-strata-"),
@@ -566,6 +584,30 @@ test_that("factual stage failures publish blocked diagnostic bundles", {
   expect_match(
     stratified_reconciliation$messages$reason,
     "simulated stratified reconciliation"
+  )
+
+  display_calls <- 0L
+  actual_display <- epi_eda_categorical_display
+  stratified_display <- with_mocked_bindings(
+    epi_eda_intake_run(
+      fixture$data, fixture$spec,
+      tempfile("intake-stratified-display-failure-"),
+      strata = "arm", render = FALSE
+    ),
+    epi_eda_categorical_display = function(result, ...) {
+      display_calls <<- display_calls + 1L
+      if (display_calls == 2L) {
+        stop("simulated stratified display failure")
+      }
+      actual_display(result, ...)
+    },
+    .package = "episcout"
+  )
+  expect_identical(stratified_display$status, "blocked")
+  expect_s3_class(stratified_display$stratified, "epi_eda_stratified")
+  expect_match(
+    stratified_display$messages$reason,
+    "simulated stratified display failure"
   )
 
   table1 <- with_mocked_bindings(
