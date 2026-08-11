@@ -22,7 +22,7 @@ The review used repository source/tests/docs/history and live owner issue decisi
 
 ## Open Questions
 
-No product or architecture question remains for the first implementation slice. The owner/dispatcher must create the drafted successor issue because this dispatch forbids GitHub issue mutation.
+No product or architecture question remains for the first implementation slice. Successor issue #278 has been created from the reviewed draft and is intentionally not dispatch-ready until PR #277 is merged and issue #276 closeout is complete.
 
 ## Local Verification
 
@@ -35,5 +35,5 @@ No product or architecture question remains for the first implementation slice. 
 
 - Tracking issue: #276 under owner roadmaps #274 and #275.
 - Design branch: `agent/issue-276-design-inventory-governance-coupling-and-spe` at canonical `master` baseline `4d55a20`.
-- First implementation tracker: complete draft in `first-implementation-issue.md`; GitHub number pending authorised creation.
-- Pull request, CI, canonical merge and closeout: pending outside this local-only dispatch.
+- First implementation tracker: #278, prepared from `first-implementation-issue.md` and intentionally not dispatch-ready until design closeout.
+- Pull request: #277. CI, canonical merge and closeout remain pending.
