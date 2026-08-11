@@ -29,4 +29,4 @@ This design is based on current `master` source, generated help, focused unit te
 
 ## Successor
 
-`first-implementation-issue.md` is the complete first tracker draft. The authorised dispatcher or owner must create that GitHub issue and record its number as this design's successor before issue #276 can complete. Later implementation trackers should be created only at the boundaries recorded in `sdd.md`.
+Issue #278 contains the first bounded implementation contract from `first-implementation-issue.md`. It is intentionally not `dispatch:ready` and must not begin until PR #277 is merged and issue #276 has completed post-merge closeout. Later implementation trackers should be created only at the boundaries recorded in `sdd.md`.
