@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-There is no active package implementation. Owner roadmaps [#274](https://github.com/antoniojbt/episcout/issues/274) and [#275](https://github.com/antoniojbt/episcout/issues/275) retain all seven `epi_sec_*` exports while removing package governance decisions; design issue [#276](https://github.com/antoniojbt/episcout/issues/276) is active as spec `034-retained-epi-sec-technical-contract`. The spec contains the complete first identity-universe implementation-issue draft, but this planning contribution does not create that GitHub tracker or claim its future contract as current behaviour. Documentation issue [#269](https://github.com/antoniojbt/episcout/issues/269) remains paused until the implementation sequence is stable, and roadmap [#249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+There is no active package implementation. Owner roadmaps [#274](https://github.com/antoniojbt/episcout/issues/274) and [#275](https://github.com/antoniojbt/episcout/issues/275) retain all seven `epi_sec_*` exports while removing package governance decisions; design issue [#276](https://github.com/antoniojbt/episcout/issues/276)/spec `034-retained-epi-sec-technical-contract` completed through merged PR [#277](https://github.com/antoniojbt/episcout/pull/277). Open issue [#278](https://github.com/antoniojbt/episcout/issues/278) is the next identity-universe implementation tracker, but implementation has not begun and it remains non-dispatchable until this closeout is canonical. Documentation issue [#269](https://github.com/antoniojbt/episcout/issues/269) remains paused until the implementation sequence is stable, and roadmap [#249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 
@@ -40,6 +40,10 @@ protected-`master` coverage upload passed for release commit `40ef702`.
   redesign or biomedical extensions.
 
 ## Done
+
+### 2026-08-11
+
+- [x] Complete design issue #276/spec 034 through PR #277, merged to canonical `master` as `8641abe9aa89fb5c1c3ecba19c16985618a3a38e`; issue #276 closed automatically, macOS and Ubuntu R CMD CHECK, PostgreSQL integration, test coverage, both Codecov gates, CodeFactor and CodeQL passed at final head `0d74c1b80bad6a8a9a6ff064cdadcd517ecac854`, and the completed design record moved to `future/specs/done/`. Issue #278 is the next implementation tracker, but implementation has not begun and it remains non-dispatchable until this closeout is canonical.
 
 ### 2026-08-10
 

@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `034-retained-epi-sec-technical-contract`
-Status: Active design inventory
+Status: Completed
 
 ## Findings
 
@@ -22,7 +22,7 @@ The review used repository source/tests/docs/history and live owner issue decisi
 
 ## Open Questions
 
-No product or architecture question remains for the first implementation slice. Successor issue #278 has been created from the reviewed draft and is intentionally not dispatch-ready until PR #277 is merged and issue #276 closeout is complete.
+No product or architecture question remains for the first implementation slice. Successor issue #278 was created from the reviewed draft and is intentionally not dispatch-ready until this closeout is canonical; implementation has not begun.
 
 ## Local Verification
 
@@ -33,7 +33,15 @@ No product or architecture question remains for the first implementation slice. 
 
 ## Lifecycle
 
-- Tracking issue: #276 under owner roadmaps #274 and #275.
+- Completed tracking issue: #276 under owner roadmaps #274 and #275.
 - Design branch: `agent/issue-276-design-inventory-governance-coupling-and-spe` at canonical `master` baseline `4d55a20`.
-- First implementation tracker: #278, prepared from `first-implementation-issue.md` and intentionally not dispatch-ready until design closeout.
-- Pull request: #277. CI, canonical merge and closeout remain pending.
+- First implementation tracker: #278, prepared from `first-implementation-issue.md`; it is open, implementation has not begun, and it remains intentionally not dispatch-ready until this closeout is canonical.
+- Pull request: #277, merged to canonical `master` as `8641abe9aa89fb5c1c3ecba19c16985618a3a38e` on 2026-08-11. GitHub closed #276 automatically.
+
+## Canonical Merge And CI Evidence
+
+GitHub records `0d74c1b80bad6a8a9a6ff064cdadcd517ecac854` as PR #277's final head and `8641abe9aa89fb5c1c3ecba19c16985618a3a38e` as its merge commit on `master`. The merge commit is reachable from canonical `upstream/master` and has the final head as its second parent.
+
+At that final head, the `macos-latest (release)` and `ubuntu-latest (release)` R CMD CHECK jobs, `PostgreSQL integration`, `test-coverage`, `codecov/patch`, `codecov/project`, CodeFactor and both CodeQL checks completed successfully. No review or inline-review finding remained open.
+
+The closeout branch passed `scripts/check-workflow-state.sh` online against `antoniojbt/episcout@master` with spec 034 completed under `future/specs/done/`, and `git diff --check` passed.

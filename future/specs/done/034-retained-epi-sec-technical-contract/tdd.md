@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `034-retained-epi-sec-technical-contract`
-Status: Active design inventory
+Status: Completed
 
 ## Design Evidence Completed
 

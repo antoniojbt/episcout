@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `034-retained-epi-sec-technical-contract`
-Status: Active design inventory
+Status: Completed
 
 ## Problem
 
@@ -29,4 +29,4 @@ This design is based on current `master` source, generated help, focused unit te
 
 ## Successor
 
-Issue #278 contains the first bounded implementation contract from `first-implementation-issue.md`. It is intentionally not `dispatch:ready` and must not begin until PR #277 is merged and issue #276 has completed post-merge closeout. Later implementation trackers should be created only at the boundaries recorded in `sdd.md`.
+Issue #278 contains the first bounded implementation contract from `first-implementation-issue.md`. It is intentionally not `dispatch:ready`, implementation has not begun, and the owner/control plane may mark it ready only after this closeout is canonical and the workflow-state check is clean. Later implementation trackers should be created only at the boundaries recorded in `sdd.md`.

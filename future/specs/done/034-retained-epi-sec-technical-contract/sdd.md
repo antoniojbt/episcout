@@ -1,7 +1,7 @@
 # Retained `epi_sec` Technical Contract
 
 Spec ID: `034-retained-epi-sec-technical-contract`
-Status: Active design inventory
+Status: Completed
 
 ## Authority Boundary
 
@@ -196,4 +196,4 @@ Each behavioural slice requires a separate tracking issue and numbered implement
 - **#274:** Preserve its owner boundary: episcout performs requested technical calculations and writes but has no approval, privacy, disclosure, sharing or publication authority. Its comment superseding removal/relocation is honoured; all seven exports remain.
 - **#275:** This design supplies the requested inventory and three-slice roadmap. Technical pseudonymisation, registry, linkage and identity-universe mechanics remain operational; `PUBLIC` grants become server outcomes; requested diagnostics are not redacted by a package sensitivity inference.
 - **#269:** Keep the issue in `question` state. Its current body conflicts with #274/#275 by requiring approval, access-review, mandatory audit-first and blocker language. After implementation, rewrite its acceptance criteria around observable prerequisites, optional inspection, technical side effects, exact statuses/schemas, transaction recovery and the factual limit that pseudonymisation is not anonymisation. Do not restore removed gates in prose.
-- **#249:** No package implementation is active during issue #276. Record the created first successor under #274/#275 before this design closes; reconcile #249 and repository queue records only through the normal lifecycle, without claiming this future contract is current package behaviour.
+- **#249:** No package implementation was active during issue #276. Successor #278 is recorded under #274/#275 as the next tracker but has not begun; reconcile #249 and repository queue records only through the normal lifecycle, without claiming this future contract is current package behaviour.
