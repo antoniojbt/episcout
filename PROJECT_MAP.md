@@ -33,7 +33,7 @@ Pseudonymisation and descriptive EDA are separate controlled stages. Pseudonymis
 | `data-raw/` | Development scripts and provenance for package or test data. |
 | `scripts/` | Canonical local and CRAN-oriented verification entry points. |
 | `.github/workflows/` | R package, PostgreSQL integration and coverage automation. |
-| `checklists/` | Required self-review criteria routed by `AGENTS.MD`. |
+| `checklists/` | Required self-review criteria routed by `AGENTS.md`. |
 | `future/` | Draft/active specifications, TODOs, decisions, reviews and completed design records; it does not define package behaviour by itself. |
 | `archive/` and `legacy/` | Historical records only. |
 

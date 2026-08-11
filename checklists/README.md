@@ -1,6 +1,6 @@
 # Package Review Checklists
 
-Use these checklists during work and before handoff. They are routed by `AGENTS.MD`, support self-review and do not constitute independent review.
+Use these checklists during work and before handoff. They are routed by `AGENTS.md`, support self-review and do not constitute independent review.
 
 ## Common workflow
 
