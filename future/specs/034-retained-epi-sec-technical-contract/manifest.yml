@@ -14,9 +14,9 @@ source_issues:
   - 269
   - 274
   - 275
-pull_request: null
+pull_request: 277
 merge_commit: null
-successor_issue: null
+successor_issue: 278
 terminal_reason: null
 
 related_files:
@@ -51,5 +51,4 @@ check_commands:
 notes:
   - This design inventory changes no package behaviour, tests, generated help or vignette content.
   - All seven epi_sec exports remain maintained; implementation removes package governance decisions while preserving technical correctness.
-  - The first implementation tracker is fully drafted but cannot be created in this dispatch because GitHub issue mutations are excluded.
-  - Record the created implementation issue in successor_issue before issue #276 is completed.
+  - Successor issue #278 contains the first bounded implementation contract and remains non-dispatchable until PR #277 is merged and issue #276 closeout is complete.
