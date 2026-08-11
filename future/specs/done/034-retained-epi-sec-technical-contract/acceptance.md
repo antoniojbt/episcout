@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `034-retained-epi-sec-technical-contract`
-Status: Active design inventory
+Status: Completed
 
 - [x] All seven retained exports have an explicit intended argument, result and compatibility contract.
 - [x] Every source restriction/output family and all transitive helpers are classified as structural, data-integrity, caller-selected or package governance behaviour.
@@ -16,6 +16,6 @@ Status: Active design inventory
 - [x] The first implementation issue is fully drafted with scope, exact contract, tests, compatibility, checks and exclusions.
 - [x] #274, #275, #269 and #249 reconciliation is explicit without rewriting the longitudinal guide or claiming future behaviour is current.
 - [x] No package code, tests, generated help, NAMESPACE, vignette, example, dependency or database was changed.
-- [x] First implementation issue #278 is created and recorded as `successor_issue`; it remains non-dispatchable until this design is merged and closed out.
-- [ ] The design pull request passes required checks with no unresolved finding.
-- [ ] Canonical merge, issue #276 closure and roadmap/TODO/changelog closeout are verified.
+- [x] First implementation issue #278 is created and recorded as `successor_issue`; implementation has not begun and it remains non-dispatchable until this closeout is canonical.
+- [x] Design PR #277 final head `0d74c1b80bad6a8a9a6ff064cdadcd517ecac854` passed macOS and Ubuntu R CMD CHECK, PostgreSQL integration, test coverage, both Codecov gates, CodeFactor and CodeQL with no unresolved finding.
+- [x] PR #277 merged to canonical `master` as `8641abe9aa89fb5c1c3ecba19c16985618a3a38e`, GitHub closed issue #276, and roadmap/TODO/changelog closeout records identify #278 as the unstarted successor.

@@ -2,7 +2,7 @@
 
 ## 2026-08-11
 
-- Activated design issue #276/spec 034 under owner roadmaps #274/#275 after inventorying all seven retained `epi_sec_*` exports, their transitive helpers, conditions, statuses, schemas, tests, documentation, release exposure and repository callers. The implementation-ready contract removes confirmation/privacy classification, package `PUBLIC` privilege policy, `blocked`/`blocking` governance semantics and package-redacted diagnostics while preserving exact mapping, registry compatibility, cryptographic uniqueness, destination protection, duplicate reconciliation, locking, transactions, rollback and database-error sanitisation. A first identity-universe implementation issue is fully drafted but not created; #269 remains paused. No package behaviour, test, generated help, vignette or example changed.
+- Completed design issue #276/spec 034 through PR #277, merged to canonical `master` as `8641abe9aa89fb5c1c3ecba19c16985618a3a38e`; GitHub closed #276 automatically. The final PR head `0d74c1b80bad6a8a9a6ff064cdadcd517ecac854` passed macOS and Ubuntu R CMD CHECK, PostgreSQL integration, test coverage, both Codecov gates, CodeFactor and CodeQL. The accepted contract inventories all seven retained `epi_sec_*` exports and removes package governance authority while preserving technical correctness; completed records move under `future/specs/done/`. Issue #278 is the next identity-universe implementation tracker, but implementation has not begun and it remains non-dispatchable until this closeout is canonical. No package behaviour, test, generated help, vignette or example changed.
 
 ## 2026-08-10
 

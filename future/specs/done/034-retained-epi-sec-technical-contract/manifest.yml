@@ -2,7 +2,7 @@ id: "034"
 slug: "retained-epi-sec-technical-contract"
 workflow_version: 1
 deliverable: design
-status: active
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-276-design-inventory-governance-coupling-and-spe
@@ -15,7 +15,7 @@ source_issues:
   - 274
   - 275
 pull_request: 277
-merge_commit: null
+merge_commit: 8641abe9aa89fb5c1c3ecba19c16985618a3a38e
 successor_issue: 278
 terminal_reason: null
 
@@ -51,4 +51,5 @@ check_commands:
 notes:
   - This design inventory changes no package behaviour, tests, generated help or vignette content.
   - All seven epi_sec exports remain maintained; implementation removes package governance decisions while preserving technical correctness.
-  - Successor issue #278 contains the first bounded implementation contract and remains non-dispatchable until PR #277 is merged and issue #276 closeout is complete.
+  - PR #277 merged to canonical master as 8641abe9aa89fb5c1c3ecba19c16985618a3a38e after all required CI passed at final head 0d74c1b80bad6a8a9a6ff064cdadcd517ecac854.
+  - Successor issue #278 contains the first bounded implementation contract and remains non-dispatchable until this closeout is canonical.
