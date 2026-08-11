@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-11
+
+- Activated design issue #276/spec 034 under owner roadmaps #274/#275 after inventorying all seven retained `epi_sec_*` exports, their transitive helpers, conditions, statuses, schemas, tests, documentation, release exposure and repository callers. The implementation-ready contract removes confirmation/privacy classification, package `PUBLIC` privilege policy, `blocked`/`blocking` governance semantics and package-redacted diagnostics while preserving exact mapping, registry compatibility, cryptographic uniqueness, destination protection, duplicate reconciliation, locking, transactions, rollback and database-error sanitisation. A first identity-universe implementation issue is fully drafted but not created; #269 remains paused. No package behaviour, test, generated help, vignette or example changed.
+
 ## 2026-08-10
 
 - Completed issue #253/spec 033 through planning PR #257, merged as `49bf7c4`, and implementation PR #258, merged to canonical `master` as `074f13a`; GitHub closed #253 automatically. The final implementation head `d4f03d3` passed PostgreSQL integration, Ubuntu, macOS, coverage, CodeFactor and both Codecov gates, with 95.00% patch coverage and 93.20% project coverage. The completed record moves under `future/specs/done/`; no successor is created because the bounded denominator-presentation slice is complete and remaining roadmap work is separately tracked or deferred.

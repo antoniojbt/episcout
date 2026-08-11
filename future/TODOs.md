@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-There is no active or ready-next package implementation. Issue [#253](https://github.com/antoniojbt/episcout/issues/253) completed the bounded categorical-denominator presentation slice through planning PR [#257](https://github.com/antoniojbt/episcout/pull/257) and implementation PR [#258](https://github.com/antoniojbt/episcout/pull/258). Roadmap [#249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for separately tracked or deferred work.
+There is no active package implementation. Owner roadmaps [#274](https://github.com/antoniojbt/episcout/issues/274) and [#275](https://github.com/antoniojbt/episcout/issues/275) retain all seven `epi_sec_*` exports while removing package governance decisions; design issue [#276](https://github.com/antoniojbt/episcout/issues/276) is active as spec `034-retained-epi-sec-technical-contract`. The spec contains the complete first identity-universe implementation-issue draft, but this planning contribution does not create that GitHub tracker or claim its future contract as current behaviour. Documentation issue [#269](https://github.com/antoniojbt/episcout/issues/269) remains paused until the implementation sequence is stable, and roadmap [#249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 
