@@ -16,6 +16,6 @@ Status: Active design inventory
 - [x] The first implementation issue is fully drafted with scope, exact contract, tests, compatibility, checks and exclusions.
 - [x] #274, #275, #269 and #249 reconciliation is explicit without rewriting the longitudinal guide or claiming future behaviour is current.
 - [x] No package code, tests, generated help, NAMESPACE, vignette, example, dependency or database was changed.
-- [ ] The first implementation GitHub issue is created and recorded as `successor_issue` before issue #276 completion.
+- [x] First implementation issue #278 is created and recorded as `successor_issue`; it remains non-dispatchable until this design is merged and closed out.
 - [ ] The design pull request passes required checks with no unresolved finding.
 - [ ] Canonical merge, issue #276 closure and roadmap/TODO/changelog closeout are verified.
