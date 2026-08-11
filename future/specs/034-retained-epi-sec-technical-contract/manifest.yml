@@ -1,0 +1,55 @@
+id: "034"
+slug: "retained-epi-sec-technical-contract"
+workflow_version: 1
+deliverable: design
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: agent/issue-276-design-inventory-governance-coupling-and-spe
+created: 2026-08-11
+updated: 2026-08-11
+
+tracking_issue: 276
+source_issues:
+  - 269
+  - 274
+  - 275
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+related_files:
+  - R/epi_sec_pseudonym.R
+  - R/epi_sec_linkage.R
+  - R/epi_sec_registry.R
+  - R/epi_sec_identity_universe.R
+  - R/epi_sec_pseudonymise_db.R
+  - tests/testthat/test-epi_sec_pseudonym.R
+  - tests/testthat/test-sec-linkage.R
+  - tests/testthat/test-sec-identity-universe.R
+  - tests/testthat/test-sec-identity-universe-postgres.R
+  - tests/testthat/test-sec-pseudonymise-postgres.R
+  - vignettes/longitudinal-pseudonymisation.Rmd
+  - inst/examples/db-to-report/walkthrough.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+  first_implementation_issue: first-implementation-issue.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'epi_sec_pseudonym|sec-linkage|sec-identity-universe', reporter = 'summary')"
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+notes:
+  - This design inventory changes no package behaviour, tests, generated help or vignette content.
+  - All seven epi_sec exports remain maintained; implementation removes package governance decisions while preserving technical correctness.
+  - The first implementation tracker is fully drafted but cannot be created in this dispatch because GitHub issue mutations are excluded.
+  - Record the created implementation issue in successor_issue before issue #276 is completed.
