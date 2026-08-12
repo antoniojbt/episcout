@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub issues are authoritativ
 
 ## Current sequence
 
-The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. Reviewable proposals, separately approved executable rules and explicitly reviewed civil-date derivation are reconciled; no automatic implementation successor is authorised.
+The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. GitHub release preparation `issue-307`/`spec-042` merged through PR-308 as `commit-9b4d5df` and awaits tag publication only. No automatic implementation successor is authorised.
 
 ## Deferred owner action
 
