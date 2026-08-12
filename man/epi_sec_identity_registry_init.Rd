@@ -15,7 +15,7 @@ epi_sec_identity_registry_init(
 \arguments{
 \item{con}{An open PostgreSQL DBI connection created with RPostgres.}
 
-\item{registry_schema}{A single existing PostgreSQL schema reserved for the identity registry.}
+\item{registry_schema}{A single existing PostgreSQL schema for the identity registry.}
 
 \item{token_prefix}{A non-empty prefix for generated entity tokens.}
 
@@ -24,13 +24,13 @@ epi_sec_identity_registry_init(
 \item{mode}{Either \code{"audit"} to inspect without writing or \code{"apply"} to create the registry tables transactionally.}
 }
 \value{
-A redacted \code{epi_sec_registry_result} with scalar \code{status}, \code{mode}, \code{writes}, \code{registry_schema}, \code{schema_restricted} and \code{next_action}; \code{metadata} columns \code{registry_id}, \code{registry_version}, \code{token_prefix}, \code{n_bytes}, \code{created_at}; and \code{objects} columns \code{object}, \code{status}. Status is \code{blocked} when access or existing objects are incompatible, \code{initialisation_required} when audit finds a suitably restricted empty schema and \code{ready} when a compatible registry exists or has been created.
+An \code{epi_sec_registry_result} with scalar \code{status}, \code{mode}, \code{writes}, \code{registry_schema} and \code{next_action}; \code{metadata} columns \code{registry_id}, \code{registry_version}, \code{token_prefix}, \code{n_bytes}, \code{created_at}; and \code{objects} columns \code{object}, \code{status}. Status is \code{incompatible} when existing objects are incompatible, \code{initialisation_required} when audit finds an empty schema and \code{ready} when a compatible registry exists or has been created.
 }
 \description{
-Audit or create the restricted tables used to assign stable pseudonym tokens across related PostgreSQL tables. The registry schema is one deliberately authorised linkage domain and must already exist.
+Audit or create the tables used to assign stable pseudonym tokens across related PostgreSQL tables. The registry schema must already exist.
 }
 \details{
-Audit mode is the default and never writes. Before apply, the database administrator must revoke \code{PUBLIC} creation and usage on the registry schema. Apply creates \code{registry_metadata}, \code{namespaces}, \code{entities}, \code{aliases}, \code{runs} and \code{run_tables} in one transaction and defensively revokes \code{PUBLIC} access to every created table and the schema. The database administrator remains responsible for creating the schema, granting named roles, testing recovery and controlling database storage, backups and logging. Audit reports incompatible existing objects as \code{blocked}; apply treats them as an unsafe-state error. Repair or replace an incomplete registry under an administrator-approved recovery procedure rather than editing registry rows manually.
+Audit mode is the default and never writes. Apply creates \code{registry_metadata}, \code{namespaces}, \code{entities}, \code{aliases}, \code{runs} and \code{run_tables} in one transaction. PostgreSQL permissions determine whether the connected role can inspect or create the named objects; this function neither queries nor changes grants. The database administrator remains responsible for creating schemas, grants, recovery, storage, backups and logging. Audit reports incompatible existing objects as \code{incompatible}; apply treats them as an error. Repair or replace an incomplete registry with an appropriate recovery procedure rather than editing registry rows manually.
 
 The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data remain restricted personal data: they are not anonymous or automatically disclosure-controlled. See \code{vignette("longitudinal-pseudonymisation")} before initialising a registry.
 }
