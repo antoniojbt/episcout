@@ -1,0 +1,74 @@
+id: "038"
+slug: "longitudinal-pseudonymisation-documentation"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: agent/issue-269-documentation-reconcile-the-longitudinal-pse
+created: 2026-08-12
+updated: 2026-08-12
+
+tracking_issue: 269
+source_issues:
+  - 255
+  - 268
+  - 274
+  - 275
+  - 276
+  - 278
+  - 284
+  - 285
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: "This is the terminal planned documentation reconciliation; it has no automatic package-code successor."
+
+related_files:
+  - vignettes/longitudinal-pseudonymisation.Rmd
+  - R/epi_sec_identity_universe.R
+  - R/epi_sec_linkage.R
+  - R/epi_sec_pseudonym.R
+  - R/epi_sec_registry.R
+  - R/epi_sec_pseudonymise_db.R
+  - man/epi_sec_identity_universe_db.Rd
+  - man/epi_sec_identity_universe_spec.Rd
+  - man/epi_sec_linkage_scaffold.Rd
+  - man/epi_sec_linkage_spec.Rd
+  - man/epi_sec_pseudonym.Rd
+  - man/epi_sec_identity_registry_init.Rd
+  - man/epi_sec_pseudonymise_db.Rd
+  - future/TODOs.md
+  - future/README.md
+  - future/changelog.md
+  - PROJECT_MAP.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'epi_sec_pseudonym|sec-identity-universe|sec-linkage|sec-registry|sec-pseudonymise-postgres', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=synthetic_records PGUSER=$USER scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-identity-universe-postgres|sec-pseudonymise-postgres', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "output <- rmarkdown::render('vignettes/longitudinal-pseudonymisation.Rmd', output_dir = tempdir(), quiet = TRUE); cat(output, '\n')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::document()"
+  - scripts/check-local.sh
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+notes:
+  - Owner-authorised dispatch is recorded on issue-269 after both required lanes completed.
+  - issue-268 and PR-295 are the completed documentation predecessor; issue-285, spec-037, PR-291 and closeout PR-292 are the final behavioural evidence.
+  - The branch starts from exact canonical commit-d79dd3c05ea1c64db2acd27b5b0af6b8193646b6.
+  - Complete and archive spec-038 only after canonical merge verification; a focused closeout PR may record merge-derived facts.

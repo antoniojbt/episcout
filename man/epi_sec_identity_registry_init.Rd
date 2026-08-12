@@ -32,7 +32,7 @@ Audit or create the tables used to assign stable pseudonym tokens across related
 \details{
 Audit mode is the default and never writes. Apply creates \code{registry_metadata}, \code{namespaces}, \code{entities}, \code{aliases}, \code{runs} and \code{run_tables} in one transaction using the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges. Audit reports structurally incompatible existing objects as \code{incompatible}; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
 
-The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data remain restricted personal data: they are not anonymous or automatically disclosure-controlled. See \code{vignette("longitudinal-pseudonymisation")} before initialising a registry.
+The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data are not anonymous or automatically disclosure-controlled. See \code{vignette("longitudinal-pseudonymisation")} for the technical workflow and recovery behaviour.
 }
 \seealso{
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_db_inventory]{epi_db_inventory()}}
