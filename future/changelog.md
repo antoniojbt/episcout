@@ -1,5 +1,10 @@
 # Future Workspace Changelog
 
+## 2026-08-12
+
+- Implemented `issue-278` under active `spec-035`: identity-universe specifications now use an exact five-column version-2 technical schema with a one-cycle syntax-only adapter; completed audits report warning/error findings independently of write permission; materialisation uses `not_written` for expected no-commit outcomes; and the path neither inspects nor changes PostgreSQL privileges. Independent aggregate expectations, disposable PostgreSQL 18.4 grant-neutrality/rollback coverage, generated help, the bounded rendered guide section, package lint and the complete local check pass. Pull-request review, merge, closeout and the second tracker remain pending.
+- Activated `issue-278`/`spec-035` after design `PR-277`, `issue-276` and `spec-034` completed canonical closeout at `commit-cc05cb0`. The bounded implementation changes only the identity-universe versioned source schema, technical result enums and privilege-neutral materialisation while preserving exact aggregate set calculations, type/collation checks, advisory locking, transaction ownership, rollback and value-free database errors; later registry/linkage/pseudonymisation slices remain inactive.
+
 ## 2026-08-11
 
 - Completed design issue #276/spec 034 through PR #277, merged to canonical `master` as `8641abe9aa89fb5c1c3ecba19c16985618a3a38e`; GitHub closed #276 automatically. The final PR head `0d74c1b80bad6a8a9a6ff064cdadcd517ecac854` passed macOS and Ubuntu R CMD CHECK, PostgreSQL integration, test coverage, both Codecov gates, CodeFactor and CodeQL. The accepted contract inventories all seven retained `epi_sec_*` exports and removes package governance authority while preserving technical correctness; completed records move under `future/specs/done/`. Issue #278 is the next identity-universe implementation tracker, but implementation has not begun and it remains non-dispatchable until this closeout is canonical. No package behaviour, test, generated help, vignette or example changed.

@@ -1,21 +1,27 @@
 universe_source_columns <- function() {
   c(
     "source_schema", "source_table", "id_column", "identity_namespace",
-    "provenance", "validation_status"
+    "provenance"
   )
 }
 
-#' Declare a reviewed PostgreSQL identifier universe
+universe_legacy_source_columns <- function() {
+  c(universe_source_columns(), "validation_status")
+}
+
+#' Declare a PostgreSQL identifier universe
 #'
-#' Create a deterministic, value-free contract for auditing one identifier namespace across at least two PostgreSQL tables. The specification names relations and identifier columns but never contains identifier values.
+#' Create a deterministic, value-free contract for an exact identifier-universe operation across at least two PostgreSQL tables. The specification names relations and identifier columns but never contains identifier values.
 #'
-#' @param sources A data frame or CSV path with `source_schema`, `source_table`, `id_column`, `identity_namespace`, `provenance` and `validation_status`.
-#' @param normalization Identifier normalisation rule. Version 1 supports only exact `"identity"` normalisation.
+#' @param sources A data frame or CSV path with exactly `source_schema`, `source_table`, `id_column`, `identity_namespace` and `provenance`.
+#' @param normalization Identifier normalisation rule. Version 2 supports only exact `"identity"` normalisation.
 #' @param validity_regex `NULL` or one non-empty PostgreSQL regular expression applied to the textual representation of each non-null, non-blank identifier.
 #'
 #' @return An `epi_sec_identity_universe_spec` list containing normalised `sources`, `normalization`, `validity_regex`, `contract_version` and `fingerprint_sha256`. It contains metadata only.
 #'
-#' @details At least two unique ordinary-table declarations are required, all in one identity namespace. Every row must have non-empty provenance and `validation_status = "confirmed"`. This function validates portable metadata only; database relation, type and regular-expression checks occur in [epi_sec_identity_universe_db()]. The universe represents distinct observed identifiers under the reviewed rule, not confirmed people.
+#' @details At least two unique ordinary-table declarations are required, all in one identity namespace, with non-empty provenance. This function validates portable metadata only; database relation, type and regular-expression checks occur in [epi_sec_identity_universe_db()]. The universe represents distinct observed identifiers under the declared exact rule and does not perform entity resolution.
+#'
+#' For one development cycle, the former exact six-column source schema is accepted with a deprecation warning. Its `validation_status` column is ignored regardless of value and is not retained in the version-2 object. Other extra columns remain errors.
 #'
 #' @seealso [epi_sec_identity_universe_db()], [epi_sec_linkage_spec()], [epi_sec_identity_registry_init()]
 #' @family longitudinal pseudonymisation
@@ -24,6 +30,15 @@ epi_sec_identity_universe_spec <- function(sources,
                                            normalization = "identity",
                                            validity_regex = NULL) {
   sources <- read_linkage_csv_or_data(sources, "sources")
+  legacy_sources <- length(names(sources)) == length(universe_legacy_source_columns()) &&
+    setequal(names(sources), universe_legacy_source_columns())
+  if (legacy_sources) {
+    warning(
+      "sources validation_status is deprecated and ignored; remove it when constructing version-2 identity-universe specifications.",
+      call. = FALSE
+    )
+    sources <- sources[universe_source_columns()]
+  }
   validate_linkage_columns(sources, universe_source_columns(), "sources")
   if (nrow(sources) < 2L) {
     stop("sources must declare at least two PostgreSQL relations.", call. = FALSE)
@@ -42,19 +57,16 @@ epi_sec_identity_universe_spec <- function(sources,
       name = paste("sources", column)
     )
   }
-  if (any(sources$validation_status != "confirmed")) {
-    stop("Every sources validation_status must be 'confirmed'.", call. = FALSE)
-  }
   source_keys <- paste(sources$source_schema, sources$source_table, sep = "\r")
   if (anyDuplicated(source_keys)) {
     stop("sources source_schema and source_table pairs must be unique.", call. = FALSE)
   }
   if (length(unique(sources$identity_namespace)) != 1L) {
-    stop("sources must declare exactly one shared identity_namespace in version 1.", call. = FALSE)
+    stop("sources must declare exactly one shared identity_namespace in version 2.", call. = FALSE)
   }
   if (!is.character(normalization) || length(normalization) != 1L ||
         is.na(normalization) || normalization != "identity") {
-    stop("normalization must be 'identity' in version 1.", call. = FALSE)
+    stop("normalization must be 'identity' in version 2.", call. = FALSE)
   }
   if (!is.null(validity_regex) &&
         (!is.character(validity_regex) || length(validity_regex) != 1L ||
@@ -64,7 +76,7 @@ epi_sec_identity_universe_spec <- function(sources,
 
   sources <- sources[order(source_keys, method = "radix"), , drop = FALSE]
   rownames(sources) <- NULL
-  contract_version <- "identity-universe-1"
+  contract_version <- "identity-universe-2"
   contract <- list(
     sources = sources,
     normalization = normalization,
@@ -78,34 +90,34 @@ epi_sec_identity_universe_spec <- function(sources,
 #' @export
 print.epi_sec_identity_universe_spec <- function(x, ...) {
   cat("<epi_sec_identity_universe_spec>\n")
-  cat("  Confirmed sources: ", nrow(x$sources), "\n", sep = "")
+  cat("  Sources: ", nrow(x$sources), "\n", sep = "")
   cat("  Identity namespaces: 1\n")
   cat("  Normalisation: ", x$normalization, "\n", sep = "")
   cat("  Identifier values: not present\n")
-  cat("  Next: run epi_sec_identity_universe_db() in audit mode.\n")
+  cat("  Next: use epi_sec_identity_universe_db() to inspect or materialise.\n")
   invisible(x)
 }
 
 #' Audit or materialise a PostgreSQL identifier universe
 #'
-#' Audit one reviewed identifier namespace across multiple PostgreSQL tables or atomically publish its blocker-free canonical identifier set into a restricted schema. All ordinary results are aggregate and value-free; identifier values remain inside PostgreSQL.
+#' Inspect one exact identifier namespace across multiple PostgreSQL tables or atomically materialise its canonical identifier set. All ordinary results are aggregate and value-free; identifier values remain inside PostgreSQL.
 #'
 #' @param con An open, idle PostgreSQL DBI connection.
-#' @param spec A confirmed object returned by [epi_sec_identity_universe_spec()].
-#' @param mode `"audit"` runs in one read-only snapshot; `"materialise"` repeats all checks and writes one restricted table atomically.
-#' @param output_schema Existing restricted destination schema. Required only for materialisation.
+#' @param spec An unmodified version-2 object returned by [epi_sec_identity_universe_spec()].
+#' @param mode `"audit"` runs in one read-only snapshot; `"materialise"` repeats all checks and writes one destination table atomically.
+#' @param output_schema Existing destination schema. Required only for materialisation.
 #' @param output_table New destination table name. Required only for materialisation.
-#' @param existing Destination policy. Version 1 supports only `"error"` and never replaces a relation.
+#' @param existing Destination policy. Only `"error"` is supported; the function never replaces a relation.
 #' @param statement_timeout Maximum seconds for each PostgreSQL statement, from 1 to 3600.
 #' @param lock_timeout Maximum seconds to wait for the destination advisory lock, from 1 to 3600.
 #'
-#' @return An `epi_sec_identity_universe_result` list with `status`, `metadata`, `source_audit`, `namespace_audit`, `overlap_audit` and value-free `issues`. Status is `audit_complete`, `blocked` or `complete`.
+#' @return An `epi_sec_identity_universe_result` list with `status`, `metadata`, `source_audit`, `namespace_audit`, `overlap_audit` and value-free `issues`. Status is `audit_complete`, `not_written` or `complete`; issue severity is `error` or `warning`.
 #'
-#' @details Audit owns a `REPEATABLE READ READ ONLY` transaction and never creates a database object. Source audits report input, null, blank, invalid, observed and distinct counts, duplicate excess and maximum frequency. Namespace and pairwise tables reconcile the distinct union and overlap. Null, blank, invalid and normalisation-collision findings block; duplicates and empty sources warn.
+#' @details Audit owns a `REPEATABLE READ READ ONLY` transaction and never creates a database object. A completed audit always returns `audit_complete`, whether or not error-severity findings are present. Source audits report input, null, blank, invalid, observed and distinct counts, duplicate excess and maximum frequency. Namespace and pairwise tables reconcile the distinct union and overlap. Null, blank, invalid and normalisation-collision findings are errors; duplicates and empty sources are warnings.
 #'
-#' Materialisation requires a pre-existing output schema that grants neither `CREATE` nor `USAGE` to `PUBLIC`. It acquires bounded advisory-lock protection, repeats validation in one `REPEATABLE READ` transaction, refuses an existing destination and creates exactly `identity_namespace`, `canonical_identifier` and `source_membership_count` with a unique namespace/identifier constraint. It revokes all table privileges from `PUBLIC`, grants no analyst access, alters no source and rolls back completely on failure.
+#' Materialisation requires a pre-existing output schema, acquires bounded advisory-lock protection, repeats validation in one `REPEATABLE READ` transaction, refuses an existing destination and creates exactly `identity_namespace`, `canonical_identifier` and `source_membership_count` with a unique namespace/identifier constraint. Error-severity findings, destination existence and lock timeout return `not_written`; other failures are errors. The function uses configured PostgreSQL permissions without querying or changing schema or table privileges, alters no source and rolls back completely on failure.
 #'
-#' The materialised universe is restricted and re-identifying. It records distinct observed identifiers, not confirmed people, and generates no pseudonyms. After separate authorisation and metadata review, it may be declared as an enrolment source in [epi_sec_linkage_spec()] and passed to the existing registry/pseudonymisation workflow.
+#' The materialised universe records distinct observed identifiers and source membership counts. It generates no pseudonyms and writes no identity-registry row. A caller may declare it as a source in [epi_sec_linkage_spec()] for a separate registry/pseudonymisation operation.
 #'
 #' @seealso [epi_sec_identity_universe_spec()], [epi_sec_linkage_spec()], [epi_sec_identity_registry_init()], [epi_sec_pseudonymise_db()]
 #' @family longitudinal pseudonymisation
@@ -125,12 +137,12 @@ epi_sec_identity_universe_db <- function(con,
         stop("The identity-universe workflow requires a connection outside a caller-managed transaction.", call. = FALSE)
       }
       if (!inherits(spec, "epi_sec_identity_universe_spec")) {
-        stop("spec must be a confirmed epi_sec_identity_universe_spec object.", call. = FALSE)
+        stop("spec must be an epi_sec_identity_universe_spec object; regenerate it with epi_sec_identity_universe_spec().", call. = FALSE)
       }
       universe_validate_spec(spec)
       mode <- match.arg(mode)
       if (!is.character(existing) || length(existing) != 1L || is.na(existing) || existing != "error") {
-        stop("existing must be 'error' in version 1.", call. = FALSE)
+        stop("existing must be 'error'.", call. = FALSE)
       }
       statement_timeout <- identity_universe_timeout(statement_timeout, "statement_timeout")
       lock_timeout <- identity_universe_timeout(lock_timeout, "lock_timeout")
@@ -155,7 +167,7 @@ epi_sec_identity_universe_db <- function(con,
         audit <- universe_audit(con, context)
         universe_add_destination_issue(con, audit, output_schema, output_table)
       })
-      if (identity_universe_is_blocked(preflight)) {
+      if (identity_universe_has_errors(preflight)) {
         return(identity_universe_result(
           "materialise", FALSE, spec, preflight, output_schema, output_table
         ))
@@ -169,9 +181,9 @@ epi_sec_identity_universe_db <- function(con,
         preflight$issues <- rbind(
           preflight$issues,
           identity_universe_issue(
-            "lock_timeout", "blocking", "transaction", NULL, 0,
+            "lock_timeout", "error", "transaction", NULL, 0,
             "Another database operation held the destination lock beyond lock_timeout.",
-            "Wait for the authorised operation to finish, verify its outcome and audit again."
+            "Wait for the other operation to finish, verify its outcome and retry."
           )
         )
         return(identity_universe_result(
@@ -192,16 +204,16 @@ epi_sec_identity_universe_db <- function(con,
           inside <- universe_add_destination_issue(
             con, inside, output_schema, output_table
           )
-          if (identity_universe_is_blocked(inside)) {
-            identity_universe_stop_blocked(inside)
+          if (identity_universe_has_errors(inside)) {
+            identity_universe_stop_write(inside)
           }
           identity_universe_create(con, context, output_schema, output_table)
           inside
         }),
-        epi_sec_identity_universe_blocked = function(error) error$audit,
+        epi_sec_identity_universe_not_written = function(error) error$audit,
         error = function(error) {
           stop(
-            "PostgreSQL identity-universe materialisation was rolled back safely; ask the database administrator to inspect restricted database logs.",
+            "PostgreSQL identity-universe materialisation was rolled back safely; ask the database administrator to inspect database logs.",
             call. = FALSE
           )
         }
@@ -215,7 +227,7 @@ epi_sec_identity_universe_db <- function(con,
         "materialise", TRUE, spec, applied, output_schema, output_table
       )
     },
-    "PostgreSQL identity-universe work could not complete safely; ask the database administrator to inspect restricted database logs."
+    "PostgreSQL identity-universe work could not complete safely; ask the database administrator to inspect database logs."
   )
 }
 
@@ -225,28 +237,39 @@ print.epi_sec_identity_universe_result <- function(x, ...) { # nolint: object_le
   cat("  status: ", x$status, "\n", sep = "")
   cat("  sources: ", nrow(x$source_audit), "\n", sep = "")
   cat("  distinct observed identifiers: ", x$namespace_audit$n_distinct[[1]], "\n", sep = "")
-  cat("  blocking issues: ", sum(x$issues$severity == "blocking"), "\n", sep = "")
+  cat("  error issues: ", sum(x$issues$severity == "error"), "\n", sep = "")
   cat("  writes performed: ", if (isTRUE(x$metadata$writes[[1]])) "yes" else "no", "\n", sep = "")
   cat("  next: ", x$metadata$next_action[[1]], "\n", sep = "")
   invisible(x)
 }
 
 universe_validate_spec <- function(spec) {
+  regeneration_message <- paste(
+    "spec must be an unmodified identity-universe-2 object.",
+    "Regenerate it with epi_sec_identity_universe_spec()."
+  )
   required <- c(
     "sources", "normalization", "validity_regex", "contract_version",
     "fingerprint_sha256"
   )
-  if (!identical(names(spec), required) ||
-        !identical(spec$contract_version, "identity-universe-1")) {
-    stop("spec must be an unmodified object returned by epi_sec_identity_universe_spec().", call. = FALSE)
+  valid_shape <- identical(class(spec), c("epi_sec_identity_universe_spec", "list")) &&
+    identical(names(spec), required) &&
+    identical(spec$contract_version, "identity-universe-2") &&
+    is.data.frame(spec$sources) &&
+    identical(names(spec$sources), universe_source_columns())
+  if (!valid_shape) {
+    stop(regeneration_message, call. = FALSE)
   }
-  rebuilt <- epi_sec_identity_universe_spec(
-    spec$sources,
-    normalization = spec$normalization,
-    validity_regex = spec$validity_regex
+  rebuilt <- tryCatch(
+    epi_sec_identity_universe_spec(
+      spec$sources,
+      normalization = spec$normalization,
+      validity_regex = spec$validity_regex
+    ),
+    error = function(error) NULL
   )
-  if (!identical(spec$fingerprint_sha256, rebuilt$fingerprint_sha256)) {
-    stop("spec must be an unmodified object returned by epi_sec_identity_universe_spec().", call. = FALSE)
+  if (is.null(rebuilt) || !identical(spec, rebuilt)) {
+    stop(regeneration_message, call. = FALSE)
   }
   invisible(TRUE)
 }
@@ -373,7 +396,7 @@ universe_source_audit <- function(con, spec) {
     aggregate <- DBI::dbGetQuery(con, query)
     counts <- lapply(aggregate, as.numeric)
     status <- if (counts$n_null > 0 || counts$n_blank > 0 || counts$n_invalid > 0) {
-      "blocked"
+      "error"
     } else if (counts$n_duplicate_excess > 0 || counts$n_input == 0) {
       "warning"
     } else {
@@ -413,7 +436,7 @@ universe_namespace_audit <- function(con, context, source_audit) {
     "(SELECT COUNT(*)::bigint FROM collisions) AS n_collisions FROM memberships"
   )
   aggregate <- lapply(DBI::dbGetQuery(con, query), as.numeric)
-  blocked <- aggregate$n_collisions > 0 || any(source_audit$status == "blocked")
+  error <- aggregate$n_collisions > 0 || any(source_audit$status == "error")
   warning <- any(source_audit$status == "warning")
   data.frame(
     identity_namespace = context$spec$sources$identity_namespace[[1]],
@@ -424,7 +447,7 @@ universe_namespace_audit <- function(con, context, source_audit) {
     n_single_source = aggregate$n_single_source,
     n_multi_source = aggregate$n_multi_source,
     n_collisions = aggregate$n_collisions,
-    status = if (blocked) "blocked" else if (warning) "warning" else "ready",
+    status = if (error) "error" else if (warning) "warning" else "ready",
     stringsAsFactors = FALSE
   )
 }
@@ -495,11 +518,11 @@ identity_universe_issues <- function(spec, source_audit, namespace_audit) {
     source <- spec$sources[index, , drop = FALSE]
     audit <- source_audit[index, , drop = FALSE]
     definitions <- list(
-      list("null_identifier", "blocking", audit$n_null, "Identifier values are null.", "Correct null identifiers under the reviewed source-data rule, then audit again."),
-      list("blank_identifier", "blocking", audit$n_blank, "Textual identifier representations are blank.", "Correct blank identifiers under the reviewed source-data rule, then audit again."),
-      list("invalid_identifier", "blocking", audit$n_invalid, "Identifiers do not satisfy validity_regex.", "Review the regular expression or correct invalid identifiers, then audit again."),
-      list("duplicate_identifier", "warning", audit$n_duplicate_excess, "A source contains repeated valid identifiers.", "Confirm that repeated source rows are expected; the universe retains one distinct identifier."),
-      list("empty_source", "warning", as.numeric(audit$n_input == 0), "A declared source contains no rows.", "Confirm that the empty source is expected before materialisation.")
+      list("null_identifier", "error", audit$n_null, "Identifier values are null.", "Correct null identifiers under the declared source-data rule, then inspect again."),
+      list("blank_identifier", "error", audit$n_blank, "Textual identifier representations are blank.", "Correct blank identifiers under the declared source-data rule, then inspect again."),
+      list("invalid_identifier", "error", audit$n_invalid, "Identifiers do not satisfy validity_regex.", "Change the regular expression or correct invalid identifiers, then inspect again."),
+      list("duplicate_identifier", "warning", audit$n_duplicate_excess, "A source contains repeated valid identifiers.", "Determine whether repeated source rows are expected; the universe retains one distinct identifier."),
+      list("empty_source", "warning", as.numeric(audit$n_input == 0), "A declared source contains no rows.", "Determine whether the empty source is expected before materialisation.")
     )
     for (definition in definitions) {
       if (definition[[3]] > 0) {
@@ -517,10 +540,10 @@ identity_universe_issues <- function(spec, source_audit, namespace_audit) {
     issues <- rbind(
       issues,
       identity_universe_issue(
-        "normalization_collision", "blocking", "namespace", NULL,
+        "normalization_collision", "error", "namespace", NULL,
         namespace_audit$n_collisions[[1]],
         "Distinct source identifiers map to the same canonical identifier.",
-        "Revise and reconfirm the normalisation contract; episcout will not select a collision member."
+        "Revise the normalisation contract; episcout will not select a collision member."
       )
     )
   }
@@ -545,15 +568,12 @@ universe_audit <- function(con, context) {
   )
 }
 
-identity_universe_is_blocked <- function(audit) {
-  nrow(audit$issues) > 0L && any(audit$issues$severity == "blocking")
+identity_universe_has_errors <- function(audit) {
+  nrow(audit$issues) > 0L && any(audit$issues$severity == "error")
 }
 
 universe_validate_destination <- function(con, spec, schema, table) {
   sec_require_schema(con, schema, "output_schema")
-  if (sec_schema_is_public(con, schema)) {
-    stop("output_schema must not grant CREATE or USAGE to PUBLIC.", call. = FALSE)
-  }
   same_as_source <- spec$sources$source_schema == schema &
     spec$sources$source_table == table
   if (any(same_as_source)) {
@@ -568,9 +588,9 @@ universe_add_destination_issue <- function(con, audit, schema, table) {
     audit$issues <- rbind(
       audit$issues,
       identity_universe_issue(
-        "destination_exists", "blocking", "output", NULL, 1,
+        "destination_exists", "error", "output", NULL, 1,
         "The declared identity-universe destination already exists.",
-        "Choose a new destination; version 1 never replaces an existing relation."
+        "Choose a new destination; the function never replaces an existing relation."
       )
     )
   }
@@ -599,19 +619,18 @@ identity_universe_create <- function(con, context, schema, table) {
       "FROM all_valid GROUP BY identity_namespace, canonical_identifier"
     )
   )
-  DBI::dbExecute(con, paste("REVOKE ALL ON TABLE", destination, "FROM PUBLIC"))
   invisible(TRUE)
 }
 
-identity_universe_stop_blocked <- function(audit) {
+identity_universe_stop_write <- function(audit) {
   audit$rolled_back <- TRUE
   condition <- structure(
     list(
-      message = "Identity-universe materialisation was blocked and rolled back.",
+      message = "Identity-universe materialisation was not written and rolled back.",
       call = NULL,
       audit = audit
     ),
-    class = c("epi_sec_identity_universe_blocked", "error", "condition")
+    class = c("epi_sec_identity_universe_not_written", "error", "condition")
   )
   stop(condition)
 }
@@ -622,22 +641,22 @@ identity_universe_result <- function(mode,
                                      audit,
                                      output_schema = "",
                                      output_table = "") {
-  blocked <- identity_universe_is_blocked(audit)
-  status <- if (blocked) {
-    "blocked"
-  } else if (writes) {
+  prevents_write <- identity_universe_has_errors(audit)
+  status <- if (writes) {
     "complete"
-  } else {
-    "audit_complete"
-  }
-  next_action <- if (blocked) {
-    "Resolve every blocking issue and begin again with audit mode."
-  } else if (writes) {
-    "Keep the restricted universe access-controlled; use it only after explicit enrolment review."
   } else if (mode == "audit") {
-    "Review warnings and database access, then explicitly request materialisation."
+    "audit_complete"
   } else {
-    "Review warnings and retry materialisation after the transient blocker is resolved."
+    "not_written"
+  }
+  next_action <- if (mode == "audit" && prevents_write) {
+    "Inspect every error issue; materialisation will not write until each is resolved."
+  } else if (writes) {
+    "The requested identity-universe table was materialised successfully."
+  } else if (mode == "audit") {
+    "Inspection is complete; materialisation may be requested separately."
+  } else {
+    "No table was written; resolve the reported issue or transient database state and retry."
   }
   structure(
     list(
