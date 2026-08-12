@@ -2,7 +2,7 @@
 
 Spec ID: `039-reviewable-qc-cleaning-proposals`
 
-Status: Active
+Status: Review
 
 Owner: repository-owner
 
