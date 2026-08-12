@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Active
+Status: Review
 
 ## Activation
 

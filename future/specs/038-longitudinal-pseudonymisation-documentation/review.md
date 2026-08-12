@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Active
+Status: Review
 
 ## Baseline And Authority
 
@@ -61,4 +61,4 @@ No unresolved correctness, confidentiality, compatibility or documentation query
 - Behavioural evidence: completed `issue-285`/`spec-037`/`PR-291` and closeout `PR-292`, supported by completed `spec-034` through `spec-036`.
 - Working branch: `agent/issue-269-documentation-reconcile-the-longitudinal-pse` from exact `commit-d79dd3c`.
 - Terminal disposition: no automatic package-code successor.
-- Current state: active implementation; pull request, merge and closeout remain pending.
+- Current state: review in `PR-296`; merge and closeout remain pending.

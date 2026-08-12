@@ -2,7 +2,7 @@ id: "038"
 slug: "longitudinal-pseudonymisation-documentation"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-269-documentation-reconcile-the-longitudinal-pse
@@ -19,7 +19,7 @@ source_issues:
   - 278
   - 284
   - 285
-pull_request: null
+pull_request: 296
 merge_commit: null
 successor_issue: null
 terminal_reason: "This is the terminal planned documentation reconciliation; it has no automatic package-code successor."
