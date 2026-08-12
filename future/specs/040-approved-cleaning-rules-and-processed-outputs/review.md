@@ -2,7 +2,7 @@
 
 Spec ID: `040-approved-cleaning-rules-and-processed-outputs`
 
-Status: Active implementation complete; pull-request handoff unavailable in this dispatch
+Status: Review in PR-301
 
 ## Review Scope
 
@@ -27,7 +27,7 @@ Issue-272 is the accepted product contract. Completed issue-271/spec-039 establi
 - Focused tests pass without skips against a disposable local PostgreSQL 18.4 cluster, including equivalent processed values and audit rows, collision refusal, zero-row publication and forced post-creation reconciliation rollback.
 - `styler::style_file()` and package-loaded `lintr::lint_package()` report no findings.
 - `scripts/check-local.sh` passes documentation, lint, the complete ordinary test suite, package build, vignette rebuild and R CMD check with zero errors and warnings. R CMD check reports only `unable to verify current time`, an environment feasibility NOTE unrelated to package behaviour.
-- `scripts/check-workflow-state.sh` matches live GitHub state with spec-040 as the sole active implementation and issue-273 retained as successor.
+- `scripts/check-workflow-state.sh` matched live GitHub state before publication; it is rerun at PR-301 handoff with spec-040 as the sole implementation in review and issue-273 retained as successor.
 
 ## Privacy Review
 
@@ -39,4 +39,4 @@ Existing public formals and semantic dictionary fields are unchanged. CSV is an 
 
 ## Handoff State
 
-No pull request is assigned because this disposable dispatch prohibits GitHub mutations. Spec-040 remains `active`; pull-request review, merge, issue closure, canonical closeout and promotion of issue-273 remain pending. This implementation review is a self-review and is not independent.
+PR-301 is the draft implementation pull request for issue-272 and spec-040. Merge, issue closure, canonical closeout and promotion of issue-273 remain pending. The implementation review above is a self-review and is not independent; the final PR diff is reviewed separately before merge.

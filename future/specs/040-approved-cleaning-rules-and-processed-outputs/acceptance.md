@@ -2,7 +2,7 @@
 
 Spec ID: `040-approved-cleaning-rules-and-processed-outputs`
 
-Status: Active
+Status: Review
 
 Tracking issue: issue-272
 
@@ -31,5 +31,5 @@ Tracking issue: issue-272
 - [x] `scripts/check-workflow-state.sh` passes before handoff.
 - [x] `scripts/check-local.sh` passes with zero errors and warnings; the environment retains only the documented current-time verification NOTE.
 - [x] Final diff, privacy canaries, generated files and staged commit are reviewed.
-- [ ] A future pull request records issue-272, spec-040, verification, compatibility, issue-273 disposition and post-merge closeout ownership.
+- [x] PR-301 records issue-272, spec-040, verification, compatibility, issue-273 disposition and post-merge closeout ownership.
 - [ ] Canonical merge and issue closure are verified before setting this manifest to `completed` and moving spec-040 under `future/specs/done/`.
