@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-[Issue-278](https://github.com/antoniojbt/episcout/issues/278) is active implementation `spec-035-identity-universe-technical-contract` after `PR-277`, `issue-276` and `spec-034` completed canonical closeout at `commit-cc05cb0`. This first bounded slice makes only the identity-universe metadata, result statuses and PostgreSQL privilege behaviour neutral and technical while preserving aggregate exact-set and transaction safeguards. The registry/linkage/pseudonymisation slices and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain inactive until their predecessors complete closeout; roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+`issue-278`/`spec-035-identity-universe-technical-contract` completed through `PR-281`, merged to canonical `master` as `commit-ebd8d35`. This first bounded slice makes only the identity-universe metadata, result statuses and PostgreSQL privilege behaviour neutral and technical while preserving aggregate exact-set and transaction safeguards. The registry successor may now be staged but remains inactive until its promotion gate; linkage/pseudonymisation and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 
@@ -40,6 +40,10 @@ protected-`master` coverage upload passed for release commit `40ef702`.
   redesign or biomedical extensions.
 
 ## Done
+
+### 2026-08-12
+
+- [x] Complete issue #278/spec 035 through PR #281, merged to canonical `master` as `ebd8d355a42c697b6747d4e53ef356bde78aa573`; GitHub closed issue #278 automatically. Required package, PostgreSQL, lint, workflow and hosted R CMD/CodeQL/CodeFactor checks passed. The former zero-tolerance Codecov patch status failed; owner direction makes Codecov reporting non-blocking, with `codecov.yml` retaining a 10% regression tolerance for informative project and patch statuses. The completed record moved under `future/specs/done/`; the registry successor is staged separately and remains inactive until promotion.
 
 ### 2026-08-11
 

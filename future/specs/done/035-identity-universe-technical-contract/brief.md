@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `035-identity-universe-technical-contract`
-Status: Active
+Status: Completed
 
 ## Problem
 
