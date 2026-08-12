@@ -17,7 +17,7 @@ epi_clean_get_dups(df = NULL, var = "", freq = 1)
 a data.frame with original and duplicated rows
 }
 \description{
-base R duplicated() does not return the originals (duplicated - 1). See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
+base R duplicated() does not return the originals (duplicated - 1).
 }
 \note{
 Creates a table with frequencies, checks those which have more than 1 (or value passed to freq and considers these as variables with duplicates) and extracts them.

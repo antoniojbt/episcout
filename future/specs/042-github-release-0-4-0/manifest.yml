@@ -1,0 +1,41 @@
+id: "042"
+slug: "github-release-0-4-0"
+workflow_version: 1
+deliverable: implementation
+status: review
+owner: Codex
+base_branch: master
+working_branch: feature/release-0.4.0
+created: 2026-08-12
+updated: 2026-08-12
+
+tracking_issue: 307
+source_issues:
+  - 81
+pull_request: 308
+merge_commit: null
+successor_issue: null
+terminal_reason: "A GitHub-only 0.4.0 release provides an immutable live-evaluation target; CRAN readiness remains independently deferred under issue-81."
+
+related_files:
+  - DESCRIPTION
+  - NEWS.md
+  - future/specs/042-github-release-0-4-0/
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+
+notes:
+  - This is a GitHub release only and does not authorise CRAN submission.
+  - Inspect the exact source tarball and a clean-library installation before tagging.

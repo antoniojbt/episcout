@@ -1,6 +1,6 @@
 # episcout News
 
-## Development version
+## 0.4.0
 
 - Added `epi_eda_approved_civil_dates()` and `epi_eda_derive_civil_dates()` for explicitly reviewed civil-date semantics on strict timezone-free character timestamps and PostgreSQL `timestamp without time zone`. Every non-missing source must be exact midnight before a separate `Date`/`date` column is appended; sources remain unchanged, missingness is preserved, non-midnight failures disclose only one aggregate count, and new CSV/RDS files or PostgreSQL tables use the existing atomic publication boundaries without assigning or converting a timezone.
 - Added `epi_eda_approved_rules()` and `epi_eda_apply_cleaning_rules()` for explicit analyst-approved bounds, allowed values and missing codes. The exact opaque-keyed rule schema is separate from pending QC proposals and descriptive dictionary metadata; data-frame processing returns a complete processed result with optional no-replace CSV/RDS publication, while PostgreSQL creates one new transactionally reconciled table through server-side transformations. Both paths preserve the source and return only aggregate missingness transitions, dimensions and a deterministic rule hash in the audit.
