@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Completed `issue-269`/`spec-038-longitudinal-pseudonymisation-documentation` records the terminal documentation reconciliation through `PR-296`, merged to canonical `master` as `commit-e135251` after predecessor `issue-268`/`PR-295` and the completed `spec-034`–`spec-037` behavioural sequence. The longitudinal guide now describes neutral technical `epi_sec_*` behaviour while preserving reversibility, pseudonymisation-not-anonymisation and external PostgreSQL responsibility warnings. No package-code successor is required. CodeFactor remains informational for low-risk findings; roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+`issue-271` is draft implementation `spec-039-reviewable-qc-cleaning-proposals` under roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249). The planning contract keeps aggregate descriptive evidence and pending proposals in separate opaque-keyed tables, preserves the reviewed semantic dictionary, and makes approved rules a distinct successor contract. Package implementation remains gated on planning review. `issue-272` follows with approved-rule application and processed outputs; `issue-273` remains staged after `issue-272` for explicitly reviewed civil-date derivation.
 
 ## Deferred owner action
 
