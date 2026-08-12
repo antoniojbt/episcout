@@ -23,36 +23,85 @@ knitr::opts_chunk$set(
 ```
 
 ```{r eval = !has_geo, echo = FALSE, results = "asis"}
-cat("This vignette needs sf and ggplot2 to run the mapping examples. Install both suggested packages to run the examples.")
+cat("This vignette needs sf and ggplot2 to run the worked examples. Install both suggested packages to run them.\n")
 ```
 
 Geometry is value-bearing data. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
 
-This guide introduces episcout's explicit vector-mapping path. It reads local vector data, converts declared coordinates, reports structural geometry QA, transforms coordinates, creates static maps and publishes named GeoPackage layers safely. It does not infer coordinate meaning, repair geometry, add basemaps or perform spatial inference.
+This guide follows the explicit vector-mapping path from declared coordinate columns and local vector files through bounded PostGIS collection and specification-first point maps. It does not infer coordinate meaning, repair geometry, add basemaps, apply disclosure control or perform spatial inference.
 
-## 1. Features, attributes and geometry
+## Before you begin
 
-A vector feature is one row describing an entity and its geometry. Ordinary non-geometry fields are attributes. The phase-A interface supports XY points, lines, polygons and their multi-geometry forms through `sf` objects; it does not create an episcout geometry class.
+The worked examples require the suggested `sf` and `ggplot2` packages and run without network access. The unevaluated PostGIS example also requires the suggested `RPostgres` package, an existing caller-managed connection and PostGIS already enabled in that database. Specification-first PostgreSQL coordinate QA does not require PostGIS. These packages remain suggested dependencies: `epi_geo_*` functions stop with an installation message when `sf` or, for mapping, `ggplot2` is absent, and the caller creates the RPostgres connection used by the database functions.
 
-A coordinate reference system (CRS) gives coordinate values their spatial meaning. An SRID is a stored identifier for a spatial reference system. Assigning a CRS declares the meaning of existing coordinates; transforming to another CRS changes the coordinate values. Neither operation establishes that the source used the correct axes, units, date or scientific definition.
+Use only coordinates and geometries whose meaning, scope and handling have been reviewed. Pseudonymised data remain personal data, and exact points, narrow bounds and rare geometry/attribute combinations can disclose locations. Successful validation or pseudonymisation is not permission to publish a map. See the [specification-first EDA guide](specification-first-eda.html) for the wider descriptive workflow and the [longitudinal pseudonymisation guide](longitudinal-pseudonymisation.html) for the separate restricted-data process.
 
-Geometry validity concerns simple-feature structure, such as polygon ring topology. It does not establish that a feature represents the intended population, place or period.
+## 1. Distinguish axes, CRS declaration and transformation
 
-## 2. GeoPackage and Shapefile
+A vector feature is one row describing an entity and its geometry. Ordinary non-geometry fields are attributes. episcout uses ordinary `sf` objects with one active XY geometry column and supports points, multipoints, lines, multilines, polygons and multipolygons.
 
-GeoPackage (`.gpkg`) is the package's created-file format. One file can contain several named spatial layers and ordinary tables. `epi_geo_read()` requires `layer` when more than one spatial layer is present, and `epi_geo_write()` stages and reconciles one named layer before replacing the complete file.
+The `x` and `y` arguments declare which reviewed source columns occupy the first and second coordinate axes. The `crs` argument separately declares what those existing values mean. For EPSG:4326 in this interface, `x` is longitude and `y` is latitude. Names, plausible ranges and correlations are not evidence for axis order or CRS.
 
-Shapefile is accepted for import compatibility only. A Shapefile is a multi-file dataset: keep at least its `.shp`, `.shx` and `.dbf` sidecars together, plus `.prj` and encoding metadata when supplied. Field names, encodings and single/multi-geometry representation can be limited or driver-dependent, so this guide makes no lossless Shapefile round-trip claim.
+Assigning a CRS labels existing coordinate values with their reviewed reference system; it does not change those values. Transforming to another CRS recalculates the coordinates. Neither action establishes that the source used the intended axes, units, place, date or scientific definition.
 
-The API accepts local `.gpkg` and `.shp` paths only. It does not accept URLs, GDAL virtual file systems, database connections, inline GeoJSON or arbitrary driver options.
+## 2. Convert an explicitly declared coordinate pair
 
-## 3. Create a neutral declared example
+The following coordinates are synthetic and do not represent patients, households, clinics or real administrative locations.
 
-The following geometry is deliberately synthetic and contains no patient, household, clinic or real administrative location. Its CRS is assigned because the coordinate meaning is declared here, not inferred from its values.
-
-```{r neutral-regions}
+```{r coordinates}
 library(episcout)
 
+locations <- data.frame(
+  site = c("site_a", "site_b", "site_c"),
+  longitude = c(0.25, 1.25, 1.75),
+  latitude = c(0.25, 0.50, 0.75),
+  group = c("reference", "comparison", NA),
+  stringsAsFactors = FALSE
+)
+
+converted <- epi_geo_from_coords(
+  locations,
+  x = "longitude",
+  y = "latitude",
+  crs = 4326
+)
+converted$audit
+points <- converted$data
+```
+
+Conversion is all-or-nothing. The selected columns must be distinct, exact numeric columns in a data frame with unique names. Missing, `NaN` or infinite coordinates block conversion; EPSG:4326 longitude outside `[-180, 180]` or latitude outside `[-90, 90]` also blocks it. A blocked call returns aggregate counts and `data = NULL` without dropping rows or reproducing coordinate values. Source coordinate columns remain by default for controlled auditability and are still sensitive; use `remove = TRUE` only when their deliberate removal fits the handling plan.
+
+## 3. Inspect and transform reviewed geometry
+
+`epi_geo_describe()` reports aggregate feature, attribute, geometry-type, validity, CRS and bound information. It never repairs geometry or returns invalidity coordinates or feature identifiers. Geometry validity concerns simple-feature structure, such as polygon ring topology; it does not establish that a feature represents the intended population, place or period.
+
+```{r describe-points}
+point_description <- epi_geo_describe(points)
+point_description$dataset[c("features", "crs_epsg", "bounding_box")]
+point_description$validity
+```
+
+Use `epi_geo_transform()` when coordinates must move to a different reviewed CRS. The example target, EPSG:3857, is for demonstrating transformation only and is not a recommendation for distance, area or analysis.
+
+```{r transform}
+points_3857 <- epi_geo_transform(points, 3857)
+sf::st_crs(points_3857)
+sf::st_bbox(points_3857)
+```
+
+The function uses the `sf`/PROJ transformation path, retains feature and attribute order, and refuses unavailable or structurally inconsistent results. It never replaces CRS metadata to imitate a transformation, repairs geometry or drops empty features.
+
+## 4. Read and write reviewed local vector layers
+
+GeoPackage (`.gpkg`) is the only format created by `epi_geo_write()`. One file can contain several named spatial layers and ordinary tables. `epi_geo_read()` requires an exact `layer` when more than one spatial layer is present.
+
+Shapefile is accepted for import compatibility only. Keep its `.shp`, `.shx` and `.dbf` files together, plus `.prj` and encoding metadata when supplied. Field names, encodings and single/multi-geometry representation can be limited or driver-dependent, so episcout makes no lossless Shapefile round-trip claim.
+
+The file API accepts local `.gpkg` and `.shp` paths only. It rejects URLs, GDAL virtual file systems, database connections, inline GeoJSON and arbitrary driver options. Inputs must have one active XY geometry column, a non-missing CRS and a supported geometry type; the functions do not infer or silently repair missing metadata.
+
+The next object uses neutral synthetic polygons and an explicitly declared CRS.
+
+```{r neutral-regions}
 west_ring <- matrix(
   c(0, 0, 1, 0, 1, 1, 0, 1, 0, 0),
   ncol = 2,
@@ -73,115 +122,45 @@ regions <- sf::st_sf(
     crs = 4326
   )
 )
-regions
-```
 
-## 4. Write, select and read a layer
-
-`overwrite = FALSE` is the default. Replacing an existing layer requires exact named authority, and unrelated layers remain present.
-
-```{r file-round-trip}
 gpkg <- tempfile(fileext = ".gpkg")
 epi_geo_write(regions, gpkg, layer = "neutral_regions")
 regions_read <- epi_geo_read(gpkg, layer = "neutral_regions")
-regions_read
+epi_geo_describe(regions_read)$dataset[c("features", "crs_epsg", "bounding_box")]
 ```
 
-## 5. Inspect aggregate geometry metadata
+`overwrite = FALSE` is the default. Replacing an existing layer requires `overwrite = TRUE` for that exact layer; unrelated layers remain present. The write path stages the complete GeoPackage beside the destination, re-reads and reconciles the named layer, then publishes the staged file. A failure before publication leaves the destination unchanged, and a failed replacement restores the previous file when the file system permits it. The caller chooses and owns the destination path.
 
-`epi_geo_describe()` reports aggregate feature, attribute, type, validity, CRS and bounds information without returning invalidity coordinates or feature identifiers. It never repairs geometry. Bounds are included because this is an explicit geospatial workflow, but they may still be sensitive.
-
-```{r describe}
-description <- epi_geo_describe(regions_read)
-description$dataset
-description$geometry_types
-description$validity
-description$messages
+```{r replace-layer}
+epi_geo_write(regions_read, gpkg, layer = "neutral_regions", overwrite = TRUE)
+reconciled <- epi_geo_read(gpkg, layer = "neutral_regions")
+epi_geo_describe(reconciled)$dataset[c("features", "crs_epsg")]
 ```
 
-## 6. Convert an explicitly declared coordinate pair
+## 5. Create static descriptive maps
 
-`x` means x/longitude/easting and `y` means y/latitude/northing only because a data dictionary or source specification declares it. Names and plausible ranges are not enough to infer axes or CRS.
+`epi_geo_map()` returns an ordinary `ggplot` object containing one `geom_sf()` layer. Polygon value maps use fill; point and line value maps use colour. Missing mapped values remain visible through `na_colour`. The function does not classify continuous values, label features, download a basemap or suppress sensitive locations.
 
-```{r coordinates}
-locations <- data.frame(
-  site = c("site_a", "site_b", "site_c"),
-  longitude = c(0.25, 1.25, 1.75),
-  latitude = c(0.25, 0.50, 0.75),
-  group = c("reference", "comparison", NA),
-  stringsAsFactors = FALSE
-)
-
-converted <- epi_geo_from_coords(
-  locations,
-  x = "longitude",
-  y = "latitude",
-  crs = 4326
-)
-converted$audit
-points <- converted$data
-```
-
-Conversion is all-or-nothing. Missing, `NaN`, infinite or EPSG:4326 out-of-range pairs set `data` to `NULL` and return aggregate blocker counts; rows are never dropped silently. Source coordinate columns remain by default for controlled auditability and are still sensitive.
-
-## 7. Transform rather than relabel
-
-Use `epi_geo_transform()` when coordinate values must move to a different CRS. The example transforms to EPSG:3857 for demonstration only; that CRS is not a recommendation for distance, area or analysis.
-
-```{r transform}
-points_3857 <- epi_geo_transform(points, 3857)
-sf::st_crs(points_3857)
-sf::st_bbox(points_3857)
-```
-
-The function retains features and attributes in order, uses the `sf`/PROJ transformation path and never substitutes CRS assignment for transformation.
-
-## 8. Use direct sf operations where episcout adds no contract
-
-Selection, cropping and spatial joins remain ordinary `sf` operations. Declare their predicate, boundary, population and duplicate-match meaning in the analysis protocol.
-
-```{r direct-sf}
-selected <- regions_read["area"]
-cropped <- sf::st_crop(selected, xmin = 0, ymin = 0, xmax = 1.5, ymax = 1)
-joined <- sf::st_join(points, selected, join = sf::st_within)
-cropped
-joined[c("site", "area")]
-```
-
-## 9. Create and extend static maps
-
-`epi_geo_map()` returns an ordinary `ggplot` object. Polygon value maps use fill; point and line value maps use colour. Missing mapped values remain visible through `na_colour`. The function does not classify continuous values, label features, download a basemap or suppress sensitive locations.
-
-```{r region-map}
+```{r region-map, fig.cap="Synthetic declared values over two neutral polygons. This static map is descriptive and has no real geographic interpretation."}
 region_map <- epi_geo_map(
   regions_read,
   value = "declared_rate",
   geometry_colour = "white"
 )
-region_map + ggplot2::labs(fill = "Declared rate", title = "Neutral synthetic regions")
+region_map + ggplot2::labs(fill = "Declared value", title = "Neutral synthetic regions")
 ```
 
-```{r point-map}
-point_map <- epi_geo_map(points, value = "group", na_colour = "grey60")
-point_map + ggplot2::labs(colour = "Declared group", title = "Neutral synthetic sites")
-```
+Mixed polygonal and non-polygonal objects require explicit user-composed `ggplot2` layers so appearance and meaning are not hidden behind a default. Selection, cropping and spatial joins also remain ordinary `sf` operations; define their predicate, boundary, population and duplicate-match meaning in the analysis protocol.
 
-Mixed polygonal and non-polygonal objects require explicit user-composed `ggplot2` layers so their appearance and meaning are not hidden behind a default.
+## 6. Collect a bounded PostGIS selection
 
-## 10. Publish and re-read deliberately
+Start with an open, idle, caller-owned RPostgres connection and pass the schema, relation and optional geometry-column names as exact separate identifiers. `epi_geo_postgis_source()` supports tables, partitioned tables, views and materialized views. A relation with one geometry or geography column is unambiguous; pass `geometry_column` when several exist. Dotted identifiers and SQL fragments are rejected. The database must already have PostGIS enabled, and the caller remains responsible for closing the connection.
 
-The write path accepts GeoPackage only. It copies any existing file to a same-directory stage, replaces or adds only the named layer, re-reads and reconciles the result, then publishes the complete staged file. A failure before publication leaves the destination unchanged; replacement failure restores the previous file when the file system permits it.
+Description returns catalogue and aggregate type, SRID, dimension, validity and bound QA from one read-only repeatable-read snapshot. It does not select feature geometry or ordinary attributes. Its bounding box and rare aggregate combinations remain sensitive and require review before they are printed, logged or shared.
 
-```{r replace-layer}
-epi_geo_write(regions_read, gpkg, layer = "neutral_regions", overwrite = TRUE)
-reconciled <- epi_geo_read(gpkg, layer = "neutral_regions")
-epi_geo_describe(reconciled)$dataset[c("features", "crs_epsg", "bounding_box")]
-unlink(gpkg)
-```
+Collection is a separate feature-level action. In this guide, always provide a reviewed `sf::st_bbox()` with finite ordered `xmin`, `ymin`, `xmax` and `ymax` values and an EPSG CRS exactly matching the source's resolved SRID. The rectangle selects intersecting features and does not clip their geometry. The API permits `bbox = NULL`, but that selects the complete relation subject only to `max_features`; do not omit the box unless the complete relation is itself the explicitly approved scope.
 
-## 11. Describe and collect PostGIS deliberately
-
-The PostGIS path starts from an open caller-owned RPostgres connection and exact separate identifiers. The constructor validates a table, view or materialized view and chooses its only spatial column; relations with several geometry/geography columns require `geometry_column`. Printing and structure display redact the connection, relation and column identities.
+Also provide the exact ordinary-column allow-list and a positive whole-number `max_features`. Use `columns = character()` explicitly for geometry only. episcout counts the complete selection and refuses it when the count exceeds the bound; it never truncates to make the request fit.
 
 ```{r postgis-workflow, eval = FALSE}
 spatial_source <- epi_geo_postgis_source(
@@ -208,34 +187,53 @@ selected_features <- epi_geo_postgis_collect(
 )
 ```
 
-Description runs catalogue, type, SRID, dimension, validity and bound aggregates inside one read-only repeatable-read snapshot. It does not select feature geometry or ordinary attributes.
+Identifiers are quoted, bounding-box ordinates are bound as query values, and count and collection occur in the same read-only repeatable-read snapshot. Collection returns an `sf` object only after the selected runtime geometry type, XY dimension, positive SRID, row count and Phase-A geometry contract reconcile. Null selected geometry and changed catalogue metadata cause failure. PostgreSQL row order is retained but is not a stable ordering guarantee.
 
-Collection is a separate explicit act. Identifiers are quoted, bbox ordinates are bound as values in the source CRS, and the complete selection is counted before at most `max_features + 1` rows can be fetched in the same snapshot. An over-limit selection fails rather than truncates. Null geometry in the selected rows also fails because it cannot satisfy the Phase-A `sf` contract. The connection remains caller-owned and usable after handled success or failure.
+episcout does not accept credentials, connection strings, predicates, ordering expressions or SQL through these functions. It does not install PostGIS, create or modify database objects, create indexes or collect automatically from `epi_geo_map()`. Database administrators may need to provide a suitable spatial index, but index design and tuning are outside this interface.
 
-episcout does not accept credentials, connection strings, predicates, ordering or SQL fragments through these functions. It does not install PostGIS, create or modify database objects, create indexes or collect automatically from `epi_geo_map()`. Large selections may need a database-administered spatial index, but index design and tuning are outside this interface.
+## 7. Declare coordinate roles for specification-first EDA
 
-## 12. Declare coordinate roles in specification-first EDA
-
-Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. Assign exactly one numeric/integer `x` row and one `y` row to the same non-empty pair identifier and explicit resolvable CRS.
+Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. Declare exactly one numeric/integer `x` row and one `y` row with the same non-empty pair identifier and the same explicit resolvable CRS text. A partial pair, duplicate axis, mismatched CRS or non-numeric declared type fails validation.
 
 ```{r eda-coordinate-qa}
 coordinate_spec <- data.frame(
-  name = c("longitude", "latitude"),
-  label = c("Declared longitude", "Declared latitude"),
-  type = c("numeric", "numeric"),
-  role = c("", ""),
-  geo_role = c("x", "y"),
-  geo_pair = c("neutral_sites", "neutral_sites"),
-  geo_crs = c("4326", "4326")
+  name = c("longitude", "latitude", "group"),
+  label = c("Declared longitude", "Declared latitude", "Declared group"),
+  type = c("numeric", "numeric", "categorical"),
+  role = c("", "", ""),
+  geo_role = c("x", "y", ""),
+  geo_pair = c("neutral_sites", "neutral_sites", ""),
+  geo_crs = c("4326", "4326", "")
 )
 
 epi_eda_profile_geo(locations, coordinate_spec)
 ```
 
-The result contains one aggregate row with total, complete, missing-axis, both-missing, non-finite and EPSG:4326 range-failure counts plus a stable map-readiness reason. The same call accepts an `epi_eda_postgres_source()` and computes one aggregate SQL row per pair without PostGIS or coordinate collection. Coordinate roles do not suppress ordinary summaries or plots.
+The profiler returns one aggregate row per pair with total, complete, missing-axis, both-missing, non-finite and EPSG:4326 range-failure counts plus `map_ready`, `status` and a stable reason. It returns no coordinates, geometry, bounds, row identifiers or maps. The same call accepts an `epi_eda_postgres_source()` and computes one aggregate SQL row per pair without PostGIS or coordinate collection.
 
-All EDA runners accept `maps`, `map_vars` and `max_map_points`. Mapping remains off by default. When requested, complete within-limit pairs create coordinate-derived point maps, with one additional thematic map per explicit theme. Failed pairs record `not_created`; PostgreSQL does not collect coordinate or theme observations for failed or over-limit pairs. `epi_eda_db_run(layout = "delivery")` keeps the created SVGs once under `maps/` and presents them through relative links in the bundle-derived HTML report; compact `plot_data/` never retains the collected coordinate or thematic observations. Existing `sf`, line, polygon and PostGIS geometry remain explicit `epi_geo_*` workflows.
+The four EDA runners `epi_eda_run()`, `epi_eda_intake_run()`, `epi_eda_db_run()` and `epi_eda_render_report()` accept `maps`, `map_vars` and `max_map_points`. Mapping is off by default, and `map_vars` must be an explicit unique allow-list of declared numeric, integer, categorical, binary or text variables. A ready pair at or below the inclusive point bound creates one geometry map and one additional map per selected theme. A failed, empty or over-limit pair records `not_created` and creates no partial map.
 
-## 13. Descriptive maps are not spatial inference
+```{r eda-map, fig.cap="Specification-first point map of three synthetic sites, including one explicitly displayed missing thematic value. The map is descriptive and not disclosure-controlled."}
+eda_result <- epi_eda_run(
+  locations,
+  coordinate_spec,
+  maps = TRUE,
+  map_vars = "group",
+  max_map_points = 100L
+)
+eda_result$map_inventory
+eda_result$maps[["map-p001-v003"]] +
+  ggplot2::labs(colour = "Declared group", title = "Neutral synthetic sites")
+```
 
-These maps display declared geometries and attributes. They do not test clustering, estimate spatial risk, select neighbours, define denominators, handle spatial dependence, quantify uncertainty or support causal claims. Any inferential method requires a concrete epidemiological question, authoritative method, explicit population and spatial/temporal unit, denominator, distance or adjacency definition, null hypothesis, multiplicity policy and independent numerical validation. Those decisions are outside this mapping foundation.
+`maps = TRUE` is an explicit feature-level disclosure action. Returned map objects contain the within-limit coordinate and requested thematic observations needed by their layers, and rendered SVGs display feature locations. The runners do not anonymise, aggregate or automatically assess those points for disclosure safety. Ordinary specification roles do not suppress aggregate summaries or descriptive plots, but the workflows do not publish a general row-level data table.
+
+With `output_dir = NULL`, `epi_eda_run()` returns map objects and prospective relative paths without writing map files. With an output directory or managed bundle, created maps are written once under `maps/`. PostgreSQL mapping collects only the coordinate and explicitly selected thematic observations needed for ready within-limit pairs inside the existing snapshot; failed or over-limit pairs trigger no map collection. Delivery bundles keep the SVGs under `maps/`, link to them from HTML and do not retain the private observations in compact `plot_data/`.
+
+## 8. Keep mapping separate from spatial inference
+
+These static maps display declared geometries and attributes. They do not test clustering, estimate spatial risk, select neighbours, define denominators, handle spatial dependence, quantify uncertainty or support causal claims. Any inferential method requires a concrete epidemiological question, authoritative method, explicit population and spatial/temporal unit, denominator, distance or adjacency definition, null hypothesis, multiplicity policy and independent numerical validation. Those decisions are outside this mapping guide.
+
+```{r cleanup, include = FALSE}
+unlink(gpkg)
+```

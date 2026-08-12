@@ -12,8 +12,8 @@ epi_geo_postgis_source(con, schema, relation, geometry_column = NULL)
 \item{schema}{One exact PostgreSQL schema identifier. Dotted names and SQL
 fragments are not accepted.}
 
-\item{relation}{One exact table, view or materialized-view identifier in
-\code{schema}.}
+\item{relation}{One exact table, partitioned table, view or materialized view
+identifier in \code{schema}.}
 
 \item{geometry_column}{\code{NULL} when the relation has exactly one PostGIS
 geometry/geography column, or its exact identifier when selection is
