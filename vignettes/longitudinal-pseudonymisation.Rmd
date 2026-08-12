@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 > **Technical boundary:** Pseudonymised data are not anonymous or automatically disclosure-controlled. PostgreSQL credentials, permissions, storage, backups and access controls remain external operational responsibilities.
 
-This vignette is the detailed governance and recovery guide. For a runnable learning example using a neutral longitudinal CSV and uniquely named disposable schemas, open the installed `examples/db-to-report/walkthrough.R` script and run it section by section.
+This vignette describes the technical workflow and recovery behaviour. For a runnable learning example using a neutral longitudinal CSV and uniquely named disposable schemas, open the installed `examples/db-to-report/walkthrough.R` script and run it section by section.
 
 ## 1. What this workflow does and when to use it
 
@@ -32,21 +32,38 @@ Supported identity columns are PostgreSQL `text` or `varchar`, integral types an
 
 Use `epi_sec_pseudonym()` instead when you need a one-off in-memory bridge for one unique vector and do not need stable tokens across later calls or related tables.
 
+`epi_sec_pseudonym()` returns a two-column tibble in input order. Setting `bridge_path` writes that re-identifying mapping as CSV; the default `overwrite = FALSE` refuses an existing path.
+
+## 1A. Public objects and statuses
+
+The seven public entry points return the following current objects. Their function help defines the exact formal arguments and nested data-frame columns.
+
+| Entry point | Returned object | Modes or statuses |
+|---|---|---|
+| `epi_sec_pseudonym()` | A tibble with `participant_id` and `token_id` | No mode or status field |
+| `epi_sec_identity_universe_spec()` | `epi_sec_identity_universe_spec`: `sources`, `normalization`, `validity_regex`, `contract_version`, `fingerprint_sha256` | Exact `identity` normalisation in contract version 2 |
+| `epi_sec_identity_universe_db()` | `epi_sec_identity_universe_result`: `status`, `metadata`, `source_audit`, `namespace_audit`, `overlap_audit`, `issues` | `audit_complete`, `not_written`, `complete` |
+| `epi_sec_linkage_scaffold()` | `epi_sec_linkage_scaffold`: `tables`, `columns`, `record_keys`, `crosswalks` | Editable metadata; no status field |
+| `epi_sec_linkage_spec()` | `epi_sec_linkage_spec` with the same four components | Validated metadata; no status field |
+| `epi_sec_identity_registry_init()` | `epi_sec_registry_result`: `status`, `mode`, `writes`, `registry_schema`, `metadata`, `objects`, `next_action` | `initialisation_required`, `incompatible`, `ready` |
+| `epi_sec_pseudonymise_db()` | `epi_sec_pseudonymisation_result`: `status`, `metadata`, `identity_audit`, `table_audit`, `duplicate_audit`, `issues`, `output_dictionary`, `output_catalogues`, `manifest`, plus requested diagnostic components | `audit_complete`, `not_written`, `complete` |
+
+A status describes only the requested technical operation. It does not decide whether processing, use, sharing or publication may proceed.
+
 ## 2. PostgreSQL prerequisites
 
-Prepare these technical conditions before R work begins:
+This example uses four caller-selected schemas named `source_data`, `identity_data`, `identity_registry` and `analysis_data`. They are distinct here to make each role visible; these names and the separate `identity_data` schema are not package requirements. Create every schema named by the requested operation before calling the database functions.
 
-- `source_data`, `identity_data`, `identity_registry` and `analysis_data` are distinct, existing schemas.
 - Source relations and any crosswalk are ordinary PostgreSQL tables, not views or materialised views.
 - The connected role has the PostgreSQL permissions required to read declared sources and crosswalks, inspect or initialise the registry, and create or replace the requested output tables.
 - PostgreSQL permissions are configured outside episcout. The registry and pseudonymisation functions neither query nor change schema or table privileges.
-- Named-role grants, storage encryption, backups, restore tests, retention and database logging have been reviewed outside episcout.
-- The connection is not already inside a caller-managed transaction when apply begins.
+- Named-role grants, storage encryption, backups, restore tests, retention and database logging are configured and operated outside episcout.
+- Identity-universe operations require a connection outside a caller-managed transaction. Registry and pseudonymisation apply require the same; their audit modes do not start a write transaction.
 
-episcout does not create schemas, grant application roles, manage backups or configure PostgreSQL, driver, administrator or server logging. Obtain `con` through your organisation's approved connection process; this guide deliberately contains no credential or connection-string example.
+episcout does not create schemas, grant application roles, manage backups or configure PostgreSQL, driver, administrator or server logging. Supply an open `con` created through the caller's connection process; this guide deliberately contains no credential or connection-string example.
 
 ```{r inspect-connection, eval = FALSE}
-# `con` is an already-open, approved RPostgres connection.
+# `con` is an already-open RPostgres connection.
 DBI::dbIsValid(con)
 ```
 
@@ -101,7 +118,7 @@ inventory$columns
 inventory$constraints
 ```
 
-`row_counts = "none"` is the metadata-only default. Use estimated or exact aggregate counts only when their cost and disclosure implications have been reviewed.
+`row_counts = "none"` is the metadata-only default. The caller selects estimated or exact aggregate counts when those outputs and their query cost are needed.
 
 ## 3A. Inspect or materialise a shared identifier universe
 
@@ -154,23 +171,24 @@ universe_result <- epi_sec_identity_universe_db(
   con,
   universe_spec,
   mode = "materialise",
-  output_schema = "restricted_identity",
+  output_schema = "identity_data",
   output_table = "identity_universe",
   existing = "error"
 )
 ```
 
-Materialisation repeats all validation in one protected transaction and creates a new table only. The table has one unique `(identity_namespace, canonical_identifier)` row and an aggregate `source_membership_count`; it has no row-level membership table. The function uses the connected role's configured PostgreSQL permissions and does not query or change schema/table privileges. A technical error finding, existing destination or lock timeout returns `status = "not_written"`; `status = "complete"` is returned only after commit.
+Materialisation repeats all validation in one protected transaction and creates a new table only. The table has one unique `(identity_namespace, canonical_identifier)` row and an aggregate `source_membership_count`; it has no row-level membership table. The function uses the connected role's configured PostgreSQL permissions and does not query or change schema/table privileges. `statement_timeout` bounds each statement and `lock_timeout` bounds the destination advisory-lock wait. A technical error finding, existing destination or lock timeout returns `status = "not_written"`; `status = "complete"` is returned only after commit. Other database failures raise a sanitised error and roll back any materialisation transaction.
 
-The result creates no token and writes no identity-registry row. A caller may declare `restricted_identity.identity_universe` as the sole `can_enrol = TRUE` source in `epi_sec_linkage_spec()`, with `canonical_identifier` as its ID column and the same namespace, for a separate registry/pseudonymisation operation. The exact universe calculation does not establish that identifiers denote distinct people.
+The result creates no token and writes no identity-registry row. A caller may declare `identity_data.identity_universe` as the sole `can_enrol = TRUE` source in `epi_sec_linkage_spec()`, with `canonical_identifier` as its ID column and the same namespace, for a separate registry/pseudonymisation operation. The exact universe calculation does not establish that identifiers denote distinct people.
 
 ## 4. Inventory and semantic dictionary
 
 Create a technical and semantic dictionary from the inventory. It contains EDA labels, types, roles, units, missingness, catalogue and geographic declarations, but no privacy classification or retained-column action.
 
-```{r dictionary-review, eval = FALSE}
+```{r dictionary-metadata, eval = FALSE}
 dictionary <- epi_eda_dictionary_scaffold(inventory)
-dictionary$provenance <- "reviewed_synthetic_metadata"
+dictionary$type[dictionary$source_column == "entity_kind"] <- "categorical"
+dictionary$provenance <- "synthetic_metadata_definition"
 
 epi_eda_dictionary_validate(dictionary, catalogues = NULL)
 ```
@@ -179,7 +197,7 @@ For an explicitly selected categorical or binary column, profile bounded aggrega
 
 ```{r catalogue-profile, eval = FALSE}
 catalogue_columns <- dictionary[
-  dictionary$source_column == "event_type",
+  dictionary$source_column == "entity_kind",
   c("source_schema", "source_table", "source_column")
 ]
 
@@ -194,9 +212,7 @@ catalogue_profile$values
 catalogue_profile$missing
 ```
 
-`values` contains only non-NULL source values and counts, so its rows can be
-copied into a draft normalised catalogue for human labelling and confirmation.
-`missing` reports one aggregate PostgreSQL NULL count per profiled column, including zero for an empty table. PostgreSQL NULL is not a catalogue `source_value`, and this technical profile does not decide whether a sentinel represents missingness.
+`values` contains only non-NULL source values and counts, so its rows can be copied into a draft normalised catalogue for labelling. `missing` reports one aggregate PostgreSQL NULL count per profiled column, including zero for an empty table. PostgreSQL NULL is not a catalogue `source_value`, and this technical profile does not decide whether a sentinel represents missingness.
 
 ## 5. Linkage scaffold and specification
 
@@ -260,7 +276,7 @@ For example, if `events` uses the namespace `event_entity_id`, change that table
 tables$identity_namespace[tables$source_table == "events"] <- "event_entity_id"
 
 crosswalks <- data.frame(
-  crosswalk_schema = "source_data",
+  crosswalk_schema = "identity_data",
   crosswalk_table = "entity_crosswalk",
   alias_namespace = "event_entity_id",
   alias_id_column = "alias_id",
@@ -293,7 +309,7 @@ registry_audit <- epi_sec_identity_registry_init(
 registry_audit
 ```
 
-When a registry is required, explicitly initialise it. The defaults use prefix `E` and 24 random bytes. Those immutable settings define one stable identity-mapping domain; reuse the registry only for sources that should share that exact mapping domain.
+To create a registry in an empty schema, explicitly request initialisation. The defaults use prefix `E` and 24 random bytes. Those token settings are immutable for the registry. Assignments persist across later calls to the same registry, while identity namespaces and crosswalks determine which source identifiers resolve to the same token.
 
 ```{r registry-apply, eval = FALSE}
 registry_apply <- epi_sec_identity_registry_init(
@@ -343,13 +359,13 @@ The result status has one of three meanings:
 | `not_written` | No | A requested apply did not commit because a technical error issue or lock timeout was found. | Follow each error's `recommended_action`, then retry. |
 | `complete` | Yes | One apply transaction committed. | Use the output and returned dictionary as requested. |
 
-An audit-complete result says only that the inspection ran against one snapshot; it does not imply that `issues` is empty or that a later database snapshot is unchanged. Audit is optional, and apply repeats all checks in its protected transaction. Malformed arguments, unsupported types, caller-managed transactions, incompatible objects and unsafe infrastructure state remain errors rather than ordinary results.
+An audit-complete result says only that the inspection queries completed; it does not imply that `issues` is empty or that concurrent or later database state is unchanged. Pseudonymisation audit does not acquire the apply locks or own one repeatable-read snapshot. Audit is optional, and apply repeats all checks in its protected transaction. Malformed arguments, unsupported types, caller-managed apply transactions, incompatible objects and unsafe infrastructure state remain errors rather than ordinary results.
 
 Common error issues include missing or blank identifiers, unmatched dependent identities, conflicting or missing crosswalk targets, missing record-key values, conflicting payloads under one key, an existing destination or a lock timeout. Malformed linkage metadata are rejected earlier as specification-validation errors. Ordinary issue messages are value-free and include a recommended technical action.
 
 ## 10. Apply, verify output and confirm stable tokens
 
-When ready to request the write, make apply explicit. A prior audit is optional because apply repeats the checks inside its protected transaction. Defaults retain exact projected duplicates and refuse existing destinations.
+To request the write, make apply explicit. A prior audit is optional because apply repeats the checks inside its protected transaction. Defaults retain exact projected duplicates and refuse existing destinations.
 
 ```{r workflow-apply, eval = FALSE}
 applied <- epi_sec_pseudonymise_db(
@@ -368,9 +384,9 @@ applied$table_audit
 applied$manifest
 ```
 
-Confirm each table's `n_input`, `n_output` and `n_exact_removed` counts reconcile, and compare `duplicate_audit$n_exact_excess` with the chosen report/drop action. The `n_invalid_id`, `n_unmatched` and `n_missing_key` columns must be zero on a completed run. Inspect the destination schema's ownership and grants with the database administrator. Do not print tokens merely to verify the workflow.
+Confirm each table's `n_input`, `n_output` and `n_exact_removed` counts reconcile, and compare `duplicate_audit$n_exact_excess` with the chosen report/drop action. The `n_invalid_id`, `n_unmatched` and `n_missing_key` columns are zero on a completed run. The function neither queries nor changes schema or table privileges; PostgreSQL applies the connected role's ownership and default-privilege configuration to newly created tables. Do not print tokens merely to verify the workflow.
 
-To confirm stability, create a second linkage specification with new destination names, inspect or apply it, then compare token sets inside PostgreSQL and return only an aggregate Boolean. Stable tokens are guaranteed only within the same registry domain.
+To confirm stability, create a second linkage specification with new destination names, inspect or apply it, then compare token sets inside PostgreSQL and return only an aggregate Boolean. Stability applies to the same registry assignment: registry, identity namespace and any alias/crosswalk mapping must resolve the identifier to the same stored entity token.
 
 ```{r stable-token-rerun, eval = FALSE}
 repeat_tables <- linkage$tables
@@ -435,15 +451,15 @@ events_spec <- epi_eda_dictionary_spec(
 events_spec
 ```
 
-Review the restricted output dictionary before EDA. Quasi-identifiers, sensitive fields, category labels and small aggregate cells may still permit disclosure. EDA does not turn pseudonymised data into anonymous or publication-safe data.
+The output dictionary describes the generated token and retained columns; it does not classify their permitted use. Retained fields, category labels and small aggregate cells can still contribute to re-identification or disclosure. EDA does not turn pseudonymised data into anonymous or automatically disclosure-controlled data.
 
 ## 13. Replacement, rollback, concurrency and recovery
 
-Apply owns one repeatable-read transaction and repeats preflight checks inside it. Registry changes, output changes and aggregate run metadata commit together; any failure rolls them all back. Transaction-scoped advisory locks are acquired in deterministic order and bounded by `lock_timeout`, which defaults to 30 seconds.
+Apply acquires bounded session advisory locks in deterministic order, opens one repeatable-read transaction and transfers protection to transaction-scoped advisory locks before releasing the session locks. It then repeats the checks inside the transaction. Registry changes, output changes and aggregate run metadata commit together; any failure rolls them all back. `lock_timeout` bounds the initial lock wait and defaults to 30 seconds; transaction-scoped locks are released by commit or rollback.
 
-Do not wrap apply in your own transaction. After `not_written` or a sanitised apply failure, confirm `writes = FALSE`, inspect the issue table and database state, correct the problem, then start again with audit.
+Do not wrap apply in your own transaction. A `not_written` result has `metadata$writes = FALSE`; inspect its issue table and the observed database state, correct the technical cause and retry audit or apply. A sanitised apply error has no result object. Errors before the protected transaction occur before the write phase; errors after it begins roll that transaction back. Inspect PostgreSQL state and available driver or server logs, correct the cause and retry from an idle connection.
 
-`existing = "replace"` is an explicit destructive choice limited to the exact declared destination ordinary tables owned by the current role. It never uses `CASCADE`; views, foreign-owned objects and dependencies prevent replacement. Prefer a new destination name when history must be retained, and coordinate replacement and recovery with the database administrator.
+`existing = "replace"` is an explicit destructive choice limited to the exact declared destination ordinary tables owned by the current role. It never uses `CASCADE`; views, foreign-owned objects and dependencies prevent replacement. Use a new destination name when the existing table must be retained. Database administration and recovery remain outside episcout.
 
 ```{r deliberate-replacement, eval = FALSE}
 replacement_audit <- epi_sec_pseudonymise_db(
@@ -453,7 +469,7 @@ replacement_audit <- epi_sec_pseudonymise_db(
   existing = "replace"
 )
 
-# Apply only after reviewing the audit and confirming replacement authority.
+# Apply repeats the checks and requests replacement of the declared tables.
 replacement_apply <- epi_sec_pseudonymise_db(
   con, dictionary, linkage,
   registry_schema = "identity_registry",
@@ -463,13 +479,15 @@ replacement_apply <- epi_sec_pseudonymise_db(
 )
 ```
 
-## 14. Privacy, access, backup, logging and disclosure limits
+The preliminary replacement audit is optional. `existing = "replace"` is the caller's explicit operation selection, not a permission decision made by episcout.
 
-The registry is deliberately re-identifying because it stores exact source identifiers and token mappings. Restrict it more tightly than ordinary analysis output. Pseudonymised output also remains personal data because identity may be recoverable through the registry, retained fields or external information.
+## 14. Reversibility and external operational boundaries
 
-episcout keeps source identifiers and record-key values inside PostgreSQL by default, returns value-free ordinary audits and never writes caller-requested issue values. This package boundary does not control database queries recorded by PostgreSQL, RPostgres or infrastructure tooling; administrator access; storage snapshots; backups; replicas; monitoring; console history; or anything a caller deliberately prints or saves.
+The registry is re-identifying because it stores exact source identifiers and token mappings. Pseudonymised output may also remain identifiable through the registry, retained fields or external information. episcout does not control who can access either database location.
 
-Before analysis or sharing, review least-privilege grants, retention, backup and restore controls, logging, permitted linkage purpose, quasi-identifiers, sensitive fields, small cells and the intended recipient. Pseudonymisation is not anonymisation, disclosure control or publication approval.
+episcout keeps source identifiers and record-key values inside PostgreSQL by default, returns value-free ordinary audits and does not persist caller-requested `issue_values`. This package boundary does not control database queries recorded by PostgreSQL, RPostgres or infrastructure tooling; administrator access; storage snapshots; backups; replicas; monitoring; console history; or anything a caller deliberately prints or saves.
+
+PostgreSQL grants, retention, backup and restore controls, logging and decisions about downstream analysis, sharing or publication remain external responsibilities. Pseudonymisation is not anonymisation or automatic disclosure control, and no episcout status supplies publication or disclosure permission.
 
 ## 15. Troubleshooting
 
@@ -479,10 +497,10 @@ Before analysis or sharing, review least-privilege grants, retention, backup and
 | Registry audit returns `incompatible` | One or more registry objects has the wrong relation kind, structure or registry version. | Inspect the registry structure and use a separate recovery operation; do not edit registry rows manually. |
 | `unmatched_identifier` | A dependent identity cannot resolve exactly through its namespace, registry or declared crosswalk. | Check the namespace and crosswalk, then correct the source or metadata. Do not use fuzzy matching. |
 | `conflicting_record_key` | One declared record key has different retained payloads. | Resolve the source conflict under an applicable data rule, or correct the declared key. episcout will not select a winner. |
-| `destination_exists` | The output name is already occupied. | Choose a new destination, or review ownership and dependencies before explicitly auditing `existing = "replace"`. |
-| `lock_timeout` error issue | Another transaction holds a required registry or destination lock. | Let the other transaction finish, verify its outcome, then audit again; do not bypass the lock. |
-| Apply returns a sanitised error | PostgreSQL or the driver rejected or interrupted the operation, and the transaction rolled back. | Confirm no writes committed, inspect PostgreSQL or driver logs, correct the technical cause, then retry. |
-| Audit warns that a table has no record key | Only exact projected duplicates can be assessed. | Confirm and declare the row grain and ordered key columns, or document acceptance of the limitation before apply. |
-| Output is complete but sharing is planned | Completion establishes transactional workflow success only. | Perform a separate disclosure and access review; do not treat the output as anonymous. |
+| `destination_exists` | The output name is already occupied. | Choose a new destination, or inspect PostgreSQL ownership and dependencies before explicitly selecting `existing = "replace"`. |
+| `lock_timeout` error issue | Another transaction holds a required registry or destination lock. | Let the other transaction finish, verify its outcome, then retry audit or apply; do not bypass the lock. |
+| Apply raises a sanitised error | PostgreSQL or the driver rejected or interrupted the operation; no result object is returned. | If the protected transaction began, it rolled back; preflight errors occurred before writes. Inspect database state and available logs, correct the cause and retry. |
+| Audit warns that a table has no record key | Only exact projected duplicates can be assessed. | Declare the row grain and ordered key columns when conflict detection is needed; otherwise the limitation remains visible in the result. |
+| A completed output is being considered for downstream use | Completion establishes transactional workflow success only. | Decide use, access, sharing and publication outside episcout; do not treat the output as anonymous. |
 
 When seeking help, share the value-free status, issue code, relation metadata and aggregate count. Do not paste source identifiers, record-key values, tokens, credentials, connection strings or native database details into an issue or report.

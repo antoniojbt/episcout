@@ -12,7 +12,7 @@
 #'
 #' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` in one transaction using the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges. Audit reports structurally incompatible existing objects as `incompatible`; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
 #'
-#' The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data remain restricted personal data: they are not anonymous or automatically disclosure-controlled. See `vignette("longitudinal-pseudonymisation")` before initialising a registry.
+#' The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data are not anonymous or automatically disclosure-controlled. See `vignette("longitudinal-pseudonymisation")` for the technical workflow and recovery behaviour.
 #'
 #' @export
 #' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_pseudonymise_db()], [epi_db_inventory()]
