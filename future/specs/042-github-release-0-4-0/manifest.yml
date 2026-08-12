@@ -12,7 +12,7 @@ updated: 2026-08-12
 tracking_issue: 307
 source_issues:
   - 81
-pull_request: null
+pull_request: 308
 merge_commit: null
 successor_issue: null
 terminal_reason: "A GitHub-only 0.4.0 release provides an immutable live-evaluation target; CRAN readiness remains independently deferred under issue-81."
