@@ -1,0 +1,50 @@
+id: "041"
+slug: "reviewed-civil-date-derivation"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: agent/issue-273-feature-derive-reviewed-civil-dates-from-loc
+created: 2026-08-12
+updated: 2026-08-12
+
+tracking_issue: 273
+source_issues:
+  - 249
+  - 272
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: "Issue 273 is the terminal authorised cleaning-lane capability; no automatic successor is required."
+
+related_files:
+  - R/eda_civil_dates.R
+  - tests/testthat/test-eda-civil-dates.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - PROJECT_MAP.md
+  - future/TODOs.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-civil-dates', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-civil-dates', reporter = 'summary')"
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+
+notes:
+  - Civil-date meaning is caller-declared and is never inferred from names, storage or observed values.
+  - In-memory local timestamps use strict timezone-free character storage; PostgreSQL support is limited to timestamp without time zone.
+  - Sources are preserved and every destination is new-only; file and PostgreSQL publication reuse the spec-040 atomicity boundaries.
+  - Issue 273 is terminal and has no automatic successor.

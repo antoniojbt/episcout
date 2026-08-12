@@ -168,7 +168,58 @@ database_result <- epi_eda_apply_cleaning_rules(
 
 The audit omits source names, paths, relation identities, allowed or disallowed values, bounds, missing codes and approval references. Its aggregate counts and deterministic rule hash can still be sensitive in context, so review them before sharing. Text, date and datetime rules, RData, Parquet, overwriting, row filtering, imputation, winsorisation and civil-date derivation are outside this contract.
 
-## 5. Audit and apply data-frame preparation
+## 5. Derive explicitly reviewed civil dates
+
+Use civil-date derivation only after external analyst review establishes that a local timestamp field means a civil calendar date. Midnight observations, a field name and a PostgreSQL type do not establish that meaning. `epi_eda_approved_civil_dates()` requires an exact schema with `operation_state = "approved"`, `declared_semantics = "civil_date"`, `preserve_source = TRUE`, `require_midnight = TRUE`, an opaque source key and an opaque caller-managed approval reference.
+
+```{r}
+local_records <- data.frame(
+  local_stamp = c("2024-02-29 00:00:00", "2024-12-31 00:00:00.000", NA_character_),
+  stringsAsFactors = FALSE
+)
+local_keys <- data.frame(
+  name = "local_stamp",
+  variable_key = "var_0000000000000001",
+  stringsAsFactors = FALSE
+)
+approved_civil_dates <- epi_eda_approved_civil_dates(data.frame(
+  source_variable_key = "var_0000000000000001",
+  derived_name = "reviewed_date",
+  operation_state = "approved",
+  declared_semantics = "civil_date",
+  preserve_source = TRUE,
+  require_midnight = TRUE,
+  approval_id = "approval_0000000000000001",
+  stringsAsFactors = FALSE
+))
+
+local_before <- local_records
+civil_dates <- epi_eda_derive_civil_dates(
+  local_records,
+  approved_civil_dates,
+  local_keys
+)
+civil_dates$data
+stopifnot(identical(local_records, local_before))
+```
+
+In memory, local timestamps must be strict timezone-free character values in `YYYY-MM-DD HH:MM:SS` form with an optional decimal fraction; `POSIXct`, `POSIXlt`, offsets and zones are rejected rather than interpreted. Fractional-zero midnight is valid, but any non-zero hour, minute, second or fractional digit blocks the complete operation. The error reports only the aggregate affected-value count. Missing timestamps produce missing `Date` values, and calendar boundaries are validated before derivation.
+
+The PostgreSQL path accepts only `timestamp without time zone`, validates exact midnight with a scalar server-side aggregate and derives with a local `::date` cast in one write transaction. It does not collect timestamps, assign a timezone or relax the instant-oriented preparation rejection. The source column remains in the new table unchanged, while the new derived column uses PostgreSQL `date` storage.
+
+```{r eval = FALSE}
+database_dates <- epi_eda_derive_civil_dates(
+  source,
+  approved_civil_dates,
+  local_keys,
+  destination_schema = "analysis",
+  destination_table = "reviewed_dates"
+)
+```
+
+Supply both `output_path` and `output_format = "csv"` or `"rds"` for a new file. Existing files and PostgreSQL relations are never replaced, and failure leaves no partial destination. Returned audits omit source and derived names, paths, relation identities, timestamps and approval references; aggregate counts and hashes can still be sensitive in context.
+
+## 6. Audit and apply data-frame preparation
 
 Preparation is a data-frame stage. Audit mode returns the original data and factual findings. Apply mode is all-or-nothing: a blocking finding returns the original data, no `schema_after`, and `metadata$overall_status == "blocked"`; a successful apply returns prepared data and `metadata$overall_status == "prepared"`. `min` and `max` are descriptive metadata rather than recoding rules.
 
@@ -213,7 +264,7 @@ With `spec = NULL`, intake generates, saves and uses a storage-derived scaffold 
 
 PostgreSQL-backed EDA has no `epi_eda_prepare()` audit/apply mode. Use `epi_eda_apply_cleaning_rules()` only for the separately approved bounded operations above, then construct a new PostgreSQL source from the processed destination. Resolve every other storage compatibility or semantic recoding need in a reviewed relation or view before EDA.
 
-## 6. Run summaries, plots and optional stratification
+## 7. Run summaries, plots and optional stratification
 
 The canonical summary contains `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped`. Every specification row remains accounted for. Numeric summaries separate finite values from infinities, categorical summaries retain declared zero-count levels, text summaries contain length and cardinality aggregates rather than observed strings, and temporal summaries state their range units.
 
@@ -247,7 +298,7 @@ epi_eda_table1(stratified, basis = "column")
 
 The default `compatibility` basis uses observed non-missing values for ordinary levels and all rows in the corresponding group for the missing level. `column` uses all rows in each group, `row` distributes each level across non-Overall strata, and `overall` uses the included analysis population. Row percentages require a stratified result. When outputs are requested, `epi_eda_run()` and intake write the compatibility calculation as `categorical_display.csv`; Table 1 records the numeric denominator behind each displayed count and percentage.
 
-## 7. Request declared point maps
+## 8. Request declared point maps
 
 Mapping is off by default. `maps = TRUE` requests one geometry-only point map per declared pair; each unique `map_vars` entry requests one additional thematic map per pair. Themes may be numeric, integer, categorical, binary or text. Date and datetime themes are unsupported, and no thematic variable is selected automatically.
 
@@ -269,7 +320,7 @@ Maps are created only when every row in a pair is complete, finite, within EPSG:
 
 The same map controls are available on intake, the data-frame report renderer and the PostgreSQL database run. Bundle-producing runs write deterministic SVGs under `maps/`; reports embed created maps and their inventory. Requested point maps contain individual locations and may contain thematic values, so an output with maps is not aggregate-only. Integrated EDA creates coordinate-derived points only; use the [geospatial mapping guide](geospatial-mapping-primer.html) for existing `sf`, line, polygon, boundary, basemap and PostGIS geometry workflows.
 
-## 8. Run PostgreSQL EDA in one snapshot
+## 9. Run PostgreSQL EDA in one snapshot
 
 PostgreSQL 17 or later is required. The caller supplies an open, idle RPostgres connection and separate schema and relation identifiers. Ordinary tables, partitioned tables, views, materialised views and foreign tables are supported. Arbitrary SQL, dotted relation names, temporary objects, generic DBI connections and caller-managed transactions are not accepted.
 
@@ -298,7 +349,7 @@ The four direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`,
 
 Without maps, the database bundle contains aggregates, the caller-authored specification and aggregate plot inputs only. When maps are requested, coordinates and selected thematic observations are collected only for map-ready pairs within the inclusive row limit. The query projects only the required coordinates and themes, applies a defensive `max_map_points + 1` limit, and fails rather than truncating or silently dropping rows. The bundle never contains a source-row table, arbitrary SQL, query parameters, credentials or connection attributes; database and driver logs remain the caller's infrastructure responsibility.
 
-## 9. Deliver the owned output root
+## 10. Deliver the owned output root
 
 For data-frame intake, `render = TRUE` creates `report.html` from the saved bundle components. The exact output root is workflow-owned: use `overwrite = TRUE` only to replace a prior valid owned intake bundle. Do not move individual files out of the root without preserving their manifest relationship.
 
@@ -328,7 +379,7 @@ Retain and transfer the complete owned root. The report is a view of the validat
 
 Neither a report nor an aggregate-only bundle is automatically safe to share. Review caller-authored dictionary metadata, categories, small cells, plots and any requested point maps. Pseudonymised observations remain restricted personal data: pseudonymisation replaces or separates direct identifiers under a controlled linkage process, but it does not make the observations anonymous or automatically disclosure-controlled.
 
-## 10. Start from the file-based scaffold
+## 11. Start from the file-based scaffold
 
 Create a starter project, edit `metadata/data_dictionary.csv`, place an authorised input at `data/input.csv`, and follow the copied README. The scaffold offers direct and optional `targets` paths to the same lower-level data-frame renderer; it does not manage PostgreSQL connections or preparation decisions.
 
