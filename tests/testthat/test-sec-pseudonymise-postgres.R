@@ -156,7 +156,6 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   skip_if_not_installed("RPostgres")
 
   connection <- pg_pseudonym_connection()
-  on.exit(DBI::dbDisconnect(connection), add = TRUE)
 
   suffix <- pg_pseudonym_suffix()
   source_ids <- setNames(
@@ -184,6 +183,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
           silent = TRUE
         )
       }
+      if (DBI::dbIsValid(connection)) DBI::dbDisconnect(connection)
     },
     add = TRUE
   )
@@ -194,22 +194,16 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       paste("CREATE SCHEMA", pg_pseudonym_quote(connection, schema))
     )
   }
-  DBI::dbExecute(
-    connection,
-    paste(
-      "GRANT CREATE, USAGE ON SCHEMA",
-      pg_pseudonym_quote(connection, schemas[["registry"]]),
-      "TO PUBLIC"
+  for (schema in schemas[c("registry", "output", "crosswalk")]) {
+    DBI::dbExecute(
+      connection,
+      paste(
+        "GRANT CREATE, USAGE ON SCHEMA",
+        pg_pseudonym_quote(connection, schema),
+        "TO PUBLIC"
+      )
     )
-  )
-  public_access_before <- DBI::dbGetQuery(
-    connection,
-    paste(
-      "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
-      "has_schema_privilege('public', $1, 'USAGE') AS can_use"
-    ),
-    params = list(schemas[["registry"]])
-  )
+  }
   public_registry_audit <- epi_sec_identity_registry_init(
     connection,
     schemas[["registry"]],
@@ -218,60 +212,36 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_identical(public_registry_audit$status, "initialisation_required")
   expect_false(public_registry_audit$writes)
   expect_false("schema_restricted" %in% names(public_registry_audit))
-  public_registry_apply <- epi_sec_identity_registry_init(
+  expect_false(DBI::dbExistsTable(
     connection,
-    schemas[["registry"]],
-    mode = "apply"
-  )
-  expect_identical(public_registry_apply$status, "ready")
-  public_access_after <- DBI::dbGetQuery(
-    connection,
-    paste(
-      "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
-      "has_schema_privilege('public', $1, 'USAGE') AS can_use"
-    ),
-    params = list(schemas[["registry"]])
-  )
-  expect_identical(public_access_after, public_access_before)
-  for (table_name in rev(episcout:::sec_registry_tables())) {
+    DBI::Id(schema = schemas[["registry"]], table = "registry_metadata")
+  ))
+  for (schema in schemas[c("registry", "output")]) {
     DBI::dbExecute(
       connection,
       paste(
-        "DROP TABLE",
-        pg_pseudonym_quote(connection, schemas[["registry"]], table_name)
-      )
-    )
-  }
-  for (schema in schemas[c("registry", "output", "crosswalk")]) {
-    DBI::dbExecute(
-      connection,
-      paste(
-        "REVOKE ALL ON SCHEMA",
+        "ALTER DEFAULT PRIVILEGES IN SCHEMA",
         pg_pseudonym_quote(connection, schema),
-        "FROM PUBLIC"
+        "GRANT SELECT ON TABLES TO PUBLIC"
       )
     )
   }
-  DBI::dbExecute(
-    connection,
-    paste(
-      "ALTER DEFAULT PRIVILEGES IN SCHEMA",
-      pg_pseudonym_quote(connection, schemas[["output"]]),
-      "GRANT SELECT ON TABLES TO PUBLIC"
-    )
-  )
   on.exit(
-    try(
-      DBI::dbExecute(
-        connection,
-        paste(
-          "ALTER DEFAULT PRIVILEGES IN SCHEMA",
-          pg_pseudonym_quote(connection, schemas[["output"]]),
-          "REVOKE SELECT ON TABLES FROM PUBLIC"
+    {
+      for (schema in schemas[c("registry", "output")]) {
+        try(
+          DBI::dbExecute(
+            connection,
+            paste(
+              "ALTER DEFAULT PRIVILEGES IN SCHEMA",
+              pg_pseudonym_quote(connection, schema),
+              "REVOKE SELECT ON TABLES FROM PUBLIC"
+            )
+          ),
+          silent = TRUE
         )
-      ),
-      silent = TRUE
-    ),
+      }
+    },
     add = TRUE
   )
 
@@ -301,7 +271,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
   DBI::dbExecute(
     connection,
-    paste("REVOKE ALL ON TABLE", aliases, "FROM PUBLIC")
+    paste("GRANT SELECT ON TABLE", aliases, "TO PUBLIC")
   )
   crosswalk_access <- DBI::dbGetQuery(
     connection,
@@ -318,9 +288,9 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       paste(schemas[["crosswalk"]], "entity_aliases", sep = ".")
     )
   )
-  expect_false(crosswalk_access$can_create[[1]])
-  expect_false(crosswalk_access$can_use[[1]])
-  expect_false(crosswalk_access$table_access[[1]])
+  expect_true(crosswalk_access$can_create[[1]])
+  expect_true(crosswalk_access$can_use[[1]])
+  expect_true(crosswalk_access$table_access[[1]])
   DBI::dbAppendTable(
     connection,
     DBI::Id(schema = schemas[["source"]], table = "entities"),
@@ -405,10 +375,33 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_false(registry_audit$writes)
   expect_true(all(registry_audit$objects$status == "planned"))
 
-  registry_apply <- epi_sec_identity_registry_init(
+  public_access_before <- DBI::dbGetQuery(
     connection,
-    schemas[["registry"]],
-    mode = "apply"
+    paste(
+      "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
+      "has_schema_privilege('public', $1, 'USAGE') AS can_use"
+    ),
+    params = list(schemas[["registry"]])
+  )
+  original_db_execute <- DBI::dbExecute
+  original_db_get_query <- DBI::dbGetQuery
+  observed_sql <- new.env(parent = emptyenv())
+  observed_sql$statements <- character()
+  registry_apply <- with_mocked_bindings(
+    epi_sec_identity_registry_init(
+      connection,
+      schemas[["registry"]],
+      mode = "apply"
+    ),
+    dbExecute = function(con, statement, ...) {
+      observed_sql$statements <- c(observed_sql$statements, statement)
+      original_db_execute(con, statement, ...)
+    },
+    dbGetQuery = function(con, statement, ...) {
+      observed_sql$statements <- c(observed_sql$statements, statement)
+      original_db_get_query(con, statement, ...)
+    },
+    .package = "DBI"
   )
   expect_identical(registry_apply$status, "ready")
   expect_true(registry_apply$writes)
@@ -421,14 +414,9 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     ),
     params = list(schemas[["registry"]])
   )
-  expect_false(public_access$can_create[[1]])
-  expect_false(public_access$can_use[[1]])
+  expect_identical(public_access, public_access_before)
 
   registry_aliases <- pg_pseudonym_quote(connection, schemas[["registry"]], "aliases")
-  DBI::dbExecute(
-    connection,
-    paste("GRANT SELECT ON TABLE", registry_aliases, "TO PUBLIC")
-  )
   registry_privilege_audit <- epi_sec_identity_registry_init(
     connection,
     schemas[["registry"]],
@@ -436,10 +424,11 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
   expect_identical(registry_privilege_audit$status, "ready")
   expect_false(registry_privilege_audit$writes)
-  expect_identical(registry_privilege_audit$objects$status, rep("present", 6L))
-  DBI::dbExecute(
-    connection,
-    paste("REVOKE SELECT ON TABLE", registry_aliases, "FROM PUBLIC")
+  expect_identical(
+    registry_privilege_audit$objects$status[
+      registry_privilege_audit$objects$object == "aliases"
+    ],
+    "present"
   )
   registry_reaudit <- epi_sec_identity_registry_init(
     connection,
@@ -448,6 +437,136 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
   expect_identical(registry_reaudit$status, "ready")
   expect_false(registry_reaudit$writes)
+
+  registry_tables <- paste(
+    vapply(
+      sec_registry_tables(),
+      function(table) pg_pseudonym_quote(connection, schemas[["registry"]], table),
+      character(1)
+    ),
+    collapse = ", "
+  )
+  current_user <- DBI::dbGetQuery(connection, "SELECT current_user AS role")$role[[1]]
+  foreign_role <- paste0("episcout_registry_owner_", suffix)
+  foreign_role_guard <- foreign_role
+  on.exit(
+    {
+      if (nzchar(foreign_role_guard) && DBI::dbIsValid(connection)) {
+        for (table in sec_registry_tables()) {
+          try(
+            DBI::dbExecute(
+              connection,
+              paste(
+                "ALTER TABLE",
+                pg_pseudonym_quote(connection, schemas[["registry"]], table),
+                "OWNER TO",
+                as.character(DBI::dbQuoteIdentifier(connection, current_user))
+              )
+            ),
+            silent = TRUE
+          )
+        }
+        try(
+          DBI::dbExecute(
+            connection,
+            paste(
+              "DROP ROLE IF EXISTS",
+              as.character(DBI::dbQuoteIdentifier(connection, foreign_role_guard))
+            )
+          ),
+          silent = TRUE
+        )
+      }
+    },
+    add = TRUE
+  )
+  DBI::dbExecute(
+    connection,
+    paste(
+      "CREATE ROLE",
+      as.character(DBI::dbQuoteIdentifier(connection, foreign_role))
+    )
+  )
+  for (table in sec_registry_tables()) {
+    DBI::dbExecute(
+      connection,
+      paste(
+        "ALTER TABLE",
+        pg_pseudonym_quote(connection, schemas[["registry"]], table),
+        "OWNER TO",
+        as.character(DBI::dbQuoteIdentifier(connection, foreign_role))
+      )
+    )
+  }
+  DBI::dbExecute(
+    connection,
+    paste(
+      "GRANT ALL PRIVILEGES ON TABLE",
+      registry_tables,
+      "TO",
+      as.character(DBI::dbQuoteIdentifier(connection, current_user))
+    )
+  )
+  registry_acl_query <- paste(
+    "SELECT c.relname, c.relacl::text AS acl",
+    "FROM pg_catalog.pg_class AS c",
+    "JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace",
+    "WHERE n.nspname = $1 AND c.relname IN (",
+    paste(
+      DBI::dbQuoteString(connection, sec_registry_tables()),
+      collapse = ", "
+    ),
+    ") ORDER BY c.relname"
+  )
+  named_acl_before <- DBI::dbGetQuery(
+    connection,
+    registry_acl_query,
+    params = list(schemas[["registry"]])
+  )
+  foreign_owned_registry <- epi_sec_identity_registry_init(
+    connection,
+    schemas[["registry"]],
+    mode = "audit"
+  )
+  expect_identical(foreign_owned_registry$status, "ready")
+  expect_true(all(foreign_owned_registry$objects$status == "present"))
+  foreign_owned_pseudonymisation <- epi_sec_pseudonymise_db(
+    connection,
+    dictionary,
+    linkage,
+    schemas[["registry"]],
+    schemas[["output"]],
+    catalogues = catalogues,
+    mode = "audit"
+  )
+  expect_identical(foreign_owned_pseudonymisation$status, "audit_complete")
+  expect_identical(
+    DBI::dbGetQuery(
+      connection,
+      registry_acl_query,
+      params = list(schemas[["registry"]])
+    ),
+    named_acl_before
+  )
+  for (table in sec_registry_tables()) {
+    DBI::dbExecute(
+      connection,
+      paste(
+        "ALTER TABLE",
+        pg_pseudonym_quote(connection, schemas[["registry"]], table),
+        "OWNER TO",
+        as.character(DBI::dbQuoteIdentifier(connection, current_user))
+      )
+    )
+  }
+  DBI::dbExecute(
+    connection,
+    paste(
+      "DROP ROLE",
+      as.character(DBI::dbQuoteIdentifier(connection, foreign_role))
+    )
+  )
+  foreign_role_guard <- ""
 
   DBI::dbAppendTable(
     connection,
@@ -612,15 +731,26 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   DBI::dbRollback(connection)
 
   applied <- pg_capture_conditions(
-    epi_sec_pseudonymise_db(
-      connection,
-      dictionary,
-      linkage,
-      schemas[["registry"]],
-      schemas[["output"]],
-      catalogues = catalogues,
-      mode = "apply",
-      exact_duplicates = "report"
+    with_mocked_bindings(
+      epi_sec_pseudonymise_db(
+        connection,
+        dictionary,
+        linkage,
+        schemas[["registry"]],
+        schemas[["output"]],
+        catalogues = catalogues,
+        mode = "apply",
+        exact_duplicates = "report"
+      ),
+      dbExecute = function(con, statement, ...) {
+        observed_sql$statements <- c(observed_sql$statements, statement)
+        original_db_execute(con, statement, ...)
+      },
+      dbGetQuery = function(con, statement, ...) {
+        observed_sql$statements <- c(observed_sql$statements, statement)
+        original_db_get_query(con, statement, ...)
+      },
+      .package = "DBI"
     )
   )
   applied_report <- applied$value
@@ -628,6 +758,12 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_identical(pg_advisory_lock_count(connection), 0L)
   expect_identical(applied_report$status, "complete")
   expect_true(applied_report$metadata$writes[[1]])
+  expect_false(any(grepl(
+    "has_(schema|table)_privilege|\\b(GRANT|REVOKE)\\b",
+    observed_sql$statements,
+    ignore.case = TRUE,
+    perl = TRUE
+  )))
   expect_equal(
     setNames(applied_report$table_audit$n_output, applied_report$table_audit$source_table),
     c(entities = 3, events = 4)
@@ -672,7 +808,36 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     params = list(schemas[["output"]])
   )
   expect_equal(output_public_access$output_table, c("entities", "events"))
-  expect_false(any(output_public_access$public_access))
+  expect_true(all(output_public_access$public_access))
+  expect_identical(
+    DBI::dbGetQuery(
+      connection,
+      paste(
+        "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
+        "has_schema_privilege('public', $1, 'USAGE') AS can_use"
+      ),
+      params = list(schemas[["registry"]])
+    ),
+    public_access_before
+  )
+  expect_identical(
+    DBI::dbGetQuery(
+      connection,
+      paste(
+        "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
+        "has_schema_privilege('public', $1, 'USAGE') AS can_use,",
+        "has_table_privilege('public', $2, 'SELECT') OR",
+        "has_table_privilege('public', $2, 'INSERT') OR",
+        "has_table_privilege('public', $2, 'UPDATE') OR",
+        "has_table_privilege('public', $2, 'DELETE') AS table_access"
+      ),
+      params = list(
+        schemas[["crosswalk"]],
+        paste(schemas[["crosswalk"]], "entity_aliases", sep = ".")
+      )
+    ),
+    crosswalk_access
+  )
 
   output_columns <- DBI::dbGetQuery(
     connection,
@@ -777,7 +942,15 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
 
   rollback_conditions <- character()
-  expect_error(
+  rollback_runs <- DBI::dbGetQuery(
+    connection,
+    paste(
+      "SELECT COUNT(*)::integer AS n FROM",
+      pg_pseudonym_quote(connection, schemas[["registry"]], "runs")
+    )
+  )$n[[1]]
+  original_sec_apply_outputs <- sec_apply_outputs
+  rollback_error <- expect_error(
     withCallingHandlers(
       with_mocked_bindings(
         epi_sec_pseudonymise_db(
@@ -791,7 +964,11 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
           exact_duplicates = "drop",
           existing = "replace"
         ),
-        sec_apply_registry = function(...) stop("simulated post-transfer failure"),
+        sec_apply_outputs = function(...) {
+          result <- original_sec_apply_outputs(...)
+          stop("simulated post-output failure")
+          result
+        },
         .package = "episcout"
       ),
       warning = function(condition) {
@@ -806,7 +983,26 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     "rolled back safely"
   )
   expect_false(any(grepl("you don't own a lock", rollback_conditions, fixed = TRUE)))
+  expect_false(grepl("simulated post-output failure", conditionMessage(rollback_error), fixed = TRUE))
   expect_identical(pg_advisory_lock_count(connection), 0L)
+  expect_identical(
+    DBI::dbGetQuery(connection, paste("SELECT entity_token, entity_kind FROM", output_entities, "ORDER BY entity_kind")),
+    entities_drop
+  )
+  expect_identical(
+    DBI::dbGetQuery(connection, paste("SELECT entity_token, event_sequence, event_value FROM", output_events, "ORDER BY event_value, event_sequence")),
+    events_drop
+  )
+  expect_identical(
+    DBI::dbGetQuery(
+      connection,
+      paste(
+        "SELECT COUNT(*)::integer AS n FROM",
+        pg_pseudonym_quote(connection, schemas[["registry"]], "runs")
+      )
+    )$n[[1]],
+    rollback_runs
+  )
 
   registry_before_timeout <- list(
     aliases = DBI::dbGetQuery(
@@ -991,12 +1187,134 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_true(all(malformed_registry$objects$status == "incompatible_structure"))
 })
 
+test_that("PostgreSQL registry permission denials are sanitised technical errors", {
+  skip_if_not(identical(Sys.getenv("EPISCOUT_TEST_POSTGRES", unset = ""), "1"))
+  skip_if_not_installed("RPostgres")
+
+  connection <- pg_pseudonym_connection()
+  suffix <- pg_pseudonym_suffix()
+  registry_schema <- paste0("permission_registry_", suffix)
+  restricted_role <- paste0("episcout_permission_", suffix)
+  stopifnot(
+    grepl("^permission_registry_[a-f0-9]{16}$", registry_schema),
+    grepl("^episcout_permission_[a-f0-9]{16}$", restricted_role)
+  )
+  on.exit(
+    {
+      if (DBI::dbIsValid(connection)) {
+        try(DBI::dbExecute(connection, "RESET ROLE"), silent = TRUE)
+        try(
+          DBI::dbExecute(
+            connection,
+            paste(
+              "DROP SCHEMA IF EXISTS",
+              pg_pseudonym_quote(connection, registry_schema),
+              "CASCADE"
+            )
+          ),
+          silent = TRUE
+        )
+        try(
+          DBI::dbExecute(
+            connection,
+            paste(
+              "DROP ROLE IF EXISTS",
+              as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+            )
+          ),
+          silent = TRUE
+        )
+        DBI::dbDisconnect(connection)
+      }
+    },
+    add = TRUE
+  )
+
+  DBI::dbExecute(
+    connection,
+    paste("CREATE SCHEMA", pg_pseudonym_quote(connection, registry_schema))
+  )
+  registry <- epi_sec_identity_registry_init(
+    connection,
+    registry_schema,
+    mode = "apply"
+  )
+  expect_identical(registry$status, "ready")
+  DBI::dbExecute(
+    connection,
+    paste(
+      "CREATE ROLE",
+      as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+    )
+  )
+  DBI::dbExecute(
+    connection,
+    paste(
+      "GRANT USAGE ON SCHEMA",
+      pg_pseudonym_quote(connection, registry_schema),
+      "TO",
+      as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+    )
+  )
+  DBI::dbExecute(
+    connection,
+    paste(
+      "GRANT SELECT ON ALL TABLES IN SCHEMA",
+      pg_pseudonym_quote(connection, registry_schema),
+      "TO",
+      as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+    )
+  )
+  metadata_table <- pg_pseudonym_quote(
+    connection,
+    registry_schema,
+    "registry_metadata"
+  )
+  DBI::dbExecute(
+    connection,
+    paste(
+      "REVOKE SELECT ON TABLE",
+      metadata_table,
+      "FROM",
+      as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+    )
+  )
+  DBI::dbExecute(
+    connection,
+    paste(
+      "GRANT UPDATE ON TABLE",
+      metadata_table,
+      "TO",
+      as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+    )
+  )
+  DBI::dbExecute(
+    connection,
+    paste(
+      "SET ROLE",
+      as.character(DBI::dbQuoteIdentifier(connection, restricted_role))
+    )
+  )
+
+  denied <- expect_error(
+    epi_sec_identity_registry_init(
+      connection,
+      registry_schema,
+      mode = "audit"
+    ),
+    "Identity registry inspection or initialisation could not complete"
+  )
+  DBI::dbExecute(connection, "RESET ROLE")
+  expect_false(grepl("permission denied", conditionMessage(denied), ignore.case = TRUE))
+  expect_false(grepl(registry_schema, conditionMessage(denied), fixed = TRUE))
+  expect_false(grepl("registry_metadata", conditionMessage(denied), fixed = TRUE))
+})
+
 test_that("live PostgreSQL identifier families preserve exact reviewed identity", {
   skip_if_not(identical(Sys.getenv("EPISCOUT_TEST_POSTGRES", unset = ""), "1"))
   skip_if_not_installed("RPostgres")
 
   connection <- pg_pseudonym_connection()
-  on.exit(DBI::dbDisconnect(connection), add = TRUE)
 
   suffix <- pg_pseudonym_suffix()
   schemas <- c(
@@ -1028,6 +1346,7 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
           silent = TRUE
         )
       }
+      if (DBI::dbIsValid(connection)) DBI::dbDisconnect(connection)
     },
     add = TRUE
   )

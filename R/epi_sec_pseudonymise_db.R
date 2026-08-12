@@ -5,8 +5,8 @@
 #' @param con An open PostgreSQL DBI connection created with RPostgres.
 #' @param dictionary A technical and semantic multi-table dictionary accepted by [epi_eda_dictionary_validate()].
 #' @param linkage A confirmed object returned by [epi_sec_linkage_spec()].
-#' @param registry_schema Existing restricted identity-registry schema initialised by [epi_sec_identity_registry_init()].
-#' @param output_schema Existing restricted schema for pseudonymised output tables.
+#' @param registry_schema Existing identity-registry schema initialised by [epi_sec_identity_registry_init()].
+#' @param output_schema Existing schema for pseudonymised output tables.
 #' @param catalogues Optional normalised semantic catalogue data frame used by
 #'   `dictionary`, with `catalog_name`, `source_value`, `label`,
 #'   `display_order`, `is_missing` and `provenance`.
@@ -20,6 +20,8 @@
 #' @return A redacted `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `sensitivity`. When `sensitive_issues = TRUE`, a marked memory-only data frame with `issue_code`, source relation/column metadata and `source_value` is appended. episcout does not print or persist that component automatically; deliberate extraction is the caller's responsibility. Status is `audit_complete`, `blocked` or `complete`.
 #'
 #' @details Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. `existing = "replace"` is deliberately opt-in and is limited to declared ordinary destination tables without `CASCADE`. Source tables are never altered.
+#'
+#' Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 #'
 #' Expected identity, duplicate, dictionary and governance findings return `status = "blocked"` with a value-free issue table containing `issue_code`, `severity`, `stage`, `source_schema`, `source_table`, `source_column`, `n_affected`, `message`, `recommended_action` and `sensitive`. Correct the declared metadata or source governance problem and audit again. Errors are reserved for malformed arguments, unsupported types or unsafe database/infrastructure state; apply errors roll back before returning a sanitised condition.
 #'
@@ -85,10 +87,6 @@ epi_sec_pseudonymise_db <- function(con,
       if (registry_schema == output_schema || registry_schema %in% source_schemas || output_schema %in% source_schemas) {
         stop("Source, registry and output schemas must be distinct.", call. = FALSE)
       }
-      if (sec_schema_is_public(con, registry_schema) || sec_schema_is_public(con, output_schema)) {
-        stop("registry_schema and output_schema must not grant CREATE or USAGE to PUBLIC.", call. = FALSE)
-      }
-
       registry_observed <- sec_registry_inspect(con, registry_schema)
       if (registry_observed$state != "compatible") {
         stop("The identity registry is not initialised; run epi_sec_identity_registry_init() first.", call. = FALSE)
@@ -152,9 +150,6 @@ epi_sec_pseudonymise_db <- function(con,
           if (length(lock_guard$keys) > 0L) {
             stop("Session advisory locks could not be transferred safely; the transaction was rolled back.", call. = FALSE)
           }
-          if (sec_schema_is_public(con, registry_schema) || sec_schema_is_public(con, output_schema)) {
-            stop("registry_schema or output_schema access changed after the initial audit; the transaction was rolled back.", call. = FALSE)
-          }
           registry_inside <- sec_registry_inspect(con, registry_schema)
           if (registry_inside$state != "compatible") {
             stop("The identity registry changed after the initial audit; the transaction was rolled back.", call. = FALSE)
@@ -186,7 +181,7 @@ epi_sec_pseudonymise_db <- function(con,
         }),
         epi_sec_blocked = function(error) error$audit,
         error = function(error) {
-          stop("PostgreSQL pseudonymisation was rolled back safely; review database access and the redacted error context.", call. = FALSE)
+          stop("PostgreSQL pseudonymisation was rolled back safely; inspect PostgreSQL or driver logs.", call. = FALSE)
         }
       )
       if (is.list(applied) && identical(applied$rolled_back, TRUE)) {
@@ -194,7 +189,7 @@ epi_sec_pseudonymise_db <- function(con,
       }
       sec_pseudonym_result("complete", mode, TRUE, context, applied)
     },
-    "PostgreSQL pseudonymisation could not complete safely; ask the database administrator to inspect restricted database logs."
+    "PostgreSQL pseudonymisation could not complete; inspect PostgreSQL or driver logs."
   )
 }
 
@@ -647,7 +642,6 @@ sec_apply_outputs <- function(con, context, audit) {
       " FROM ", source, " s INNER JOIN ", aliases, " a ON a.identity_namespace = ",
       sec_quote_literal(con, d$identity_namespace), " AND a.source_id = (s.", id, "::text COLLATE \"C\")"
     ))
-    DBI::dbExecute(con, paste("REVOKE ALL ON TABLE", destination, "FROM PUBLIC"))
     not_null_columns <- c(
       context$token_column,
       item$columns$source_column[
@@ -1128,9 +1122,6 @@ sec_validate_crosswalks_db <- function(con, crosswalks, table_contexts) {
     if (!relation$exists || !identical(relation$relkind, "r")) {
       stop("Every declared crosswalk relation must be an ordinary PostgreSQL table.", call. = FALSE)
     }
-    if (sec_schema_is_public(con, row$crosswalk_schema) || sec_table_is_public(con, row$crosswalk_schema, row$crosswalk_table)) {
-      stop("Every crosswalk relation must be restricted from PUBLIC schema and table access.", call. = FALSE)
-    }
     columns <- sec_source_columns(con, row$crosswalk_schema, row$crosswalk_table)
     if (nrow(columns) == 0L) stop("A declared crosswalk relation was not found.", call. = FALSE)
     alias_index <- match(row$alias_id_column, columns$source_column)
@@ -1170,15 +1161,6 @@ sec_crosswalk_union <- function(con, crosswalks) {
 }
 
 sec_quote_literal <- function(con, value) as.character(DBI::dbQuoteLiteral(con, value))
-
-sec_schema_is_public <- function(con, schema) {
-  observed <- DBI::dbGetQuery(
-    con,
-    "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create, has_schema_privilege('public', $1, 'USAGE') AS can_use",
-    params = list(schema)
-  )
-  isTRUE(observed$can_create[[1]]) || isTRUE(observed$can_use[[1]])
-}
 
 sec_connection_is_transacting <- function(con) {
   checker <- utils::getFromNamespace("connection_is_transacting", "RPostgres")
