@@ -1,0 +1,48 @@
+id: "036"
+slug: "epi-sec-registry-neutral"
+workflow_version: 1
+deliverable: implementation
+status: review
+owner: repository-owner
+base_branch: master
+working_branch: refactor/epi-sec-registry-neutral
+created: 2026-08-12
+updated: 2026-08-12
+
+tracking_issue: 284
+source_issues:
+  - 274
+  - 275
+  - 276
+  - 278
+pull_request: 286
+merge_commit: null
+successor_issue: 285
+terminal_reason: null
+
+related_files:
+  - R/epi_sec_registry.R
+  - tests/testthat/test-sec-pseudonymise-postgres.R
+  - man/epi_sec_identity_registry_init.Rd
+  - vignettes/longitudinal-pseudonymisation.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-pseudonymise', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=synthetic_records PGUSER=postgres scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-pseudonymise-postgres', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+notes:
+  - Owner-authorised stack-after-green is recorded on issue-284; its predecessor is already canonical, so this branch starts from canonical master.
+  - issue-285 remains the staged successor and must not activate before this slice closes out canonically.

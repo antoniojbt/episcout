@@ -202,26 +202,46 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       "TO PUBLIC"
     )
   )
+  public_access_before <- DBI::dbGetQuery(
+    connection,
+    paste(
+      "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
+      "has_schema_privilege('public', $1, 'USAGE') AS can_use"
+    ),
+    params = list(schemas[["registry"]])
+  )
   public_registry_audit <- epi_sec_identity_registry_init(
     connection,
     schemas[["registry"]],
     mode = "audit"
   )
-  expect_identical(public_registry_audit$status, "blocked")
+  expect_identical(public_registry_audit$status, "initialisation_required")
   expect_false(public_registry_audit$writes)
-  expect_false(public_registry_audit$schema_restricted)
-  expect_error(
-    epi_sec_identity_registry_init(
-      connection,
-      schemas[["registry"]],
-      mode = "apply"
-    ),
-    "grants CREATE or USAGE to PUBLIC"
-  )
-  expect_false(DBI::dbExistsTable(
+  expect_false("schema_restricted" %in% names(public_registry_audit))
+  public_registry_apply <- epi_sec_identity_registry_init(
     connection,
-    DBI::Id(schema = schemas[["registry"]], table = "registry_metadata")
-  ))
+    schemas[["registry"]],
+    mode = "apply"
+  )
+  expect_identical(public_registry_apply$status, "ready")
+  public_access_after <- DBI::dbGetQuery(
+    connection,
+    paste(
+      "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
+      "has_schema_privilege('public', $1, 'USAGE') AS can_use"
+    ),
+    params = list(schemas[["registry"]])
+  )
+  expect_identical(public_access_after, public_access_before)
+  for (table_name in rev(episcout:::sec_registry_tables())) {
+    DBI::dbExecute(
+      connection,
+      paste(
+        "DROP TABLE",
+        pg_pseudonym_quote(connection, schemas[["registry"]], table_name)
+      )
+    )
+  }
   for (schema in schemas[c("registry", "output", "crosswalk")]) {
     DBI::dbExecute(
       connection,
@@ -414,14 +434,9 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     schemas[["registry"]],
     mode = "audit"
   )
-  expect_identical(registry_privilege_audit$status, "blocked")
+  expect_identical(registry_privilege_audit$status, "ready")
   expect_false(registry_privilege_audit$writes)
-  expect_identical(
-    registry_privilege_audit$objects$status[
-      registry_privilege_audit$objects$object == "aliases"
-    ],
-    "public_access"
-  )
+  expect_identical(registry_privilege_audit$objects$status, rep("present", 6L))
   DBI::dbExecute(
     connection,
     paste("REVOKE SELECT ON TABLE", registry_aliases, "FROM PUBLIC")
@@ -972,7 +987,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     schemas[["registry"]],
     mode = "audit"
   )
-  expect_identical(malformed_registry$status, "blocked")
+  expect_identical(malformed_registry$status, "incompatible")
   expect_true(all(malformed_registry$objects$status == "incompatible_structure"))
 })
 

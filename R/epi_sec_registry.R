@@ -1,16 +1,16 @@
 #' Initialise a PostgreSQL identity registry
 #'
-#' Audit or create the restricted tables used to assign stable pseudonym tokens across related PostgreSQL tables. The registry schema is one deliberately authorised linkage domain and must already exist.
+#' Audit or create the tables used to assign stable pseudonym tokens across related PostgreSQL tables. The registry schema must already exist.
 #'
 #' @param con An open PostgreSQL DBI connection created with RPostgres.
-#' @param registry_schema A single existing PostgreSQL schema reserved for the identity registry.
+#' @param registry_schema A single existing PostgreSQL schema for the identity registry.
 #' @param token_prefix A non-empty prefix for generated entity tokens.
 #' @param n_bytes Number of cryptographically random bytes per token; at least 16.
 #' @param mode Either `"audit"` to inspect without writing or `"apply"` to create the registry tables transactionally.
 #'
-#' @return A redacted `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema`, `schema_restricted` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `blocked` when access or existing objects are incompatible, `initialisation_required` when audit finds a suitably restricted empty schema and `ready` when a compatible registry exists or has been created.
+#' @return An `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `incompatible` when existing objects are incompatible, `initialisation_required` when audit finds an empty schema and `ready` when a compatible registry exists or has been created.
 #'
-#' @details Audit mode is the default and never writes. Before apply, the database administrator must revoke `PUBLIC` creation and usage on the registry schema. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` in one transaction and defensively revokes `PUBLIC` access to every created table and the schema. The database administrator remains responsible for creating the schema, granting named roles, testing recovery and controlling database storage, backups and logging. Audit reports incompatible existing objects as `blocked`; apply treats them as an unsafe-state error. Repair or replace an incomplete registry under an administrator-approved recovery procedure rather than editing registry rows manually.
+#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` in one transaction. PostgreSQL permissions determine whether the connected role can inspect or create the named objects; this function neither queries nor changes grants. The database administrator remains responsible for creating schemas, grants, recovery, storage, backups and logging. Audit reports incompatible existing objects as `incompatible`; apply treats them as an error. Repair or replace an incomplete registry with an appropriate recovery procedure rather than editing registry rows manually.
 #'
 #' The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data remain restricted personal data: they are not anonymous or automatically disclosure-controlled. See `vignette("longitudinal-pseudonymisation")` before initialising a registry.
 #'
@@ -34,26 +34,7 @@ epi_sec_identity_registry_init <- function(con,
       }
       sec_require_schema(con, registry_schema, "registry_schema")
 
-      schema_restricted <- !sec_schema_is_public(con, registry_schema)
       observed <- sec_registry_inspect(con, registry_schema)
-      if (!schema_restricted) {
-        if (mode == "apply") {
-          stop(
-            "registry_schema grants CREATE or USAGE to PUBLIC; ask the database administrator to revoke those privileges before applying.",
-            call. = FALSE
-          )
-        }
-        return(sec_registry_result(
-          status = "blocked",
-          mode = mode,
-          writes = FALSE,
-          registry_schema = registry_schema,
-          schema_restricted = FALSE,
-          metadata = observed$metadata,
-          objects = observed$objects,
-          next_action = "Ask the database administrator to revoke PUBLIC CREATE and USAGE on the registry schema, then audit again."
-        ))
-      }
       if (observed$state == "compatible") {
         sec_registry_assert_settings(observed$metadata, token_prefix, n_bytes)
         return(sec_registry_result(
@@ -61,7 +42,6 @@ epi_sec_identity_registry_init <- function(con,
           mode = mode,
           writes = FALSE,
           registry_schema = registry_schema,
-          schema_restricted = TRUE,
           metadata = observed$metadata,
           objects = observed$objects,
           next_action = "Run epi_sec_pseudonymise_db() in audit mode."
@@ -70,11 +50,10 @@ epi_sec_identity_registry_init <- function(con,
       if (observed$state == "incompatible") {
         if (mode == "audit") {
           return(sec_registry_result(
-            status = "blocked",
+            status = "incompatible",
             mode = mode,
             writes = FALSE,
             registry_schema = registry_schema,
-            schema_restricted = TRUE,
             metadata = observed$metadata,
             objects = observed$objects,
             next_action = "Ask the database administrator to inspect the incompatible registry objects; do not edit registry rows manually."
@@ -91,10 +70,9 @@ epi_sec_identity_registry_init <- function(con,
           mode = mode,
           writes = FALSE,
           registry_schema = registry_schema,
-          schema_restricted = TRUE,
           metadata = sec_empty_registry_metadata(),
           objects = sec_registry_object_frame("planned"),
-          next_action = "Review database access, then rerun with mode = 'apply'."
+          next_action = "Rerun with mode = 'apply' to create the registry."
         ))
       }
 
@@ -114,7 +92,6 @@ epi_sec_identity_registry_init <- function(con,
         mode = mode,
         writes = TRUE,
         registry_schema = registry_schema,
-        schema_restricted = TRUE,
         metadata = created$metadata,
         objects = created$objects,
         next_action = "Create and confirm a linkage specification, then run an audit."
@@ -129,7 +106,6 @@ print.epi_sec_registry_result <- function(x, ...) {
   cat("episcout identity registry\n")
   cat("  status: ", x$status, "\n", sep = "")
   cat("  schema: ", x$registry_schema, "\n", sep = "")
-  cat("  schema restricted from PUBLIC: ", if (isTRUE(x$schema_restricted)) "yes" else "no", "\n", sep = "")
   cat("  writes performed: ", if (isTRUE(x$writes)) "yes" else "no", "\n", sep = "")
   cat("  next: ", x$next_action, "\n", sep = "")
   invisible(x)
@@ -145,14 +121,7 @@ sec_registry_inspect <- function(con, schema) {
   relations <- DBI::dbGetQuery(
     con,
     paste(
-      "SELECT c.relname AS table_name, c.relkind, pg_get_userbyid(c.relowner) = current_user AS owned,",
-      "has_table_privilege('public', c.oid, 'SELECT') OR",
-      "has_table_privilege('public', c.oid, 'INSERT') OR",
-      "has_table_privilege('public', c.oid, 'UPDATE') OR",
-      "has_table_privilege('public', c.oid, 'DELETE') OR",
-      "has_table_privilege('public', c.oid, 'TRUNCATE') OR",
-      "has_table_privilege('public', c.oid, 'REFERENCES') OR",
-      "has_table_privilege('public', c.oid, 'TRIGGER') AS public_access",
+      "SELECT c.relname AS table_name, c.relkind",
       "FROM pg_class c INNER JOIN pg_namespace n ON n.oid = c.relnamespace",
       "WHERE n.nspname = $1 ORDER BY c.relname"
     ),
@@ -162,17 +131,15 @@ sec_registry_inspect <- function(con, schema) {
   expected_relations <- relations[match(sec_registry_tables(), relations$table_name), , drop = FALSE]
   present <- !is.na(expected_relations$table_name)
   ordinary <- present & expected_relations$relkind == "r"
-  owned <- present & expected_relations$owned
-  restricted <- present & !expected_relations$public_access
   objects <- data.frame(
     object = sec_registry_tables(),
-    status = ifelse(!present, "absent", ifelse(!ordinary, "wrong_kind", ifelse(!owned, "foreign_owner", ifelse(!restricted, "public_access", "present")))),
+    status = ifelse(!present, "absent", ifelse(!ordinary, "wrong_kind", "present")),
     stringsAsFactors = FALSE
   )
   if (length(found) == 0L) {
     return(list(state = "empty", metadata = sec_empty_registry_metadata(), objects = objects))
   }
-  if (!setequal(found, sec_registry_tables()) || !all(ordinary) || !all(owned) || !all(restricted)) {
+  if (!setequal(found, sec_registry_tables()) || !all(ordinary)) {
     return(list(state = "incompatible", metadata = sec_empty_registry_metadata(), objects = objects))
   }
   if (!sec_registry_structure_ok(con, schema)) {
@@ -323,9 +290,6 @@ sec_registry_create <- function(con, schema, token_prefix, n_bytes) {
     paste("INSERT INTO", table_name("registry_metadata"), "(registry_id, registry_version, token_prefix, n_bytes) VALUES ($1, $2, $3, $4)"),
     params = list(registry_id, sec_registry_version(), token_prefix, n_bytes)
   )
-  quoted_tables <- paste(vapply(sec_registry_tables(), function(name) table_name(name), character(1)), collapse = ", ")
-  DBI::dbExecute(con, paste("REVOKE ALL ON TABLE", quoted_tables, "FROM PUBLIC"))
-  DBI::dbExecute(con, paste("REVOKE ALL ON SCHEMA", sec_quote_identifier(con, schema), "FROM PUBLIC"))
   invisible(TRUE)
 }
 
@@ -337,14 +301,13 @@ sec_registry_assert_settings <- function(metadata, token_prefix, n_bytes) {
   invisible(TRUE)
 }
 
-sec_registry_result <- function(status, mode, writes, registry_schema, schema_restricted, metadata, objects, next_action) {
+sec_registry_result <- function(status, mode, writes, registry_schema, metadata, objects, next_action) {
   structure(
     list(
       status = status,
       mode = mode,
       writes = writes,
       registry_schema = registry_schema,
-      schema_restricted = schema_restricted,
       metadata = metadata,
       objects = objects,
       next_action = next_action

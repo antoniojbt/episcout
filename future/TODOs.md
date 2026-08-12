@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-`issue-278`/`spec-035-identity-universe-technical-contract` completed through `PR-281`, merged to canonical `master` as `commit-ebd8d35`. This first bounded slice makes only the identity-universe metadata, result statuses and PostgreSQL privilege behaviour neutral and technical while preserving aggregate exact-set and transaction safeguards. The registry successor may now be staged but remains inactive until its promotion gate; linkage/pseudonymisation and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+Active `issue-284`/`spec-036-epi-sec-registry-neutral` follows completed `issue-278`/`PR-281` and PR-283 closeout. It removes only registry privilege-policy coupling while preserving physical registry compatibility and transactional creation. Staged `issue-285` and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 

@@ -18,13 +18,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-> **Privacy boundary:** Pseudonymised data remain restricted personal data. They are not anonymous, automatically disclosure-controlled or automatically safe to share. Keep the identity registry and output behind reviewed access controls.
+> **Technical boundary:** Pseudonymised data are not anonymous or automatically disclosure-controlled. PostgreSQL credentials, permissions, storage, backups and access controls remain external operational responsibilities.
 
 This vignette is the detailed governance and recovery guide. For a runnable learning example using a neutral longitudinal CSV and uniquely named disposable schemas, open the installed `examples/db-to-report/walkthrough.R` script and run it section by section.
 
 ## 1. What this workflow does and when to use it
 
-Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same stable pseudonymous token over time. A reviewed dictionary decides which columns may enter output, a value-free linkage specification declares exact identity semantics, and a restricted registry preserves token stability across runs.
+Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same stable pseudonymous token over time. A dictionary and linkage specification declare the requested projection and exact identity semantics, and a registry preserves token stability across runs.
 
 The workflow performs exact matching only. It does not trim or case-fold text identifiers, infer identity from similar records, detect personal information, perform fuzzy linkage, aggregate conflicting observations or make data anonymous. PostgreSQL through RPostgres is the supported persistent backend.
 
@@ -36,10 +36,10 @@ Use `epi_sec_pseudonym()` instead when you need a one-off in-memory bridge for o
 
 Ask the database administrator to prepare and review these conditions before R work begins:
 
-- `source_data`, `restricted_identity`, `identity_registry` and `analysis_data` are distinct, existing schemas.
+- `source_data`, `identity_data`, `identity_registry` and `analysis_data` are distinct, existing schemas.
 - Source relations and any crosswalk are ordinary PostgreSQL tables, not views or materialised views.
-- The working role can read declared sources, create and own ordinary tables in `restricted_identity` and `analysis_data`, and initialise the registry only when authorised.
-- `PUBLIC` cannot create objects in the restricted-identity, registry or analysis-output schemas and has no access to restricted tables.
+- The working role has the PostgreSQL permissions required to read declared sources and create the requested registry/output objects.
+- PostgreSQL, not episcout, determines whether those permissions permit an operation; the package neither inspects nor changes grants.
 - Named-role grants, storage encryption, backups, restore tests, retention and database logging have been reviewed outside episcout.
 - The connection is not already inside a caller-managed transaction when apply begins.
 
@@ -298,7 +298,7 @@ registry_audit <- epi_sec_identity_registry_init(
 registry_audit
 ```
 
-After the database administrator has reviewed the schema and the audit's next action, explicitly initialise it. The defaults use prefix `E` and 24 random bytes. Those immutable settings define one deliberately authorised linkage domain; reuse the registry only for sources approved to share that domain.
+After inspecting the empty schema, initialise it explicitly. The defaults use prefix `E` and 24 random bytes. Those immutable settings define one registry domain; reuse the registry only for sources intended to share that token domain.
 
 ```{r registry-apply, eval = FALSE}
 registry_apply <- epi_sec_identity_registry_init(
