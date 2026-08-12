@@ -27,7 +27,7 @@ Issue-273 is the accepted product and privacy contract. Completed issue-272/spec
 - Targeted live-backend coverage is 98.07%. The only instrumentation gaps are fixed-schema and reconciliation stop blocks; direct mocked failure assertions exercise those conditions even though `covr::file_coverage()` resolves the already loaded namespace closures rather than its instrumented copies.
 - `styler::style_file()` reports the changed R/test files styled and package-loaded `lintr::lint_package()` reports no findings.
 - `scripts/check-local.sh` passes documentation, lint, the complete ordinary test suite, source build, examples, vignette rebuild and R CMD check with zero errors and warnings. R CMD check reports only `unable to verify current time`, an environment feasibility NOTE unrelated to package behaviour.
-- `scripts/check-workflow-state.sh` matches live GitHub state with spec-041 as the sole active implementation specification and issue-273 open.
+- `scripts/check-workflow-state.sh` matched live GitHub state before publication; it is rerun at PR-303 handoff with spec-041 as the sole implementation in review and issue-273 open.
 
 ## Privacy Review
 
@@ -43,4 +43,4 @@ None. In-memory `POSIXct`/`POSIXlt` rejection is required by the no-instant/no-t
 
 ## Handoff State
 
-The bounded implementation is ready for local dispatch handoff on the issue-273 task branch. The user prohibited push, issue/PR mutation and publication, so PR creation, merge, issue closure and canonical closeout remain pending. Issue-273 is terminal and has no automatic successor. This review is a self-review and is not independent.
+PR-303 is the draft implementation pull request for issue-273 and spec-041. Merge, issue closure and canonical closeout remain pending. Issue-273 is terminal and has no automatic successor. The implementation review above is a self-review and is not independent; the final PR diff is reviewed separately before merge.
