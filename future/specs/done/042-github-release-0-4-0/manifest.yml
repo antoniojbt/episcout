@@ -2,7 +2,7 @@ id: "042"
 slug: "github-release-0-4-0"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: Codex
 base_branch: master
 working_branch: feature/release-0.4.0
@@ -13,14 +13,14 @@ tracking_issue: 307
 source_issues:
   - 81
 pull_request: 308
-merge_commit: null
+merge_commit: "9b4d5df7e8367c28aba59b8f1c412a5b9845f0f4"
 successor_issue: null
 terminal_reason: "A GitHub-only 0.4.0 release provides an immutable live-evaluation target; CRAN readiness remains independently deferred under issue-81."
 
 related_files:
   - DESCRIPTION
   - NEWS.md
-  - future/specs/042-github-release-0-4-0/
+  - future/specs/done/042-github-release-0-4-0/
 
 documents:
   brief: brief.md
