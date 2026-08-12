@@ -1,0 +1,50 @@
+id: "040"
+slug: "approved-cleaning-rules-and-processed-outputs"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: agent/issue-272-feature-apply-approved-cleaning-rules-and-ma
+created: 2026-08-12
+updated: 2026-08-12
+
+tracking_issue: 272
+source_issues:
+  - 249
+  - 271
+pull_request: null
+merge_commit: null
+successor_issue: 273
+terminal_reason: null
+
+related_files:
+  - R/eda_cleaning.R
+  - tests/testthat/test-eda-cleaning.R
+  - README.md
+  - NEWS.md
+  - vignettes/specification-first-eda.Rmd
+  - PROJECT_MAP.md
+  - future/TODOs.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-cleaning', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-cleaning', reporter = 'summary')"
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+
+notes:
+  - The issue-271 proposal result remains descriptive and pending; no proposal field or state transition creates an approved rule.
+  - Rule application is limited to bounds, allowed values and approved missing codes for numeric, integer, categorical and binary variables.
+  - File publication uses a complete sibling staging file and no-replace publication; PostgreSQL publication uses one transaction and one new destination table.
+  - Issue 273 remains the staged civil-date successor and is outside this specification.

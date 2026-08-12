@@ -112,20 +112,72 @@ qc$proposals
 
 The `evidence` table has one `evidence_state = "descriptive"` row per specification row. It reports aggregate counts and, for numeric or integer variables, finite observed extrema and type-7 Tukey 1.5-IQR fences. These values describe only the profiled snapshot: they are not scientific validity limits and do not replace semantic `min` or `max`. Explicit `id` or `identifier` roles are not profiled, high-cardinality variables contribute a scalar distinct count without returned values, and incompatible or unsupported storage receives a fixed unavailable status.
 
-The separate `proposals` table contains only `proposal_state = "pending"` prompts. An observed numeric or integer variable containing exactly both 0 and 1 may receive a binary candidate, finite observations beyond a Tukey fence may receive candidate screening bounds, and a blank unit may prompt review. The function never reclassifies a variable, infers a unit or missing-value code, enumerates general observed levels, changes data or the semantic dictionary, approves a rule, or writes an output. Approved executable rules are a separate future contract; editing `proposal_state` does not make this result executable.
+The separate `proposals` table contains only `proposal_state = "pending"` prompts. An observed numeric or integer variable containing exactly both 0 and 1 may receive a binary candidate, finite observations beyond a Tukey fence may receive candidate screening bounds, and a blank unit may prompt review. The function never reclassifies a variable, infers a unit or missing-value code, enumerates general observed levels, changes data or the semantic dictionary, approves a rule, or writes an output. Approved executable rules use the separate contract below; editing `proposal_state` does not make this result executable.
 
 The same call accepts an `epi_eda_postgres_source` and performs scalar aggregate queries in one read-only repeatable-read snapshot. QC proposals are not added automatically to intake, report or database bundles. Aggregate counts and extrema can still be sensitive in context, so review disclosure risk before saving or sharing either table.
 
-## 4. Audit and apply data-frame preparation
+## 4. Apply separately approved cleaning rules
+
+Create executable rules only after external analyst review. `epi_eda_approved_rules()` requires an exact schema with `rule_state = "approved"`, an opaque variable key and an opaque caller-managed `approval_id`. Executable bounds are named `valid_min` and `valid_max`; descriptive dictionary `min` and `max` remain metadata. The package validates the declared approval record but does not authenticate the analyst or decide whether a rule is scientifically justified.
+
+```{r}
+approved_rules <- epi_eda_approved_rules(data.frame(
+  variable_key = variable_keys$variable_key[variable_keys$name == "age"],
+  rule_state = "approved",
+  declared_type = "integer",
+  valid_min = 0,
+  valid_max = 120,
+  allowed_values = "",
+  missing_codes = "",
+  approval_id = "approval_0000000000000001",
+  stringsAsFactors = FALSE
+))
+
+cleaning <- epi_eda_apply_cleaning_rules(
+  received_data,
+  approved_rules,
+  variable_keys
+)
+analysis_data <- cleaning$data
+cleaning$audit$summary
+cleaning$audit$variables
+stopifnot(identical(received_data, source_before))
+```
+
+Numeric or integer values outside inclusive approved bounds become typed missing values. Categorical or binary values outside a populated semicolon-delimited `allowed_values` set become typed missing, and approved `missing_codes` become typed missing for any supported rule. Every rule and source mapping is validated before transformation. The result preserves data-frame row count, order, row names, column order and source storage and returns aggregate before/after and transition counts linked only by opaque variable key.
+
+Supply both `output_path` and explicit `output_format = "csv"` or `"rds"` to publish the same complete processed data without replacing an existing file. For PostgreSQL, pass an `epi_eda_postgres_source` plus a new `destination_schema` and `destination_table`; server-side transformations, destination collision checks, dimension checks and missingness reconciliation run in one write transaction. Failure leaves no destination table. PostgreSQL tables have no physical row-order contract, but the operation neither filters nor explicitly reorders source rows.
+
+```{r eval = FALSE}
+file_result <- epi_eda_apply_cleaning_rules(
+  received_data,
+  approved_rules,
+  variable_keys,
+  output_path = "processed-data.rds",
+  output_format = "rds"
+)
+
+database_result <- epi_eda_apply_cleaning_rules(
+  source,
+  approved_rules,
+  variable_keys,
+  destination_schema = "analysis",
+  destination_table = "processed_observations"
+)
+```
+
+The audit omits source names, paths, relation identities, allowed or disallowed values, bounds, missing codes and approval references. Its aggregate counts and deterministic rule hash can still be sensitive in context, so review them before sharing. Text, date and datetime rules, RData, Parquet, overwriting, row filtering, imputation, winsorisation and civil-date derivation are outside this contract.
+
+## 5. Audit and apply data-frame preparation
 
 Preparation is a data-frame stage. Audit mode returns the original data and factual findings. Apply mode is all-or-nothing: a blocking finding returns the original data, no `schema_after`, and `metadata$overall_status == "blocked"`; a successful apply returns prepared data and `metadata$overall_status == "prepared"`. `min` and `max` are descriptive metadata rather than recoding rules.
 
 ```{r}
-assessment <- epi_eda_prepare(received_data, spec, mode = "audit")
+assessment <- epi_eda_prepare(analysis_data, spec, mode = "audit")
 assessment$metadata$overall_status
 assessment$audit
 
-prepared <- epi_eda_prepare(received_data, spec, mode = "apply")
+prepared <- epi_eda_prepare(analysis_data, spec, mode = "apply")
 stopifnot(prepared$metadata$overall_status == "prepared")
 prepared$schema_after
 ```
@@ -159,9 +211,9 @@ intake$table1
 
 With `spec = NULL`, intake generates, saves and uses a storage-derived scaffold as `specification.csv`; use that shortcut only when its undeclared semantic fields are acceptable for the current run. Intake creates a missing output directory. Its five-column manifest has `artifact`, `type`, `path`, `status` and `checksum_md5`, and manifest paths are relative to the exact output root. It never writes source or prepared rows, row previews, raw free-text examples, identifier values or pseudonymisation bridge tables.
 
-PostgreSQL-backed EDA has no audit/apply preparation mode. Resolve storage compatibility and semantic recoding in a reviewed source relation or view before constructing `epi_eda_postgres_source()`. In particular, the PostgreSQL source must already satisfy the declared EDA contract.
+PostgreSQL-backed EDA has no `epi_eda_prepare()` audit/apply mode. Use `epi_eda_apply_cleaning_rules()` only for the separately approved bounded operations above, then construct a new PostgreSQL source from the processed destination. Resolve every other storage compatibility or semantic recoding need in a reviewed relation or view before EDA.
 
-## 5. Run summaries, plots and optional stratification
+## 6. Run summaries, plots and optional stratification
 
 The canonical summary contains `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped`. Every specification row remains accounted for. Numeric summaries separate finite values from infinities, categorical summaries retain declared zero-count levels, text summaries contain length and cardinality aggregates rather than observed strings, and temporal summaries state their range units.
 
@@ -195,7 +247,7 @@ epi_eda_table1(stratified, basis = "column")
 
 The default `compatibility` basis uses observed non-missing values for ordinary levels and all rows in the corresponding group for the missing level. `column` uses all rows in each group, `row` distributes each level across non-Overall strata, and `overall` uses the included analysis population. Row percentages require a stratified result. When outputs are requested, `epi_eda_run()` and intake write the compatibility calculation as `categorical_display.csv`; Table 1 records the numeric denominator behind each displayed count and percentage.
 
-## 6. Request declared point maps
+## 7. Request declared point maps
 
 Mapping is off by default. `maps = TRUE` requests one geometry-only point map per declared pair; each unique `map_vars` entry requests one additional thematic map per pair. Themes may be numeric, integer, categorical, binary or text. Date and datetime themes are unsupported, and no thematic variable is selected automatically.
 
@@ -217,7 +269,7 @@ Maps are created only when every row in a pair is complete, finite, within EPSG:
 
 The same map controls are available on intake, the data-frame report renderer and the PostgreSQL database run. Bundle-producing runs write deterministic SVGs under `maps/`; reports embed created maps and their inventory. Requested point maps contain individual locations and may contain thematic values, so an output with maps is not aggregate-only. Integrated EDA creates coordinate-derived points only; use the [geospatial mapping guide](geospatial-mapping-primer.html) for existing `sf`, line, polygon, boundary, basemap and PostGIS geometry workflows.
 
-## 7. Run PostgreSQL EDA in one snapshot
+## 8. Run PostgreSQL EDA in one snapshot
 
 PostgreSQL 17 or later is required. The caller supplies an open, idle RPostgres connection and separate schema and relation identifiers. Ordinary tables, partitioned tables, views, materialised views and foreign tables are supported. Arbitrary SQL, dotted relation names, temporary objects, generic DBI connections and caller-managed transactions are not accepted.
 
@@ -246,7 +298,7 @@ The four direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`,
 
 Without maps, the database bundle contains aggregates, the caller-authored specification and aggregate plot inputs only. When maps are requested, coordinates and selected thematic observations are collected only for map-ready pairs within the inclusive row limit. The query projects only the required coordinates and themes, applies a defensive `max_map_points + 1` limit, and fails rather than truncating or silently dropping rows. The bundle never contains a source-row table, arbitrary SQL, query parameters, credentials or connection attributes; database and driver logs remain the caller's infrastructure responsibility.
 
-## 8. Deliver the owned output root
+## 9. Deliver the owned output root
 
 For data-frame intake, `render = TRUE` creates `report.html` from the saved bundle components. The exact output root is workflow-owned: use `overwrite = TRUE` only to replace a prior valid owned intake bundle. Do not move individual files out of the root without preserving their manifest relationship.
 
@@ -276,7 +328,7 @@ Retain and transfer the complete owned root. The report is a view of the validat
 
 Neither a report nor an aggregate-only bundle is automatically safe to share. Review caller-authored dictionary metadata, categories, small cells, plots and any requested point maps. Pseudonymised observations remain restricted personal data: pseudonymisation replaces or separates direct identifiers under a controlled linkage process, but it does not make the observations anonymous or automatically disclosure-controlled.
 
-## 9. Start from the file-based scaffold
+## 10. Start from the file-based scaffold
 
 Create a starter project, edit `metadata/data_dictionary.csv`, place an authorised input at `data/input.csv`, and follow the copied README. The scaffold offers direct and optional `targets` paths to the same lower-level data-frame renderer; it does not manage PostgreSQL connections or preparation decisions.
 
