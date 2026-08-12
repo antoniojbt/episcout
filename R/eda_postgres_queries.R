@@ -399,6 +399,237 @@ eda_postgres_row_count <- function(source, timing_env = NULL) {
   eda_checked_count(observed$n[[1]], "PostgreSQL relation row count")
 }
 
+eda_pg_qc_evidence_inside <- function(source, spec, keys) {
+  rows <- lapply(seq_len(nrow(spec)), function(index) {
+    row <- spec[index, , drop = FALSE]
+    type <- row$type[[1]]
+    if (qc_identifier_role(row$role[[1]])) {
+      return(qc_unprofiled_evidence(keys[[index]], type, "declared_identifier"))
+    }
+
+    column <- eda_postgres_column(source, row$name[[1]])
+    if (is.null(column)) {
+      return(qc_unprofiled_evidence(keys[[index]], type, "missing_variable"))
+    }
+    if (eda_postgres_storage_family(column) == "unsupported") {
+      return(qc_unprofiled_evidence(keys[[index]], type, "unsupported_storage"))
+    }
+    levels <- if ("levels" %in% names(row)) eda_spec_levels(row$levels) else character()
+    compatibility <- eda_pg_type_compatibility(column, type, levels)
+    if (!compatibility$status %in% c("compatible", "coercible")) {
+      return(qc_unprofiled_evidence(keys[[index]], type, "incompatible_storage"))
+    }
+    contract <- eda_postgres_missing_contract(
+      source,
+      column,
+      type,
+      eda_missing_codes(spec, row$name[[1]])
+    )
+    if (!contract$valid) {
+      return(qc_unprofiled_evidence(keys[[index]], type, "incompatible_storage"))
+    }
+
+    if (type %in% c("numeric", "integer")) {
+      return(eda_postgres_qc_numeric(
+        source,
+        column,
+        contract,
+        type,
+        index,
+        keys[[index]]
+      ))
+    }
+    eda_postgres_qc_counts(
+      source,
+      column,
+      contract,
+      type,
+      index,
+      keys[[index]]
+    )
+  })
+  qc_bind_evidence(rows)
+}
+
+eda_postgres_qc_counts <- function(source, column, contract, type, index, key) {
+  expression <- eda_postgres_value_expression(source, column, type)
+  observed <- eda_db_fetch(
+    source$con,
+    paste0(
+      "WITH v AS (SELECT ", expression, " AS value, ", contract$sql,
+      " AS missing FROM ", eda_postgres_table_sql(source), ") ",
+      "SELECT count(*)::text AS n, ",
+      "count(*) FILTER (WHERE missing)::text AS n_missing, ",
+      "count(*) FILTER (WHERE NOT missing)::text AS n_observed, ",
+      "count(DISTINCT value) FILTER (WHERE NOT missing)::text AS n_unique FROM v"
+    ),
+    params = contract$params,
+    query_kind = "qc_scalar_counts",
+    limit = 1L,
+    variable_index = index,
+    name = column$name[[1]]
+  )
+  eda_postgres_qc_require_scalar(
+    observed,
+    c("n", "n_missing", "n_observed", "n_unique")
+  )
+  counts <- lapply(
+    observed[c("n", "n_missing", "n_observed", "n_unique")],
+    eda_checked_count,
+    field = "PostgreSQL QC count"
+  )
+  row <- qc_profiled_evidence(
+    variable_key = key,
+    declared_type = type,
+    n = counts$n,
+    n_missing = counts$n_missing,
+    n_observed = counts$n_observed,
+    n_unique = counts$n_unique
+  )
+  qc_validate_evidence_counts(row)
+  row
+}
+
+eda_postgres_qc_numeric <- function(source,
+                                    column,
+                                    contract,
+                                    type,
+                                    index,
+                                    key) {
+  expression <- eda_postgres_value_expression(source, column, type)
+  finite <- "value NOT IN ('Infinity'::double precision, '-Infinity'::double precision)"
+  bigint <- identical(as.character(column$base_udt_name[[1]]), "int8")
+  exact_sql <- if (type == "integer" && bigint) {
+    paste0(
+      "bool_and(abs(value) <= 9007199254740991::double precision) ",
+      "FILTER (WHERE NOT missing) AS integer_exact"
+    )
+  } else {
+    "TRUE AS integer_exact"
+  }
+  observed <- eda_db_fetch(
+    source$con,
+    paste0(
+      "WITH v AS (SELECT ", expression, " AS value, ", contract$sql,
+      " AS missing FROM ", eda_postgres_table_sql(source), ") ",
+      "SELECT count(*)::text AS n, ",
+      "count(*) FILTER (WHERE missing)::text AS n_missing, ",
+      "count(*) FILTER (WHERE NOT missing)::text AS n_observed, ",
+      "count(DISTINCT value) FILTER (WHERE NOT missing)::text AS n_unique, ",
+      "count(*) FILTER (WHERE NOT missing AND NOT (", finite,
+      "))::text AS n_infinite, ",
+      "count(*) FILTER (WHERE NOT missing AND ", finite,
+      ")::text AS n_finite, ",
+      "min(value) FILTER (WHERE NOT missing AND ", finite, ") AS observed_min, ",
+      "max(value) FILTER (WHERE NOT missing AND ", finite, ") AS observed_max, ",
+      "percentile_cont(0.25) WITHIN GROUP (ORDER BY value) FILTER (WHERE NOT missing AND ",
+      finite, ") AS q1, ",
+      "percentile_cont(0.75) WITHIN GROUP (ORDER BY value) FILTER (WHERE NOT missing AND ",
+      finite, ") AS q3, ", exact_sql, " FROM v"
+    ),
+    params = contract$params,
+    query_kind = "qc_numeric_aggregate",
+    limit = 1L,
+    variable_index = index,
+    name = column$name[[1]]
+  )
+  eda_postgres_qc_require_scalar(
+    observed,
+    c(
+      "n", "n_missing", "n_observed", "n_unique", "n_infinite",
+      "n_finite", "observed_min", "observed_max", "q1", "q3",
+      "integer_exact"
+    )
+  )
+  counts <- lapply(
+    observed[c(
+      "n", "n_missing", "n_observed", "n_unique", "n_infinite",
+      "n_finite"
+    )],
+    eda_checked_count,
+    field = "PostgreSQL QC count"
+  )
+  integer_exact <- observed$integer_exact[[1]]
+  if (!is.logical(integer_exact) || length(integer_exact) != 1L) {
+    stop("PostgreSQL QC query returned an invalid scalar schema.", call. = FALSE)
+  }
+  if (!is.na(integer_exact) && !isTRUE(integer_exact)) {
+    return(qc_unprofiled_evidence(key, type, "incompatible_storage"))
+  }
+
+  numbers <- vapply(
+    observed[c("observed_min", "observed_max", "q1", "q3")],
+    function(value) if (is.na(value[[1]])) NA_real_ else as.numeric(value[[1]]),
+    numeric(1)
+  )
+  if (counts$n_finite > 0L && any(!is.finite(numbers))) {
+    stop("PostgreSQL QC numeric aggregates were unavailable.", call. = FALSE)
+  }
+  iqr <- numbers[["q3"]] - numbers[["q1"]]
+  lower <- numbers[["q1"]] - 1.5 * iqr
+  upper <- numbers[["q3"]] + 1.5 * iqr
+  fences <- c(n_below = 0L, n_above = 0L)
+  if (counts$n_finite > 0L) {
+    lower_index <- length(contract$params) + 1L
+    upper_index <- lower_index + 1L
+    fence_row <- eda_db_fetch(
+      source$con,
+      paste0(
+        "WITH v AS (SELECT ", expression, " AS value, ", contract$sql,
+        " AS missing FROM ", eda_postgres_table_sql(source), ") ",
+        "SELECT count(*) FILTER (WHERE value < $", lower_index,
+        "::double precision)::text AS n_below, ",
+        "count(*) FILTER (WHERE value > $", upper_index,
+        "::double precision)::text AS n_above FROM v WHERE NOT missing AND ",
+        finite
+      ),
+      params = c(contract$params, list(lower, upper)),
+      query_kind = "qc_numeric_fences",
+      limit = 1L,
+      variable_index = index,
+      name = column$name[[1]]
+    )
+    eda_postgres_qc_require_scalar(fence_row, c("n_below", "n_above"))
+    fences <- c(
+      n_below = eda_checked_count(
+        fence_row$n_below[[1]],
+        "PostgreSQL QC count"
+      ),
+      n_above = eda_checked_count(
+        fence_row$n_above[[1]],
+        "PostgreSQL QC count"
+      )
+    )
+  }
+  row <- qc_profiled_evidence(
+    variable_key = key,
+    declared_type = type,
+    n = counts$n,
+    n_missing = counts$n_missing,
+    n_observed = counts$n_observed,
+    n_unique = counts$n_unique,
+    n_infinite = counts$n_infinite,
+    n_finite = counts$n_finite,
+    observed_min = numbers[["observed_min"]],
+    observed_max = numbers[["observed_max"]],
+    tukey_lower_fence = lower,
+    tukey_upper_fence = upper,
+    n_below_tukey = fences[["n_below"]],
+    n_above_tukey = fences[["n_above"]]
+  )
+  qc_validate_evidence_counts(row)
+  row
+}
+
+eda_postgres_qc_require_scalar <- function(observed, fields) {
+  valid <- is.data.frame(observed) && nrow(observed) == 1L &&
+    identical(names(observed), fields)
+  if (!valid) {
+    stop("PostgreSQL QC query returned an invalid scalar schema.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 eda_postgres_schema_inside <- function(source, spec, timing_env = NULL) {
   expected <- lapply(seq_len(nrow(spec)), function(index) {
     column <- eda_postgres_column(source, spec$name[[index]])

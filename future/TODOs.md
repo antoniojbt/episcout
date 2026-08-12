@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-`issue-271` is draft implementation `spec-039-reviewable-qc-cleaning-proposals` under roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249). The planning contract keeps aggregate descriptive evidence and pending proposals in separate opaque-keyed tables, preserves the reviewed semantic dictionary, and makes approved rules a distinct successor contract. Package implementation remains gated on planning review. `issue-272` follows with approved-rule application and processed outputs; `issue-273` remains staged after `issue-272` for explicitly reviewed civil-date derivation.
+`issue-271` is active implementation `spec-039-reviewable-qc-cleaning-proposals` under roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) after PR-298 accepted the planning contract at canonical commit-9f48a06. The implementation keeps aggregate descriptive evidence and pending proposals in separate opaque-keyed tables, preserves the reviewed semantic dictionary, and makes approved rules a distinct successor contract. `issue-272` follows with approved-rule application and processed outputs; `issue-273` remains staged after `issue-272` for explicitly reviewed civil-date derivation.
 
 ## Deferred owner action
 

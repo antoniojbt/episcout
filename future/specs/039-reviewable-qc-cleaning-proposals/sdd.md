@@ -2,7 +2,7 @@
 
 Spec ID: `039-reviewable-qc-cleaning-proposals`
 
-Status: Draft
+Status: Review
 
 ## Design Authority And Boundary
 
