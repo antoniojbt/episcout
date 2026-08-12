@@ -2,7 +2,7 @@
 
 Spec ID: `040-approved-cleaning-rules-and-processed-outputs`
 
-Status: Review in PR-301
+Status: Completed
 
 ## Review Scope
 
@@ -39,4 +39,4 @@ Existing public formals and semantic dictionary fields are unchanged. CSV is an 
 
 ## Handoff State
 
-PR-301 is the draft implementation pull request for issue-272 and spec-040. Merge, issue closure, canonical closeout and promotion of issue-273 remain pending. The implementation review above is a self-review and is not independent; the final PR diff is reviewed separately before merge.
+PR-301 passed PostgreSQL integration, macOS and Ubuntu package checks, coverage, CodeQL, Actions analysis and CodeFactor at final commit-8555709, then merged to canonical `master` as commit-6713a79 and closed issue-272. No unresolved review thread or actionable finding remained. Spec-040 is completed and archived; issue-273 may be promoted only after this focused closeout becomes canonical. The implementation review above was a self-review; the final PR diff received a separate lifecycle review before merge.

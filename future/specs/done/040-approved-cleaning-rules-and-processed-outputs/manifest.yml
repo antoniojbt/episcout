@@ -2,7 +2,7 @@ id: "040"
 slug: "approved-cleaning-rules-and-processed-outputs"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-272-feature-apply-approved-cleaning-rules-and-ma
@@ -14,7 +14,7 @@ source_issues:
   - 249
   - 271
 pull_request: 301
-merge_commit: null
+merge_commit: 6713a797900164f2ad073093570fa804267b6b43
 successor_issue: 273
 terminal_reason: null
 
