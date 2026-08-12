@@ -54,7 +54,7 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 ## Current Status
 
-Roadmap issue [#249](https://github.com/antoniojbt/episcout/issues/249) is the authoritative return point. `TODOs.md` mirrors its ready-next and deferred work without replacing live GitHub state.
+No roadmap is currently active. GitHub issues are the authoritative return point; `TODOs.md` mirrors independently deferred work without replacing live GitHub state. Create a focused roadmap only when a future set of related issues needs ordered coordination.
 
 Completed spec `027-epi-geo-phase-a` records issue [#226](https://github.com/antoniojbt/episcout/issues/226) and PR [#234](https://github.com/antoniojbt/episcout/pull/234), merged to canonical `master` as `b37b391`. Completed spec `028-epi-geo-postgis` records issue [#233](https://github.com/antoniojbt/episcout/issues/233) and PR [#238](https://github.com/antoniojbt/episcout/pull/238), merged to canonical `master` as `460acd0`. Completed terminal Phase-C spec `029-eda-reviewed-coordinate-roles` records issue [#237](https://github.com/antoniojbt/episcout/issues/237), planning PR [#240](https://github.com/antoniojbt/episcout/pull/240) and implementation PR [#241](https://github.com/antoniojbt/episcout/pull/241), merged as `308d544`; all required CI passed.
 

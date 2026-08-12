@@ -28,7 +28,7 @@ List exact commands, results, skips and unrelated baseline failures.
 ## Post-merge closeout
 
 - [ ] Verify the merge and required checks on canonical `upstream/master`.
-- [ ] Reconcile the tracking issue and roadmap.
+- [ ] Reconcile the tracking issue and any active roadmap.
 - [ ] Finalize specification acceptance/review, set it to `completed` and move it under `future/specs/done/` when applicable.
 - [ ] Reconcile `future/TODOs.md` and `future/changelog.md`; update `PROJECT_MAP.md` only for durable architecture or pointer changes.
 - [ ] Confirm successor issue or terminal reason.

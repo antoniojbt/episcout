@@ -188,8 +188,12 @@ fi
 
 roadmap_issue="$(sed -n 's/.*roadmap issue \[#\([0-9][0-9]*\)\].*/\1/p' "${repo_root}/future/TODOs.md" | awk 'NR == 1 { print; exit }')"
 if [[ -z $roadmap_issue ]]; then
-  echo "Workflow drift: future/TODOs.md does not identify one roadmap issue" >&2
-  drift=1
+  for pointer_file in "${repo_root}/future/TODOs.md" "${repo_root}/future/README.md" "${repo_root}/PROJECT_MAP.md"; do
+    if ! grep -Eiq 'no roadmap.*active' "$pointer_file"; then
+      echo "Workflow drift: ${pointer_file#"${repo_root}/"} does not explicitly record that no roadmap is active" >&2
+      drift=1
+    fi
+  done
 else
   roadmap_url="issues/${roadmap_issue}"
   for pointer_file in "${repo_root}/future/README.md" "${repo_root}/PROJECT_MAP.md"; do
@@ -231,10 +235,12 @@ if [[ -z $repository || -z $default_branch ]]; then
   exit 2
 fi
 
-roadmap_state="$(gh issue view "$roadmap_issue" --repo "$repository" --json state --jq .state 2>/dev/null)"
-if [[ $roadmap_state != "OPEN" ]]; then
-  echo "Workflow drift: roadmap issue #${roadmap_issue} is not open" >&2
-  drift=1
+if [[ -n $roadmap_issue ]]; then
+  roadmap_state="$(gh issue view "$roadmap_issue" --repo "$repository" --json state --jq .state 2>/dev/null)"
+  if [[ $roadmap_state != "OPEN" ]]; then
+    echo "Workflow drift: roadmap issue #${roadmap_issue} is not open" >&2
+    drift=1
+  fi
 fi
 
 default_ref="refs/remotes/upstream/${default_branch}"
