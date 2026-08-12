@@ -35,6 +35,7 @@ For an end-to-end learning example that combines disposable PostgreSQL tables, p
 - `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*` provide lower-level helpers for data preparation, descriptive work, plotting and utilities.
 - `epi_eda_*` provides specification-first EDA for in-memory data and supported PostgreSQL sources.
 - `epi_eda_qc_proposals()` links aggregate descriptive evidence to explicitly pending review prompts through caller-managed opaque variable keys; it never changes the reviewed dictionary or data and never approves or applies a cleaning rule.
+- `epi_eda_approved_rules()` and `epi_eda_apply_cleaning_rules()` validate a separate analyst-approved rule schema and apply bounds, allowed values and missing codes to a complete new data-frame, CSV, RDS or PostgreSQL output without replacing the source or an existing destination.
 - `epi_sec_*` provides auditable longitudinal pseudonymisation for related PostgreSQL tables.
 - `epi_geo_*` provides explicit vector and coordinate mapping with optional `sf` support.
 
