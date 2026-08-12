@@ -22,8 +22,11 @@ terminal_reason: null
 
 related_files:
   - R/epi_sec_registry.R
+  - R/epi_sec_pseudonymise_db.R
+  - tests/testthat/test-sec-registry.R
   - tests/testthat/test-sec-pseudonymise-postgres.R
   - man/epi_sec_identity_registry_init.Rd
+  - man/epi_sec_pseudonymise_db.Rd
   - vignettes/longitudinal-pseudonymisation.Rmd
 
 documents:
@@ -35,8 +38,14 @@ documents:
 
 review_required: true
 
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
 check_commands:
-  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-pseudonymise', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-registry|sec-pseudonymise-postgres', reporter = 'summary')"
   - EPISCOUT_TEST_POSTGRES=1 PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=synthetic_records PGUSER=postgres scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-pseudonymise-postgres', reporter = 'summary')"
   - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
   - scripts/check-local.sh
@@ -46,3 +55,5 @@ check_commands:
 notes:
   - Owner-authorised stack-after-green is recorded on issue-284; its predecessor is already canonical, so this branch starts from canonical master.
   - issue-285 remains the staged successor and must not activate before this slice closes out canonically.
+  - PR-286 merged during this isolated run but implemented only registry initialisation; this task branch completes the issue's explicit crosswalk/output privilege-neutrality outcome locally.
+  - GitHub mutation, corrective publication and post-merge closeout are outside this disposable-clone task.

@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Active `issue-284`/`spec-036-epi-sec-registry-neutral` follows completed `issue-278`/`PR-281` and PR-283 closeout. It removes only registry privilege-policy coupling while preserving physical registry compatibility and transactional creation. Staged `issue-285` and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+`PR-286` merged to canonical `master` as `commit-6312b8d` and GitHub closed `issue-284` during the isolated implementation run, but that diff removed privilege-policy coupling only from registry initialisation and left the issue's explicit stable pseudonymisation-path checks and revocation in place. This task branch completes the bounded registry, crosswalk and output privilege-neutrality contract locally; corrective publication and lifecycle reconciliation remain pending because GitHub mutation is outside the task. Staged `issue-285` and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream and must not begin. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 
