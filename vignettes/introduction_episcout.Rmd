@@ -1,113 +1,77 @@
 ---
-title: "Examples of how to episcout"
-author: "Antonio Berlanga-Taylor"
+title: "Lower-level episcout helpers"
+author: "episcout contributors"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output:
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
-  %\VignetteIndexEntry{Examples of how to episcout}
+  %\VignetteIndexEntry{Lower-level episcout helpers}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
+has_ggplot2 <- requireNamespace("ggplot2", quietly = TRUE)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-Welcome to episcout!
+This vignette is a short, runnable introduction to episcout's lower-level cleaning, descriptive-statistics and plotting helpers. It uses neutral synthetic data and does not establish a scientific finding.
 
-episcout has many functions that can be used to quickly explore data sets. It is particularly useful during cleaning, describing and visualising data sets of tens of thousands of rows with tens to hundreds of columns.
+For a declared-dictionary EDA workflow, see the [specification-first EDA guide](specification-first-eda.html). For related restricted PostgreSQL tables, see the [longitudinal pseudonymisation guide](longitudinal-pseudonymisation.html). For explicitly declared coordinates or vector data, see the [geospatial mapping guide](geospatial-mapping-primer.html).
 
-It was developed using a combination of tidyverse packages, base R functions and data.table.
-
-It suggests many packages but does not force you to import them as there are many functions available.
-
-If you want to install all of them however, do:
-
-```{r eval = FALSE}
-# Remove 'eval = FALSE' to run
-install.packages(c(
-  "dplyr",
-  "tibble",
-  "tidyr",
-  "data.table",
-  "compare",
-  "stringi",
-  "stringr",
-  "lubridate",
-  "purrr",
-  "e1071",
-  "Hmisc",
-  "ggplot2",
-  "cowplot",
-  "scales",
-  "ggthemes",
-  "future",
-  "doFuture",
-  "foreach",
-  "iterators",
-  "magrittr",
-  "reshape2"
-))
-```
-
-Many parameters are given as defaults, admittedly with quite a bit of personal preference, but with the aim of processing hundreds of thousands of observations from hundreds of variables from multiple data sets a bit faster. Hence, convenience and standardisation are often preferred. This may not be your case however but it is simple enough to defer to your preferred R packages.
-
-Below are a number of examples of how to use lower-level episcout helper functions. For a complete specification-first EDA workflow, including lean semantic dictionaries and opt-in bounded point maps, see the `specification-first-eda` vignette. episcout creates the EDA outputs explicitly requested by the analyst and does not decide whether they may be shared. For stable pseudonyms across related PostgreSQL tables, see the friendly, audit-first `longitudinal-pseudonymisation` vignette before handling restricted data. To practise the complete journey with a neutral CSV and disposable PostgreSQL database, open the installed `examples/db-to-report/walkthrough.R` script.
-
-```{r library, message=FALSE}
+```{r library, message = FALSE}
 library(episcout)
 ```
 
+## Create neutral synthetic data
 
-Currently there are functions for:
-- pre-processing: epi\_clean\_\*
-- descriptive statistics: epi\_stats\_\*
-- visualising: epi\_plot\_\*
-- specification-first EDA workflows: epi\_eda\_\*
-- various: epi\_read() ; epi\_write() etc.
+Set a seed so that the example is reproducible. The repeated `record_id` values are intentional and let the duplicate check return rows.
 
-## A few examples with dummy data
+```{r data}
+set.seed(20260812)
 
-```{r}
-# Test set df:
 n <- 20
-df <- data.frame(
-  var_id = rep(1:(n / 2), each = 2),
-  var_to_rep = rep(c("Pre", "Post"), n / 2),
-  x = rnorm(n),
-  y = rbinom(n, 1, 0.50),
-  z = rpois(n, 2)
+example_data <- data.frame(
+  record_id = rep(seq_len(n / 2), each = 2),
+  timepoint = rep(c("baseline", "follow_up"), n / 2),
+  measurement = rnorm(n),
+  event = rbinom(n, 1, 0.5),
+  contacts = rpois(n, 2)
 )
-df
+
+example_data
 ```
 
-## Checking duplicates
+## Inspect duplicate values
 
-`epi_clean_get_dups()` identifies duplicate rows based on a chosen column.
-```{r}
-epi_clean_get_dups(df, "var_id", 1)
+`epi_clean_get_dups()` returns rows whose selected value occurs more than the requested frequency. Here, every `record_id` occurs twice.
+
+```{r duplicates}
+duplicates <- epi_clean_get_dups(example_data, "record_id", freq = 1)
+duplicates
 ```
 
-## Numeric summaries
+## Summarise a numeric variable
 
-`epi_stats_numeric()` calculates descriptive statistics for a numeric vector.
+`epi_stats_numeric()` returns one row of descriptive statistics for a numeric vector. Interpret the results with the study design, data provenance and missingness rules; the helper does not make an epidemiological conclusion.
 
-```{r}
-summary_stats <- epi_stats_numeric(df$x)
+```{r numeric-summary}
+summary_stats <- epi_stats_numeric(example_data$measurement)
 summary_stats
 ```
 
-## Plotting
+## Plot a numeric variable
 
-`epi_plot_hist()` quickly draws a histogram of a numeric column.
+`epi_plot_hist()` creates a `ggplot2` histogram. Install the suggested `ggplot2` package to run this chunk.
 
-```{r, fig.width=4, fig.height=3}
-epi_plot_hist(df, "x")
+```{r plotting, fig.width = 4, fig.height = 3, eval = has_ggplot2}
+epi_plot_hist(example_data, "measurement")
 ```
 
-This vignette only scratches the surface of what `episcout` can do. For more details see the function documentation.
-
-Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled.
+```{r no-ggplot2, eval = !has_ggplot2, echo = FALSE, results = "asis"}
+cat("Install ggplot2 to run the plotting example.")
+```
