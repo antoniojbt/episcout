@@ -1,6 +1,6 @@
 #' @title Get all duplicated rows including the originals
 #'
-#' @description base R duplicated() does not return the originals (duplicated - 1). See for example \href{https://stackoverflow.com/questions/16905425/find-duplicate-values-in-r}{find duplicates in R}.
+#' @description base R duplicated() does not return the originals (duplicated - 1).
 #'
 #' @param df A data.frame to extract duplicates from
 #'
