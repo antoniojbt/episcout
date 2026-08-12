@@ -2,7 +2,7 @@ id: "036"
 slug: "epi-sec-registry-neutral"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: refactor/epi-sec-registry-neutral
@@ -16,7 +16,7 @@ source_issues:
   - 276
   - 278
 pull_request: 286
-merge_commit: null
+merge_commit: "6312b8dedc38a2e7ba533a165fdd090b50c69735"
 successor_issue: 285
 terminal_reason: null
 

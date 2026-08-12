@@ -12,7 +12,7 @@ draft PR + dispatch:review
     ↓
 post-PR lifecycle reconciliation
     ↓
-all required checks pass + human review
+substantive required checks pass + human review
     ↓
 merge
     ↓

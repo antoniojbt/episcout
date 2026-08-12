@@ -138,6 +138,13 @@ Passing tests and successful execution do not establish that analytical behaviou
 - If there are no findings, say so and identify residual risks or checks that were not run.
 - State whether the review was independent of the implementation.
 
+## CodeFactor follow-up
+
+- A CodeFactor failure is non-blocking by default. Before merge, closeout or authorised successor stacking, inspect the changed code and the reported finding when available; do not infer that a finding is minor merely from the check status.
+- Treat a CodeFactor finding as blocking when there is concrete evidence that it affects correctness, data integrity, security, privacy, performance, concurrency, resource lifetime, public-interface compatibility or a consequential documentation claim. Fix it in the current slice or create a separate tracked issue before proceeding.
+- For style, naming, formatting, duplication or local maintainability findings without such impact, record the PR, rule/file and short rationale in issue-288. Do not interrupt the current delivery with one-off style churn.
+- Triage issue-288 as one focused maintenance batch after ten recorded PR entries, when one rule recurs in maintained code, or when the owner requests it. Group fixes by rule, use focused verification and split any newly identified higher-risk finding into its own issue.
+
 ## Work lifecycle and continuity
 
 GitHub issues and the current roadmap issue are the authoritative live task state. `future/TODOs.md`, specification manifests, `future/changelog.md` and `PROJECT_MAP.md` are synchronised repository records; when they disagree with GitHub, stop new work and reconcile them first.
@@ -154,6 +161,7 @@ In prose, plans and status reports, prefix identifiers with their artefact type 
 - After merge, verify the canonical `upstream/master` commit and required checks; close or update the tracking issue and roadmap; finalize acceptance/review evidence; set the manifest to `completed`; move the spec to `future/specs/done/`; update `future/TODOs.md` and `future/changelog.md`; update `PROJECT_MAP.md` only when architecture or durable pointers changed; and create or confirm the successor tracker.
 - Use a focused closeout pull request when default-branch files require merge-derived evidence. A closeout-only pull request is terminal maintenance and does not recursively require another documentation pull request.
 - Do not begin the successor task until prior closeout passes the workflow-state check. If a merge occurs after a session ends, the next session must perform closeout before any new planning or implementation.
+- CodeFactor's non-blocking low-risk findings do not prevent authorised successor stacking; substantive check, review or workflow failures still do.
 - After closeout merges, synchronize local and fork `master` with canonical `upstream/master`. Remove only clean, fully merged worktrees and branches, and delete remote branches only when the owner has authorized that cleanup.
 
 ## Git and GitHub

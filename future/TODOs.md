@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-Active `issue-284`/`spec-036-epi-sec-registry-neutral` follows completed `issue-278`/`PR-281` and PR-283 closeout. It removes only registry privilege-policy coupling while preserving physical registry compatibility and transactional creation. Staged `issue-285` and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+Completed `issue-284`/`spec-036-epi-sec-registry-neutral` through `PR-286`, merged to canonical `master` as `commit-6312b8d`. Staged `issue-285` is now the active implementation lane; documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remains downstream. CodeFactor is informational and does not block authorised successor stacking; substantive package, PostgreSQL, workflow and review evidence remains required. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 
@@ -40,6 +40,10 @@ protected-`master` coverage upload passed for release commit `40ef702`.
   redesign or biomedical extensions.
 
 ## Done
+
+### 2026-08-12
+
+- [x] Complete issue #284/spec 036 through PR #286, merged to canonical `master` as `6312b8dedc38a2e7ba533a165fdd090b50c69735`; registry initialisation no longer applies package PUBLIC-privilege policy while registry structure, version/token compatibility and transactional creation remain intact. Hosted macOS/Ubuntu, PostgreSQL integration, coverage and Codecov checks passed. CodeFactor failed and is owner-designated informational; it does not block successor stacking. Issue #285 is the staged successor.
 
 ### 2026-08-12
 
