@@ -15,8 +15,9 @@ epi_sec_pseudonymise_db(
   token_column = "entity_token",
   exact_duplicates = c("report", "drop"),
   existing = c("error", "replace"),
-  sensitive_issues = FALSE,
-  lock_timeout = 30
+  sensitive_issues = NULL,
+  lock_timeout = 30,
+  include_issue_values = FALSE
 )
 }
 \arguments{
@@ -24,7 +25,7 @@ epi_sec_pseudonymise_db(
 
 \item{dictionary}{A technical and semantic multi-table dictionary accepted by \code{\link[=epi_eda_dictionary_validate]{epi_eda_dictionary_validate()}}.}
 
-\item{linkage}{A confirmed object returned by \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}.}
+\item{linkage}{An object returned by \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}.}
 
 \item{registry_schema}{Existing identity-registry schema initialised by \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}.}
 
@@ -42,30 +43,32 @@ epi_sec_pseudonymise_db(
 
 \item{existing}{\code{"error"} refuses existing destinations; \code{"replace"} replaces only declared ordinary tables without \code{CASCADE}.}
 
-\item{sensitive_issues}{Logical; explicitly return identifier-bearing diagnostic rows in memory. episcout marks and redacts this component's ordinary print and structure methods and never persists it, but callers can deliberately extract, print or save its columns and are responsible for controlling them.}
+\item{sensitive_issues}{Deprecated compatibility alias for \code{include_issue_values}. \code{NULL} leaves the new argument unchanged; an explicit logical value warns and cannot conflict with an explicitly supplied new value.}
 
 \item{lock_timeout}{Maximum seconds to wait for transaction-scoped PostgreSQL locks.}
+
+\item{include_issue_values}{Logical; return identifier values for \code{invalid_identifier} and \code{unmatched_identifier} findings in an ordinary \code{issue_values} data frame. Other value families are not collected.}
 }
 \value{
-A redacted \code{epi_sec_pseudonymisation_result} list containing \code{status}; \code{metadata} columns \code{mode}, \code{writes}, \code{registry_schema}, \code{output_schema}, \code{next_action}; \code{identity_audit} columns \code{n_crosswalk_rows}, \code{n_unused_crosswalk_rows}, \code{n_crosswalk_conflicts}; \code{table_audit} columns \code{source_schema}, \code{source_table}, \code{destination_table}, \code{n_input}, \code{n_invalid_id}, \code{n_unmatched}, \code{n_missing_key}, \code{n_output}, \code{n_exact_removed}; \code{duplicate_audit} columns \code{source_schema}, \code{source_table}, \code{n_exact_excess}, \code{n_conflicting_keys}, \code{action}; \code{issues}; \code{output_dictionary}; \code{output_catalogues}; and \code{manifest} columns \code{source_schema}, \code{source_table}, \code{output_schema}, \code{output_table}, \code{status}, \code{sensitivity}. When \code{sensitive_issues = TRUE}, a marked memory-only data frame with \code{issue_code}, source relation/column metadata and \code{source_value} is appended. episcout does not print or persist that component automatically; deliberate extraction is the caller's responsibility. Status is \code{audit_complete}, \code{blocked} or \code{complete}.
+An \code{epi_sec_pseudonymisation_result} list containing \code{status}; \code{metadata} columns \code{mode}, \code{writes}, \code{registry_schema}, \code{output_schema}, \code{next_action}; \code{identity_audit} columns \code{n_crosswalk_rows}, \code{n_unused_crosswalk_rows}, \code{n_crosswalk_conflicts}; \code{table_audit} columns \code{source_schema}, \code{source_table}, \code{destination_table}, \code{n_input}, \code{n_invalid_id}, \code{n_unmatched}, \code{n_missing_key}, \code{n_output}, \code{n_exact_removed}; \code{duplicate_audit} columns \code{source_schema}, \code{source_table}, \code{n_exact_excess}, \code{n_conflicting_keys}, \code{action}; \code{issues}; \code{output_dictionary}; \code{output_catalogues}; and \code{manifest} columns \code{source_schema}, \code{source_table}, \code{output_schema}, \code{output_table}, \code{status}, \code{output_type}. When \code{include_issue_values = TRUE}, ordinary \code{issue_values} columns are \code{issue_code}, source relation/column metadata and \code{source_value}. Status is \code{audit_complete}, \code{not_written} or \code{complete}.
 }
 \description{
-Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, specialised column policy and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
+Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, explicit output actions and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
 }
 \details{
 Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. \code{existing = "replace"} is deliberately opt-in and is limited to declared ordinary destination tables without \code{CASCADE}. Source tables are never altered.
 
 Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 
-Expected identity, duplicate, dictionary and governance findings return \code{status = "blocked"} with a value-free issue table containing \code{issue_code}, \code{severity}, \code{stage}, \code{source_schema}, \code{source_table}, \code{source_column}, \code{n_affected}, \code{message}, \code{recommended_action} and \code{sensitive}. Correct the declared metadata or source governance problem and audit again. Errors are reserved for malformed arguments, unsupported types or unsafe database/infrastructure state; apply errors roll back before returning a sanitised condition.
+A completed audit always returns \code{status = "audit_complete"}, whether or not technical issues are present. The value-free issue table contains \code{issue_code}, \code{severity}, \code{stage}, \code{source_schema}, \code{source_table}, \code{source_column}, \code{n_affected}, \code{message} and \code{recommended_action}; severity is \code{error} or \code{warning}. Apply returns \code{not_written} when error-severity findings or a lock timeout prevent commit. Malformed arguments, unsupported types and unsafe database or infrastructure state remain errors; apply errors roll back before returning a sanitised condition.
 
-The semantic dictionary must completely and currently cover every declared source table. The linkage \code{columns} policy requires the declared ID column to be a confirmed \code{direct_identifier} with action \code{bridge}; \code{bridge} and \code{drop} columns are excluded, while \code{retain} and \code{retain_restricted} columns form the output. The generated token is semantic identifier metadata. \code{output_dictionary} and \code{output_catalogues} can pass directly to \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}.
+The semantic dictionary must completely and currently cover every declared source table. The linkage \code{columns} component requires exactly the declared ID column to use \code{output_action = "pseudonymise"}; pseudonymised and dropped columns are excluded, while \code{retain} columns form the output. The generated token is semantic identifier metadata. \code{output_dictionary} and \code{output_catalogues} can pass directly to \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}.
 
 Identifier families are PostgreSQL \code{text}/\code{varchar}, integral types and \code{uuid}. Fixed-width character identifiers and nondeterministic text collations are rejected. Text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons; UUIDs follow PostgreSQL UUID identity. Matching never trims, case-folds, hashes or infers identity.
 
-Exact projected duplicates are retained under \code{exact_duplicates = "report"} and explicitly removed under \code{"drop"}. Equal declared record keys with different retained payloads block; no conflicting observation is selected, aggregated or overwritten. With no record key, only exact projected duplicates can be assessed.
+Exact projected duplicates are retained under \code{exact_duplicates = "report"} and explicitly removed under \code{"drop"}. Equal declared record keys with different retained payloads produce an error-severity issue; no conflicting observation is selected, aggregated or overwritten. With no record key, only exact projected duplicates can be assessed.
 
-Pseudonymised output remains restricted personal data. It is not anonymous or automatically disclosure-controlled. The registry alias table is re-identifying and requires separate database, backup and access controls. episcout does not control PostgreSQL, driver, backup, administrator or server logging. See \code{vignette("longitudinal-pseudonymisation")} for the complete audit-first workflow and recovery guidance.
+Pseudonymisation is reversible through the registry and is not anonymisation or automatic disclosure control. episcout does not decide whether an output may be used or disclosed and does not control PostgreSQL, driver, backup, administrator or server logging. See \code{vignette("longitudinal-pseudonymisation")} for the complete technical workflow and recovery guidance.
 }
 \seealso{
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}

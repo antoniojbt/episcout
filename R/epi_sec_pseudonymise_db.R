@@ -1,10 +1,10 @@
 #' Pseudonymise related PostgreSQL tables through a stable identity registry
 #'
-#' Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, specialised column policy and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
+#' Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, explicit output actions and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
 #'
 #' @param con An open PostgreSQL DBI connection created with RPostgres.
 #' @param dictionary A technical and semantic multi-table dictionary accepted by [epi_eda_dictionary_validate()].
-#' @param linkage A confirmed object returned by [epi_sec_linkage_spec()].
+#' @param linkage An object returned by [epi_sec_linkage_spec()].
 #' @param registry_schema Existing identity-registry schema initialised by [epi_sec_identity_registry_init()].
 #' @param output_schema Existing schema for pseudonymised output tables.
 #' @param catalogues Optional normalised semantic catalogue data frame used by
@@ -14,24 +14,25 @@
 #' @param token_column Name used for the pseudonym token in every output table.
 #' @param exact_duplicates `"report"` retains identical projected rows; `"drop"` removes them explicitly.
 #' @param existing `"error"` refuses existing destinations; `"replace"` replaces only declared ordinary tables without `CASCADE`.
-#' @param sensitive_issues Logical; explicitly return identifier-bearing diagnostic rows in memory. episcout marks and redacts this component's ordinary print and structure methods and never persists it, but callers can deliberately extract, print or save its columns and are responsible for controlling them.
+#' @param sensitive_issues Deprecated compatibility alias for `include_issue_values`. `NULL` leaves the new argument unchanged; an explicit logical value warns and cannot conflict with an explicitly supplied new value.
 #' @param lock_timeout Maximum seconds to wait for transaction-scoped PostgreSQL locks.
+#' @param include_issue_values Logical; return identifier values for `invalid_identifier` and `unmatched_identifier` findings in an ordinary `issue_values` data frame. Other value families are not collected.
 #'
-#' @return A redacted `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `sensitivity`. When `sensitive_issues = TRUE`, a marked memory-only data frame with `issue_code`, source relation/column metadata and `source_value` is appended. episcout does not print or persist that component automatically; deliberate extraction is the caller's responsibility. Status is `audit_complete`, `blocked` or `complete`.
+#' @return An `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `output_type`. When `include_issue_values = TRUE`, ordinary `issue_values` columns are `issue_code`, source relation/column metadata and `source_value`. Status is `audit_complete`, `not_written` or `complete`.
 #'
 #' @details Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. `existing = "replace"` is deliberately opt-in and is limited to declared ordinary destination tables without `CASCADE`. Source tables are never altered.
 #'
 #' Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 #'
-#' Expected identity, duplicate, dictionary and governance findings return `status = "blocked"` with a value-free issue table containing `issue_code`, `severity`, `stage`, `source_schema`, `source_table`, `source_column`, `n_affected`, `message`, `recommended_action` and `sensitive`. Correct the declared metadata or source governance problem and audit again. Errors are reserved for malformed arguments, unsupported types or unsafe database/infrastructure state; apply errors roll back before returning a sanitised condition.
+#' A completed audit always returns `status = "audit_complete"`, whether or not technical issues are present. The value-free issue table contains `issue_code`, `severity`, `stage`, `source_schema`, `source_table`, `source_column`, `n_affected`, `message` and `recommended_action`; severity is `error` or `warning`. Apply returns `not_written` when error-severity findings or a lock timeout prevent commit. Malformed arguments, unsupported types and unsafe database or infrastructure state remain errors; apply errors roll back before returning a sanitised condition.
 #'
-#' The semantic dictionary must completely and currently cover every declared source table. The linkage `columns` policy requires the declared ID column to be a confirmed `direct_identifier` with action `bridge`; `bridge` and `drop` columns are excluded, while `retain` and `retain_restricted` columns form the output. The generated token is semantic identifier metadata. `output_dictionary` and `output_catalogues` can pass directly to [epi_eda_dictionary_spec()].
+#' The semantic dictionary must completely and currently cover every declared source table. The linkage `columns` component requires exactly the declared ID column to use `output_action = "pseudonymise"`; pseudonymised and dropped columns are excluded, while `retain` columns form the output. The generated token is semantic identifier metadata. `output_dictionary` and `output_catalogues` can pass directly to [epi_eda_dictionary_spec()].
 #'
 #' Identifier families are PostgreSQL `text`/`varchar`, integral types and `uuid`. Fixed-width character identifiers and nondeterministic text collations are rejected. Text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons; UUIDs follow PostgreSQL UUID identity. Matching never trims, case-folds, hashes or infers identity.
 #'
-#' Exact projected duplicates are retained under `exact_duplicates = "report"` and explicitly removed under `"drop"`. Equal declared record keys with different retained payloads block; no conflicting observation is selected, aggregated or overwritten. With no record key, only exact projected duplicates can be assessed.
+#' Exact projected duplicates are retained under `exact_duplicates = "report"` and explicitly removed under `"drop"`. Equal declared record keys with different retained payloads produce an error-severity issue; no conflicting observation is selected, aggregated or overwritten. With no record key, only exact projected duplicates can be assessed.
 #'
-#' Pseudonymised output remains restricted personal data. It is not anonymous or automatically disclosure-controlled. The registry alias table is re-identifying and requires separate database, backup and access controls. episcout does not control PostgreSQL, driver, backup, administrator or server logging. See `vignette("longitudinal-pseudonymisation")` for the complete audit-first workflow and recovery guidance.
+#' Pseudonymisation is reversible through the registry and is not anonymisation or automatic disclosure control. episcout does not decide whether an output may be used or disclosed and does not control PostgreSQL, driver, backup, administrator or server logging. See `vignette("longitudinal-pseudonymisation")` for the complete technical workflow and recovery guidance.
 #'
 #' @export
 #' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_identity_registry_init()], [epi_eda_dictionary_spec()]
@@ -46,8 +47,17 @@ epi_sec_pseudonymise_db <- function(con,
                                     token_column = "entity_token",
                                     exact_duplicates = c("report", "drop"),
                                     existing = c("error", "replace"),
-                                    sensitive_issues = FALSE,
-                                    lock_timeout = 30) {
+                                    sensitive_issues = NULL,
+                                    lock_timeout = 30,
+                                    include_issue_values = FALSE) {
+  include_issue_values_supplied <- !missing(include_issue_values)
+  diagnostics <- sec_diagnostic_options(
+    sensitive_issues,
+    include_issue_values,
+    include_issue_values_supplied
+  )
+  include_issue_values <- diagnostics$include_issue_values
+  legacy_issue_values_alias <- diagnostics$legacy_alias
   sec_database_boundary(
     {
       validate_postgres_connection(con)
@@ -58,19 +68,26 @@ epi_sec_pseudonymise_db <- function(con,
       output_schema <- sec_scalar_text(output_schema, "output_schema")
       token_column <- sec_scalar_text(token_column, "token_column")
       lock_timeout <- sec_whole_number(lock_timeout, "lock_timeout", minimum = 1L)
-      if (!is.logical(sensitive_issues) || length(sensitive_issues) != 1L || is.na(sensitive_issues)) {
-        stop("sensitive_issues must be TRUE or FALSE.", call. = FALSE)
-      }
       if (!inherits(linkage, "epi_sec_linkage_spec") ||
         !identical(
           names(linkage),
           c("tables", "columns", "record_keys", "crosswalks")
-        )) {
+        ) ||
+        !linkage_has_exact_columns(linkage$tables, linkage_table_columns()) ||
+        !linkage_has_exact_columns(linkage$columns, linkage_output_action_columns()) ||
+        !linkage_has_exact_columns(linkage$record_keys, linkage_record_key_columns()) ||
+        !linkage_has_exact_columns(linkage$crosswalks, linkage_crosswalk_columns())) {
         stop(
-          "linkage must use the four-component epi_sec_linkage_spec schema; regenerate old linkage objects with an explicit columns policy.",
+          "linkage must use the current four-component epi_sec_linkage_spec schema; regenerate saved or modified linkage objects.",
           call. = FALSE
         )
       }
+      linkage <- epi_sec_linkage_spec(
+        linkage$tables,
+        linkage$columns,
+        linkage$record_keys,
+        linkage$crosswalks
+      )
       if (mode == "apply" && sec_connection_is_transacting(con)) {
         stop("mode = 'apply' requires a connection that is not already inside a caller-managed transaction.", call. = FALSE)
       }
@@ -102,27 +119,21 @@ epi_sec_pseudonymise_db <- function(con,
         stop("The identity registry is not initialised; run epi_sec_identity_registry_init() first.", call. = FALSE)
       }
 
-      context <- tryCatch(
-        sec_pseudonym_context(
-          con, dictionary, catalogues, linkage, registry_schema, output_schema,
-          token_column, exact_duplicates, existing, sensitive_issues
-        ),
-        epi_sec_governance = function(condition) condition
+      context <- sec_pseudonym_context(
+        con, dictionary, catalogues, linkage, registry_schema, output_schema,
+        token_column, exact_duplicates, existing, include_issue_values,
+        legacy_issue_values_alias
       )
-      if (inherits(context, "epi_sec_governance")) {
-        blocked_context <- sec_minimal_context(
-          dictionary, catalogues, linkage, registry_schema, output_schema,
-          token_column, exact_duplicates, existing, sensitive_issues
-        )
-        blocked_audit <- sec_governance_audit(blocked_context, context$issue)
-        return(sec_pseudonym_result("blocked", mode, FALSE, blocked_context, blocked_audit))
-      }
-      audit <- sec_pseudonym_audit(con, context, include_sensitive = sensitive_issues)
-      if (nrow(audit$issues) > 0L && any(audit$issues$severity == "blocking")) {
-        return(sec_pseudonym_result("blocked", mode, FALSE, context, audit))
-      }
+      audit <- sec_pseudonym_audit(
+        con,
+        context,
+        include_issue_values = include_issue_values
+      )
       if (mode == "audit") {
         return(sec_pseudonym_result("audit_complete", mode, FALSE, context, audit))
+      }
+      if (sec_pseudonym_has_errors(audit)) {
+        return(sec_pseudonym_result("not_written", mode, FALSE, context, audit))
       }
 
       lock_keys <- sec_lock_keys(context)
@@ -134,12 +145,12 @@ epi_sec_pseudonymise_db <- function(con,
         audit$issues <- rbind(
           audit$issues,
           sec_issue(
-            "lock_timeout", "blocking", "transaction", declaration, NA_character_, 0L,
+            "lock_timeout", "error", "transaction", declaration, NA_character_, 0L,
             "Another database operation held a required registry or destination lock beyond lock_timeout.",
-            "Wait for the other operation to finish, then rerun the audit."
+            "Wait for the other operation to finish, then retry."
           )
         )
-        return(sec_pseudonym_result("blocked", mode, FALSE, context, audit))
+        return(sec_pseudonym_result("not_written", mode, FALSE, context, audit))
       }
 
       applied <- tryCatch(
@@ -154,42 +165,78 @@ epi_sec_pseudonymise_db <- function(con,
           if (registry_inside$state != "compatible") {
             stop("The identity registry changed after the initial audit; the transaction was rolled back.", call. = FALSE)
           }
-          inside_context <- tryCatch(
-            sec_pseudonym_context(
-              con, dictionary, catalogues, linkage, registry_schema, output_schema,
-              token_column, exact_duplicates, existing, sensitive_issues
-            ),
-            epi_sec_governance = function(condition) condition
+          inside_context <- sec_pseudonym_context(
+            con, dictionary, catalogues, linkage, registry_schema, output_schema,
+            token_column, exact_duplicates, existing, include_issue_values,
+            legacy_issue_values_alias
           )
-          if (inherits(inside_context, "epi_sec_governance")) {
-            changed_context <- sec_minimal_context(
-              dictionary, catalogues, linkage, registry_schema, output_schema,
-              token_column, exact_duplicates, existing, sensitive_issues
-            )
-            sec_stop_blocked(sec_governance_audit(changed_context, inside_context$issue))
-          }
-          inside <- sec_pseudonym_audit(con, inside_context, include_sensitive = sensitive_issues)
-          if (nrow(inside$issues) > 0L && any(inside$issues$severity == "blocking")) {
-            sec_stop_blocked(inside)
+          inside <- sec_pseudonym_audit(
+            con,
+            inside_context,
+            include_issue_values = include_issue_values
+          )
+          if (sec_pseudonym_has_errors(inside)) {
+            sec_stop_no_write(inside)
           }
           sec_apply_registry(con, inside_context)
-          after_registry <- sec_pseudonym_audit(con, inside_context, include_sensitive = sensitive_issues, registry_complete = TRUE)
-          if (nrow(after_registry$issues) > 0L && any(after_registry$issues$severity == "blocking")) {
-            sec_stop_blocked(after_registry)
+          after_registry <- sec_pseudonym_audit(
+            con,
+            inside_context,
+            include_issue_values = include_issue_values,
+            registry_complete = TRUE
+          )
+          if (sec_pseudonym_has_errors(after_registry)) {
+            sec_stop_no_write(after_registry)
           }
           sec_apply_outputs(con, inside_context, after_registry)
         }),
-        epi_sec_blocked = function(error) error$audit,
+        epi_sec_no_write = function(error) error$audit,
         error = function(error) {
           stop("PostgreSQL pseudonymisation was rolled back safely; inspect PostgreSQL or driver logs.", call. = FALSE)
         }
       )
       if (is.list(applied) && identical(applied$rolled_back, TRUE)) {
-        return(sec_pseudonym_result("blocked", mode, FALSE, context, applied))
+        return(sec_pseudonym_result("not_written", mode, FALSE, context, applied))
       }
       sec_pseudonym_result("complete", mode, TRUE, context, applied)
     },
     "PostgreSQL pseudonymisation could not complete; inspect PostgreSQL or driver logs."
+  )
+}
+
+sec_diagnostic_options <- function(sensitive_issues,
+                                   include_issue_values,
+                                   include_issue_values_supplied) {
+  if (!is.logical(include_issue_values) ||
+        length(include_issue_values) != 1L ||
+        is.na(include_issue_values)) {
+    stop("include_issue_values must be TRUE or FALSE.", call. = FALSE)
+  }
+  if (is.null(sensitive_issues)) {
+    return(list(
+      include_issue_values = include_issue_values,
+      legacy_alias = FALSE
+    ))
+  }
+  if (!is.logical(sensitive_issues) ||
+        length(sensitive_issues) != 1L ||
+        is.na(sensitive_issues)) {
+    stop("sensitive_issues must be NULL, TRUE or FALSE.", call. = FALSE)
+  }
+  warning(
+    "sensitive_issues is deprecated; use include_issue_values instead. Requested issue values are returned as ordinary data.",
+    call. = FALSE
+  )
+  if (include_issue_values_supplied &&
+        !identical(sensitive_issues, include_issue_values)) {
+    stop(
+      "sensitive_issues and include_issue_values must not conflict.",
+      call. = FALSE
+    )
+  }
+  list(
+    include_issue_values = sensitive_issues,
+    legacy_alias = isTRUE(sensitive_issues)
   )
 }
 
@@ -198,26 +245,14 @@ print.epi_sec_pseudonymisation_result <- function(x, ...) { # nolint: object_len
   cat("episcout longitudinal pseudonymisation\n")
   cat("  status: ", x$status, "\n", sep = "")
   cat("  tables: ", nrow(x$table_audit), "\n", sep = "")
-  cat("  blocking issues: ", sum(x$issues$severity == "blocking"), "\n", sep = "")
+  cat("  error issues: ", sum(x$issues$severity == "error"), "\n", sep = "")
   cat("  writes performed: ", if (isTRUE(x$metadata$writes[[1]])) "yes" else "no", "\n", sep = "")
   cat("  output schema: ", x$metadata$output_schema[[1]], "\n", sep = "")
   cat("  next: ", x$metadata$next_action[[1]], "\n", sep = "")
   invisible(x)
 }
 
-#' @export
-print.epi_sec_sensitive_issues <- function(x, ...) {
-  cat("<sensitive pseudonymisation issues: ", nrow(x), " row(s); values hidden>\n", sep = "")
-  invisible(x)
-}
-
-#' @export
-str.epi_sec_sensitive_issues <- function(object, ...) {
-  cat("<sensitive pseudonymisation issues: ", nrow(object), " row(s); structure and values hidden>\n", sep = "")
-  invisible(object)
-}
-
-sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, sensitive_issues) {
+sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, include_issue_values, legacy_issue_values_alias) {
   table_contexts <- lapply(seq_len(nrow(linkage$tables)), function(index) {
     declaration <- linkage$tables[index, , drop = FALSE]
     relation <- sec_relation_state(con, declaration$source_schema, declaration$source_table)
@@ -235,38 +270,29 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
       drop = FALSE
     ]
     if (!setequal(columns$source_column, dictionary_rows$source_column)) {
-      sec_governance_stop(
-        "dictionary_coverage", declaration, NA_character_,
-        length(setdiff(union(columns$source_column, dictionary_rows$source_column), intersect(columns$source_column, dictionary_rows$source_column))),
-        "The confirmed dictionary does not exactly cover the current source columns.",
-        "Refresh and reconfirm the dictionary against the current source inventory, then audit again."
+      stop(
+        "The semantic dictionary does not exactly cover the current source columns.",
+        call. = FALSE
       )
     }
     dictionary_rows <- dictionary_rows[match(columns$source_column, dictionary_rows$source_column), , drop = FALSE]
-    policy_rows <- linkage$columns[
+    action_rows <- linkage$columns[
       linkage$columns$source_schema == declaration$source_schema &
-        linkage$columns$source_table == declaration$source_table,
-      , drop = FALSE
+        linkage$columns$source_table == declaration$source_table, ,
+      drop = FALSE
     ]
-    policy_match <- match(
-      dictionary_rows$source_column, policy_rows$source_column
+    action_match <- match(
+      dictionary_rows$source_column, action_rows$source_column
     )
-    if (nrow(policy_rows) != nrow(dictionary_rows) || anyNA(policy_match) ||
-          !setequal(policy_rows$source_column, dictionary_rows$source_column)) {
-      sec_governance_stop(
-        "column_policy_coverage", declaration, NA_character_,
-        length(setdiff(
-          union(dictionary_rows$source_column, policy_rows$source_column),
-          intersect(dictionary_rows$source_column, policy_rows$source_column)
-        )),
-        "The linkage column policy does not exactly cover the current semantic dictionary.",
-        "Regenerate the linkage scaffold from the current dictionary and reconfirm its columns policy."
+    if (nrow(action_rows) != nrow(dictionary_rows) || anyNA(action_match) ||
+          !setequal(action_rows$source_column, dictionary_rows$source_column)) {
+      stop(
+        "The linkage output actions do not exactly cover the current semantic dictionary.",
+        call. = FALSE
       )
     }
-    policy_rows <- policy_rows[policy_match, , drop = FALSE]
-    sec_validate_privacy_rows(
-      dictionary_rows, policy_rows, declaration$id_column
-    )
+    action_rows <- action_rows[action_match, , drop = FALSE]
+    sec_validate_current_rows(dictionary_rows)
     id_index <- match(declaration$id_column, columns$source_column)
     if (is.na(id_index)) {
       stop("The declared id_column was not found in source table ", declaration$source_schema, ".", declaration$source_table, ".", call. = FALSE)
@@ -278,7 +304,7 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     if (id_family == "text" && !sec_id_collation_deterministic(con, columns[id_index, , drop = FALSE])) {
       stop("A textual identifier uses a nondeterministic PostgreSQL collation and cannot provide exact identity matching.", call. = FALSE)
     }
-    retained <- policy_rows$analytic_action %in% c("retain", "retain_restricted")
+    retained <- action_rows$output_action == "retain"
     retained_columns <- dictionary_rows$source_column[retained]
     if (token_column %in% retained_columns) {
       stop("token_column collides with a retained source column in ", declaration$source_schema, ".", declaration$source_table, ".", call. = FALSE)
@@ -301,7 +327,7 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
       declaration = declaration,
       columns = columns,
       dictionary = dictionary_rows,
-      policy = policy_rows,
+      actions = action_rows,
       id_family = id_family,
       retained_columns = retained_columns,
       record_keys = keys
@@ -322,14 +348,15 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     token_column = token_column,
     exact_duplicates = exact_duplicates,
     existing = existing,
-    sensitive_issues = sensitive_issues,
+    include_issue_values = include_issue_values,
+    legacy_issue_values_alias = legacy_issue_values_alias,
     tables = table_contexts
   )
 }
 
-sec_pseudonym_audit <- function(con, context, include_sensitive = FALSE, registry_complete = FALSE) {
+sec_pseudonym_audit <- function(con, context, include_issue_values = FALSE, registry_complete = FALSE) {
   issues <- sec_empty_issues()
-  sensitive <- sec_empty_sensitive_issues()
+  issue_values <- sec_empty_issue_values()
   table_rows <- vector("list", length(context$tables))
   duplicate_rows <- vector("list", length(context$tables))
   mapping <- sec_mapping_ctes(con, context, registry_complete)
@@ -352,26 +379,26 @@ sec_pseudonym_audit <- function(con, context, include_sensitive = FALSE, registr
     key_missing <- sec_record_key_missing(con, item)
     destination <- sec_destination_state(con, context$output_schema, declaration$destination_table)
 
-    if (invalid_id > 0) issues <- rbind(issues, sec_issue("invalid_identifier", "blocking", "identity", declaration, declaration$id_column, invalid_id, "Identifier values are missing or blank.", "Correct the source identifiers and rerun the audit."))
-    if (n_unmatched > 0) issues <- rbind(issues, sec_issue("unmatched_identifier", "blocking", "identity", declaration, declaration$id_column, n_unmatched, "Identifiers cannot be resolved through the registry, enrolment source or confirmed crosswalk.", "Review the namespace or add a confirmed database-resident crosswalk, then rerun."))
-    if (key_missing > 0) issues <- rbind(issues, sec_issue("missing_record_key", "blocking", "duplicates", declaration, paste(item$record_keys$key_column, collapse = ","), key_missing, "Declared record-key values are missing.", "Correct the record keys or revise the reviewed linkage specification."))
-    if (destination$exists && context$existing == "error") issues <- rbind(issues, sec_issue("destination_exists", "blocking", "output", declaration, NA_character_, 1L, "The declared destination table already exists.", "Choose a new destination or explicitly use existing = 'replace'."))
-    if (destination$exists && !destination$replaceable) issues <- rbind(issues, sec_issue("unsafe_destination", "blocking", "output", declaration, NA_character_, 1L, "The destination is not an ordinary table owned by the current database role.", "Choose an owned ordinary destination table; dependencies and views are never replaced."))
+    if (invalid_id > 0) issues <- rbind(issues, sec_issue("invalid_identifier", "error", "identity", declaration, declaration$id_column, invalid_id, "Identifier values are missing or blank.", "Correct the source identifiers and retry."))
+    if (n_unmatched > 0) issues <- rbind(issues, sec_issue("unmatched_identifier", "error", "identity", declaration, declaration$id_column, n_unmatched, "Identifiers cannot be resolved through the registry, enrolment source or declared crosswalk.", "Check the namespace or add a database-resident crosswalk, then retry."))
+    if (key_missing > 0) issues <- rbind(issues, sec_issue("missing_record_key", "error", "duplicates", declaration, paste(item$record_keys$key_column, collapse = ","), key_missing, "Declared record-key values are missing.", "Correct the record keys or revise the linkage specification."))
+    if (destination$exists && context$existing == "error") issues <- rbind(issues, sec_issue("destination_exists", "error", "output", declaration, NA_character_, 1L, "The declared destination table already exists.", "Choose a new destination or explicitly use existing = 'replace'."))
+    if (destination$exists && !destination$replaceable) issues <- rbind(issues, sec_issue("unsafe_destination", "error", "output", declaration, NA_character_, 1L, "The destination is not an ordinary table owned by the current database role.", "Choose an owned ordinary destination table; dependencies and views are never replaced."))
 
     duplicate <- sec_duplicate_audit(con, context, item, mapping)
-    if (duplicate$n_conflicting > 0) issues <- rbind(issues, sec_issue("conflicting_record_key", "blocking", "duplicates", declaration, NA_character_, duplicate$n_conflicting, "Equal record keys have different retained payloads.", "Resolve the conflicting records; episcout never selects or aggregates them."))
-    if (nrow(item$record_keys) == 0L && !isTRUE(declaration$one_row_per_entity)) issues <- rbind(issues, sec_issue("record_key_not_declared", "warning", "duplicates", declaration, NA_character_, 0L, "No record key is declared, so only exact projected duplicates can be checked.", "Declare reviewed record-key columns when conflicting repeated observations must be detected."))
+    if (duplicate$n_conflicting > 0) issues <- rbind(issues, sec_issue("conflicting_record_key", "error", "duplicates", declaration, NA_character_, duplicate$n_conflicting, "Equal record keys have different retained payloads.", "Resolve the conflicting records; episcout never selects or aggregates them."))
+    if (nrow(item$record_keys) == 0L && !isTRUE(declaration$one_row_per_entity)) issues <- rbind(issues, sec_issue("record_key_not_declared", "warning", "duplicates", declaration, NA_character_, 0L, "No record key is declared, so only exact projected duplicates can be checked.", "Declare record-key columns when conflicting repeated observations must be detected."))
 
-    if (include_sensitive && invalid_id > 0) {
+    if (include_issue_values && invalid_id > 0) {
       values <- DBI::dbGetQuery(
         con,
         paste0("SELECT ", id, "::text AS source_value FROM ", source, " WHERE ", id, " IS NULL OR btrim(", id, "::text) = ''")
       )
-      sensitive <- rbind(sensitive, sec_sensitive_rows("invalid_identifier", declaration, declaration$id_column, values$source_value))
+      issue_values <- rbind(issue_values, sec_issue_value_rows("invalid_identifier", declaration, declaration$id_column, values$source_value))
     }
-    if (include_sensitive && n_unmatched > 0) {
+    if (include_issue_values && n_unmatched > 0) {
       values <- DBI::dbGetQuery(con, sec_unmatched_query(con, context, item, mapping, return_values = TRUE))
-      sensitive <- rbind(sensitive, sec_sensitive_rows("unmatched_identifier", declaration, declaration$id_column, values$source_value))
+      issue_values <- rbind(issue_values, sec_issue_value_rows("unmatched_identifier", declaration, declaration$id_column, values$source_value))
     }
 
     table_rows[[index]] <- data.frame(
@@ -411,7 +438,7 @@ sec_pseudonym_audit <- function(con, context, include_sensitive = FALSE, registr
     table_audit = do.call(rbind, table_rows),
     duplicate_audit = do.call(rbind, duplicate_rows),
     issues = issues,
-    sensitive_issues = sensitive,
+    issue_values = issue_values,
     output_dictionary = sec_output_dictionary(context),
     output_catalogues = sec_output_catalogues(context),
     manifest = sec_output_manifest(context, created = FALSE)
@@ -540,11 +567,11 @@ sec_crosswalk_audit <- function(con, context, mapping) {
   ))
   issues <- sec_empty_issues()
   declaration <- context$linkage$tables[which(context$linkage$tables$can_enrol), , drop = FALSE]
-  if (counts$n_conflicts[[1]] > 0) issues <- rbind(issues, sec_issue("crosswalk_conflict", "blocking", "crosswalk", declaration, NA_character_, counts$n_conflicts[[1]], "A crosswalk alias has multiple canonical targets.", "Correct and reconfirm the database-resident crosswalk."))
-  if (counts$n_missing_targets[[1]] > 0) issues <- rbind(issues, sec_issue("crosswalk_target_missing", "blocking", "crosswalk", declaration, NA_character_, counts$n_missing_targets[[1]], "Crosswalk targets are absent from the enrolment source and registry.", "Correct the canonical targets and rerun."))
-  if (counts$n_chains[[1]] > 0) issues <- rbind(issues, sec_issue("crosswalk_not_flat", "blocking", "crosswalk", declaration, NA_character_, counts$n_chains[[1]], "Crosswalk aliases form a chain or cycle.", "Flatten every mapping to one canonical enrolment or registry identifier."))
-  if (counts$n_invalid[[1]] > 0) issues <- rbind(issues, sec_issue("invalid_crosswalk_identifier", "blocking", "crosswalk", declaration, NA_character_, counts$n_invalid[[1]], "Crosswalk identifiers are missing or blank.", "Correct the restricted crosswalk relation and rerun."))
-  if (counts$n_registry_conflicts[[1]] > 0) issues <- rbind(issues, sec_issue("registry_alias_conflict", "blocking", "crosswalk", declaration, NA_character_, counts$n_registry_conflicts[[1]], "A crosswalk alias conflicts with its immutable registry assignment.", "Correct the crosswalk; existing registry aliases are never reassigned."))
+  if (counts$n_conflicts[[1]] > 0) issues <- rbind(issues, sec_issue("crosswalk_conflict", "error", "crosswalk", declaration, NA_character_, counts$n_conflicts[[1]], "A crosswalk alias has multiple canonical targets.", "Correct the database-resident crosswalk."))
+  if (counts$n_missing_targets[[1]] > 0) issues <- rbind(issues, sec_issue("crosswalk_target_missing", "error", "crosswalk", declaration, NA_character_, counts$n_missing_targets[[1]], "Crosswalk targets are absent from the enrolment source and registry.", "Correct the canonical targets and retry."))
+  if (counts$n_chains[[1]] > 0) issues <- rbind(issues, sec_issue("crosswalk_not_flat", "error", "crosswalk", declaration, NA_character_, counts$n_chains[[1]], "Crosswalk aliases form a chain or cycle.", "Flatten every mapping to one canonical enrolment or registry identifier."))
+  if (counts$n_invalid[[1]] > 0) issues <- rbind(issues, sec_issue("invalid_crosswalk_identifier", "error", "crosswalk", declaration, NA_character_, counts$n_invalid[[1]], "Crosswalk identifiers are missing or blank.", "Correct the crosswalk relation and retry."))
+  if (counts$n_registry_conflicts[[1]] > 0) issues <- rbind(issues, sec_issue("registry_alias_conflict", "error", "crosswalk", declaration, NA_character_, counts$n_registry_conflicts[[1]], "A crosswalk alias conflicts with its immutable registry assignment.", "Correct the crosswalk; existing registry aliases are never reassigned."))
   list(
     n_rows = as.numeric(counts$n_rows[[1]]),
     n_unused = as.numeric(counts$n_unused[[1]]),
@@ -629,10 +656,10 @@ sec_apply_outputs <- function(con, context, audit) {
     fields <- character()
     for (row in seq_len(nrow(item$dictionary))) {
       column <- item$dictionary$source_column[[row]]
-      action <- item$policy$analytic_action[[row]]
+      action <- item$actions$output_action[[row]]
       if (column == d$id_column) {
         fields <- c(fields, paste0("a.entity_token AS ", sec_quote_identifier(con, context$token_column)))
-      } else if (action %in% c("retain", "retain_restricted")) {
+      } else if (action == "retain") {
         fields <- c(fields, paste0("s.", sec_quote_identifier(con, column)))
       }
     }
@@ -773,89 +800,25 @@ sec_release_session_locks <- function(con, keys) {
   invisible(failed)
 }
 
-sec_stop_blocked <- function(audit) {
+sec_stop_no_write <- function(audit) {
   audit$rolled_back <- TRUE
   condition <- structure(
-    list(message = "Pseudonymisation was blocked and rolled back.", call = NULL, audit = audit),
-    class = c("epi_sec_blocked", "error", "condition")
+    list(message = "Pseudonymisation was not written and the transaction was rolled back.", call = NULL, audit = audit),
+    class = c("epi_sec_no_write", "error", "condition")
   )
   stop(condition)
 }
 
-sec_governance_stop <- function(code, declaration, column, n, message, action) {
-  condition <- structure(
-    list(
-      message = message,
-      call = NULL,
-      issue = sec_issue(code, "blocking", "dictionary", declaration, column, n, message, action)
-    ),
-    class = c("epi_sec_governance", "error", "condition")
-  )
-  stop(condition)
-}
-
-sec_minimal_context <- function(dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, sensitive_issues) {
-  list(
-    dictionary = dictionary,
-    catalogues = catalogues,
-    linkage = linkage,
-    registry_schema = registry_schema,
-    output_schema = output_schema,
-    token_column = token_column,
-    exact_duplicates = exact_duplicates,
-    existing = existing,
-    sensitive_issues = sensitive_issues,
-    tables = list()
-  )
-}
-
-sec_governance_audit <- function(context, issue) {
-  declarations <- context$linkage$tables
-  table_audit <- data.frame(
-    source_schema = declarations$source_schema,
-    source_table = declarations$source_table,
-    destination_table = declarations$destination_table,
-    n_input = NA_real_,
-    n_invalid_id = NA_real_,
-    n_unmatched = NA_real_,
-    n_missing_key = NA_real_,
-    n_output = NA_real_,
-    n_exact_removed = NA_real_,
-    stringsAsFactors = FALSE
-  )
-  duplicate_audit <- data.frame(
-    source_schema = declarations$source_schema,
-    source_table = declarations$source_table,
-    n_exact_excess = NA_real_,
-    n_conflicting_keys = NA_real_,
-    action = context$exact_duplicates,
-    stringsAsFactors = FALSE
-  )
-  list(
-    rolled_back = FALSE,
-    identity_audit = data.frame(
-      n_crosswalk_rows = NA_real_,
-      n_unused_crosswalk_rows = NA_real_,
-      n_crosswalk_conflicts = NA_real_,
-      stringsAsFactors = FALSE
-    ),
-    table_audit = table_audit,
-    duplicate_audit = duplicate_audit,
-    issues = issue,
-    sensitive_issues = sec_empty_sensitive_issues(),
-    output_dictionary = context$dictionary[0, , drop = FALSE],
-    output_catalogues = if (is.null(context$catalogues)) NULL else context$catalogues[0, , drop = FALSE],
-    manifest = sec_output_manifest(context, created = FALSE)
-  )
+sec_pseudonym_has_errors <- function(audit) {
+  nrow(audit$issues) > 0L && any(audit$issues$severity == "error")
 }
 
 sec_pseudonym_result <- function(status, mode, writes, context, audit) {
-  next_action <- switch(
-    status,
-    blocked = "Resolve every blocking issue and rerun the audit.",
-    audit_complete = "Review the audit, then rerun with mode = 'apply'.",
-    complete = "Review the pseudonymised tables and continue with the returned output dictionary."
-  )
+  next_action <- c(
+    not_written = "Resolve every error issue before retrying mode = 'apply'.",
+    audit_complete = "Inspect the result or run mode = 'apply'.",
+    complete = "Use the pseudonymised tables and returned output dictionary."
+  )[[status]]
   result <- list(
     status = status,
     metadata = data.frame(
@@ -874,7 +837,12 @@ sec_pseudonym_result <- function(status, mode, writes, context, audit) {
     output_catalogues = audit$output_catalogues,
     manifest = audit$manifest
   )
-  if (isTRUE(context$sensitive_issues)) result$sensitive_issues <- audit$sensitive_issues
+  if (isTRUE(context$include_issue_values)) {
+    result$issue_values <- audit$issue_values
+  }
+  if (isTRUE(context$legacy_issue_values_alias)) {
+    result$sensitive_issues <- audit$issue_values
+  }
   structure(
     result,
     class = c("epi_sec_pseudonymisation_result", "list")
@@ -886,37 +854,29 @@ sec_empty_issues <- function() {
     issue_code = character(), severity = character(), stage = character(),
     source_schema = character(), source_table = character(), source_column = character(),
     n_affected = numeric(), message = character(), recommended_action = character(),
-    sensitive = logical(), stringsAsFactors = FALSE
+    stringsAsFactors = FALSE
   )
 }
 
-sec_empty_sensitive_issues <- function() {
-  structure(
-    data.frame(
-      issue_code = character(),
-      source_schema = character(),
-      source_table = character(),
-      source_column = character(),
-      source_value = character(),
-      stringsAsFactors = FALSE
-    ),
-    class = c("epi_sec_sensitive_issues", "data.frame"),
-    sensitive = TRUE
+sec_empty_issue_values <- function() {
+  data.frame(
+    issue_code = character(),
+    source_schema = character(),
+    source_table = character(),
+    source_column = character(),
+    source_value = character(),
+    stringsAsFactors = FALSE
   )
 }
 
-sec_sensitive_rows <- function(code, declaration, column, values) {
-  structure(
-    data.frame(
-      issue_code = rep(code, length(values)),
-      source_schema = rep(as.character(declaration$source_schema[[1]]), length(values)),
-      source_table = rep(as.character(declaration$source_table[[1]]), length(values)),
-      source_column = rep(as.character(column), length(values)),
-      source_value = as.character(values),
-      stringsAsFactors = FALSE
-    ),
-    class = c("epi_sec_sensitive_issues", "data.frame"),
-    sensitive = TRUE
+sec_issue_value_rows <- function(code, declaration, column, values) {
+  data.frame(
+    issue_code = rep(code, length(values)),
+    source_schema = rep(as.character(declaration$source_schema[[1]]), length(values)),
+    source_table = rep(as.character(declaration$source_table[[1]]), length(values)),
+    source_column = rep(as.character(column), length(values)),
+    source_value = as.character(values),
+    stringsAsFactors = FALSE
   )
 }
 
@@ -931,7 +891,6 @@ sec_issue <- function(code, severity, stage, declaration, column, n, message, ac
     n_affected = as.numeric(n),
     message = message,
     recommended_action = action,
-    sensitive = FALSE,
     stringsAsFactors = FALSE
   )
 }
@@ -985,46 +944,11 @@ sec_id_collation_deterministic <- function(con, column) {
   nrow(observed) == 1L && isTRUE(observed$collisdeterministic[[1]])
 }
 
-sec_validate_privacy_rows <- function(rows, policy, id_column) {
-  declaration <- data.frame(
-    source_schema = rows$source_schema[[1]],
-    source_table = rows$source_table[[1]],
-    stringsAsFactors = FALSE
-  )
-  if (any(policy$validation_status != "confirmed") ||
-        any(rows$drift_status != "current")) {
-    sec_governance_stop(
-      "column_policy_not_confirmed", declaration, NA_character_,
-      sum(policy$validation_status != "confirmed" | rows$drift_status != "current"),
-      "Every selected semantic dictionary row must be current and its column policy confirmed.",
-      "Refresh the dictionary and reconfirm every linkage column-policy row, then audit again."
-    )
-  }
-  if (any(policy$privacy_class == "unclassified") ||
-        any(policy$analytic_action %in% c("review", "derive"))) {
-    sec_governance_stop(
-      "column_policy_unreviewed", declaration, NA_character_,
-      sum(policy$privacy_class == "unclassified" | policy$analytic_action %in% c("review", "derive")),
-      "Every selected column-policy row must have a supported classified action.",
-      "Classify each column and choose bridge, drop, retain or retain_restricted."
-    )
-  }
-  id <- policy[policy$source_column == id_column, , drop = FALSE]
-  if (nrow(id) != 1L || id$privacy_class[[1]] != "direct_identifier" || id$analytic_action[[1]] != "bridge") {
-    sec_governance_stop(
-      "identifier_not_bridged", declaration, id_column, 1L,
-      "The declared identifier is not a confirmed direct identifier with bridge action.",
-      "Review the declared ID column as privacy_class = 'direct_identifier' and analytic_action = 'bridge'."
-    )
-  }
-  other_direct <- policy$source_column != id_column &
-    policy$privacy_class == "direct_identifier" &
-    policy$analytic_action != "drop"
-  if (any(other_direct)) {
-    sec_governance_stop(
-      "additional_identifier_retained", declaration, NA_character_, sum(other_direct),
-      "An additional direct identifier is not excluded from output.",
-      "Set every additional direct identifier to analytic_action = 'drop', then reconfirm the column policy."
+sec_validate_current_rows <- function(rows) {
+  if (any(rows$drift_status != "current")) {
+    stop(
+      "Every selected semantic dictionary row must have drift_status = 'current'.",
+      call. = FALSE
     )
   }
   invisible(TRUE)
@@ -1039,13 +963,13 @@ sec_validate_catalogues <- function(dictionary,
     tables[c("source_schema", "source_table")],
     by = c("source_schema", "source_table")
   )
-  policy <- merge(
+  actions <- merge(
     columns,
     tables[c("source_schema", "source_table")],
     by = c("source_schema", "source_table")
   )
-  retained <- policy[
-    policy$analytic_action %in% c("retain", "retain_restricted"),
+  retained <- actions[
+    actions$output_action == "retain",
     dictionary_key_columns(),
     drop = FALSE
   ]
@@ -1066,11 +990,9 @@ sec_validate_catalogues <- function(dictionary,
     !(selected$type %in% c("categorical", "binary"))
   invalid <- invalid || any(invalid_types)
   if (invalid) {
-    declaration <- tables[1, , drop = FALSE]
-    sec_governance_stop(
-      "catalogue_contract_invalid", declaration, NA_character_, length(referenced),
+    stop(
       "A retained column references missing or incompatible semantic catalogue metadata.",
-      "Supply every referenced semantic catalogue definition, then audit again."
+      call. = FALSE
     )
   }
   invisible(TRUE)
@@ -1201,13 +1123,11 @@ sec_destination_state <- function(con, schema, table) {
 sec_output_dictionary <- function(context) {
   output <- lapply(context$tables, function(item) {
     d <- item$declaration
-    retained <- item$policy$source_column[
-      item$policy$analytic_action %in% c("retain", "retain_restricted")
-    ]
+    retained <- item$actions$source_column[item$actions$output_action == "retain"]
     rows <- item$dictionary[
       item$dictionary$source_column == d$id_column |
-        item$dictionary$source_column %in% retained,
-      , drop = FALSE
+        item$dictionary$source_column %in% retained, ,
+      drop = FALSE
     ]
     id_index <- match(d$id_column, rows$source_column)
     rows$source_schema <- context$output_schema
@@ -1261,7 +1181,7 @@ sec_output_manifest <- function(context, created) {
     output_schema = context$output_schema,
     output_table = context$linkage$tables$destination_table,
     status = if (created) "created" else "planned",
-    sensitivity = "restricted_pseudonymised_data",
+    output_type = "pseudonymised_table",
     stringsAsFactors = FALSE
   )
 }
@@ -1293,7 +1213,7 @@ sec_database_boundary <- function(expr, message) {
       }
     ),
     error = function(error) {
-      if (inherits(error, c("epi_sec_database_condition", "epi_sec_governance", "epi_sec_blocked"))) stop(error)
+      if (inherits(error, c("epi_sec_database_condition", "epi_sec_no_write"))) stop(error)
       native <- grepl(
         "ERROR:|Failed to (prepare|execute|fetch)|server closed|connection.*(closed|invalid)|invalid result",
         conditionMessage(error),

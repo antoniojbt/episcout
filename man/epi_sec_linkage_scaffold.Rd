@@ -16,12 +16,12 @@ An \code{epi_sec_linkage_scaffold} list containing editable \code{tables},
 \code{columns}, \code{record_keys} and \code{crosswalks} data frames.
 }
 \description{
-Create editable, value-free linkage and column-policy metadata from a reusable semantic database dictionary. The function reads dictionary metadata only; it never reads source rows or identifier values. Identity columns, namespaces, enrolment permission, row grain, record keys, provenance and validation states remain explicitly unreviewed.
+Create editable, value-free linkage and output-action metadata from a reusable semantic database dictionary. The function reads dictionary metadata only; it never reads source rows or identifier values. The caller declares identity columns, namespaces, the enrolment source, row grain, record keys, provenance and output actions.
 }
 \details{
-The \code{tables} component contains \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace}, \code{can_enrol}, \code{one_row_per_entity}, \code{destination_table}, \code{provenance} and \code{validation_status}. \code{columns} covers every active selected dictionary column and adds \code{privacy_class}, \code{analytic_action} and \code{validation_status}, initially set to \code{unclassified}, \code{review} and \code{unreviewed}. \code{record_keys} and \code{crosswalks} initially have no rows. Complete the scaffold outside this function and pass all four components to \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}.
+The \code{tables} component contains \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace}, \code{can_enrol}, \code{one_row_per_entity}, \code{destination_table} and \code{provenance}. \code{columns} covers every active selected dictionary column and adds a blank \code{output_action}; set every action to \code{pseudonymise}, \code{retain} or \code{drop}. \code{record_keys} and \code{crosswalks} initially have no rows. Complete the scaffold outside this function and pass all four components to \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}.
 
-This function reads dictionary metadata only and performs no database or file writes. It does not inspect values, infer identity matches or detect personal information. See \code{vignette("longitudinal-pseudonymisation")} for the friendly audit-first workflow.
+This function reads dictionary metadata only and performs no database or file writes. It does not inspect values, infer identity matches, classify columns or decide whether an output may be used or disclosed. See \code{vignette("longitudinal-pseudonymisation")} for a worked technical workflow.
 }
 \seealso{
 \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_eda_dictionary_scaffold]{epi_eda_dictionary_scaffold()}}

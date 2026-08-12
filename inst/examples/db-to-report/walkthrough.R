@@ -1,7 +1,7 @@
 # episcout: synthetic longitudinal data from PostgreSQL to an EDA delivery
 #
 # Run this file one numbered section at a time in an interactive R session.
-# The example uses only neutral synthetic records. Specialised policy below is illustrative, not inferred by core EDA.
+# The example uses only neutral synthetic records. Explicit output actions below are caller declarations, not inferred by core EDA.
 
 # 1. Load packages and locate the installed example ---------------------------
 
@@ -267,7 +267,7 @@ catalogues <- data.frame(
 )
 epi_eda_dictionary_validate(dictionary, catalogues)
 
-# 5. Declare longitudinal linkage and initialise the restricted registry ------
+# 5. Declare longitudinal linkage and initialise the registry -----------------
 
 linkage_draft <- epi_sec_linkage_scaffold(
   dictionary,
@@ -288,26 +288,12 @@ linkage_tables$destination_table <- paste0(
   linkage_tables$source_table,
   "_pseudonymised"
 )
-linkage_tables$provenance <- "reviewed_synthetic_walkthrough_v1"
-linkage_tables$validation_status <- "confirmed"
+linkage_tables$provenance <- "synthetic_walkthrough_v2"
 
 linkage_columns <- linkage_draft$columns
-linkage_columns$privacy_class <- "non_sensitive"
-linkage_columns$analytic_action <- "retain"
-identifier_policy <- linkage_columns$source_column == "source_person_id"
-quasi_policy <- linkage_columns$source_column %in% c(
-  "sex", "baseline_age", "visit_date", "site"
-)
-sensitive_policy <- linkage_columns$source_column %in% c(
-  "systolic_bp", "outcome", "symptom_text"
-)
-linkage_columns$privacy_class[identifier_policy] <- "direct_identifier"
-linkage_columns$analytic_action[identifier_policy] <- "bridge"
-linkage_columns$privacy_class[quasi_policy] <- "quasi_identifier"
-linkage_columns$analytic_action[quasi_policy] <- "retain_restricted"
-linkage_columns$privacy_class[sensitive_policy] <- "sensitive"
-linkage_columns$analytic_action[sensitive_policy] <- "retain_restricted"
-linkage_columns$validation_status <- "confirmed"
+linkage_columns$output_action <- "retain"
+identifier_row <- linkage_columns$source_column == "source_person_id"
+linkage_columns$output_action[identifier_row] <- "pseudonymise"
 
 record_keys <- data.frame(
   source_schema = source_schema,

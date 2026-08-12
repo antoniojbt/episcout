@@ -105,9 +105,7 @@ pg_pseudonym_columns <- function(dictionary, id_columns) {
   identifier <- dictionary$source_column %in% id_columns
   data.frame(
     dictionary[c("source_schema", "source_table", "source_column")],
-    privacy_class = ifelse(identifier, "direct_identifier", "non_sensitive"),
-    analytic_action = ifelse(identifier, "bridge", "retain"),
-    validation_status = "confirmed",
+    output_action = ifelse(identifier, "pseudonymise", "retain"),
     stringsAsFactors = FALSE
   )
 }
@@ -151,7 +149,7 @@ pg_runtime_uuid <- function() {
   )
 }
 
-test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
+test_that("live PostgreSQL workflow is stable, neutral, and atomic", {
   skip_if_not(identical(Sys.getenv("EPISCOUT_TEST_POSTGRES", unset = ""), "1"))
   skip_if_not_installed("RPostgres")
 
@@ -338,8 +336,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       can_enrol = c(TRUE, FALSE),
       one_row_per_entity = c(FALSE, FALSE),
       destination_table = c("entities", "events"),
-      provenance = rep("reviewed_synthetic_fixture", 2L),
-      validation_status = rep("confirmed", 2L),
+      provenance = rep("synthetic_fixture", 2L),
       stringsAsFactors = FALSE
     ),
     columns = pg_pseudonym_columns(
@@ -359,8 +356,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       alias_id_column = "alias_code",
       canonical_namespace = "entity_codes",
       canonical_id_column = "canonical_code",
-      provenance = "reviewed_synthetic_fixture",
-      validation_status = "confirmed",
+      provenance = "synthetic_fixture",
       stringsAsFactors = FALSE
     )
   )
@@ -568,6 +564,70 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   )
   foreign_role_guard <- ""
 
+  incomplete_dictionary <- dictionary[
+    dictionary$source_column != "event_value", ,
+    drop = FALSE
+  ]
+  dictionary_error <- expect_error(
+    epi_sec_pseudonymise_db(
+      connection,
+      incomplete_dictionary,
+      linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "audit"
+    ),
+    "dictionary does not exactly cover"
+  )
+  expect_false(inherits(
+    dictionary_error,
+    c("epi_sec_governance", "epi_sec_blocked")
+  ))
+
+  incomplete_linkage <- linkage
+  incomplete_linkage$columns <- incomplete_linkage$columns[
+    incomplete_linkage$columns$source_column != "event_value", ,
+    drop = FALSE
+  ]
+  action_error <- expect_error(
+    epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      incomplete_linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "audit"
+    ),
+    "output actions do not exactly cover"
+  )
+  expect_false(inherits(
+    action_error,
+    c("epi_sec_governance", "epi_sec_blocked")
+  ))
+
+  incomplete_catalogues <- catalogues[
+    catalogues$catalog_name != "entity_kinds", ,
+    drop = FALSE
+  ]
+  catalogue_error <- expect_error(
+    epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = incomplete_catalogues,
+      mode = "audit"
+    ),
+    "catalogue"
+  )
+  expect_false(inherits(
+    catalogue_error,
+    c("epi_sec_governance", "epi_sec_blocked")
+  ))
+
   DBI::dbAppendTable(
     connection,
     DBI::Id(schema = schemas[["source"]], table = "events"),
@@ -587,16 +647,27 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     catalogues = catalogues,
     mode = "audit"
   )
-  expect_identical(unmatched_default$status, "blocked")
+  expect_identical(unmatched_default$status, "audit_complete")
   expect_true("unmatched_identifier" %in% unmatched_default$issues$issue_code)
-  expect_false("sensitive_issues" %in% names(unmatched_default))
+  expect_true(all(unmatched_default$issues$severity %in% c("error", "warning")))
+  expect_identical(
+    unmatched_default$issues$severity[
+      unmatched_default$issues$issue_code == "unmatched_identifier"
+    ],
+    "error"
+  )
+  expect_named(unmatched_default$issues, c(
+    "issue_code", "severity", "stage", "source_schema", "source_table",
+    "source_column", "n_affected", "message", "recommended_action"
+  ))
+  expect_false("issue_values" %in% names(unmatched_default))
   expect_false(grepl(
     source_ids[["unmatched"]],
     paste(capture.output(str(unmatched_default)), collapse = "\n"),
     fixed = TRUE
   ))
 
-  unmatched_sensitive <- epi_sec_pseudonymise_db(
+  unmatched_values <- epi_sec_pseudonymise_db(
     connection,
     dictionary,
     linkage,
@@ -604,53 +675,93 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     schemas[["output"]],
     catalogues = catalogues,
     mode = "audit",
-    sensitive_issues = TRUE
+    include_issue_values = TRUE
   )
-  expect_identical(unmatched_sensitive$status, "blocked")
+  expect_identical(unmatched_values$status, "audit_complete")
   expect_named(
-    unmatched_sensitive$sensitive_issues,
+    unmatched_values$issue_values,
     c("issue_code", "source_schema", "source_table", "source_column", "source_value")
   )
-  expect_identical(unmatched_sensitive$sensitive_issues$source_value, source_ids[["unmatched"]])
+  expect_s3_class(unmatched_values$issue_values, "data.frame")
+  expect_identical(class(unmatched_values$issue_values), "data.frame")
+  expect_null(attr(unmatched_values$issue_values, "sensitive"))
+  expect_identical(unmatched_values$issue_values$source_value, source_ids[["unmatched"]])
   expect_false(grepl(
     source_ids[["unmatched"]],
-    paste(capture.output(print(unmatched_sensitive)), collapse = "\n"),
+    paste(capture.output(print(unmatched_values)), collapse = "\n"),
     fixed = TRUE
   ))
-  sensitive_display <- paste(
+  ordinary_display <- paste(
     c(
-      capture.output(print(unmatched_sensitive$sensitive_issues)),
-      capture.output(str(unmatched_sensitive$sensitive_issues))
+      capture.output(print(unmatched_values$issue_values)),
+      capture.output(str(unmatched_values$issue_values))
     ),
     collapse = "\n"
   )
-  expect_false(grepl(source_ids[["unmatched"]], sensitive_display, fixed = TRUE))
+  expect_true(grepl(source_ids[["unmatched"]], ordinary_display, fixed = TRUE))
+  expect_warning(
+    unmatched_legacy <- epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "audit",
+      sensitive_issues = TRUE
+    ),
+    "deprecated.*ordinary data"
+  )
+  expect_identical(unmatched_legacy$issue_values, unmatched_legacy$sensitive_issues)
+  expect_warning(
+    unmatched_legacy_false <- epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "audit",
+      sensitive_issues = FALSE
+    ),
+    "deprecated.*ordinary data"
+  )
+  expect_false("issue_values" %in% names(unmatched_legacy_false))
+  expect_false("sensitive_issues" %in% names(unmatched_legacy_false))
+  expect_error(
+    suppressWarnings(epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "audit",
+      sensitive_issues = TRUE,
+      include_issue_values = FALSE
+    )),
+    "must not conflict"
+  )
   DBI::dbExecute(
     connection,
     paste("DELETE FROM", events, "WHERE event_entity_code = $1"),
     params = list(source_ids[["unmatched"]])
   )
 
-  pending_linkage <- linkage
-  pending_linkage$columns$validation_status[
-    pending_linkage$columns$source_table == "events" &
-      pending_linkage$columns$source_column == "event_value"
-  ] <- "pending"
-  pending_audit <- epi_sec_pseudonymise_db(
-    connection,
-    dictionary,
-    pending_linkage,
-    schemas[["registry"]],
-    schemas[["output"]],
-    catalogues = catalogues,
-    mode = "audit"
+  legacy_linkage <- linkage
+  legacy_linkage$columns$validation_status <- "confirmed"
+  expect_error(
+    epi_sec_pseudonymise_db(
+      connection,
+      dictionary,
+      legacy_linkage,
+      schemas[["registry"]],
+      schemas[["output"]],
+      catalogues = catalogues,
+      mode = "audit"
+    ),
+    "regenerate saved or modified linkage objects"
   )
-  expect_identical(pending_audit$status, "blocked")
-  expect_false(pending_audit$metadata$writes[[1]])
-  expect_true("column_policy_not_confirmed" %in% pending_audit$issues$issue_code)
-  expect_true(all(
-    pending_audit$issues$stage[pending_audit$issues$issue_code == "column_policy_not_confirmed"] == "dictionary"
-  ))
   expect_equal(DBI::dbGetQuery(
     connection,
     paste("SELECT COUNT(*)::integer AS n FROM", registry_aliases)
@@ -672,7 +783,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_s3_class(audit, "epi_sec_pseudonymisation_result")
   expect_identical(audit$status, "audit_complete")
   expect_false(audit$metadata$writes[[1]])
-  expect_false(any(audit$issues$severity == "blocking"))
+  expect_false(any(audit$issues$severity == "error"))
   expect_true("record_key_not_declared" %in% audit$issues$issue_code)
   expect_equal(audit$identity_audit$n_crosswalk_rows, 3)
   expect_equal(audit$identity_audit$n_unused_crosswalk_rows, 1)
@@ -690,7 +801,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   expect_false(DBI::dbExistsTable(connection, DBI::Id(schema = schemas[["output"]], table = "entities")))
   expect_false(DBI::dbExistsTable(connection, DBI::Id(schema = schemas[["output"]], table = "events")))
 
-  audit_sensitive <- epi_sec_pseudonymise_db(
+  audit_values <- epi_sec_pseudonymise_db(
     connection,
     dictionary,
     linkage,
@@ -698,14 +809,14 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     schemas[["output"]],
     catalogues = catalogues,
     mode = "audit",
-    sensitive_issues = TRUE
+    include_issue_values = TRUE
   )
-  expect_identical(audit_sensitive$status, "audit_complete")
+  expect_identical(audit_values$status, "audit_complete")
   expect_named(
-    audit_sensitive$sensitive_issues,
+    audit_values$issue_values,
     c("issue_code", "source_schema", "source_table", "source_column", "source_value")
   )
-  expect_equal(nrow(audit_sensitive$sensitive_issues), 0L)
+  expect_equal(nrow(audit_values$issue_values), 0L)
 
   DBI::dbBegin(connection)
   expect_error(
@@ -769,7 +880,12 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     c(entities = 3, events = 4)
   )
   expect_true(all(applied_report$manifest$status == "created"))
-  expect_false("sensitive_issues" %in% names(applied_report))
+  expect_false("issue_values" %in% names(applied_report))
+  expect_named(applied_report$manifest, c(
+    "source_schema", "source_table", "output_schema", "output_table",
+    "status", "output_type"
+  ))
+  expect_true(all(applied_report$manifest$output_type == "pseudonymised_table"))
   expect_silent(epi_eda_dictionary_validate(
     applied_report$output_dictionary,
     applied_report$output_catalogues
@@ -893,12 +1009,12 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     unique(events_report$entity_token[events_report$event_value == "value-c"]),
     unique(entities_report$entity_token[entities_report$entity_kind == "kind-b"])
   )
-  redacted <- paste(capture.output(str(applied_report)), collapse = "\n")
+  value_free_structure <- paste(capture.output(str(applied_report)), collapse = "\n")
   expect_false(any(vapply(
     unname(source_ids),
     grepl,
     logical(1),
-    x = redacted,
+    x = value_free_structure,
     fixed = TRUE
   )))
 
@@ -1054,10 +1170,10 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     existing = "replace",
     lock_timeout = 1L
   )
-  expect_identical(timed_out$status, "blocked")
+  expect_identical(timed_out$status, "not_written")
   expect_false(timed_out$metadata$writes[[1]])
   expect_true("lock_timeout" %in% timed_out$issues$issue_code)
-  expect_false("sensitive_issues" %in% names(timed_out))
+  expect_false("issue_values" %in% names(timed_out))
   expect_identical(pg_advisory_lock_count(connection), 0L)
   timed_out_print <- paste(capture.output(print(timed_out)), collapse = "\n")
   expect_false(any(vapply(
@@ -1092,7 +1208,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
   DBI::dbRollback(lock_connection)
   DBI::dbDisconnect(lock_connection)
 
-  registry_before_block <- list(
+  registry_before_no_write <- list(
     aliases = DBI::dbGetQuery(
       connection,
       paste("SELECT * FROM", pg_pseudonym_quote(connection, schemas[["registry"]], "aliases"), "ORDER BY identity_namespace, source_id")
@@ -1102,7 +1218,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
       paste("SELECT * FROM", pg_pseudonym_quote(connection, schemas[["registry"]], "runs"), "ORDER BY completed_at, run_id")
     )
   )
-  output_before_block <- list(entities = entities_drop, events = events_drop)
+  output_before_no_write <- list(entities = entities_drop, events = events_drop)
   DBI::dbAppendTable(
     connection,
     DBI::Id(schema = schemas[["source"]], table = "events"),
@@ -1118,7 +1234,7 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     paste("SELECT * FROM", events, "ORDER BY event_entity_code, event_sequence, event_value")
   )
 
-  blocked <- epi_sec_pseudonymise_db(
+  not_written <- epi_sec_pseudonymise_db(
     connection,
     dictionary,
     linkage,
@@ -1129,30 +1245,30 @@ test_that("live PostgreSQL workflow is stable, redacted, and atomic", {
     exact_duplicates = "drop",
     existing = "replace"
   )
-  expect_identical(blocked$status, "blocked")
-  expect_false(blocked$metadata$writes[[1]])
-  expect_true("conflicting_record_key" %in% blocked$issues$issue_code)
+  expect_identical(not_written$status, "not_written")
+  expect_false(not_written$metadata$writes[[1]])
+  expect_true("conflicting_record_key" %in% not_written$issues$issue_code)
   expect_identical(
     DBI::dbGetQuery(
       connection,
       paste("SELECT * FROM", pg_pseudonym_quote(connection, schemas[["registry"]], "aliases"), "ORDER BY identity_namespace, source_id")
     ),
-    registry_before_block$aliases
+    registry_before_no_write$aliases
   )
   expect_identical(
     DBI::dbGetQuery(
       connection,
       paste("SELECT * FROM", pg_pseudonym_quote(connection, schemas[["registry"]], "runs"), "ORDER BY completed_at, run_id")
     ),
-    registry_before_block$runs
+    registry_before_no_write$runs
   )
   expect_identical(
     DBI::dbGetQuery(connection, paste("SELECT entity_token, entity_kind FROM", output_entities, "ORDER BY entity_kind")),
-    output_before_block$entities
+    output_before_no_write$entities
   )
   expect_identical(
     DBI::dbGetQuery(connection, paste("SELECT entity_token, event_sequence, event_value FROM", output_events, "ORDER BY event_value, event_sequence")),
-    output_before_block$events
+    output_before_no_write$events
   )
   expect_identical(
     DBI::dbGetQuery(connection, paste("SELECT * FROM", events, "ORDER BY event_entity_code, event_sequence, event_value")),
@@ -1310,7 +1426,7 @@ test_that("PostgreSQL registry permission denials are sanitised technical errors
   expect_false(grepl("registry_metadata", conditionMessage(denied), fixed = TRUE))
 })
 
-test_that("live PostgreSQL identifier families preserve exact reviewed identity", {
+test_that("live PostgreSQL identifier families preserve exact declared identity", {
   skip_if_not(identical(Sys.getenv("EPISCOUT_TEST_POSTGRES", unset = ""), "1"))
   skip_if_not_installed("RPostgres")
 
@@ -1557,8 +1673,7 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
       can_enrol = c(TRUE, FALSE, FALSE, FALSE),
       one_row_per_entity = c(TRUE, FALSE, FALSE, FALSE),
       destination_table = c("text_entities", "text_events", "integer_events", "uuid_events"),
-      provenance = rep("reviewed_runtime_fixture", 4L),
-      validation_status = rep("confirmed", 4L),
+      provenance = rep("runtime_fixture", 4L),
       stringsAsFactors = FALSE
     ),
     columns = pg_pseudonym_columns(
@@ -1578,8 +1693,7 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
       alias_id_column = rep("alias_code", 3L),
       canonical_namespace = rep("text_codes", 3L),
       canonical_id_column = rep("canonical_code", 3L),
-      provenance = rep("reviewed_runtime_fixture", 3L),
-      validation_status = rep("confirmed", 3L),
+      provenance = rep("runtime_fixture", 3L),
       stringsAsFactors = FALSE
     )
   )
@@ -1606,8 +1720,7 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
       can_enrol = TRUE,
       one_row_per_entity = TRUE,
       destination_table = "fixed_ids",
-      provenance = "reviewed_runtime_fixture",
-      validation_status = "confirmed",
+      provenance = "runtime_fixture",
       stringsAsFactors = FALSE
     ),
     pg_pseudonym_columns(fixed_dictionary, "fixed_code")
@@ -1676,8 +1789,7 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
         can_enrol = TRUE,
         one_row_per_entity = TRUE,
         destination_table = "nondeterministic_ids",
-        provenance = "reviewed_runtime_fixture",
-        validation_status = "confirmed",
+        provenance = "runtime_fixture",
         stringsAsFactors = FALSE
       ),
       pg_pseudonym_columns(nondeterministic_dictionary, "identifier")
@@ -1706,7 +1818,7 @@ test_that("live PostgreSQL identifier families preserve exact reviewed identity"
     mode = "audit"
   )
   expect_identical(audit$status, "audit_complete")
-  expect_false(any(audit$issues$severity == "blocking"))
+  expect_false(any(audit$issues$severity == "error"))
   expect_equal(audit$identity_audit$n_crosswalk_rows, 5)
 
   applied <- epi_sec_pseudonymise_db(

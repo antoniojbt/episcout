@@ -39,9 +39,7 @@ make_linkage_columns <- function() {
   identifier <- dictionary$source_column %in% c("entity_code", "event_entity_code")
   data.frame(
     dictionary[c("source_schema", "source_table", "source_column")],
-    privacy_class = ifelse(identifier, "direct_identifier", "non_sensitive"),
-    analytic_action = ifelse(identifier, "bridge", "retain"),
-    validation_status = "confirmed",
+    output_action = ifelse(identifier, "pseudonymise", "retain"),
     stringsAsFactors = FALSE
   )
 }
@@ -55,8 +53,7 @@ make_linkage_tables <- function() {
     can_enrol = c(TRUE, FALSE),
     one_row_per_entity = c(TRUE, FALSE),
     destination_table = c("entities", "events"),
-    provenance = c("reviewed_dictionary", "reviewed_dictionary"),
-    validation_status = c("confirmed", "confirmed"),
+    provenance = c("dictionary_fixture", "dictionary_fixture"),
     stringsAsFactors = FALSE
   )
 }
@@ -79,19 +76,19 @@ make_linkage_crosswalks <- function() {
     alias_id_column = "alias_code",
     canonical_namespace = "entity_codes",
     canonical_id_column = "canonical_code",
-    provenance = "reviewed_crosswalk",
-    validation_status = "confirmed",
+    provenance = "crosswalk_fixture",
     stringsAsFactors = FALSE
   )
 }
 
-test_that("linkage scaffold separates semantic dictionary and column policy", {
+test_that("linkage scaffold separates semantic dictionary and output actions", {
   dictionary <- make_linkage_dictionary()
   dictionary$catalog_name[dictionary$source_column == "entity_kind"] <- "entity_kinds"
   scaffold <- epi_sec_linkage_scaffold(dictionary)
 
   expect_s3_class(scaffold, "epi_sec_linkage_scaffold")
   expect_named(scaffold, c("tables", "columns", "record_keys", "crosswalks"))
+  expect_named(scaffold$tables, names(make_linkage_tables()))
   expect_equal(scaffold$tables$source_table, c("entities", "events"))
   expect_true(all(scaffold$tables$id_column == ""))
   expect_equal(scaffold$tables$destination_table, scaffold$tables$source_table)
@@ -99,17 +96,15 @@ test_that("linkage scaffold separates semantic dictionary and column policy", {
   expect_true(all(is.na(scaffold$tables$one_row_per_entity)))
   expect_true(all(scaffold$tables$identity_namespace == ""))
   expect_true(all(scaffold$tables$provenance == ""))
-  expect_true(all(scaffold$tables$validation_status == "unreviewed"))
   expect_named(scaffold$columns, c(
-    "source_schema", "source_table", "source_column", "privacy_class",
-    "analytic_action", "validation_status"
+    "source_schema", "source_table", "source_column", "output_action"
   ))
   expect_equal(nrow(scaffold$columns), nrow(dictionary))
-  expect_true(all(scaffold$columns$privacy_class == "unclassified"))
-  expect_true(all(scaffold$columns$analytic_action == "review"))
-  expect_true(all(scaffold$columns$validation_status == "unreviewed"))
+  expect_true(all(scaffold$columns$output_action == ""))
   expect_equal(nrow(scaffold$record_keys), 0L)
+  expect_named(scaffold$record_keys, names(make_linkage_record_keys()))
   expect_equal(nrow(scaffold$crosswalks), 0L)
+  expect_named(scaffold$crosswalks, names(make_linkage_crosswalks()))
 })
 
 test_that("linkage scaffold supports explicit metadata-only table selection", {
@@ -161,6 +156,7 @@ test_that("linkage specification normalises all four metadata components", {
   expect_named(spec, c("tables", "columns", "record_keys", "crosswalks"))
   expect_named(spec$tables, names(make_linkage_tables()))
   expect_named(spec$columns, names(make_linkage_columns()))
+  expect_named(spec$record_keys, names(make_linkage_record_keys()))
   expect_type(spec$tables$can_enrol, "logical")
   expect_type(spec$tables$one_row_per_entity, "logical")
   expect_equal(spec$record_keys$key_column, c("event_sequence", "event_kind"))
@@ -182,7 +178,8 @@ test_that("linkage specification reads CSV metadata robustly", {
   utils::write.csv(make_linkage_crosswalks(), paths[[4]], row.names = FALSE, na = "")
 
   spec <- epi_sec_linkage_spec(
-    paths[[1]], paths[[2]], record_keys = paths[[3]], crosswalks = paths[[4]]
+    paths[[1]], paths[[2]],
+    record_keys = paths[[3]], crosswalks = paths[[4]]
   )
   expect_identical(spec$tables$can_enrol, c(TRUE, FALSE))
   expect_identical(spec$tables$one_row_per_entity, c(TRUE, FALSE))
@@ -190,10 +187,51 @@ test_that("linkage specification reads CSV metadata robustly", {
   expect_error(epi_sec_linkage_spec(tempfile(fileext = ".csv")), "columns component is required")
 })
 
-test_that("old linkage calls fail with migration guidance", {
+test_that("old three-component linkage calls fail with migration guidance", {
   expect_error(
     epi_sec_linkage_spec(make_linkage_tables()),
-    "Move privacy_class, analytic_action and validation_status.*columns"
+    "explicit output_action"
+  )
+})
+
+test_that("exact legacy linkage schemas receive a syntax-only adapter", {
+  tables <- transform(make_linkage_tables(), validation_status = c("pending", NA_character_))
+  columns <- make_linkage_columns()
+  columns$analytic_action <- ifelse(
+    columns$output_action == "pseudonymise", "bridge", "retain_restricted"
+  )
+  columns$analytic_action[columns$source_column == "event_sequence"] <- "retain"
+  columns$analytic_action[columns$source_column == "entity_kind"] <- "drop"
+  columns$output_action <- NULL
+  columns$privacy_class <- c(NA_character_, "sensitive", "other", "", "direct_identifier")
+  columns$validation_status <- c("pending", "confirmed", NA_character_, "unreviewed", "other")
+  columns <- columns[c(
+    "source_schema", "source_table", "source_column", "privacy_class",
+    "analytic_action", "validation_status"
+  )]
+  crosswalks <- transform(make_linkage_crosswalks(), validation_status = NA_character_)
+
+  expect_warning(
+    spec <- epi_sec_linkage_spec(
+      tables,
+      columns,
+      make_linkage_record_keys(),
+      crosswalks
+    ),
+    "deprecated and ignored"
+  )
+  expect_named(spec$tables, names(make_linkage_tables()))
+  expect_named(spec$columns, names(make_linkage_columns()))
+  expect_named(spec$crosswalks, names(make_linkage_crosswalks()))
+  expect_identical(
+    spec$columns$output_action,
+    c("pseudonymise", "drop", "pseudonymise", "retain", "retain")
+  )
+
+  columns$analytic_action[[2]] <- "review"
+  expect_error(
+    epi_sec_linkage_spec(tables, columns, crosswalks = crosswalks),
+    "review, derive and other actions cannot be converted"
   )
 })
 
@@ -202,10 +240,6 @@ test_that("linkage table decisions are explicit", {
   tables <- make_linkage_tables()
   tables$can_enrol <- FALSE
   expect_error(epi_sec_linkage_spec(tables, columns), "exactly one can_enrol")
-
-  tables <- make_linkage_tables()
-  tables$validation_status[[2]] <- "pending"
-  expect_error(epi_sec_linkage_spec(tables, columns), "must be 'confirmed'")
 
   tables <- make_linkage_tables()
   tables$destination_table[[2]] <- tables$destination_table[[1]]
@@ -228,7 +262,7 @@ test_that("linkage table decisions are explicit", {
   expect_error(epi_sec_linkage_spec(tables, columns), "must not contain row values")
 })
 
-test_that("column policy is complete, confirmed and consistent with identifiers", {
+test_that("output actions are complete and consistent with identifiers", {
   tables <- make_linkage_tables()
   columns <- make_linkage_columns()
 
@@ -236,18 +270,16 @@ test_that("column policy is complete, confirmed and consistent with identifiers"
   expect_error(epi_sec_linkage_spec(tables, missing_table), "cover every declared source table")
   duplicate <- rbind(columns, columns[1, ])
   expect_error(epi_sec_linkage_spec(tables, duplicate), "source keys must be unique")
-  pending <- columns
-  pending$validation_status[[1]] <- "pending"
-  expect_error(epi_sec_linkage_spec(tables, pending), "must be 'confirmed'")
-  unclassified <- columns
-  unclassified$privacy_class[[2]] <- "unclassified"
-  expect_error(epi_sec_linkage_spec(tables, unclassified), "classified supported output action")
-  wrong_bridge <- columns
-  wrong_bridge$source_column[[1]] <- "other_id"
-  expect_error(epi_sec_linkage_spec(tables, wrong_bridge), "id_column must match")
-  extra_direct <- columns
-  extra_direct$privacy_class[[2]] <- "direct_identifier"
-  expect_error(epi_sec_linkage_spec(tables, extra_direct), "additional direct identifier.*drop")
+  invalid <- columns
+  invalid$output_action[[2]] <- "review"
+  expect_error(epi_sec_linkage_spec(tables, invalid), "pseudonymise.*retain.*drop")
+  wrong_identifier <- columns
+  wrong_identifier$output_action[wrong_identifier$source_column == "entity_code"] <- "retain"
+  wrong_identifier$output_action[wrong_identifier$source_column == "entity_kind"] <- "pseudonymise"
+  expect_error(epi_sec_linkage_spec(tables, wrong_identifier), "id_column must match")
+  extra_pseudonymised <- columns
+  extra_pseudonymised$output_action[[2]] <- "pseudonymise"
+  expect_error(epi_sec_linkage_spec(tables, extra_pseudonymised), "no other column")
 })
 
 test_that("record keys are table-bound, retained, ordered and distinct from identifiers", {
@@ -277,7 +309,7 @@ test_that("record keys are table-bound, retained, ordered and distinct from iden
   expect_error(epi_sec_linkage_spec(tables, columns, keys), "positive whole numbers")
 
   dropped <- columns
-  dropped$analytic_action[dropped$source_column == "event_sequence"] <- "drop"
+  dropped$output_action[dropped$source_column == "event_sequence"] <- "drop"
   expect_error(epi_sec_linkage_spec(tables, dropped, make_linkage_record_keys()), "retain")
 })
 
@@ -290,10 +322,6 @@ test_that("crosswalk specifications contain relation metadata only", {
     epi_sec_linkage_spec(tables, columns, crosswalks = crosswalks),
     "must not contain row values"
   )
-
-  crosswalks <- make_linkage_crosswalks()
-  crosswalks$validation_status <- "unreviewed"
-  expect_error(epi_sec_linkage_spec(tables, columns, crosswalks = crosswalks), "must be 'confirmed'")
 
   crosswalks <- make_linkage_crosswalks()
   crosswalks$alias_namespace <- "undeclared_codes"
@@ -313,7 +341,7 @@ test_that("crosswalk specifications contain relation metadata only", {
   expect_error(epi_sec_linkage_spec(tables, columns, crosswalks = crosswalks), "at most one relation")
 })
 
-test_that("linkage print methods are friendly and redact metadata values", {
+test_that("linkage print methods summarise without component values", {
   spec <- epi_sec_linkage_spec(
     make_linkage_tables(),
     make_linkage_columns(),
@@ -322,8 +350,8 @@ test_that("linkage print methods are friendly and redact metadata values", {
   )
   output <- paste(utils::capture.output(print(spec)), collapse = "\n")
 
-  expect_match(output, "Confirmed metadata for 2 source table")
-  expect_match(output, "Confirmed column policies: 5")
+  expect_match(output, "Metadata for 2 source table")
+  expect_match(output, "Output actions: 5")
   expect_match(output, "Identifier values: not present")
   expect_false(grepl("entity_code", output, fixed = TRUE))
   expect_false(grepl("event_sequence", output, fixed = TRUE))
@@ -333,7 +361,7 @@ test_that("linkage print methods are friendly and redact metadata values", {
     utils::capture.output(print(epi_sec_linkage_scaffold(make_linkage_dictionary()))),
     collapse = "\n"
   )
-  expect_match(scaffold_output, "Review required")
-  expect_match(scaffold_output, "Column policies: 5")
+  expect_match(scaffold_output, "Source tables: 2")
+  expect_match(scaffold_output, "Output actions to set: 5")
   expect_false(grepl("entity_code", scaffold_output, fixed = TRUE))
 })

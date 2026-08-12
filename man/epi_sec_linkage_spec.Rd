@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_sec_linkage.R
 \name{epi_sec_linkage_spec}
 \alias{epi_sec_linkage_spec}
-\title{Validate reviewed longitudinal linkage metadata}
+\title{Validate longitudinal linkage metadata}
 \usage{
 epi_sec_linkage_spec(
   tables,
@@ -12,26 +12,27 @@ epi_sec_linkage_spec(
 )
 }
 \arguments{
-\item{tables}{A data frame or CSV path with \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace}, \code{can_enrol}, \code{one_row_per_entity}, \code{destination_table}, \code{provenance} and \code{validation_status}.}
+\item{tables}{A data frame or CSV path with \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace}, \code{can_enrol}, \code{one_row_per_entity}, \code{destination_table} and \code{provenance}.}
 
-\item{columns}{A data frame or CSV path with exact source-column keys,
-\code{privacy_class}, \code{analytic_action} and \code{validation_status}.}
+\item{columns}{A data frame or CSV path with exact source-column keys and \code{output_action}, which must be \code{pseudonymise}, \code{retain} or \code{drop}.}
 
 \item{record_keys}{Optional data frame or CSV path with \code{source_schema}, \code{source_table}, \code{key_column} and \code{key_order}. The generated entity token is implicitly prepended to each declared record key.}
 
-\item{crosswalks}{Optional data frame or CSV path with \code{crosswalk_schema}, \code{crosswalk_table}, \code{alias_namespace}, \code{alias_id_column}, \code{canonical_namespace}, \code{canonical_id_column}, \code{provenance} and \code{validation_status}. These fields describe a database relation; identifier values are not accepted.}
+\item{crosswalks}{Optional data frame or CSV path with \code{crosswalk_schema}, \code{crosswalk_table}, \code{alias_namespace}, \code{alias_id_column}, \code{canonical_namespace}, \code{canonical_id_column} and \code{provenance}. These fields describe a database relation; identifier values are not accepted.}
 }
 \value{
 A validated, normalised \code{epi_sec_linkage_spec} list containing
 \code{tables}, \code{columns}, \code{record_keys} and \code{crosswalks} data frames.
 }
 \description{
-Read and validate a metadata-only linkage contract for PostgreSQL pseudonymisation. Each source table declares exactly one identifier column, exactly one table may enrol previously unseen entities, and every review status must be \code{confirmed}. Crosswalk arguments describe a restricted PostgreSQL relation and its columns; they never contain identifier values.
+Read and validate a metadata-only linkage contract for PostgreSQL pseudonymisation. Each source table declares exactly one identifier column, exactly one table may enrol previously unseen entities and every selected source column has an explicit output action. Crosswalk arguments describe a PostgreSQL relation and its columns; they never contain identifier values.
 }
 \details{
-Exactly one row in \code{tables} must set \code{can_enrol = TRUE}. Set \code{one_row_per_entity = TRUE} only when one output record per entity is a reviewed rule. Otherwise, declare ordered record-key columns or deliberately leave that table without a record key. Crosswalk rows name restricted PostgreSQL relations and columns; source identifier values must not be placed in this portable specification.
+Exactly one row in \code{tables} must set \code{can_enrol = TRUE}. Set \code{one_row_per_entity = TRUE} only when the requested output has one record per entity. Otherwise, declare ordered record-key columns or deliberately leave that table without a record key. Exactly the declared \code{id_column} must use \code{output_action = "pseudonymise"}; record-key columns must use \code{retain}. Crosswalk rows name PostgreSQL relations and columns; source identifier values must not be placed in this portable specification.
 
-Validation errors indicate malformed or unconfirmed metadata and do not write anything. A valid specification is permission to audit the declared linkage, not evidence that identities match or that output is safe to disclose. See \code{vignette("longitudinal-pseudonymisation")} for preparation, audit, blocker and recovery guidance.
+For one development cycle, exact legacy component schemas are accepted with one deprecation warning. Legacy \code{validation_status} and \code{privacy_class} values are ignored; executable actions map from \code{bridge}, \code{retain}, \code{retain_restricted} and \code{drop}. \code{review} and \code{derive} cannot be converted. Returned objects always use the new schemas.
+
+Validation errors indicate malformed or structurally inconsistent metadata and do not write anything. A valid specification defines a technical operation; it does not establish that identities match or decide whether an output may be used or disclosed. See \code{vignette("longitudinal-pseudonymisation")} for preparation, inspection and recovery guidance.
 }
 \seealso{
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
