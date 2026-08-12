@@ -144,6 +144,8 @@ GitHub issues and the current roadmap issue are the authoritative live task stat
 
 Use this lifecycle for tracked work: `candidate` (issue only), `draft` (specification unresolved), `active` (accepted contract and implementation in progress), `review` (pull request open), `merged/pending-closeout` (derived transient state) and `completed` (default branch verified and all closeout conditions satisfied). Commit only `draft`, `active`, `review` or `completed` in versioned manifests. Record blocked or deferred scheduling in the tracking issue and roadmap rather than inventing additional manifest states.
 
+In prose, plans and status reports, prefix identifiers with their artefact type so references are unambiguous: for example, `issue-278`, `PR-280`, `spec-034`, `commit-cc05cb0` and `release-0.3.0`. Avoid bare numeric or hash-style references such as `278`, `#278` or `034` except where GitHub syntax requires them, such as `Closes #278` in a pull-request description.
+
 - Run `scripts/check-workflow-state.sh` at the start of tracked work, before pull-request handoff and during post-merge closeout. Use `--offline` only when GitHub access is genuinely unavailable and report that limitation.
 - Keep at most one implementation specification in `active` or `review`. Draft design research may coexist, but it must not overtake the active lane, rewrite shared status files independently or merge ahead without explicit owner approval.
 - Give every non-trivial change one tracking issue. Use a numbered specification when required by the core approach, then use one scoped branch and one pull request for the accepted slice.
