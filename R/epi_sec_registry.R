@@ -8,9 +8,9 @@
 #' @param n_bytes Number of cryptographically random bytes per token; at least 16.
 #' @param mode Either `"audit"` to inspect without writing or `"apply"` to create the registry tables transactionally.
 #'
-#' @return An `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `incompatible` when existing objects are incompatible, `initialisation_required` when audit finds an empty schema and `ready` when a compatible registry exists or has been created.
+#' @return An `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `incompatible` when existing objects do not have the expected structure or version, `initialisation_required` when audit finds no registry objects and `ready` when a compatible registry exists or has been created.
 #'
-#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` in one transaction. PostgreSQL permissions determine whether the connected role can inspect or create the named objects; this function neither queries nor changes grants. The database administrator remains responsible for creating schemas, grants, recovery, storage, backups and logging. Audit reports incompatible existing objects as `incompatible`; apply treats them as an error. Repair or replace an incomplete registry with an appropriate recovery procedure rather than editing registry rows manually.
+#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` in one transaction using the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges. Audit reports structurally incompatible existing objects as `incompatible`; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
 #'
 #' The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data remain restricted personal data: they are not anonymous or automatically disclosure-controlled. See `vignette("longitudinal-pseudonymisation")` before initialising a registry.
 #'
@@ -44,7 +44,7 @@ epi_sec_identity_registry_init <- function(con,
           registry_schema = registry_schema,
           metadata = observed$metadata,
           objects = observed$objects,
-          next_action = "Run epi_sec_pseudonymise_db() in audit mode."
+          next_action = "Use the registry with epi_sec_pseudonymise_db()."
         ))
       }
       if (observed$state == "incompatible") {
@@ -56,7 +56,7 @@ epi_sec_identity_registry_init <- function(con,
             registry_schema = registry_schema,
             metadata = observed$metadata,
             objects = observed$objects,
-            next_action = "Ask the database administrator to inspect the incompatible registry objects; do not edit registry rows manually."
+            next_action = "Inspect the incompatible registry structure; do not edit registry rows manually."
           ))
         }
         stop(
@@ -72,7 +72,7 @@ epi_sec_identity_registry_init <- function(con,
           registry_schema = registry_schema,
           metadata = sec_empty_registry_metadata(),
           objects = sec_registry_object_frame("planned"),
-          next_action = "Rerun with mode = 'apply' to create the registry."
+          next_action = "Rerun with mode = 'apply' to initialise the registry."
         ))
       }
 
@@ -94,10 +94,10 @@ epi_sec_identity_registry_init <- function(con,
         registry_schema = registry_schema,
         metadata = created$metadata,
         objects = created$objects,
-        next_action = "Create and confirm a linkage specification, then run an audit."
+        next_action = "Use the registry with a compatible linkage specification."
       )
     },
-    "Identity registry inspection or initialisation could not complete safely; ask the database administrator to inspect restricted database logs."
+    "Identity registry inspection or initialisation could not complete; inspect PostgreSQL or driver logs."
   )
 }
 
@@ -146,11 +146,11 @@ sec_registry_inspect <- function(con, schema) {
     objects$status <- "incompatible_structure"
     return(list(state = "incompatible", metadata = sec_empty_registry_metadata(), objects = objects))
   }
-  metadata <- tryCatch(
-    DBI::dbGetQuery(con, paste("SELECT registry_id, registry_version, token_prefix, n_bytes, created_at FROM", sec_quote_table(con, schema, "registry_metadata"))),
-    error = function(error) NULL
+  metadata <- DBI::dbGetQuery(
+    con,
+    paste("SELECT registry_id, registry_version, token_prefix, n_bytes, created_at FROM", sec_quote_table(con, schema, "registry_metadata"))
   )
-  if (is.null(metadata) || nrow(metadata) != 1L || !identical(as.integer(metadata$registry_version[[1]]), sec_registry_version())) {
+  if (nrow(metadata) != 1L || !identical(as.integer(metadata$registry_version[[1]]), sec_registry_version())) {
     return(list(state = "incompatible", metadata = sec_empty_registry_metadata(), objects = objects))
   }
   list(state = "compatible", metadata = metadata, objects = objects)
@@ -360,26 +360,7 @@ sec_require_schema <- function(con, schema, name) {
     params = list(schema)
   )
   if (!isTRUE(observed$present[[1]])) {
-    stop(name, " does not exist; create and secure it before continuing.", call. = FALSE)
+    stop(name, " does not exist; create it before continuing.", call. = FALSE)
   }
   invisible(TRUE)
-}
-
-sec_table_is_public <- function(con, schema, table) {
-  observed <- DBI::dbGetQuery(
-    con,
-    paste(
-      "SELECT has_table_privilege('public', c.oid, 'SELECT') OR",
-      "has_table_privilege('public', c.oid, 'INSERT') OR",
-      "has_table_privilege('public', c.oid, 'UPDATE') OR",
-      "has_table_privilege('public', c.oid, 'DELETE') OR",
-      "has_table_privilege('public', c.oid, 'TRUNCATE') OR",
-      "has_table_privilege('public', c.oid, 'REFERENCES') OR",
-      "has_table_privilege('public', c.oid, 'TRIGGER') AS public_access",
-      "FROM pg_class c INNER JOIN pg_namespace n ON n.oid = c.relnamespace",
-      "WHERE n.nspname = $1 AND c.relname = $2"
-    ),
-    params = list(schema, table)
-  )
-  nrow(observed) == 1L && isTRUE(observed$public_access[[1]])
 }

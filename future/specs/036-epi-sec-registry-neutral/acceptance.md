@@ -1,11 +1,40 @@
 # Acceptance
 
 Spec ID: `036-epi-sec-registry-neutral`
-Status: Active
+Status: Review
 
-- [x] Registry result has no `schema_restricted` field; incompatible existing objects use `incompatible`.
-- [x] Registry initialisation issues no privilege query, GRANT or REVOKE statement.
-- [x] PUBLIC privileges neither block audit nor apply, and schema grants are identical before and after apply in the disposable PostgreSQL regression.
-- [x] Structure/version/token-setting, transaction, rollback and sanitised database-error behaviour remain covered by focused tests.
-- [x] Focused offline/live PostgreSQL tests, lint, workflow state and diff checks pass; the broad local test run was started but its command transport did not return a final completion result.
-- [x] Directly affected help and vignette prose describe observable technical behaviour.
+## Activation
+
+- [x] `issue-278`/`PR-281`/`spec-035` completed closeout on canonical `commit-e3bc0d5` before implementation began.
+- [x] The predecessor diff, tests and accepted `spec-034` slice-2 contract were reconciled at that exact canonical baseline.
+- [x] The owner-authorised stack-after-green promotion was recorded on `issue-284` before package edits.
+- [x] The change remains bounded to registry and stable-path privilege neutrality; `issue-285` remains the explicit successor.
+
+## Registry Contract
+
+- [x] The registry export, public arguments/defaults, S3 class, physical schema/version and immutable token settings remain.
+- [x] Registry results omit `schema_restricted`, use only `ready`, `initialisation_required` or structural `incompatible`, and print neutral technical text.
+- [x] Registry inspection ignores ownership/grant state and classifies only relation kind, exact structure, metadata cardinality/version and settings.
+- [x] Creation remains atomic and concurrent change rolls back without partial objects.
+
+## PostgreSQL Privilege Neutrality
+
+- [x] Registry, crosswalk and output paths perform no privilege query, grant or revoke.
+- [x] Configured `PUBLIC` and named-role grants are unchanged before and after successful calls.
+- [x] A compatible foreign-owned registry remains usable when PostgreSQL grants sufficient access.
+- [x] Insufficient PostgreSQL permissions produce fixed value-free technical errors.
+
+## Preserved Integrity
+
+- [x] Source/registry/output separation, stable mappings, locks, rollback, row reconciliation and source non-mutation remain covered.
+- [x] `existing = "replace"` remains limited to an owned ordinary non-partitioned dependency-free destination and never cascades.
+- [x] No linkage, pseudonymisation-result, issue-severity, diagnostic-value or manifest contract assigned to `issue-285` changes.
+
+## Documentation And Verification
+
+- [x] Roxygen-generated help and only directly affected guide text match observed behaviour.
+- [x] Focused offline and live PostgreSQL tests, package lint, the complete local check and `git diff --check` pass.
+- [x] The software-verification, truth-and-semantics, copy-edit and render/release checklists were applied as self-review.
+- [x] No real identifiers, production database, credentials, role-administration feature, unrelated refactor or new dependency enters the diff.
+- [ ] `scripts/check-workflow-state.sh` cannot pass while GitHub has `issue-284` closed but the versioned specification remains in review pending publication of the complete corrective diff.
+- [x] Review evidence is recorded; GitHub mutation, publication, merge and closeout remain outside this disposable-clone task.

@@ -26,9 +26,9 @@ epi_sec_pseudonymise_db(
 
 \item{linkage}{A confirmed object returned by \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}.}
 
-\item{registry_schema}{Existing restricted identity-registry schema initialised by \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}.}
+\item{registry_schema}{Existing identity-registry schema initialised by \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}.}
 
-\item{output_schema}{Existing restricted schema for pseudonymised output tables.}
+\item{output_schema}{Existing schema for pseudonymised output tables.}
 
 \item{catalogues}{Optional normalised semantic catalogue data frame used by
 \code{dictionary}, with \code{catalog_name}, \code{source_value}, \code{label},
@@ -54,6 +54,8 @@ Audit or transactionally create pseudonymised copies of related PostgreSQL table
 }
 \details{
 Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. \code{existing = "replace"} is deliberately opt-in and is limited to declared ordinary destination tables without \code{CASCADE}. Source tables are never altered.
+
+Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 
 Expected identity, duplicate, dictionary and governance findings return \code{status = "blocked"} with a value-free issue table containing \code{issue_code}, \code{severity}, \code{stage}, \code{source_schema}, \code{source_table}, \code{source_column}, \code{n_affected}, \code{message}, \code{recommended_action} and \code{sensitive}. Correct the declared metadata or source governance problem and audit again. Errors are reserved for malformed arguments, unsupported types or unsafe database/infrastructure state; apply errors roll back before returning a sanitised condition.
 

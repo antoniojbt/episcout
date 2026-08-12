@@ -32,14 +32,14 @@ Supported identity columns are PostgreSQL `text` or `varchar`, integral types an
 
 Use `epi_sec_pseudonym()` instead when you need a one-off in-memory bridge for one unique vector and do not need stable tokens across later calls or related tables.
 
-## 2. Database administrator prerequisites
+## 2. PostgreSQL prerequisites
 
-Ask the database administrator to prepare and review these conditions before R work begins:
+Prepare these technical conditions before R work begins:
 
 - `source_data`, `identity_data`, `identity_registry` and `analysis_data` are distinct, existing schemas.
 - Source relations and any crosswalk are ordinary PostgreSQL tables, not views or materialised views.
-- The working role has the PostgreSQL permissions required to read declared sources and create the requested registry/output objects.
-- PostgreSQL, not episcout, determines whether those permissions permit an operation; the package neither inspects nor changes grants.
+- The connected role has the PostgreSQL permissions required to read declared sources and crosswalks, inspect or initialise the registry, and create or replace the requested output tables.
+- PostgreSQL permissions are configured outside episcout. The registry and pseudonymisation functions neither query nor change schema or table privileges.
 - Named-role grants, storage encryption, backups, restore tests, retention and database logging have been reviewed outside episcout.
 - The connection is not already inside a caller-managed transaction when apply begins.
 
@@ -298,7 +298,7 @@ registry_audit <- epi_sec_identity_registry_init(
 registry_audit
 ```
 
-After inspecting the empty schema, initialise it explicitly. The defaults use prefix `E` and 24 random bytes. Those immutable settings define one registry domain; reuse the registry only for sources intended to share that token domain.
+When a registry is required, explicitly initialise it. The defaults use prefix `E` and 24 random bytes. Those immutable settings define one stable identity-mapping domain; reuse the registry only for sources that should share that exact mapping domain.
 
 ```{r registry-apply, eval = FALSE}
 registry_apply <- epi_sec_identity_registry_init(
@@ -312,7 +312,7 @@ registry_apply <- epi_sec_identity_registry_init(
 registry_apply
 ```
 
-Apply creates or validates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` transactionally. The alias table remains re-identifying plaintext. Do not edit registry rows manually; an incomplete registry, incompatible version or changed token setting requires an administrator-approved recovery decision.
+Apply creates or validates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` transactionally. It uses the connected role's configured PostgreSQL permissions without granting or revoking privileges. The alias table remains re-identifying plaintext. Do not edit registry rows manually; handle an incomplete registry, incompatible version or changed token setting through a separate recovery operation.
 
 ## 8. Audit before any data write
 
@@ -480,12 +480,13 @@ Before analysis or sharing, review least-privilege grants, retention, backup and
 
 | Symptom | What it means | Exact next action |
 |---|---|---|
-| Registry audit returns `initialisation_required` | The existing restricted schema has no compatible registry. | Ask the database administrator to review schema access, then run registry initialisation with `mode = "apply"`. |
+| Registry audit returns `initialisation_required` | The existing schema contains no registry objects. | Run registry initialisation with `mode = "apply"` if a new registry is required. |
+| Registry audit returns `incompatible` | One or more registry objects has the wrong relation kind, structure or registry version. | Inspect the registry structure and use a separate recovery operation; do not edit registry rows manually. |
 | `unmatched_identifier` | A dependent identity cannot resolve exactly through its namespace, registry or confirmed crosswalk. | Review the namespace and restricted crosswalk; correct and reconfirm metadata, then audit again. Do not use fuzzy matching. |
 | `conflicting_record_key` | One declared record key has different retained payloads. | Resolve the source conflict under a reviewed data rule, or correct the declared key. episcout will not select a winner. |
 | `destination_exists` | The output name is already occupied. | Choose a new destination, or review ownership and dependencies before explicitly auditing `existing = "replace"`. |
 | Lock timeout blocker | Another transaction holds a required registry or destination lock. | Let the authorised transaction finish, verify its outcome, then audit again; do not bypass the lock. |
-| Apply returns a sanitised error | An unsafe database or infrastructure condition caused rollback. | Confirm no writes committed, ask the database administrator to inspect restricted logs, correct the condition, then restart with audit. |
+| Apply returns a sanitised error | PostgreSQL or the driver rejected or interrupted the operation, and the transaction rolled back. | Confirm no writes committed, inspect PostgreSQL or driver logs, correct the technical cause, then retry. |
 | Audit warns that a table has no record key | Only exact projected duplicates can be assessed. | Confirm and declare the row grain and ordered key columns, or document acceptance of the limitation before apply. |
 | Output is complete but sharing is planned | Completion establishes transactional workflow success only. | Perform a separate disclosure and access review; do not treat the output as anonymous. |
 
