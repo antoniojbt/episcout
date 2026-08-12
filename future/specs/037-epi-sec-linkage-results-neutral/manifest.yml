@@ -1,0 +1,66 @@
+id: "037"
+slug: "epi-sec-linkage-results-neutral"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: agent/issue-285-refactor-make-epi-sec-linkage-results-issues
+created: 2026-08-12
+updated: 2026-08-12
+
+tracking_issue: 285
+source_issues:
+  - 269
+  - 274
+  - 275
+  - 276
+  - 278
+  - 284
+pull_request: null
+merge_commit: null
+successor_issue: 269
+terminal_reason: null
+
+related_files:
+  - R/epi_sec_linkage.R
+  - R/epi_sec_pseudonymise_db.R
+  - R/epi_sec_pseudonym.R
+  - tests/testthat/test-sec-linkage.R
+  - tests/testthat/test-sec-pseudonymise-postgres.R
+  - man/epi_sec_linkage_scaffold.Rd
+  - man/epi_sec_linkage_spec.Rd
+  - man/epi_sec_pseudonymise_db.Rd
+  - man/epi_sec_pseudonym.Rd
+  - NAMESPACE
+  - inst/examples/db-to-report/walkthrough.R
+  - vignettes/longitudinal-pseudonymisation.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+checklists:
+  - checklists/software-verification.md
+  - checklists/truth-and-semantics.md
+  - checklists/copy-edit.md
+  - checklists/render-and-release.md
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-linkage|sec-pseudonymise-postgres', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 PGHOST=127.0.0.1 PGPORT=55432 PGDATABASE=synthetic_records PGUSER=$USER scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'sec-linkage|sec-pseudonymise-postgres', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); if (length(findings) > 0L) quit(status = 1L)"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+notes:
+  - Owner-authorised stack-after-green is recorded on issue-285; issue-284 is canonically complete, so this branch starts from canonical master.
+  - PR-289 and closeout PR-290 are predecessor evidence; this dispatch does not create, edit or merge a pull request.
+  - issue-269 remains the downstream final documentation reconciliation and does not authorise broad guide changes in this slice.

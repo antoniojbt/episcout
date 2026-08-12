@@ -30,7 +30,7 @@ A tibble with columns \code{participant_id} and \code{token_id}.
 Generate random, non-derivable token identifiers for participant pseudonymisation. The returned bridge table maps each original participant identifier to a cryptographically random token.
 }
 \details{
-Tokens are generated from cryptographic random bytes using \code{openssl::rand_bytes()}. The function does not accept a seed and does not provide deterministic output. This single-vector helper does not maintain stable tokens across later calls or rewrite related tables. For stable, reviewed linkage across PostgreSQL tables, start with \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}} and follow \code{vignette("longitudinal-pseudonymisation")}.
+Tokens are generated from cryptographic random bytes using \code{openssl::rand_bytes()}. The function does not accept a seed and does not provide deterministic output. This single-vector helper does not maintain stable tokens across later calls or rewrite related tables. For stable linkage across PostgreSQL tables, start with \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}} and follow \code{vignette("longitudinal-pseudonymisation")}.
 
 The bridge table remains re-identifying information. Store it separately from pseudonymised analysis datasets and protect it with appropriate access controls. Pseudonymisation reduces risk but does not by itself anonymise a dataset.
 }
