@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `036-epi-sec-registry-neutral`
-Status: Review
+Status: Completed
 
 ## Baseline
 
@@ -27,12 +27,13 @@ During this isolated run, `PR-286` merged as canonical `commit-6312b8d` and GitH
 - The longitudinal vignette renders successfully, and plain-text inspection confirms the connected-role permission boundary, `initialisation_required`, `incompatible` and sanitised-error guidance.
 - `scripts/check-local.sh` passes the complete suite and package check with 0 errors, 0 warnings and 0 notes; its 26 skips are the repository's explicit environment-gated PostgreSQL/PostGIS, installed-package parallel and visual tests. Generated unrelated Rd drift and skipped visual snapshots were restored after the check.
 - `git diff --check` passes.
-- `scripts/check-workflow-state.sh` reports the expected lifecycle blocker: GitHub has closed `issue-284` and merged `PR-286` while the complete corrective diff remains unpublished and `spec-036` is still in review.
+- Hosted final PR-289 checks passed for macOS/Ubuntu R CMD, PostgreSQL integration, coverage, CodeQL and CodeFactor. Codecov reported one uncovered line while its informational status passed.
+- `scripts/check-workflow-state.sh` passes against canonical master after merge.
 
 ## Checklist Self-review
 
 The software-verification checklist found no untested changed branch, dependency, generated-interface drift or unexplained broad-suite failure. The truth-and-semantics review confirms that package results do not reinterpret PostgreSQL privilege state and that configured ACLs are compared independently before and after calls. The copy-edit review retains British spelling, neutral technical language and the direct privacy boundary without broad guide rewrites. The render/release review inspected the rendered guide and package build; no release artifact or publication is authorised.
 
-## Remaining Lifecycle Action
+## Closeout
 
-The implementation is complete and committed locally. A repository owner must reopen or otherwise reconcile the prematurely closed tracker, publish the corrective commit through an authorised pull request, rerun hosted checks and complete canonical closeout before `issue-285` starts. Those GitHub mutations are outside this disposable-clone task.
+PR-286 merged an initial subset of issue-284. Final PR-289 completed the remaining in-scope registry, crosswalk and output privilege-neutrality changes and merged to canonical master as `commit-40b284f` on 2026-08-12. The original closeout PR-287 was closed as premature. issue-285 is now the promoted successor; issue-269 remains downstream.

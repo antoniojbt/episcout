@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `036-epi-sec-registry-neutral`
-Status: Review
+Status: Completed
 
 ## Activation
 
@@ -36,5 +36,5 @@ Status: Review
 - [x] Focused offline and live PostgreSQL tests, package lint, the complete local check and `git diff --check` pass.
 - [x] The software-verification, truth-and-semantics, copy-edit and render/release checklists were applied as self-review.
 - [x] No real identifiers, production database, credentials, role-administration feature, unrelated refactor or new dependency enters the diff.
-- [ ] `scripts/check-workflow-state.sh` cannot pass while GitHub has `issue-284` closed but the versioned specification remains in review pending publication of the complete corrective diff.
-- [x] Review evidence is recorded; GitHub mutation, publication, merge and closeout remain outside this disposable-clone task.
+- [x] Final `PR-289` merged to canonical `master` as `commit-40b284f` on 2026-08-12. Hosted macOS/Ubuntu R CMD, PostgreSQL integration, test coverage, CodeQL and CodeFactor checks passed; Codecov reported one uncovered line while its informational status passed.
+- [x] `scripts/check-workflow-state.sh` passes after canonical merge; issue-285 is the promoted successor and spec-036 is under `future/specs/done/`.

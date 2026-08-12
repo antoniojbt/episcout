@@ -2,7 +2,7 @@ id: "036"
 slug: "epi-sec-registry-neutral"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: refactor/epi-sec-registry-neutral
@@ -15,8 +15,8 @@ source_issues:
   - 275
   - 276
   - 278
-pull_request: 286
-merge_commit: null
+pull_request: 289
+merge_commit: "40b284f36a4d403060c975d8504059b61d6ba5be"
 successor_issue: 285
 terminal_reason: null
 
@@ -55,5 +55,5 @@ check_commands:
 notes:
   - Owner-authorised stack-after-green is recorded on issue-284; its predecessor is already canonical, so this branch starts from canonical master.
   - issue-285 remains the staged successor and must not activate before this slice closes out canonically.
-  - PR-286 merged during this isolated run but implemented only registry initialisation; this task branch completes the issue's explicit crosswalk/output privilege-neutrality outcome locally.
-  - GitHub mutation, corrective publication and post-merge closeout are outside this disposable-clone task.
+  - PR-286 merged an initial subset; final PR-289 completed the registry, crosswalk and output privilege-neutrality outcome.
+  - Post-merge closeout verified canonical master before this completed record was written.

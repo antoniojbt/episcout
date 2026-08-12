@@ -138,6 +138,13 @@ Passing tests and successful execution do not establish that analytical behaviou
 - If there are no findings, say so and identify residual risks or checks that were not run.
 - State whether the review was independent of the implementation.
 
+## CodeFactor follow-up
+
+- A CodeFactor failure is non-blocking by default. Before merge, closeout or authorised successor stacking, inspect the changed code and the reported finding when available; do not infer that a finding is minor merely from the check status.
+- Treat a CodeFactor finding as blocking when there is concrete evidence that it affects correctness, data integrity, security, privacy, performance, concurrency, resource lifetime, public-interface compatibility or a consequential documentation claim. Fix it in the current slice or create a separate tracked issue before proceeding.
+- For style, naming, formatting, duplication or local maintainability findings without such impact, record the PR, rule/file and short rationale in issue-288. Do not interrupt the current delivery with one-off style churn.
+- Triage issue-288 as one focused maintenance batch after ten recorded PR entries, when one rule recurs in maintained code, or when the owner requests it. Group fixes by rule, use focused verification and split any newly identified higher-risk finding into its own issue.
+
 ## Work lifecycle and continuity
 
 GitHub issues and the current roadmap issue are the authoritative live task state. `future/TODOs.md`, specification manifests, `future/changelog.md` and `PROJECT_MAP.md` are synchronised repository records; when they disagree with GitHub, stop new work and reconcile them first.
