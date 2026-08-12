@@ -1,7 +1,7 @@
-# episcout: synthetic longitudinal data from PostgreSQL to an EDA delivery
+# episcout: neutral synthetic longitudinal data from PostgreSQL to an owned EDA delivery
 #
 # Run this file one numbered section at a time in an interactive R session.
-# The example uses only neutral synthetic records. Explicit output actions below are caller declarations, not inferred by core EDA.
+# The example uses only neutral synthetic records and an approved disposable PostgreSQL database. The caller owns the database, connection, credentials, output root and disclosure decision. Explicit output actions below are caller declarations, not inferred by core EDA.
 
 # 1. Load packages and locate the installed example ---------------------------
 
@@ -102,7 +102,7 @@ if (nzchar(pg_password)) {
 con <- do.call(DBI::dbConnect, connection_arguments)
 DBI::dbIsValid(con)
 
-# If you stop before the final section, close this session with DBI::dbDisconnect(con). The generated schemas are uniquely named and are not overwritten.
+# If you stop before the final section, close this session with DBI::dbDisconnect(con). The generated schemas are uniquely named and are not overwritten; have the database owner review those exact names before removing an interrupted run.
 
 # Use unique schema names so a rerun cannot overwrite earlier walkthrough data.
 run_id <- Sys.getenv(
@@ -143,7 +143,7 @@ DBI::dbWriteTable(
   visits
 )
 
-# 4. Inventory the database and define a reusable semantic dictionary ---------
+# 4. Inventory metadata and define a reusable semantic dictionary -------------
 
 inventory <- epi_db_inventory(
   con,
@@ -379,6 +379,8 @@ postgres_source <- epi_eda_postgres_source(
 )
 postgres_source
 
+# PostgreSQL-backed EDA has no audit/apply preparation mode. The reviewed pseudonymised output relation and its semantic dictionary are the handoff contract.
+
 schema_profile <- epi_eda_check_schema(postgres_source, visits_spec)
 missing_profile <- epi_eda_profile_missing(postgres_source, visits_spec)
 summary_profile <- epi_eda_profile_summaries(postgres_source, visits_spec)
@@ -412,6 +414,7 @@ database_bundle <- epi_eda_db_run(
   output_dir = delivery_dir,
   plots = TRUE,
   max_plot_levels = 10L,
+  maps = FALSE,
   layout = "delivery",
   quiet = TRUE
 )
@@ -432,10 +435,7 @@ frequency_companions
 database_report <- file.path(delivery_dir, "reports", "eda-report.html")
 stopifnot(file.exists(database_report))
 
-# episcout creates the outputs explicitly requested by the analyst and does
-# not decide whether they may be shared. The HTML renderer ran after the
-# repeatable-read snapshot closed and consumed only the validated aggregate
-# bundle; it did not receive this connection or source observations.
+# episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared. With maps disabled, the delivery contains aggregate CSV and plot inputs rather than source rows, raw text examples, identifiers, map coordinates or thematic row values. The HTML renderer ran after the repeatable-read snapshot closed and consumed only the validated bundle; it did not receive this connection or source observations. Aggregate outputs and pseudonymised observations still require disclosure and restricted-access review.
 
 # 8. Reconcile outputs, disconnect and optionally remove disposable schemas ----
 
@@ -444,6 +444,8 @@ stopifnot(identical(
   c("artifact", "type", "path", "status", "checksum_md5")
 ))
 stopifnot(database_bundle$metadata$status == "complete")
+stopifnot(database_bundle$status == "complete")
+stopifnot(identical(database_bundle$metadata$maps, FALSE))
 
 cat("\nWalkthrough schemas:\n", paste(walkthrough_schemas, collapse = "\n"), "\n")
 cat("\nWalkthrough outputs:\n", normalizePath(output_root), "\n")
@@ -465,4 +467,4 @@ if (cleanup_schemas) {
 
 DBI::dbDisconnect(con)
 
-cat("\nComplete. Open the report and retain its manifest-owned delivery root.\n")
+cat("\nComplete. Open the report, retain the complete manifest-owned delivery root and review it before sharing.\n")

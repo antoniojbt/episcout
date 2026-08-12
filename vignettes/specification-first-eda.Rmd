@@ -18,19 +18,27 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = has_ggplot2)
 cat("This vignette needs ggplot2. Install it to run the examples.")
 ```
 
-Specification-first EDA uses an analyst-declared semantic dictionary for schema checks, missingness, summaries, plots, optional stratification and optional point maps. The same declaration can drive an in-memory or PostgreSQL workflow.
+Specification-first EDA starts with a reviewed semantic dictionary, then uses that dictionary for preparation, schema and missingness checks, summaries, plots, optional stratification, optional point maps and report delivery. The data-frame and PostgreSQL entry points share the same EDA specification and aggregate summary contracts, but their preparation and output ownership differ.
 
-episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
+episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared. Aggregate outputs can still reveal sensitive names, categories, small cells or point locations, so review the complete output root before delivery.
 
-## Generate a lean semantic dictionary
+## 1. Choose the data source
 
-When data arrive without a dictionary, `epi_eda_spec_scaffold()` uses storage metadata only. Its exact fields are `name`, `label`, `type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. It does not include observed counts, candidate declarations, approval states or privacy policy.
+Use the data-frame path when the caller has already loaded an authorised in-memory data frame. `epi_eda_intake_run()` is the guided audit/apply and owned-bundle entry point. `epi_eda_run()` and `epi_eda_render_report()` are lower-level analysis and reporting entry points; they do not call `epi_eda_prepare()`.
+
+Use the PostgreSQL path when observations must remain in one supported database relation. The caller creates and owns the connection and credentials, then passes separate schema and relation identifiers to `epi_eda_postgres_source()`. episcout does not create a server, manage credentials, accept arbitrary SQL or prepare database values.
+
+The installed `project-template/README.md` provides a file-based data-frame scaffold. The installed `examples/db-to-report/README.md` and `walkthrough.R` provide a runnable synthetic example of database inventory, separate pseudonymisation policy and PostgreSQL EDA delivery.
+
+## 2. Create and review the dictionary
+
+For a data frame without a dictionary, `epi_eda_spec_scaffold()` uses storage metadata only. It returns the 15 semantic fields `name`, `label`, `type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. It does not infer scientific roles, sentinel missing values, units, validation ranges, geographic meaning, privacy policy or approval status, and it does not inspect observed values for evidence.
 
 ```{r}
 library(episcout)
 
 received_data <- data.frame(
-  age = c(42, 57, 61, NA),
+  age = c(42L, 57L, 61L, NA_integer_),
   study_group = c("A", "B", "A", "B"),
   longitude = c(-3, -1, 1, 3),
   latitude = c(51, 52, 53, 54),
@@ -41,7 +49,7 @@ spec <- epi_eda_spec_scaffold(received_data)
 names(spec)
 ```
 
-Storage-derived types are a starting point. Declare the intended categorical semantics and the coordinate pair explicitly; episcout does not infer either from names or roles.
+Storage-derived types are only a starting point. Declare the intended semantics and review them against source documentation. In this neutral example, the analyst declares a categorical exposure and one coordinate pair explicitly; episcout does not infer them from names or roles.
 
 ```{r}
 spec$role <- c("covariate", "exposure", "coordinate", "coordinate")
@@ -54,35 +62,57 @@ spec$geo_crs[spec$name %in% c("longitude", "latitude")] <- "4326"
 spec <- epi_eda_spec(spec)
 ```
 
-`missing_codes` accepts semicolon-separated declared sentinels. Preparation is all-or-nothing: incompatible storage, unsafe conversion or unexpected categorical values produce factual audit findings rather than partial transformations. Roles describe variables; `id`, `identifier` and coordinate roles do not suppress ordinary summaries, plots or strata.
+`missing_codes` accepts semicolon-separated declared sentinels. Standard missing values and these declared codes are treated as missing in EDA calculations. Roles describe variables; `id`, `identifier` and coordinate roles do not suppress ordinary summaries, plots or strata.
+
+For PostgreSQL, inventory the caller-selected schema, then create the extended technical and semantic dictionary. Inventory reads metadata by default; request `row_counts = "exact"` only when the aggregate count is needed and acceptable for the source. Convert one reviewed active table into the same 15-field EDA specification.
+
+```{r eval = FALSE}
+inventory <- epi_db_inventory(
+  con,
+  schema = "study",
+  tables = "observations",
+  row_counts = "none"
+)
+dictionary <- epi_eda_dictionary_scaffold(inventory)
+
+# Edit semantic fields and optional catalogue definitions, then validate them.
+epi_eda_dictionary_validate(dictionary, catalogues)
+spec <- epi_eda_dictionary_spec(
+  dictionary,
+  table = "study.observations",
+  catalogues = catalogues
+)
+```
+
+The extended dictionary contains technical source metadata and semantic declarations. `epi_db_catalogue_profile()` reads values only for an explicit `source_schema`, `source_table`, `source_column` selection and a caller-supplied `max_levels` bound. Privacy classification, column retention and pseudonymisation policy do not belong in either EDA dictionary; use the separate `epi_sec_*` workflow when those controls are required. A pseudonymisation result's semantic `output_dictionary` and `output_catalogues` can pass directly to `epi_eda_dictionary_spec()`.
+
+## 3. Audit and apply data-frame preparation
+
+Preparation is a data-frame stage. Audit mode returns the original data and factual findings. Apply mode is all-or-nothing: a blocking finding returns the original data, no `schema_after`, and `metadata$overall_status == "blocked"`; a successful apply returns prepared data and `metadata$overall_status == "prepared"`. `min` and `max` are descriptive metadata rather than recoding rules.
 
 ```{r}
 assessment <- epi_eda_prepare(received_data, spec, mode = "audit")
+assessment$metadata$overall_status
 assessment$audit
 
 prepared <- epi_eda_prepare(received_data, spec, mode = "apply")
-prepared$metadata
+stopifnot(prepared$metadata$overall_status == "prepared")
+prepared$schema_after
 ```
 
-## Use the intake workflow
-
-With `spec = NULL`, intake generates the lean dictionary, saves it as `specification.csv`, uses it, and continues. Its processing statuses are `complete`, `audit_complete` and `blocked`.
+`epi_eda_intake_run()` composes this audit with preparation, summaries, optional stratification and an owned bundle. Use `prepare = "audit"` to stop after a successful audit, `prepare = "apply"` to apply reviewed transformations, or `prepare = "none"` only when the audit requires no changes. Intake statuses are `audit_complete`, `complete` and `blocked`; invalid arguments and unsafe output collisions are errors.
 
 ```{r}
-generated_dir <- tempfile("episcout-generated-intake-")
-generated <- epi_eda_intake_run(
+audit_dir <- tempfile("episcout-audit-intake-")
+audit <- epi_eda_intake_run(
   received_data,
-  output_dir = generated_dir,
+  spec,
+  output_dir = audit_dir,
+  prepare = "audit",
   render = FALSE
 )
-generated$status
-generated$spec$data
-generated$manifest
-```
+audit$status
 
-Supply a semantic dictionary when declarations differ from storage or when preparation is required.
-
-```{r}
 intake_dir <- tempfile("episcout-complete-intake-")
 intake <- epi_eda_intake_run(
   received_data,
@@ -94,19 +124,54 @@ intake <- epi_eda_intake_run(
 )
 intake$status
 intake$stratified$groups
-intake$categorical_display
 intake$table1
 ```
 
-Core manifests have exactly `artifact`, `type`, `path`, `status` and `checksum_md5`. Intake never writes source or prepared rows.
+With `spec = NULL`, intake generates, saves and uses a storage-derived scaffold as `specification.csv`; use that shortcut only when its undeclared semantic fields are acceptable for the current run. Intake creates a missing output directory. Its five-column manifest has `artifact`, `type`, `path`, `status` and `checksum_md5`, and manifest paths are relative to the exact output root. It never writes source or prepared rows, row previews, raw free-text examples, identifier values or pseudonymisation bridge tables.
 
-## Request declared point maps
+PostgreSQL-backed EDA has no audit/apply preparation mode. Resolve storage compatibility and semantic recoding in a reviewed source relation or view before constructing `epi_eda_postgres_source()`. In particular, the PostgreSQL source must already satisfy the declared EDA contract.
 
-Mapping is off by default. `maps = TRUE` requests one geometry-only map per declared pair; each unique `map_vars` entry requests one additional thematic map per pair. Themes may be numeric, integer, categorical, binary or text. Date and datetime themes are unsupported. No thematic variable is selected automatically.
+## 4. Run summaries, plots and optional stratification
+
+The canonical summary contains `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped`. Every specification row remains accounted for. Numeric summaries separate finite values from infinities, categorical summaries retain declared zero-count levels, text summaries contain length and cardinality aggregates rather than observed strings, and temporal summaries state their range units.
+
+```{r}
+results <- epi_eda_run(prepared$data, spec)
+names(results$summaries)
+results$summaries$variables
+results$categorical_display
+
+stratified <- epi_eda_profile_stratified(
+  prepared$data,
+  spec,
+  strata = "study_group"
+)
+table1 <- epi_eda_table1(stratified)
+table1
+```
+
+`epi_eda_profile_stratified()` is a data-frame interface for exactly one declared categorical or binary stratifier. PostgreSQL-backed EDA does not provide a stratified or Table 1 database entry point; collect only an authorised data frame or use reviewed database aggregates outside this workflow when that output is required.
+
+`epi_eda_categorical_display()` is the shared aggregate calculation behind categorical presentation. Every row retains an integer `numerator`, integer `denominator`, numeric `proportion`, percentage-basis fields and explicit missingness treatment. Standard missing values and declared missing codes are combined into one missing-level row. A zero denominator remains integer zero and its proportion is `NA_real_`; it is never presented as zero percent.
+
+```{r}
+compatibility <- epi_eda_categorical_display(stratified)
+column <- epi_eda_categorical_display(stratified, basis = "column")
+row <- epi_eda_categorical_display(stratified, basis = "row")
+overall <- epi_eda_categorical_display(stratified, basis = "overall")
+
+epi_eda_table1(stratified, basis = "column")
+```
+
+The default `compatibility` basis uses observed non-missing values for ordinary levels and all rows in the corresponding group for the missing level. `column` uses all rows in each group, `row` distributes each level across non-Overall strata, and `overall` uses the included analysis population. Row percentages require a stratified result. When outputs are requested, `epi_eda_run()` and intake write the compatibility calculation as `categorical_display.csv`; Table 1 records the numeric denominator behind each displayed count and percentage.
+
+## 5. Request declared point maps
+
+Mapping is off by default. `maps = TRUE` requests one geometry-only point map per declared pair; each unique `map_vars` entry requests one additional thematic map per pair. Themes may be numeric, integer, categorical, binary or text. Date and datetime themes are unsupported, and no thematic variable is selected automatically.
 
 ```{r, fig.width = 6, fig.height = 4}
 mapped <- epi_eda_run(
-  received_data,
+  prepared$data,
   spec,
   maps = TRUE,
   map_vars = "study_group",
@@ -118,110 +183,50 @@ mapped$maps[["map-p001-geometry"]]
 mapped$maps[["map-p001-v002"]]
 ```
 
-Maps are created only when every row in a pair is complete, finite, within EPSG:4326 ranges when applicable, and the source has at most `max_map_points` rows. A failed pair records `not_created`, preserves the rest of EDA, and is never partially mapped or truncated. Declared thematic missing codes use the existing missing-value colour. Integrated EDA creates coordinate-derived points only; use explicit `epi_geo_*` functions for existing `sf`, line, polygon, boundary, basemap or PostGIS geometry workflows.
+Maps are created only when every row in a pair is complete, finite, within EPSG:4326 ranges when applicable, and the source has at most `max_map_points` rows. A failed pair records `not_created`, preserves the rest of EDA, and is never partially mapped or truncated. Map readiness is structural QA, not evidence that coordinates represent the intended place, person, time or unit, and not disclosure approval.
 
-The same options are available on `epi_eda_intake_run()` and `epi_eda_render_report()`. Bundle-producing runs write deterministic SVGs under `maps/`; HTML reports embed their maps and inventory.
+The same map controls are available on intake, the data-frame report renderer and the PostgreSQL database run. Bundle-producing runs write deterministic SVGs under `maps/`; reports embed created maps and their inventory. Requested point maps contain individual locations and may contain thematic values, so an output with maps is not aggregate-only. Integrated EDA creates coordinate-derived points only; use the [geospatial mapping guide](geospatial-mapping-primer.html) for existing `sf`, line, polygon, boundary, basemap and PostGIS geometry workflows.
 
-## Summaries and Table 1
+## 6. Run PostgreSQL EDA in one snapshot
 
-The canonical summary contains `variables`, `numeric`, `categorical`, `text`, `temporal` and `skipped`. Every specification row remains accounted for. Numeric summaries separate finite values from infinities, categorical summaries retain declared zero-count levels and temporal summaries state their units.
-
-```{r}
-results <- epi_eda_run(prepared$data, spec)
-results$summaries$variables
-
-stratified <- epi_eda_profile_stratified(
-  prepared$data,
-  spec,
-  strata = "study_group"
-)
-epi_eda_table1(stratified)
-```
-
-`epi_eda_categorical_display()` is the shared aggregate calculation behind categorical presentation. It combines standard and declared-code missing values in one explicit missing row and retains zero denominators as integer zero with `NA_real_` proportion.
-
-```{r}
-compatibility <- epi_eda_categorical_display(stratified)
-column <- epi_eda_categorical_display(stratified, basis = "column")
-row <- epi_eda_categorical_display(stratified, basis = "row")
-overall <- epi_eda_categorical_display(stratified, basis = "overall")
-
-epi_eda_table1(stratified, basis = "column")
-```
-
-The default `compatibility` basis uses observed non-missing values for ordinary levels and all group rows for the missing level. `column` uses all rows within each group, `row` distributes each level across non-Overall strata, and `overall` uses the included analysis population. Row percentages require a stratified result. `epi_eda_run()` and intake publish the compatibility table as `categorical_display.csv`; the HTML reports show the same numeric fields.
-
-## PostgreSQL-backed EDA
-
-The caller owns an open idle RPostgres connection and supplies schema and relation identifiers separately. Arbitrary SQL, dotted relation names, generic DBI connections and caller-managed transactions are not accepted.
+PostgreSQL 17 or later is required. The caller supplies an open, idle RPostgres connection and separate schema and relation identifiers. Ordinary tables, partitioned tables, views, materialised views and foreign tables are supported. Arbitrary SQL, dotted relation names, temporary objects, generic DBI connections and caller-managed transactions are not accepted.
 
 ```{r eval = FALSE}
 con <- DBI::dbConnect(
   RPostgres::Postgres(),
   host = Sys.getenv("PGHOST"),
+  port = as.integer(Sys.getenv("PGPORT", unset = "5432")),
   dbname = Sys.getenv("PGDATABASE"),
   user = Sys.getenv("PGUSER")
 )
-source <- epi_eda_postgres_source(con, "eda_fixture", "observations")
+source <- epi_eda_postgres_source(con, "study", "observations")
 
 db_results <- epi_eda_db_run(
   source,
   spec,
-  output_dir = "20260809_eda_cycle",
+  output_dir = "YYYYMMDD_eda_cycle",
   plots = TRUE,
-  maps = TRUE,
-  map_vars = "study_group",
-  max_map_points = 10000L,
+  maps = FALSE,
   layout = "delivery"
 )
 DBI::dbDisconnect(con)
 ```
 
-All profiling reads and the map bound check occur in one read-only repeatable-read snapshot. Coordinates and thematic observations are collected only for requested, map-ready, within-limit pairs. The query projects only ready-pair coordinates and explicitly selected themes, uses a defensive `max_map_points + 1` bound, and fails rather than truncates or silently drops rows. Rendering and atomic filesystem publication happen after the snapshot ends.
+The four direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`, `epi_eda_profile_summaries()` and `epi_eda_profile_plots()` also accept a PostgreSQL source; each direct call owns its own read-only repeatable-read transaction. `epi_eda_db_run()` performs catalogue revalidation, schema and missingness checks, canonical summaries, identifier QA, compact plot preparation and map-readiness QA in one read-only repeatable-read snapshot. Rendering and atomic filesystem publication occur after the snapshot ends.
 
-`layout = "delivery"` makes `README.md` and `reports/eda-report.html` the human entry points. `QA_QC/` retains aggregate checks and summaries, `plot_data/` retains compact aggregate plot inputs but never map coordinates/themes or source rows, `plots/` and `maps/` retain deterministic SVGs, and `run_manifests/` retains provenance, timings and the five-column checksum manifest. Frequency companions use `compact-plot-data-2`: their established plot columns come first, followed by the shared categorical display fields. Valid legacy four-column `compact-plot-data-1` companions are reconstructed from validated summary aggregates in memory and are not rewritten. The caller supplies the exact root; a `YYYYMMDD_eda_cycle` name is recommended rather than inferred. The default `layout = "bundle"` preserves the flat bundle and its metadata schemas.
+Without maps, the database bundle contains aggregates, the caller-authored specification and aggregate plot inputs only. When maps are requested, coordinates and selected thematic observations are collected only for map-ready pairs within the inclusive row limit. The query projects only the required coordinates and themes, applies a defensive `max_map_points + 1` limit, and fails rather than truncating or silently dropping rows. The bundle never contains a source-row table, arbitrary SQL, query parameters, credentials or connection attributes; database and driver logs remain the caller's infrastructure responsibility.
 
-Existing flat and delivery bundles can be rendered without a live connection. The renderer re-reads and validates the on-disk bundle; a result object contributes only its output directory.
+## 7. Deliver the owned output root
 
-```{r eval = FALSE}
-report <- epi_eda_render_db_report("postgres-eda-bundle")
-# Use overwrite = TRUE only to replace an already owned README/report.
-```
+For data-frame intake, `render = TRUE` creates `report.html` from the saved bundle components. The exact output root is workflow-owned: use `overwrite = TRUE` only to replace a prior valid owned intake bundle. Do not move individual files out of the root without preserving their manifest relationship.
 
-The extended PostgreSQL dictionary is technical and semantic. Catalogue profiling uses an explicit three-key selector:
-
-```{r eval = FALSE}
-dictionary <- epi_eda_dictionary_scaffold(epi_db_inventory(con, "study"))
-columns <- dictionary[
-  dictionary$source_column == "study_group",
-  c("source_schema", "source_table", "source_column")
-]
-profile <- epi_db_catalogue_profile(con, dictionary, columns, max_levels = 50L)
-```
-
-Specialised privacy classification and retained-column actions belong to `epi_sec_linkage_scaffold()` and `epi_sec_linkage_spec(columns = ...)`, not the EDA dictionary. A pseudonymisation output dictionary is semantic and can pass directly to `epi_eda_dictionary_spec()`.
-
-## Breaking-change migration
-
-This release intentionally rejects old contracts:
-
-- Replace scaffold evidence/candidate/review fields with the 15 semantic fields shown above; regenerate with `epi_eda_spec_scaffold()`.
-- Remove `privacy_class`, `analytic_action`, `validation_status` and `profile_catalogue` from extended EDA dictionaries. Put security column policy in `linkage$columns`.
-- Remove ordinary catalogue `validation_status`; preserve labels, missingness, ordering and provenance.
-- Pass an exact `source_schema`, `source_table`, `source_column` selector to `epi_db_catalogue_profile()`.
-- Replace core six-column sensitivity manifests with the five-column manifest contract.
-- Regenerate old three-component linkage objects with `tables`, `columns`, `record_keys` and `crosswalks`.
-- Replace database-to-report examples that extract rows with `epi_eda_db_run(layout = "delivery")` or render an existing aggregate bundle with `epi_eda_render_db_report()`. Direct in-memory reporting remains available through `epi_eda_render_report()`.
-
-Old objects fail with concise migration guidance; no warning-only compatibility shim is provided.
-
-## Write in-memory outputs and render HTML
+For a lower-level data-frame report, create an empty output directory and pass already prepared data to `epi_eda_render_report()`. It writes machine-readable CSV components and `eda-report.html`, but it does not create a checksum manifest and does not run preparation.
 
 ```{r eval = FALSE}
 output_dir <- file.path(tempdir(), "episcout-eda")
-dir.create(output_dir, showWarnings = FALSE)
+dir.create(output_dir)
 epi_eda_render_report(
-  received_data,
+  prepared$data,
   spec,
   output_dir,
   maps = TRUE,
@@ -229,4 +234,24 @@ epi_eda_render_report(
 )
 ```
 
-For a file-based project, use `epi_eda_create_project("my-eda-project")`. The lower-level `epi_eda_*` functions remain available for ordinary scripts.
+For PostgreSQL delivery, `layout = "delivery"` creates `README.md` and `reports/eda-report.html` as human entry points. `QA_QC/` contains aggregate checks and summaries, `plot_data/` contains compact aggregate plot inputs but no map coordinates, themes or source rows, `plots/` and `maps/` contain requested deterministic SVGs, and `run_manifests/` contains source metadata, timings, delivery metadata and the five-column checksum manifest. The caller supplies the exact root; a `YYYYMMDD_eda_cycle` name is recommended but not inferred. The default `layout = "bundle"` retains the flat aggregate bundle and has no automatic HTML entry point.
+
+An existing flat or delivery database bundle can be rendered without a live connection. The renderer re-reads and validates every on-disk manifest-owned artefact; a run result contributes only its `output_dir`. Use `overwrite = TRUE` only to replace an existing owned README and report.
+
+```{r eval = FALSE}
+report <- epi_eda_render_db_report("postgres-eda-bundle")
+```
+
+Retain and transfer the complete owned root. The report is a view of the validated canonical CSV, SVG, checksum and provenance evidence; it does not replace those artefacts. A complete run has `status == "complete"`. A database-run validation or publication failure raises an error rather than returning an intake-style blocked bundle.
+
+Neither a report nor an aggregate-only bundle is automatically safe to share. Review caller-authored dictionary metadata, categories, small cells, plots and any requested point maps. Pseudonymised observations remain restricted personal data: pseudonymisation replaces or separates direct identifiers under a controlled linkage process, but it does not make the observations anonymous or automatically disclosure-controlled.
+
+## 8. Start from the file-based scaffold
+
+Create a starter project, edit `metadata/data_dictionary.csv`, place an authorised input at `data/input.csv`, and follow the copied README. The scaffold offers direct and optional `targets` paths to the same lower-level data-frame renderer; it does not manage PostgreSQL connections or preparation decisions.
+
+```{r eval = FALSE}
+epi_eda_create_project("my-eda-project")
+```
+
+Synthetic generation in the scaffold is for pipeline preparation and testing only. It is not suitable for inference, anonymity or disclosure control. The lower-level `epi_eda_*` functions remain available for ordinary scripts when an owned intake bundle or project scaffold is unnecessary.

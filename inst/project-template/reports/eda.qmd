@@ -12,14 +12,26 @@ params:
 
 # Project EDA Report
 
-Render the specification-first EDA report for this project with `episcout::epi_eda_render_report()`.
+Render the specification-first EDA report for this project with `episcout::epi_eda_render_report()`. Review the dictionary first. For an authorised input data set, audit and prepare the data before passing it to this lower-level renderer. Synthetic mode does not read `data_path` and is for pipeline preparation and testing only.
 
 ```{r render-eda-report, eval=FALSE}
-data <- read.csv(params$data_path, stringsAsFactors = FALSE)
+spec <- episcout::epi_eda_spec(params$spec_path)
 
+if (isTRUE(params$synthetic)) {
+  report_data <- NULL
+} else {
+  source_data <- read.csv(params$data_path, stringsAsFactors = FALSE)
+  audit <- episcout::epi_eda_prepare(source_data, spec, mode = "audit")
+  print(audit$audit)
+  prepared <- episcout::epi_eda_prepare(source_data, spec, mode = "apply")
+  stopifnot(prepared$metadata$overall_status == "prepared")
+  report_data <- prepared$data
+}
+
+dir.create(params$output_dir, recursive = TRUE, showWarnings = FALSE)
 episcout::epi_eda_render_report(
-  data = data,
-  spec = params$spec_path,
+  data = report_data,
+  spec = spec,
   output_dir = params$output_dir,
   synthetic = params$synthetic,
   n = params$n,
