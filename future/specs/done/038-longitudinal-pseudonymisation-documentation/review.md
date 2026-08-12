@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Review
+Status: Completed
 
 ## Baseline And Authority
 
@@ -61,4 +61,5 @@ No unresolved correctness, confidentiality, compatibility or documentation query
 - Behavioural evidence: completed `issue-285`/`spec-037`/`PR-291` and closeout `PR-292`, supported by completed `spec-034` through `spec-036`.
 - Working branch: `agent/issue-269-documentation-reconcile-the-longitudinal-pse` from exact `commit-d79dd3c`.
 - Terminal disposition: no automatic package-code successor.
-- Current state: review in `PR-296`; merge and closeout remain pending.
+- `PR-296` merged to canonical `master` as `commit-e1352517ee5bd974d531015a94795e176709f77c` on 2026-08-12. Its final `commit-9dad9fa` passed macOS and Ubuntu R CMD checks, live PostgreSQL integration, coverage, CodeQL, CodeFactor, actions analysis and both informational Codecov statuses with no review threads.
+- Current state: completed and archived by the focused terminal closeout; no successor is required.

@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Review
+Status: Completed
 
 ## Activation
 
@@ -38,6 +38,6 @@ Status: Review
 
 ## Post-Merge Closeout
 
-- [ ] Canonical merge and required hosted checks are verified.
-- [ ] `issue-269`, roadmap records and terminal disposition are reconciled.
-- [ ] `spec-038` is set to `completed` and moved under `future/specs/done/` with exact merge evidence.
+- [x] Canonical merge `commit-e135251` and all required hosted checks at final `commit-9dad9fa` are verified.
+- [x] `issue-269`, roadmap records and terminal disposition are reconciled.
+- [x] `spec-038` is set to `completed` and moved under `future/specs/done/` with exact merge evidence.
