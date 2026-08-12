@@ -2,7 +2,7 @@
 
 Spec ID: `039-reviewable-qc-cleaning-proposals`
 
-Status: Review
+Status: Completed
 
 ## Planning And Activation
 
@@ -45,11 +45,11 @@ Status: Review
 - [x] `scripts/check-local.sh` passes.
 - [x] `scripts/check-cran.sh` passes with only reconciled inherited or external notes, if any.
 - [x] `scripts/check-workflow-state.sh` and `git diff --check` pass before handoff.
-- [ ] Required pull-request checks are green and actionable feedback is resolved.
+- [x] Required pull-request checks are green and actionable feedback is resolved.
 
 ## Closeout
 
-- [ ] The implementation pull request closes issue-271 only after every acceptance criterion is delivered.
-- [ ] Canonical merge and issue closure are verified before setting this manifest to `completed` and moving spec-039 under `future/specs/done/`.
-- [ ] Roadmap, TODO, changelog, acceptance and review evidence are reconciled.
-- [ ] `issue-272` is promoted only after `issue-271` canonical closeout; `issue-273` remains staged behind `issue-272`.
+- [x] The implementation pull request closes issue-271 only after every acceptance criterion is delivered.
+- [x] Canonical merge and issue closure are verified before setting this manifest to `completed` and moving spec-039 under `future/specs/done/`.
+- [x] Roadmap, TODO, changelog, acceptance and review evidence are reconciled.
+- [x] `issue-272` is promoted only after `issue-271` canonical closeout; `issue-273` remains staged behind `issue-272`.

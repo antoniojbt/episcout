@@ -2,7 +2,7 @@
 
 Spec ID: `039-reviewable-qc-cleaning-proposals`
 
-Status: Review
+Status: Completed
 
 ## Planning Findings
 
@@ -30,10 +30,10 @@ Status: Review
 
 | Checklist | Planning application | Current status |
 | --- | --- | --- |
-| `checklists/truth-and-semantics.md` | Separates reviewed metadata, observed evidence, pending candidates and future approved rules; fixes missingness, extrema, binary and fence meanings. | Pass for planning; implementation evidence pending. |
-| `checklists/analysis-and-statistics.md` | Fixes unit of observation, denominators, finite/missing partitions, type-7/Tukey definitions, high-cardinality handling and independent fixture values. | Pass for planning; live parity and calculation evidence pending. |
-| `checklists/copy-edit.md` | Uses British English, consistent state/field terminology, explicit limitations and no hard-wrapped prose paragraphs or project-specific examples. | Pass for planning; user documentation pending implementation. |
-| `checklists/software-verification.md` | Routed because the accepted plan defines a future public package interface; executable verification applies during implementation. | Not applicable to package behaviour in this planning-only contribution. |
+| `checklists/truth-and-semantics.md` | Separates reviewed metadata, observed evidence, pending candidates and future approved rules; fixes missingness, extrema, binary and fence meanings. | Passed through implementation and final review. |
+| `checklists/analysis-and-statistics.md` | Fixes unit of observation, denominators, finite/missing partitions, type-7/Tukey definitions, high-cardinality handling and independent fixture values. | Passed with literal fixtures and live cross-backend parity. |
+| `checklists/copy-edit.md` | Uses British English, consistent state/field terminology, explicit limitations and no hard-wrapped prose paragraphs or project-specific examples. | Passed for final user documentation. |
+| `checklists/software-verification.md` | Routes executable verification for the public package interface. | Passed through focused, live, local, CRAN-oriented and hosted checks. |
 
 This checklist review is self-review and is not independent of the specification authoring.
 
@@ -76,4 +76,4 @@ The specification-first vignette renders successfully and the reviewed HTML cont
 
 Privacy-canary searches of package source, help, README, NEWS, vignette, project map and specification records find no committed row/source canaries. The result necessarily contains caller-supplied opaque keys and aggregate numeric evidence, which can remain sensitive and is explicitly documented as requiring disclosure review before saving or sharing. No dependency, semantic dictionary field, existing public formal, cleaned data, database object, output bundle, approval adapter or issue-272 rule schema is added. This implementation review is self-review and is not independent.
 
-Pull-request checks, publication, canonical merge, issue closure, spec completion/move and successor promotion remain pending and are intentionally outside this disposable-clone dispatch.
+PR-299 passed PostgreSQL integration, macOS and Ubuntu package checks, coverage, CodeQL, Actions analysis and CodeFactor at final commit-8d40d45, then merged to canonical `master` as commit-78a4776 and closed issue-271. No unresolved review thread or actionable finding remained. Spec-039 is completed and archived; issue-272 is promoted only after this closeout becomes canonical, while issue-273 remains staged behind it.
