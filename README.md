@@ -8,11 +8,11 @@ episcout provides lower-level helper functions and specification-first workflows
 
 ## Install
 
-Install the published 0.3.0 release from GitHub:
+Install the published 0.4.0 release from GitHub:
 
 ```r
 install.packages("devtools")
-devtools::install_github("AntonioJBT/episcout@0.3.0")
+devtools::install_github("AntonioJBT/episcout@0.4.0")
 ```
 
 Install from `master` only when you deliberately need the current development version:

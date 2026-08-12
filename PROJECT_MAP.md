@@ -42,7 +42,7 @@ Pseudonymisation and descriptive EDA are separate technical stages. Pseudonymise
 
 ## Planning Status
 
-- GitHub release `0.4.0` is prepared from canonical commit `9b4d5df`; CRAN work remains deferred under issue #81.
+- GitHub release `0.4.0` is published from canonical commit `ea2a3f1`; CRAN work remains deferred under issue #81.
 - No roadmap is active: GitHub issues are the authoritative live task records. `future/TODOs.md` is the synchronised deferred-work index, `future/README.md` defines the lifecycle and `future/changelog.md` records completed outcomes.
 - Completed spec `025-curp-validation-and-reconciliation` records issue #225 and PR #231, merged to canonical `master` as `7e42f22`. Checksum verification remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.
 - Completed design spec `026-epi-geo-series-plan` and implementation specs `027-epi-geo-phase-a`, `028-epi-geo-postgis` and `029-eda-reviewed-coordinate-roles` are preserved under `future/specs/done/`; issue #226 closed through PR #234, merged as `b37b391`, issue #233 through PR #238, merged as `460acd0`, and terminal Phase-C issue #237 through planning PR #240 and implementation PR #241, merged as `308d544`. Later spatial inference requires a new concrete scientific tracker.
