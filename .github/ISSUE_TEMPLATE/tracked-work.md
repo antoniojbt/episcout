@@ -8,7 +8,7 @@ assignees: ""
 
 ## Status
 
-Candidate. State whether this is ready next, blocked or deferred and identify the current roadmap issue.
+Candidate. State whether this is ready next, blocked or deferred and identify the current roadmap issue when one is active.
 
 ## Outcome
 
@@ -32,7 +32,7 @@ Link source issues, specifications, decisions, reports or prior pull requests. D
 - [ ] Required tests, documentation, generated files and checks are identified.
 - [ ] Privacy, scientific meaning and recovery constraints are explicit where applicable.
 - [ ] The specification requirement and activation gates are resolved before package-code changes.
-- [ ] Post-merge acceptance, roadmap and repository records are reconciled before closure.
+- [ ] Post-merge acceptance, any active roadmap and repository records are reconciled before closure.
 
 ## Dependencies and sequence
 
