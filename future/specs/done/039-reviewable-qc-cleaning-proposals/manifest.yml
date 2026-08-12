@@ -2,7 +2,7 @@ id: "039"
 slug: "reviewable-qc-cleaning-proposals"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-271-planning-add-reviewable-qc-and-cleaning-rule
@@ -13,7 +13,7 @@ tracking_issue: 271
 source_issues:
   - 249
 pull_request: 299
-merge_commit: null
+merge_commit: 78a4776b439bc4d98a5a52277d60f4a4b8e2edc6
 successor_issue: 272
 terminal_reason: null
 
