@@ -2,7 +2,7 @@
 
 Spec ID: `040-approved-cleaning-rules-and-processed-outputs`
 
-Status: Review
+Status: Completed
 
 Tracking issue: issue-272
 
@@ -32,4 +32,4 @@ Tracking issue: issue-272
 - [x] `scripts/check-local.sh` passes with zero errors and warnings; the environment retains only the documented current-time verification NOTE.
 - [x] Final diff, privacy canaries, generated files and staged commit are reviewed.
 - [x] PR-301 records issue-272, spec-040, verification, compatibility, issue-273 disposition and post-merge closeout ownership.
-- [ ] Canonical merge and issue closure are verified before setting this manifest to `completed` and moving spec-040 under `future/specs/done/`.
+- [x] PR-301 merged to canonical `master` as commit-6713a79, issue-272 closed, and spec-040 is completed under `future/specs/done/`.

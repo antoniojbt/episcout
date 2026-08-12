@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-`issue-271`/`spec-039-reviewable-qc-cleaning-proposals` is complete through planning PR-298 and implementation PR-299, merged to canonical `master` as `commit-9f48a06` and `commit-78a4776`. `issue-272`/`spec-040-approved-cleaning-rules-and-processed-outputs` is in review through PR-301 with the distinct executable rule schema, complete data-frame/CSV/RDS output and new-only transactional PostgreSQL materialisation. Merge and canonical closeout remain pending; `issue-273` stays staged for explicitly reviewed civil-date derivation.
+`issue-271`/`spec-039-reviewable-qc-cleaning-proposals` and `issue-272`/`spec-040-approved-cleaning-rules-and-processed-outputs` are complete through PR-299 and PR-301, merged to canonical `master` as `commit-78a4776` and `commit-6713a79`. The proposal-only and separately approved executable-rule contracts are reconciled. `issue-273` is the next terminal implementation slice after this closeout becomes canonical.
 
 ## Deferred owner action
 
