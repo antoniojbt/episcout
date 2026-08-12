@@ -2,7 +2,7 @@ id: "039"
 slug: "reviewable-qc-cleaning-proposals"
 workflow_version: 1
 deliverable: implementation
-status: draft
+status: active
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-271-planning-add-reviewable-qc-and-cleaning-rule
@@ -54,20 +54,20 @@ check_commands:
   - git diff --check
 
 activation_gates:
-  - pending: The planning contribution is green and the opaque variable-key, evidence, pending-proposal and approval-boundary contracts are accepted before package changes.
+  - accepted: PR-298 is merged at canonical commit-9f48a06 with green checks, and the opaque variable-key, evidence, pending-proposal and approval-boundary contracts are accepted before package changes.
   - accepted: The semantic specification remains unchanged and authoritative; proposal fields are separate and never overwrite type, units, levels, min, max or missing_codes.
   - accepted: The public operation is read-only, returns aggregate tables only and has no file, data-cleaning, rule-approval or PostgreSQL-write path.
   - accepted: Equivalent data-frame and PostgreSQL sources use the same reviewed specification and caller-managed variable-key map, with no categorical value collection.
 
 baseline:
-  canonical_master: "a1eabaf77907f31ed1f6af9c1a51a8867b82950a"
+  canonical_master: "9f48a06e457371bfbde3280b54964ea19a5f0af6"
   roadmap: "Issue 249 is authoritative; issue 271 is the active dispatch target, followed by issues 272 and 273."
   semantic_dictionary: "The lean data-frame scaffold has 15 semantic fields; the PostgreSQL dictionary uses source_schema, source_table and source_column as internal source keys and produces the same semantic specification."
   descriptive_summaries: "Canonical summaries already define aggregate counts, observed numeric extrema and Tukey 1.5-IQR fences for data frames and PostgreSQL, but they return source names and complete categorical frequencies."
   preparation: "epi_eda_prepare ignores semantic min and max as cleaning rules and performs no cleaning-rule proposal or approval workflow."
 
 notes:
-  - This planning contribution changes no package source, tests, generated help or runtime behaviour.
-  - No package implementation begins until the planning review gate is satisfied.
+  - The planning contribution changed no package source, tests, generated help or runtime behaviour.
+  - The package implementation begins only after the planning review gate was satisfied by merged PR-298.
   - Issue 272 is the approved-rule application successor after issue 271 implementation and canonical closeout.
   - Issue 273 remains staged after issue 272 and is outside this specification.

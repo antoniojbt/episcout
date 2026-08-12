@@ -2,7 +2,7 @@
 
 Spec ID: `039-reviewable-qc-cleaning-proposals`
 
-Status: Draft
+Status: Active
 
 ## Planning Findings
 
@@ -62,4 +62,18 @@ This contribution changes only spec-039 and synchronised planning records. It do
 
 ## Implementation And Closeout Notes
 
-Pending. Record focused/offline/live checks, direct object and query inspection, privacy-canary searches, compatibility impact, generated-file review, pull request, canonical merge and issue/successor reconciliation here during implementation and closeout.
+PR-298 merged the accepted planning contract to canonical `master` as commit-9f48a06 with all required checks green. Spec-039 is active for the bounded implementation on issue-271; issue-272 remains the staged successor.
+
+The implementation adds `epi_eda_qc_proposals()` with exact `data`, `spec` and `variable_keys` formals, an exact two-table result, aggregate-only printing/structure display and no persistence or rule-application path. The in-memory path uses the canonical missing mask and type-7 numeric core after fixed storage compatibility checks. The PostgreSQL path uses only one-row count/numeric aggregates plus a one-row fence-count follow-up inside the existing read-only repeatable-read transaction and never invokes categorical frequencies, Shapiro collection, plotting or catalogue-value profiling.
+
+Hand-authored neutral fixtures independently fix the `c(1, 2, 3, 100)` quartiles at 1.75 and 27.25, fences at -36.5 and 65.5, and one upper-tail observation. Tests cover exact 0/1 binary precedence, all-zero/all-one/three-level/signed/non-finite exclusions, zero-IQR tails, declared missing codes, zero rows, numeric and text all-missing inputs, absent variables, incompatible storage, list/matrix/raw/complex/semantic subclasses, declared identifiers, date/datetime unit prompts, high cardinality, data.table by-reference safety, exact schemas and value-free errors. Expected values are literal and were not generated through the production path.
+
+The focused offline selection `scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-(qc-proposals|spec-scaffold|summaries|postgres-source)|db-dictionary', reporter = 'summary')"` passes with only the expected live-PostgreSQL skip. Package-loaded `lintr::lint_package()` returns no findings. Direct object inspection confirms specification-order opaque keys, fixed states/codes, typed unavailable fields, blank inferred unit/missing-code/general-level fields and no source names or row canaries in the result, print or structure output.
+
+An isolated trust-local PostgreSQL 18.4 cluster under a temporary directory ran `EPISCOUT_TEST_POSTGRES=1 ... devtools::test(filter = 'eda-(qc-proposals|postgres-parity)', reporter = 'summary')`; the complete new and existing parity selection passes. Equivalent fixtures have identical discrete evidence and proposals, numerical evidence within the declared tolerance, an unchanged relation, a valid idle caller connection and no row-valued QC query. The temporary clusters were stopped and deleted after verification.
+
+The specification-first vignette renders successfully and the reviewed HTML contains the opaque-key example, review-only state distinction and aggregate disclosure warning. `scripts/check-local.sh` passes the complete suite, lint, build, vignette rebuild and R CMD check with 0 errors, 0 warnings and one environment NOTE because current time could not be verified. `scripts/check-cran.sh` passes build, tests, examples, vignette rebuild and HTML/PDF manual checks with 0 errors, 0 warnings and one inherited incoming-feasibility NOTE for new-submission status, the existing absent prebuilt vignette index and two existing Stack Overflow URLs returning 403. Known roxygen author-format churn and disabled-vdiffr snapshot cleanup were restored exactly and are not part of the change.
+
+Privacy-canary searches of package source, help, README, NEWS, vignette, project map and specification records find no committed row/source canaries. The result necessarily contains caller-supplied opaque keys and aggregate numeric evidence, which can remain sensitive and is explicitly documented as requiring disclosure review before saving or sharing. No dependency, semantic dictionary field, existing public formal, cleaned data, database object, output bundle, approval adapter or issue-272 rule schema is added. This implementation review is self-review and is not independent.
+
+Pull-request checks, publication, canonical merge, issue closure, spec completion/move and successor promotion remain pending and are intentionally outside this disposable-clone dispatch.
