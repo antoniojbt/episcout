@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `037-epi-sec-linkage-results-neutral`
-Status: Review
+Status: Completed
 
 ## Baseline And Authority
 
@@ -34,8 +34,8 @@ The merged predecessor diff removed privilege queries/refusals/revocations from 
 - `scripts/check-local.sh` passed on the final files: the complete suite had 26 documented environment-gated skips, and its build and `R CMD check` completed with `0 errors`, `0 warnings` and `0 notes`.
 - The changed longitudinal vignette rendered successfully to HTML, and plain-text inspection confirmed the neutral status, duplicate, lock-timeout and ordinary diagnostic wording.
 - `scripts/check-cran.sh` completed under R 4.5.3 on Ubuntu 24.04 with `0 errors`, `0 warnings` and the inherited single incoming-feasibility NOTE: no prebuilt vignette index plus two unchanged Stack Overflow URLs returning HTTP 403. CRAN package-index access timed out, so the network-dependent portion of incoming checks was unavailable.
-- The final online `scripts/check-workflow-state.sh` passed and reported `issue-285`/`spec-037` as the sole active implementation against canonical `antoniojbt/episcout@master`; `git diff --check` passed on the task-scoped diff.
-- Draft `PR-291` is open against canonical `master`. CodeFactor passed its initial analysis; the remaining hosted checks are running, so their final results remain pending. No CodeFactor finding exists to record in `issue-288`.
+- The final pre-PR online `scripts/check-workflow-state.sh` passed and reported `issue-285`/`spec-037` as the sole active implementation against canonical `antoniojbt/episcout@master`; `git diff --check` passed on the task-scoped diff.
+- Hosted macOS and Ubuntu package checks, PostgreSQL integration, test coverage, CodeQL, CodeFactor and both informational Codecov statuses passed at final `commit-5550b66`. CodeFactor reported no finding to record in `issue-288`.
 
 ## Checklist Self-review
 
@@ -53,4 +53,5 @@ This review is a self-review, not an independent implementation review.
 - Predecessor and closeout: `issue-284`, `PR-289` and `PR-290`.
 - Working branch: `agent/issue-285-refactor-make-epi-sec-linkage-results-issues` from canonical `commit-6ba8f25`.
 - Downstream documentation tracker: `issue-269`.
-- Draft pull request: `PR-291`; merge and post-merge closeout remain pending.
+- `PR-291` merged to canonical `master` as `commit-0d9b302` on 2026-08-12 and closed `issue-285`.
+- Post-merge closeout verified the canonical merge commit and final hosted checks, completed and archived this specification, and left `issue-269` waiting only for its independent `issue-268` documentation-lane dependency.

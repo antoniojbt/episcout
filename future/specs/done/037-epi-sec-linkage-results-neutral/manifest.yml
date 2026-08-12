@@ -2,7 +2,7 @@ id: "037"
 slug: "epi-sec-linkage-results-neutral"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-285-refactor-make-epi-sec-linkage-results-issues
@@ -18,7 +18,7 @@ source_issues:
   - 278
   - 284
 pull_request: 291
-merge_commit: null
+merge_commit: "0d9b30288636a05833fdf3af79465ba77728f7c5"
 successor_issue: 269
 terminal_reason: null
 
@@ -62,5 +62,6 @@ check_commands:
 
 notes:
   - Owner-authorised stack-after-green is recorded on issue-285; issue-284 is canonically complete, so this branch starts from canonical master.
-  - PR-289 and closeout PR-290 are predecessor evidence; this dispatch does not create, edit or merge a pull request.
-  - issue-269 remains the downstream final documentation reconciliation and does not authorise broad guide changes in this slice.
+  - PR-289 and closeout PR-290 are predecessor evidence; PR-291 completed this bounded implementation.
+  - Post-merge closeout verified canonical master at commit-0d9b302 before this completed record was written.
+  - issue-269 remains the downstream final documentation reconciliation and still waits for issue-268.

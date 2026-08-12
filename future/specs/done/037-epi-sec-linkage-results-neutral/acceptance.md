@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `037-epi-sec-linkage-results-neutral`
-Status: Active
+Status: Completed
 
 ## Activation
 
