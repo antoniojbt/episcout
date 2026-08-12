@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-`issue-271`/`spec-039-reviewable-qc-cleaning-proposals` and `issue-272`/`spec-040-approved-cleaning-rules-and-processed-outputs` are complete through PR-299 and PR-301, merged to canonical `master` as `commit-78a4776` and `commit-6713a79`. `issue-273`/`spec-041-reviewed-civil-date-derivation` is in review through PR-303 with explicit civil-date semantics, exact-midnight validation, immutable sources and new-only data-frame/file/PostgreSQL outputs. Merge and canonical closeout remain pending. This is the terminal authorised cleaning-lane slice and has no automatic successor.
+The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`. Reviewable proposals, separately approved executable rules and explicitly reviewed civil-date derivation are reconciled; no automatic implementation successor is authorised.
 
 ## Deferred owner action
 

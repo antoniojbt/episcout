@@ -2,7 +2,7 @@
 
 Spec ID: `041-reviewed-civil-date-derivation`
 
-Status: Active implementation ready for local handoff
+Status: Completed
 
 ## Review Scope
 
@@ -43,4 +43,4 @@ None. In-memory `POSIXct`/`POSIXlt` rejection is required by the no-instant/no-t
 
 ## Handoff State
 
-PR-303 is the draft implementation pull request for issue-273 and spec-041. Merge, issue closure and canonical closeout remain pending. Issue-273 is terminal and has no automatic successor. The implementation review above is a self-review and is not independent; the final PR diff is reviewed separately before merge.
+PR-303 passed PostgreSQL integration, macOS and Ubuntu package checks, coverage, CodeQL, Actions analysis, CodeFactor and both informational Codecov statuses at final commit-a1f1dff, then merged to canonical `master` as commit-db839d0 and closed issue-273. No unresolved review thread or actionable finding remained. Spec-041 is completed and archived; issue-273 is terminal and has no automatic successor. The implementation review above was a self-review; the final PR diff received a separate lifecycle review before merge.
