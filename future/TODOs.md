@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-`PR-286` merged to canonical `master` as `commit-6312b8d` and GitHub closed `issue-284` during the isolated implementation run, but that diff removed privilege-policy coupling only from registry initialisation and left the issue's explicit stable pseudonymisation-path checks and revocation in place. This task branch completes the bounded registry, crosswalk and output privilege-neutrality contract locally; corrective publication and lifecycle reconciliation remain pending because GitHub mutation is outside the task. Staged `issue-285` and documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remain downstream and must not begin. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+Completed `issue-284`/`spec-036-epi-sec-registry-neutral` through final `PR-289`, merged to canonical `master` as `commit-40b284f`. The completed slice removes package PUBLIC-privilege inspection/revocation and policy-bearing registry status while retaining registry structure/version, immutable token settings, atomic creation, locking, rollback, source/registry/output separation, ownership-safe destructive replacement and sanitised database failures. `issue-285` is the promoted implementation lane; documentation [issue-269](https://github.com/antoniojbt/episcout/issues/269) remains downstream. CodeFactor is informational for low-risk findings; substantive package, PostgreSQL, workflow and review evidence remains required. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 
@@ -43,6 +43,7 @@ protected-`master` coverage upload passed for release commit `40ef702`.
 
 ### 2026-08-12
 
+- [x] Complete issue #284/spec 036 through final PR #289, merged to canonical `master` as `40b284f36a4d403060c975d8504059b61d6ba5be`; registry, crosswalk and output paths no longer apply package PUBLIC-privilege policy, while registry and transaction invariants remain intact. Hosted macOS/Ubuntu, PostgreSQL integration, coverage, CodeQL and CodeFactor checks passed; Codecov reported one uncovered line while its informational status passed. Issue #285 is the promoted successor.
 - [x] Complete issue #278/spec 035 through PR #281, merged to canonical `master` as `ebd8d355a42c697b6747d4e53ef356bde78aa573`; GitHub closed issue #278 automatically. Required package, PostgreSQL, lint, workflow and hosted R CMD/CodeQL/CodeFactor checks passed. The former zero-tolerance Codecov patch status failed; owner direction makes Codecov reporting non-blocking, with `codecov.yml` retaining a 10% regression tolerance for informative project and patch statuses. The completed record moved under `future/specs/done/`; the registry successor is staged separately and remains inactive until promotion.
 
 ### 2026-08-11
