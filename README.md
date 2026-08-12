@@ -36,6 +36,7 @@ For an end-to-end learning example that combines disposable PostgreSQL tables, p
 - `epi_eda_*` provides specification-first EDA for in-memory data and supported PostgreSQL sources.
 - `epi_eda_qc_proposals()` links aggregate descriptive evidence to explicitly pending review prompts through caller-managed opaque variable keys; it never changes the reviewed dictionary or data and never approves or applies a cleaning rule.
 - `epi_eda_approved_rules()` and `epi_eda_apply_cleaning_rules()` validate a separate analyst-approved rule schema and apply bounds, allowed values and missing codes to a complete new data-frame, CSV, RDS or PostgreSQL output without replacing the source or an existing destination.
+- `epi_eda_approved_civil_dates()` and `epi_eda_derive_civil_dates()` require an explicit reviewed civil-date declaration, preserve local timestamp sources and add separate dates only after every non-missing value passes exact-midnight validation; they never infer or assign a timezone.
 - `epi_sec_*` provides auditable longitudinal pseudonymisation for related PostgreSQL tables.
 - `epi_geo_*` provides explicit vector and coordinate mapping with optional `sf` support.
 
