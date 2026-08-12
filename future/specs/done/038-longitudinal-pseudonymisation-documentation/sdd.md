@@ -1,7 +1,7 @@
 # Longitudinal Pseudonymisation Documentation Contract
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Review
+Status: Completed
 
 ## Authority Boundary
 

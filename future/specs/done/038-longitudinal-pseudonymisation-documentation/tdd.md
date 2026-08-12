@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Review
+Status: Completed
 
 ## Independent Basis
 

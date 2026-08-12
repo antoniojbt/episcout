@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub roadmap issue [#249](ht
 
 ## Current sequence
 
-`issue-269`/`spec-038-longitudinal-pseudonymisation-documentation` is in review through `PR-296` as the terminal documentation reconciliation from exact canonical `commit-d79dd3c`, after completed documentation predecessor `issue-268`/`PR-295` and completed behavioural evidence `issue-285`/`spec-037`/`PR-291` plus closeout `PR-292`. The bounded slice reconciles the longitudinal guide with neutral technical `epi_sec_*` behaviour while preserving reversibility, pseudonymisation-not-anonymisation and external PostgreSQL responsibility warnings. It has no automatic package-code successor; merge and post-merge closeout remain pending. CodeFactor is informational for low-risk findings; substantive package, PostgreSQL, workflow and review evidence remains required. Roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
+Completed `issue-269`/`spec-038-longitudinal-pseudonymisation-documentation` records the terminal documentation reconciliation through `PR-296`, merged to canonical `master` as `commit-e135251` after predecessor `issue-268`/`PR-295` and the completed `spec-034`–`spec-037` behavioural sequence. The longitudinal guide now describes neutral technical `epi_sec_*` behaviour while preserving reversibility, pseudonymisation-not-anonymisation and external PostgreSQL responsibility warnings. No package-code successor is required. CodeFactor remains informational for low-risk findings; roadmap [issue-249](https://github.com/antoniojbt/episcout/issues/249) remains the return point for the existing EDA/deferred queue.
 
 ## Deferred owner action
 

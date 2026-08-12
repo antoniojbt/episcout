@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `038-longitudinal-pseudonymisation-documentation`
-Status: Review
+Status: Completed
 
 ## Problem
 

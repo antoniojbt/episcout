@@ -2,7 +2,7 @@ id: "038"
 slug: "longitudinal-pseudonymisation-documentation"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-269-documentation-reconcile-the-longitudinal-pse
@@ -20,7 +20,7 @@ source_issues:
   - 284
   - 285
 pull_request: 296
-merge_commit: null
+merge_commit: "e1352517ee5bd974d531015a94795e176709f77c"
 successor_issue: null
 terminal_reason: "This is the terminal planned documentation reconciliation; it has no automatic package-code successor."
 
@@ -71,4 +71,5 @@ notes:
   - Owner-authorised dispatch is recorded on issue-269 after both required lanes completed.
   - issue-268 and PR-295 are the completed documentation predecessor; issue-285, spec-037, PR-291 and closeout PR-292 are the final behavioural evidence.
   - The branch starts from exact canonical commit-d79dd3c05ea1c64db2acd27b5b0af6b8193646b6.
-  - Complete and archive spec-038 only after canonical merge verification; a focused closeout PR may record merge-derived facts.
+  - PR-296 merged to canonical master as commit-e1352517ee5bd974d531015a94795e176709f77c after all required hosted checks passed at final commit-9dad9fa.
+  - This terminal specification is complete and has no automatic package-code successor.
