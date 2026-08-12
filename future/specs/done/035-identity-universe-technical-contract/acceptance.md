@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `035-identity-universe-technical-contract`
-Status: Active
+Status: Completed
 
 ## Activation
 
@@ -38,4 +38,6 @@ Status: Active
 - [x] Focused offline and live PostgreSQL tests, lint, `scripts/check-local.sh`, `scripts/check-workflow-state.sh` and `git diff --check` pass or exact environment-dependent skips are recorded.
 - [x] The software-verification, truth-and-semantics, analysis-and-statistics, copy-edit and render/release checklists are applied as self-review.
 - [x] No real identifiers, production database, credentials, governance decision, unrelated refactor or new dependency enters the diff.
-- [x] The task commit is focused and the worktree is clean; pull request, merge and post-merge closeout remain outside this dispatch.
+- [x] `PR-281` merged to canonical `master` as `commit-ebd8d35` on 2026-08-12, closing `issue-278`.
+- [x] Canonical reachability, GitHub merge state and required package/CI evidence were read back during closeout. Codecov patch coverage failed under its former zero-tolerance policy; the owner accepted this as non-blocking and `codecov.yml` now reports both coverage statuses informationally with a 10% regression tolerance.
+- [x] This completed specification moved under `future/specs/done/`; the registry successor may now be staged but remains inactive until its promotion gate.

@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `035-identity-universe-technical-contract`
-Status: Active
+Status: Completed
 
 ## Pre-implementation Findings
 
@@ -55,6 +55,8 @@ Roxygen regenerated only the two intended identity-universe Rd contracts after u
 
 The software-verification, truth-and-semantics, analysis-and-statistics, copy-edit and render/release checklists were applied as a self-review, not an independent review. No coverage percentage was measured. No unresolved correctness or documentation finding remains.
 
-## Lifecycle Handoff
+## Closeout
 
-`Issue-278`/`spec-035` remains `active` because this dispatch explicitly excludes GitHub and pull-request mutation. The local implementation is committed and clean; pull-request review, merge, post-merge closeout and creation of the second privilege-neutrality tracker remain pending. The successor must not activate before this slice's canonical closeout passes `scripts/check-workflow-state.sh`.
+`PR-281` merged to canonical `master` as `commit-ebd8d35` on 2026-08-12 and GitHub closed `issue-278`. The merge commit is reachable from canonical `master`; its required package, PostgreSQL, lint and workflow evidence remains accepted. The `codecov/patch` status failed only under the former zero-tolerance patch policy. The owner directed that Codecov be informative rather than merge-blocking, so the closeout adds validated `codecov.yml` settings that retain `target: auto` and a 10% regression tolerance while making project and patch statuses informational.
+
+The completed spec moves under `future/specs/done/`. Its required registry successor is deliberately created only after this closeout becomes canonical and must remain inactive until its own promotion gate.

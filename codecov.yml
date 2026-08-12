@@ -1,0 +1,15 @@
+# Coverage reports remain visible on pull requests but do not gate merge.
+# `target: auto` compares with the base commit; the 10% threshold provides
+# a useful regression signal without treating ordinary refactors as failures.
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 10%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 10%
+        informational: true

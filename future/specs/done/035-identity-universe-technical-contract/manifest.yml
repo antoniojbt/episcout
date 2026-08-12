@@ -2,7 +2,7 @@ id: "035"
 slug: "identity-universe-technical-contract"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-278-refactor-make-the-epi-sec-identity-universe
@@ -14,10 +14,10 @@ source_issues:
   - 274
   - 275
   - 276
-pull_request: null
-merge_commit: null
+pull_request: 281
+merge_commit: "ebd8d355a42c697b6747d4e53ef356bde78aa573"
 successor_issue: null
-terminal_reason: null
+terminal_reason: "The required registry successor is intentionally staged only after this closeout is canonical; it remains inactive until its own promotion gate."
 
 dependencies:
   imports:
@@ -79,4 +79,4 @@ notes:
   - No released 0.3.0 interface contains these two exports; the bounded legacy constructor adapter protects current repository syntax only.
   - Ordinary results remain aggregate and value-free, and native database failures remain sanitised.
   - Focused offline/live PostgreSQL 18.4 tests, package lint, rendered-vignette inspection, the complete local check, workflow state and diff checks pass.
-  - The second implementation tracker must not be created or activated before this slice merges and completes closeout.
+  - The registry successor must be created only after this closeout is canonical and must remain inactive until its separate promotion gate.
