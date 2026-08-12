@@ -32,14 +32,24 @@ identity_universe_quote <- function(connection, schema, table = NULL) {
   as.character(DBI::dbQuoteIdentifier(connection, value))
 }
 
+universe_public_schema_state <- function(connection, schema) {
+  DBI::dbGetQuery(
+    connection,
+    paste(
+      "SELECT has_schema_privilege('public', $1, 'CREATE') AS can_create,",
+      "has_schema_privilege('public', $1, 'USAGE') AS can_use"
+    ),
+    params = list(schema)
+  )
+}
+
 identity_universe_live_spec <- function(schema, regex = NULL, tables = c("source_a", "source_b")) {
   sources <- data.frame(
     source_schema = rep(schema, length(tables)),
     source_table = tables,
     id_column = rep("identifier", length(tables)),
     identity_namespace = rep("synthetic_codes", length(tables)),
-    provenance = rep("reviewed_runtime_synthetic_fixture", length(tables)),
-    validation_status = rep("confirmed", length(tables)),
+    provenance = rep("runtime_synthetic_fixture", length(tables)),
     stringsAsFactors = FALSE
   )
   epi_sec_identity_universe_spec(sources, validity_regex = regex)
@@ -87,7 +97,11 @@ test_that("live identity-universe audit and materialisation reconcile without le
   )
   DBI::dbExecute(
     connection,
-    paste("REVOKE ALL ON SCHEMA", identity_universe_quote(connection, output_schema), "FROM PUBLIC")
+    paste(
+      "GRANT USAGE, CREATE ON SCHEMA",
+      identity_universe_quote(connection, output_schema),
+      "TO PUBLIC"
+    )
   )
   for (table in c("source_a", "source_b", "source_bad", "source_empty")) {
     DBI::dbExecute(
@@ -99,7 +113,7 @@ test_that("live identity-universe audit and materialisation reconcile without le
     )
   }
 
-  identifiers <- paste0("secret_", c("alpha", "beta", "gamma", "delta"), "_", suffix)
+  identifiers <- paste0("synthetic_", c("alpha", "beta", "gamma", "delta"), "_", suffix)
   insert_value <- function(table, value) {
     if (is.null(value)) {
       return(DBI::dbExecute(
@@ -119,8 +133,27 @@ test_that("live identity-universe audit and materialisation reconcile without le
   insert_value("source_bad", "   ")
   insert_value("source_bad", paste0("invalid_", suffix))
 
-  regex <- paste0("^secret_[a-z]+_", suffix, "$")
+  regex <- paste0("^synthetic_[a-z]+_", suffix, "$")
   spec <- identity_universe_live_spec(source_schema, regex)
+  saved_version_one <- spec
+  saved_version_one$sources$validation_status <- "confirmed"
+  saved_version_one$contract_version <- "identity-universe-1"
+  saved_version_one$fingerprint_sha256 <- "saved-version-one-fingerprint"
+  expect_error(
+    epi_sec_identity_universe_db(connection, saved_version_one),
+    "Regenerate it with epi_sec_identity_universe_spec"
+  )
+  modified_spec <- spec
+  modified_spec$fingerprint_sha256 <- paste(rep("0", 64L), collapse = "")
+  expect_error(
+    epi_sec_identity_universe_db(connection, modified_spec),
+    "Regenerate it with epi_sec_identity_universe_spec"
+  )
+  public_privileges_before <- universe_public_schema_state(
+    connection, output_schema
+  )
+  expect_true(public_privileges_before$can_create[[1]])
+  expect_true(public_privileges_before$can_use[[1]])
   before_rows <- DBI::dbGetQuery(
     connection,
     paste("SELECT COUNT(*)::integer AS n FROM", identity_universe_quote(connection, source_schema, "source_a"))
@@ -158,16 +191,41 @@ test_that("live identity-universe audit and materialisation reconcile without le
   ordinary_text <- paste(unlist(audit), collapse = "\n")
   expect_false(any(vapply(identifiers, grepl, logical(1), x = ordinary_text, fixed = TRUE)))
 
-  materialised <- epi_sec_identity_universe_db(
-    connection,
-    spec,
-    mode = "materialise",
-    output_schema = output_schema,
-    output_table = "identity_universe"
+  original_db_execute <- DBI::dbExecute
+  original_db_get_query <- DBI::dbGetQuery
+  observed_sql <- new.env(parent = emptyenv())
+  observed_sql$statements <- character()
+  materialised <- with_mocked_bindings(
+    epi_sec_identity_universe_db(
+      connection,
+      spec,
+      mode = "materialise",
+      output_schema = output_schema,
+      output_table = "identity_universe"
+    ),
+    dbExecute = function(conn, statement, ...) {
+      observed_sql$statements <- c(observed_sql$statements, statement)
+      original_db_execute(conn, statement, ...)
+    },
+    dbGetQuery = function(conn, statement, ...) {
+      observed_sql$statements <- c(observed_sql$statements, statement)
+      original_db_get_query(conn, statement, ...)
+    },
+    .package = "DBI"
   )
 
   expect_identical(materialised$status, "complete")
   expect_true(materialised$metadata$writes[[1]])
+  expect_false(any(grepl(
+    "has_(schema|table)_privilege|\\b(GRANT|REVOKE)\\b",
+    observed_sql$statements,
+    ignore.case = TRUE,
+    perl = TRUE
+  )))
+  expect_identical(
+    universe_public_schema_state(connection, output_schema),
+    public_privileges_before
+  )
   output <- DBI::dbGetQuery(
     connection,
     paste(
@@ -196,9 +254,6 @@ test_that("live identity-universe audit and materialisation reconcile without le
     params = list(output_schema, "identity_universe")
   )
   expect_equal(constraints$n[[1]], 1L)
-  expect_false(
-    sec_table_is_public(connection, output_schema, "identity_universe")
-  )
 
   existing <- epi_sec_identity_universe_db(
     connection,
@@ -207,23 +262,43 @@ test_that("live identity-universe audit and materialisation reconcile without le
     output_schema = output_schema,
     output_table = "identity_universe"
   )
-  expect_identical(existing$status, "blocked")
+  expect_identical(existing$status, "not_written")
   expect_equal(existing$issues$issue_code, c("duplicate_identifier", "destination_exists"))
+  expect_equal(existing$issues$severity, c("warning", "error"))
 
-  blocked_spec <- identity_universe_live_spec(
+  error_spec <- identity_universe_live_spec(
     source_schema, regex, c("source_bad", "source_empty")
   )
-  blocked <- epi_sec_identity_universe_db(connection, blocked_spec)
-  expect_identical(blocked$status, "blocked")
+  inspected_errors <- epi_sec_identity_universe_db(connection, error_spec)
+  expect_identical(inspected_errors$status, "audit_complete")
+  expect_false(inspected_errors$metadata$writes[[1]])
   expect_equal(
-    blocked$issues$issue_code,
+    inspected_errors$issues$issue_code,
     c("null_identifier", "blank_identifier", "invalid_identifier", "empty_source")
   )
-  expect_equal(blocked$issues$n_affected, c(1, 1, 1, 1))
-  expect_equal(blocked$namespace_audit$n_distinct, 0)
-  expect_equal(blocked$overlap_audit$n_intersection, 0)
-  expect_true(is.na(blocked$overlap_audit$left_coverage))
-  expect_true(is.na(blocked$overlap_audit$right_coverage))
+  expect_equal(inspected_errors$issues$severity, c("error", "error", "error", "warning"))
+  expect_equal(inspected_errors$issues$n_affected, c(1, 1, 1, 1))
+  expect_equal(inspected_errors$source_audit$status, c("error", "warning"))
+  expect_identical(inspected_errors$namespace_audit$status, "error")
+  expect_equal(inspected_errors$namespace_audit$n_distinct, 0)
+  expect_equal(inspected_errors$overlap_audit$n_intersection, 0)
+  expect_true(is.na(inspected_errors$overlap_audit$left_coverage))
+  expect_true(is.na(inspected_errors$overlap_audit$right_coverage))
+
+  error_table <- "error_universe"
+  not_written <- epi_sec_identity_universe_db(
+    connection,
+    error_spec,
+    mode = "materialise",
+    output_schema = output_schema,
+    output_table = error_table
+  )
+  expect_identical(not_written$status, "not_written")
+  expect_false(not_written$metadata$writes[[1]])
+  expect_false(DBI::dbExistsTable(
+    connection,
+    DBI::Id(schema = output_schema, table = error_table)
+  ))
 
   lock_table <- "locked_universe"
   lock_key <- paste0("identity-universe:", output_schema, ".", lock_table)
@@ -240,8 +315,9 @@ test_that("live identity-universe audit and materialisation reconcile without le
     output_table = lock_table,
     lock_timeout = 1
   )
-  expect_identical(locked$status, "blocked")
+  expect_identical(locked$status, "not_written")
   expect_true("lock_timeout" %in% locked$issues$issue_code)
+  expect_identical(locked$issues$severity[locked$issues$issue_code == "lock_timeout"], "error")
   expect_false(DBI::dbExistsTable(connection, DBI::Id(schema = output_schema, table = lock_table)))
   DBI::dbGetQuery(
     lock_connection,
@@ -250,8 +326,7 @@ test_that("live identity-universe audit and materialisation reconcile without le
   )
 
   rollback_table <- "rollback_universe"
-  original_db_execute <- DBI::dbExecute
-  expect_error(
+  rollback_error <- expect_error(
     with_mocked_bindings(
       epi_sec_identity_universe_db(
         connection,
@@ -261,16 +336,40 @@ test_that("live identity-universe audit and materialisation reconcile without le
         output_table = rollback_table
       ),
       dbExecute = function(conn, statement, ...) {
-        if (grepl("REVOKE ALL ON TABLE", statement, fixed = TRUE)) {
-          stop("forced restricted-publication failure")
+        result <- original_db_execute(conn, statement, ...)
+        if (grepl("INSERT INTO", statement, fixed = TRUE) &&
+              grepl(rollback_table, statement, fixed = TRUE)) {
+          stop("forced post-insert failure")
         }
-        original_db_execute(conn, statement, ...)
+        result
       },
       .package = "DBI"
     ),
     "rolled back safely"
   )
+  expect_false(grepl("forced post-insert failure", conditionMessage(rollback_error), fixed = TRUE))
   expect_false(
     DBI::dbExistsTable(connection, DBI::Id(schema = output_schema, table = rollback_table))
   )
+
+  expect_error(
+    epi_sec_identity_universe_db(
+      connection,
+      spec,
+      mode = "materialise",
+      output_schema = source_schema,
+      output_table = "source_a"
+    ),
+    "distinct from every source"
+  )
+  expect_error(
+    epi_sec_identity_universe_db(connection, spec, statement_timeout = 0),
+    "greater than or equal to 1"
+  )
+  DBI::dbBegin(connection)
+  expect_error(
+    epi_sec_identity_universe_db(connection, spec),
+    "outside a caller-managed transaction"
+  )
+  DBI::dbRollback(connection)
 })

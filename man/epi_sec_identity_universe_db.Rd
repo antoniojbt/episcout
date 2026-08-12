@@ -18,32 +18,32 @@ epi_sec_identity_universe_db(
 \arguments{
 \item{con}{An open, idle PostgreSQL DBI connection.}
 
-\item{spec}{A confirmed object returned by \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}}.}
+\item{spec}{An unmodified version-2 object returned by \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}}.}
 
-\item{mode}{\code{"audit"} runs in one read-only snapshot; \code{"materialise"} repeats all checks and writes one restricted table atomically.}
+\item{mode}{\code{"audit"} runs in one read-only snapshot; \code{"materialise"} repeats all checks and writes one destination table atomically.}
 
-\item{output_schema}{Existing restricted destination schema. Required only for materialisation.}
+\item{output_schema}{Existing destination schema. Required only for materialisation.}
 
 \item{output_table}{New destination table name. Required only for materialisation.}
 
-\item{existing}{Destination policy. Version 1 supports only \code{"error"} and never replaces a relation.}
+\item{existing}{Destination policy. Only \code{"error"} is supported; the function never replaces a relation.}
 
 \item{statement_timeout}{Maximum seconds for each PostgreSQL statement, from 1 to 3600.}
 
 \item{lock_timeout}{Maximum seconds to wait for the destination advisory lock, from 1 to 3600.}
 }
 \value{
-An \code{epi_sec_identity_universe_result} list with \code{status}, \code{metadata}, \code{source_audit}, \code{namespace_audit}, \code{overlap_audit} and value-free \code{issues}. Status is \code{audit_complete}, \code{blocked} or \code{complete}.
+An \code{epi_sec_identity_universe_result} list with \code{status}, \code{metadata}, \code{source_audit}, \code{namespace_audit}, \code{overlap_audit} and value-free \code{issues}. Status is \code{audit_complete}, \code{not_written} or \code{complete}; issue severity is \code{error} or \code{warning}.
 }
 \description{
-Audit one reviewed identifier namespace across multiple PostgreSQL tables or atomically publish its blocker-free canonical identifier set into a restricted schema. All ordinary results are aggregate and value-free; identifier values remain inside PostgreSQL.
+Inspect one exact identifier namespace across multiple PostgreSQL tables or atomically materialise its canonical identifier set. All ordinary results are aggregate and value-free; identifier values remain inside PostgreSQL.
 }
 \details{
-Audit owns a \verb{REPEATABLE READ READ ONLY} transaction and never creates a database object. Source audits report input, null, blank, invalid, observed and distinct counts, duplicate excess and maximum frequency. Namespace and pairwise tables reconcile the distinct union and overlap. Null, blank, invalid and normalisation-collision findings block; duplicates and empty sources warn.
+Audit owns a \verb{REPEATABLE READ READ ONLY} transaction and never creates a database object. A completed audit always returns \code{audit_complete}, whether or not error-severity findings are present. Source audits report input, null, blank, invalid, observed and distinct counts, duplicate excess and maximum frequency. Namespace and pairwise tables reconcile the distinct union and overlap. Null, blank, invalid and normalisation-collision findings are errors; duplicates and empty sources are warnings.
 
-Materialisation requires a pre-existing output schema that grants neither \code{CREATE} nor \code{USAGE} to \code{PUBLIC}. It acquires bounded advisory-lock protection, repeats validation in one \verb{REPEATABLE READ} transaction, refuses an existing destination and creates exactly \code{identity_namespace}, \code{canonical_identifier} and \code{source_membership_count} with a unique namespace/identifier constraint. It revokes all table privileges from \code{PUBLIC}, grants no analyst access, alters no source and rolls back completely on failure.
+Materialisation requires a pre-existing output schema, acquires bounded advisory-lock protection, repeats validation in one \verb{REPEATABLE READ} transaction, refuses an existing destination and creates exactly \code{identity_namespace}, \code{canonical_identifier} and \code{source_membership_count} with a unique namespace/identifier constraint. Error-severity findings, destination existence and lock timeout return \code{not_written}; other failures are errors. The function uses configured PostgreSQL permissions without querying or changing schema or table privileges, alters no source and rolls back completely on failure.
 
-The materialised universe is restricted and re-identifying. It records distinct observed identifiers, not confirmed people, and generates no pseudonyms. After separate authorisation and metadata review, it may be declared as an enrolment source in \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}} and passed to the existing registry/pseudonymisation workflow.
+The materialised universe records distinct observed identifiers and source membership counts. It generates no pseudonyms and writes no identity-registry row. A caller may declare it as a source in \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}} for a separate registry/pseudonymisation operation.
 }
 \seealso{
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}

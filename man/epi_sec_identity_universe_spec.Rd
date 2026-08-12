@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_sec_identity_universe.R
 \name{epi_sec_identity_universe_spec}
 \alias{epi_sec_identity_universe_spec}
-\title{Declare a reviewed PostgreSQL identifier universe}
+\title{Declare a PostgreSQL identifier universe}
 \usage{
 epi_sec_identity_universe_spec(
   sources,
@@ -11,9 +11,9 @@ epi_sec_identity_universe_spec(
 )
 }
 \arguments{
-\item{sources}{A data frame or CSV path with \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace}, \code{provenance} and \code{validation_status}.}
+\item{sources}{A data frame or CSV path with exactly \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace} and \code{provenance}.}
 
-\item{normalization}{Identifier normalisation rule. Version 1 supports only exact \code{"identity"} normalisation.}
+\item{normalization}{Identifier normalisation rule. Version 2 supports only exact \code{"identity"} normalisation.}
 
 \item{validity_regex}{\code{NULL} or one non-empty PostgreSQL regular expression applied to the textual representation of each non-null, non-blank identifier.}
 }
@@ -21,10 +21,12 @@ epi_sec_identity_universe_spec(
 An \code{epi_sec_identity_universe_spec} list containing normalised \code{sources}, \code{normalization}, \code{validity_regex}, \code{contract_version} and \code{fingerprint_sha256}. It contains metadata only.
 }
 \description{
-Create a deterministic, value-free contract for auditing one identifier namespace across at least two PostgreSQL tables. The specification names relations and identifier columns but never contains identifier values.
+Create a deterministic, value-free contract for an exact identifier-universe operation across at least two PostgreSQL tables. The specification names relations and identifier columns but never contains identifier values.
 }
 \details{
-At least two unique ordinary-table declarations are required, all in one identity namespace. Every row must have non-empty provenance and \code{validation_status = "confirmed"}. This function validates portable metadata only; database relation, type and regular-expression checks occur in \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}}. The universe represents distinct observed identifiers under the reviewed rule, not confirmed people.
+At least two unique ordinary-table declarations are required, all in one identity namespace, with non-empty provenance. This function validates portable metadata only; database relation, type and regular-expression checks occur in \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}}. The universe represents distinct observed identifiers under the declared exact rule and does not perform entity resolution.
+
+For one development cycle, the former exact six-column source schema is accepted with a deprecation warning. Its \code{validation_status} column is ignored regardless of value and is not retained in the version-2 object. Other extra columns remain errors.
 }
 \seealso{
 \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}

@@ -103,35 +103,34 @@ inventory$constraints
 
 `row_counts = "none"` is the metadata-only default. Use estimated or exact aggregate counts only when their cost and disclosure implications have been reviewed.
 
-## 3A. Audit a shared identifier universe before enrolment
+## 3A. Inspect or materialise a shared identifier universe
 
-When one reviewed identifier namespace is distributed across two or more source tables, audit the observed universe before deciding which restricted relation may enrol identities. The universe is a set of observed identifiers, not confirmed people. Its portable metadata contains relation and column names, namespace, provenance and confirmation only.
+When one declared identifier namespace is distributed across two or more source tables, define the exact observed universe from value-free technical metadata. The portable specification contains relation and column names, namespace and provenance only; it contains no identifier values.
 
-This deliberately over-restrictive synthetic contract demonstrates a blocked review without changing source data:
+This deliberately over-restrictive synthetic expression demonstrates error-severity findings without changing source data. A completed inspection still returns `status = "audit_complete"` and `writes = FALSE`:
 
-```{r universe-blocked-audit, eval = FALSE}
+```{r universe-error-audit, eval = FALSE}
 universe_sources <- data.frame(
   source_schema = rep("source_data", 3),
   source_table = c("entities", "events", "measurements"),
   id_column = rep("entity_id", 3),
   identity_namespace = rep("entity_id", 3),
-  provenance = rep("reviewed_synthetic_metadata", 3),
-  validation_status = rep("confirmed", 3),
+  provenance = rep("synthetic_metadata_definition", 3),
   stringsAsFactors = FALSE
 )
 
 over_restrictive <- epi_sec_identity_universe_spec(
   universe_sources,
-  validity_regex = "^reviewed_prefix_[0-9a-f]{24}$"
+  validity_regex = "^required_prefix_[0-9a-f]{24}$"
 )
-blocked_universe <- epi_sec_identity_universe_db(con, over_restrictive)
-blocked_universe$status
-blocked_universe$issues
+universe_inspection <- epi_sec_identity_universe_db(con, over_restrictive)
+universe_inspection$status
+universe_inspection$issues
 ```
 
-The ordinary result contains only reviewed metadata, aggregate affected counts and fixed guidance. It never returns invalid values or collision members. Null, blank, regex-invalid and normalisation-collision findings block. Repeated valid identifiers produce a warning because repeated rows may be legitimate longitudinal records; the universe still retains one distinct identifier. Correct source values only under the source system's reviewed rule, or correct an erroneous metadata rule and confirm it again.
+The ordinary result contains only declared metadata, aggregate affected counts and fixed technical guidance. It never returns invalid values or collision members. Null, blank, regex-invalid and normalisation-collision findings have severity `error` and prevent a materialisation request from writing. Repeated valid identifiers and empty sources have severity `warning`; repeated source rows still contribute one distinct identifier to the universe.
 
-For the runtime-generated synthetic values above, the reviewed corrected expression is:
+For the runtime-generated synthetic values above, the matching expression is:
 
 ```{r universe-corrected-audit, eval = FALSE}
 universe_spec <- epi_sec_identity_universe_spec(
@@ -146,9 +145,9 @@ universe_audit$overlap_audit
 universe_audit$issues
 ```
 
-Audit uses one read-only repeatable-read PostgreSQL snapshot. `n_duplicate_excess` counts valid rows beyond each source's distinct set. `n_single_source` and `n_multi_source` partition the distinct universe by how many declared relations contain an identifier. Directional coverage uses each source's distinct count as its denominator and is unavailable for an empty denominator.
+Audit is an optional technical inspection and uses one read-only repeatable-read PostgreSQL snapshot. `n_duplicate_excess` counts valid rows beyond each source's distinct set. `n_single_source` and `n_multi_source` partition the distinct universe by how many declared relations contain an identifier. Directional coverage uses each source's distinct count as its denominator and is unavailable for an empty denominator.
 
-Only after reviewing a blocker-free audit and the database administrator's access controls should an authorised caller explicitly materialise the restricted universe:
+A caller may request materialisation directly or after inspecting the same aggregate checks:
 
 ```{r universe-materialisation, eval = FALSE}
 universe_result <- epi_sec_identity_universe_db(
@@ -161,9 +160,9 @@ universe_result <- epi_sec_identity_universe_db(
 )
 ```
 
-Materialisation repeats all validation in one protected transaction and creates a new table only. The table has one unique `(identity_namespace, canonical_identifier)` row and an aggregate `source_membership_count`; it has no row-level membership table, analyst grant or export. The workflow revokes `PUBLIC` table access, but named-role grants, backups and logging remain administrator responsibilities.
+Materialisation repeats all validation in one protected transaction and creates a new table only. The table has one unique `(identity_namespace, canonical_identifier)` row and an aggregate `source_membership_count`; it has no row-level membership table. The function uses the connected role's configured PostgreSQL permissions and does not query or change schema/table privileges. A technical error finding, existing destination or lock timeout returns `status = "not_written"`; `status = "complete"` is returned only after commit.
 
-The result creates no token and writes no identity-registry row. After a separate authorisation and dictionary review, `restricted_identity.identity_universe` may be declared as the sole `can_enrol = TRUE` source in `epi_sec_linkage_spec()`, with `canonical_identifier` as its ID column and the same reviewed namespace. Retain only the minimum permitted metadata in later pseudonymised output; do not treat the universe as anonymous or as evidence that identifiers denote distinct people.
+The result creates no token and writes no identity-registry row. A caller may declare `restricted_identity.identity_universe` as the sole `can_enrol = TRUE` source in `epi_sec_linkage_spec()`, with `canonical_identifier` as its ID column and the same namespace, for a separate registry/pseudonymisation operation. The exact universe calculation does not establish that identifiers denote distinct people.
 
 ## 4. Inventory and semantic dictionary
 
