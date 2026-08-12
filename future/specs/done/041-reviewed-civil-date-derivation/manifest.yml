@@ -2,7 +2,7 @@ id: "041"
 slug: "reviewed-civil-date-derivation"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: agent/issue-273-feature-derive-reviewed-civil-dates-from-loc
@@ -14,7 +14,7 @@ source_issues:
   - 249
   - 272
 pull_request: 303
-merge_commit: null
+merge_commit: db839d0da01019e07aa078774a90c23ecf96c8ad
 successor_issue: null
 terminal_reason: "Issue 273 is the terminal authorised cleaning-lane capability; no automatic successor is required."
 

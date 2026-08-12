@@ -2,7 +2,7 @@
 
 Spec ID: `041-reviewed-civil-date-derivation`
 
-Status: Review
+Status: Completed
 
 Tracking issue: issue-273
 
@@ -33,4 +33,4 @@ Tracking issue: issue-273
 - [x] Final diff, privacy canaries, generated files and staged commit are reviewed.
 - [x] The task-scoped implementation is committed and the worktree is clean at dispatch handoff.
 - [x] PR-303 records issue-273, spec-041, verification, compatibility, terminal disposition and post-merge closeout ownership.
-- [ ] Canonical merge and issue closure are verified before setting this manifest to `completed` and moving spec-041 under `future/specs/done/`.
+- [x] PR-303 merged to canonical `master` as commit-db839d0, issue-273 closed, and spec-041 is completed under `future/specs/done/` with no successor.
