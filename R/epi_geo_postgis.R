@@ -92,8 +92,8 @@ geo_pg_source_signature <- function(source) {
 #' @param con An open, idle connection created by RPostgres.
 #' @param schema One exact PostgreSQL schema identifier. Dotted names and SQL
 #'   fragments are not accepted.
-#' @param relation One exact table, view or materialized-view identifier in
-#'   `schema`.
+#' @param relation One exact table, partitioned table, view or materialized view
+#'   identifier in `schema`.
 #' @param geometry_column `NULL` when the relation has exactly one PostGIS
 #'   geometry/geography column, or its exact identifier when selection is
 #'   required.
