@@ -2,7 +2,7 @@ id: "046"
 slug: eda-creation-style-hooks
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: Codex
 base_branch: master
 working_branch: feature/eda-creation-style-hooks
@@ -14,7 +14,7 @@ source_issues:
   - 310
   - 316
   - 311
-pull_request: null
+pull_request: 321
 merge_commit: null
 successor_issue: null
 terminal_reason: The accepted styling-hook slice completes issue-311; later styling capabilities require a new tracker.
