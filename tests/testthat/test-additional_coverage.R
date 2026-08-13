@@ -72,7 +72,7 @@ print("Function being tested: epi_plot_bar custom palette")
 
 test_that("epi_plot_bar applies custom palette", {
   df <- data.frame(cat = c("a", "b", "a", "b"))
-  p <- epi_plot_bar(df, "cat", custom_palette = c("red", "blue"))
+  expect_warning(p <- epi_plot_bar(df, "cat", custom_palette = c("red", "blue")), "deprecated")
   expect_s3_class(p, "ggplot")
   cols <- p$scales$scales[[1]]$palette(2)
   expect_equal(cols, c("red", "blue"))
@@ -80,18 +80,33 @@ test_that("epi_plot_bar applies custom palette", {
 
 test_that("epi_plot_bar with var_y uses custom palette across levels", {
   df <- data.frame(group = factor(c("A", "B")), value = c(1, 2))
-  p <- epi_plot_bar(
+  expect_warning(p <- epi_plot_bar(
     df,
     var_x = "group",
     var_y = "value",
     custom_palette = "green"
-  )
+  ), "deprecated")
   scale_obj <- p$scales$scales[[1]]
   expect_true(is.null(scale_obj$scale_name) || scale_obj$scale_name == "manual")
   cols <- scale_obj$palette(2)
   expect_equal(cols, c("green", "green"))
   first_stat <- class(p$layers[[1]]$stat)[1]
   expect_equal(first_stat, "StatIdentity")
+})
+
+test_that("epi_plot_bar applies exact fill mappings", {
+  df <- data.frame(cat = factor(c("medium", "high", "low"), levels = c("low", "medium", "high")))
+  p <- epi_plot_bar(df, "cat", fill_values = c(high = "blue", low = "red", medium = "gold"))
+  expect_equal(p$scales$scales[[1]]$palette(3), c(low = "red", medium = "gold", high = "blue"))
+  expect_equal(p$scales$scales[[1]]$limits, c("low", "medium", "high"))
+})
+
+test_that("epi_plot_bar rejects ambiguous explicit fill mappings", {
+  df <- data.frame(cat = factor(c("a", "b"), levels = c("a", "b", "c")))
+  expect_error(epi_plot_bar(df, "cat", fill_values = c("red", "blue")), "one colour")
+  expect_error(epi_plot_bar(df, "cat", fill_values = c(a = "red", b = "blue", d = "green")), "exactly match")
+  expect_error(epi_plot_bar(df, "cat", fill_values = c(a = "not-a-colour", b = "blue", c = "green")), "invalid colour")
+  expect_error(epi_plot_bar(df, "cat", custom_palette = "red", fill_values = c(a = "red", b = "blue", c = "green")), "cannot be supplied")
 })
 
 ######################
