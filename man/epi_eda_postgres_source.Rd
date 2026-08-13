@@ -22,7 +22,7 @@ Printing and structure display redact the connection and relation names.
 \description{
 Validate a caller-owned RPostgres connection and one schema-qualified
 relation without collecting observations. The returned object can be passed
-to the four \verb{epi_eda_*} profiling functions and \code{\link[=epi_eda_db_run]{epi_eda_db_run()}}.
+to the five \verb{epi_eda_*} profiling functions and \code{\link[=epi_eda_db_run]{epi_eda_db_run()}}.
 }
 \details{
 PostgreSQL 17 or later is required. Ordinary tables, partitioned

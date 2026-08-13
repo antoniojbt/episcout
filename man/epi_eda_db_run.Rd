@@ -15,7 +15,11 @@ epi_eda_db_run(
   map_vars = character(),
   max_map_points = 10000L,
   layout = c("bundle", "delivery"),
-  quiet = TRUE
+  quiet = TRUE,
+  strata = NULL,
+  include_overall = TRUE,
+  include_missing_stratum = TRUE,
+  table1_basis = c("compatibility", "column", "row", "overall")
 )
 }
 \arguments{
@@ -46,12 +50,27 @@ portable HTML entry point.}
 
 \item{quiet}{Logical passed to the delivery report renderer. It is ignored
 when \code{layout = "bundle"}.}
+
+\item{strata}{Optional single categorical or binary specification variable
+for aggregate-only PostgreSQL stratification. \code{NULL} preserves the
+unstratified bundle contract and files.}
+
+\item{include_overall}{Include the direct Overall population when \code{strata}
+is supplied.}
+
+\item{include_missing_stratum}{Retain missing strata explicitly when
+\code{strata} is supplied; otherwise record omitted rows in stratified metadata.}
+
+\item{table1_basis}{Categorical percentage basis passed to
+\code{\link[=epi_eda_table1]{epi_eda_table1()}} when \code{strata} is supplied.}
 }
 \value{
 An \code{epi_eda_db_run} list with fixed components \code{status},
 \code{output_dir}, \code{manifest}, \code{source}, \code{spec}, \code{schema}, \code{missing},
 \code{summaries}, \code{identifier_qa}, \code{geo}, \code{plots}, \code{plot_inventory}, \code{maps},
 \code{map_inventory}, \code{timings}, \code{messages}, and \code{metadata}.
+Opt-in stratification appends \code{stratified} and \code{table1} components and
+manifest-owned aggregate CSV files.
 }
 \description{
 Execute schema, missingness, canonical summary, identifier-QA, compact plot
@@ -62,6 +81,10 @@ repeatable-read snapshot, then publish a staged bundle.
 The bundle contains aggregates, the caller-authored specification,
 and only explicitly requested bounded point maps. It contains no source-row
 table, SQL, query parameters, credentials, or connection attributes.
+Stratified bundles reject point-map collection and disable Shapiro-Wilk for
+both Overall and grouped numeric summaries, so the run never collects an
+analysis-value vector. The resulting p-values are \code{NA} and the limitation is
+recorded in stratified metadata.
 PostgreSQL and driver/server logs remain the caller's infrastructure
 responsibility. episcout creates the outputs explicitly requested by the
 analyst and does not decide whether they may be shared.

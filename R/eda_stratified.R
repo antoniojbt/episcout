@@ -4,7 +4,8 @@
 #' categorical or binary specification variable. Results are long-form,
 #' machine-readable, and retain declared empty, unexpected, and missing strata.
 #'
-#' @param data A data frame containing observed or prepared data.
+#' @param data A data frame containing observed or prepared data, or an
+#'   [epi_eda_postgres_source()].
 #' @param spec An EDA specification accepted by [epi_eda_spec()].
 #' @param strata A single character name of a categorical or binary variable.
 #' @param include_overall Include an Overall group calculated directly from the
@@ -17,12 +18,27 @@
 #'   `categorical`, `text`, `temporal`, `skipped`, and `metadata` data frames.
 #'   Text output contains aggregate diagnostics only. No files are written.
 #'
+#' @details PostgreSQL sources are profiled inside one read-only repeatable-read
+#'   transaction. Queries return grouped or scalar aggregates only. Shapiro-Wilk
+#'   p-values are `NA` for PostgreSQL stratified numeric summaries because that
+#'   calculation would require collecting an analysis-value vector; all other
+#'   supported canonical numeric fields remain aggregate queries.
+#'
 #' @export
 epi_eda_profile_stratified <- function(data,
                                        spec,
                                        strata,
                                        include_overall = TRUE,
                                        include_missing_stratum = TRUE) {
+  if (inherits(data, "epi_eda_postgres_source")) {
+    return(eda_pg_profile_stratified(
+      data,
+      spec,
+      strata,
+      include_overall,
+      include_missing_stratum
+    ))
+  }
   stratified_validate_data(data)
   spec <- epi_eda_spec(spec)
   stratified_validate_flag(include_overall, "include_overall")

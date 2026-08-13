@@ -21,15 +21,30 @@
 #'   portable HTML entry point.
 #' @param quiet Logical passed to the delivery report renderer. It is ignored
 #'   when `layout = "bundle"`.
+#' @param strata Optional single categorical or binary specification variable
+#'   for aggregate-only PostgreSQL stratification. `NULL` preserves the
+#'   unstratified bundle contract and files.
+#' @param include_overall Include the direct Overall population when `strata`
+#'   is supplied.
+#' @param include_missing_stratum Retain missing strata explicitly when
+#'   `strata` is supplied; otherwise record omitted rows in stratified metadata.
+#' @param table1_basis Categorical percentage basis passed to
+#'   [epi_eda_table1()] when `strata` is supplied.
 #'
 #' @return An `epi_eda_db_run` list with fixed components `status`,
 #'   `output_dir`, `manifest`, `source`, `spec`, `schema`, `missing`,
 #'   `summaries`, `identifier_qa`, `geo`, `plots`, `plot_inventory`, `maps`,
 #'   `map_inventory`, `timings`, `messages`, and `metadata`.
+#'   Opt-in stratification appends `stratified` and `table1` components and
+#'   manifest-owned aggregate CSV files.
 #'
 #' @details The bundle contains aggregates, the caller-authored specification,
 #' and only explicitly requested bounded point maps. It contains no source-row
 #' table, SQL, query parameters, credentials, or connection attributes.
+#' Stratified bundles reject point-map collection and disable Shapiro-Wilk for
+#' both Overall and grouped numeric summaries, so the run never collects an
+#' analysis-value vector. The resulting p-values are `NA` and the limitation is
+#' recorded in stratified metadata.
 #' PostgreSQL and driver/server logs remain the caller's infrastructure
 #' responsibility. episcout creates the outputs explicitly requested by the
 #' analyst and does not decide whether they may be shared.
@@ -45,7 +60,13 @@ epi_eda_db_run <- function(source,
                            map_vars = character(),
                            max_map_points = 10000L,
                            layout = c("bundle", "delivery"),
-                           quiet = TRUE) {
+                           quiet = TRUE,
+                           strata = NULL,
+                           include_overall = TRUE,
+                           include_missing_stratum = TRUE,
+                           table1_basis = c(
+                             "compatibility", "column", "row", "overall"
+                           )) {
   if (!inherits(source, "epi_eda_postgres_source")) {
     stop("source must be an epi_eda_postgres_source.", call. = FALSE)
   }
@@ -61,11 +82,25 @@ epi_eda_db_run <- function(source,
   map_options <- eda_map_options(spec, maps, map_vars, max_map_points)
   eda_validate_map_columns(source$columns$name, map_options)
   catalogue <- eda_validate_postgres_source(source, require_idle = TRUE)
+  stratified_options <- eda_db_stratified_options(
+    source,
+    spec,
+    strata,
+    include_overall,
+    include_missing_stratum,
+    table1_basis
+  )
+  if (!is.null(stratified_options) && isTRUE(map_options$maps)) {
+    stop(
+      "Stratified PostgreSQL bundles cannot collect source-row map data; set maps = FALSE.",
+      call. = FALSE
+    )
+  }
   source_fingerprint <- eda_pg_source_fingerprint(source)
   spec_fingerprint <- eda_postgres_fingerprint(spec)
   paths <- eda_db_prepare_output_dir(
     output_dir, overwrite, source_fingerprint, spec_fingerprint, plots,
-    max_plot_levels, map_options, layout
+    max_plot_levels, map_options, layout, stratified_options
   )
   published <- FALSE
   on.exit(
@@ -91,18 +126,38 @@ epi_eda_db_run <- function(source,
       map_data <- eda_postgres_map_data_inside(
         source, spec, geo, map_options, timing_env, n_total
       )
-      summaries <- eda_postgres_summaries_inside(source, spec, timing_env, n_total)
+      summaries <- eda_postgres_summaries_inside(
+        source,
+        spec,
+        timing_env,
+        n_total,
+        allow_value_vectors = is.null(stratified_options)
+      )
       identifier_qa <- eda_pg_identifier_qa_inside(source, spec, timing_env, n_total)
       plot_data <- eda_postgres_plot_data_inside(
         source, spec, summaries, max_plot_levels, timing_env
       )
+      stratified <- if (is.null(stratified_options)) {
+        NULL
+      } else {
+        eda_pg_stratified_inside(
+          source,
+          spec,
+          stratified_options$contract$strata_row,
+          stratified_options$contract$column,
+          stratified_options$contract$missing,
+          stratified_options$include_overall,
+          stratified_options$include_missing_stratum,
+          timing_env
+        )
+      }
       eda_db_reconcile(
         n_total, spec, missing, summaries, identifier_qa, geo, plot_data
       )
       list(
         n_total = n_total, schema = schema, missing = missing,
         summaries = summaries, identifier_qa = identifier_qa, geo = geo,
-        plot_data = plot_data, map_data = map_data
+        plot_data = plot_data, map_data = map_data, stratified = stratified
       )
     },
     timing_env = timing_env
@@ -164,6 +219,18 @@ epi_eda_db_run <- function(source,
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
+  if (!is.null(stratified_options)) {
+    metadata$strata <- stratified_options$strata
+    metadata$include_overall <- stratified_options$include_overall
+    metadata$include_missing_stratum <- stratified_options$include_missing_stratum
+    metadata$table1_basis <- stratified_options$table1_basis
+    metadata$stratified_contract <- "stratified-1"
+  }
+  table1 <- if (is.null(snapshot$stratified)) {
+    NULL
+  } else {
+    epi_eda_table1(snapshot$stratified, stratified_options$table1_basis)
+  }
   timings <- eda_db_timings(timing_env)
   elapsed <- proc.time()[["elapsed"]] - started_elapsed
   timings <- rbind(timings, data.frame(
@@ -175,14 +242,15 @@ epi_eda_db_run <- function(source,
 
   eda_db_write_bundle_tables(
     paths$staging_dir, metadata, messages, spec, source_metadata,
-    snapshot, plot_inventory, map_result$map_inventory, timings, layout
+    snapshot, plot_inventory, map_result$map_inventory, timings, layout,
+    snapshot$stratified, table1
   )
   plot_data_registry <- eda_db_write_plot_data(
     paths$staging_dir, snapshot$plot_data$entries, layout
   )
   manifest <- eda_db_create_manifest(
     paths$staging_dir, plot_inventory, map_result$map_inventory, layout,
-    plot_data_registry
+    plot_data_registry, !is.null(snapshot$stratified)
   )
   manifest_path <- file.path(
     paths$staging_dir, eda_db_manifest_relative_path(layout)
@@ -204,27 +272,63 @@ epi_eda_db_run <- function(source,
   intake_publish_bundle(state)
   published <- TRUE
   normalized_output <- normalizePath(paths$output_dir, winslash = "/", mustWork = TRUE)
+  result <- list(
+    status = "complete",
+    output_dir = normalized_output,
+    manifest = manifest,
+    source = source_metadata,
+    spec = spec,
+    schema = snapshot$schema,
+    missing = snapshot$missing,
+    summaries = snapshot$summaries,
+    identifier_qa = snapshot$identifier_qa,
+    geo = snapshot$geo,
+    plots = rendered,
+    plot_inventory = plot_inventory,
+    maps = map_result$maps,
+    map_inventory = map_result$map_inventory,
+    timings = timings,
+    messages = messages,
+    metadata = metadata
+  )
+  if (!is.null(snapshot$stratified)) {
+    result$stratified <- snapshot$stratified
+    result$table1 <- table1
+  }
   structure(
-    list(
-      status = "complete",
-      output_dir = normalized_output,
-      manifest = manifest,
-      source = source_metadata,
-      spec = spec,
-      schema = snapshot$schema,
-      missing = snapshot$missing,
-      summaries = snapshot$summaries,
-      identifier_qa = snapshot$identifier_qa,
-      geo = snapshot$geo,
-      plots = rendered,
-      plot_inventory = plot_inventory,
-      maps = map_result$maps,
-      map_inventory = map_result$map_inventory,
-      timings = timings,
-      messages = messages,
-      metadata = metadata
-    ),
+    result,
     class = c("epi_eda_db_run", "list")
+  )
+}
+
+eda_db_stratified_options <- function(source,
+                                      spec,
+                                      strata,
+                                      include_overall,
+                                      include_missing_stratum,
+                                      table1_basis) {
+  if (is.null(strata)) {
+    return(NULL)
+  }
+  if (!is.character(strata) || length(strata) != 1L || is.na(strata) ||
+        !nzchar(strata)) {
+    stop("strata must be NULL or one non-missing character name.", call. = FALSE)
+  }
+  stratified_validate_flag(include_overall, "include_overall")
+  stratified_validate_flag(
+    include_missing_stratum,
+    "include_missing_stratum"
+  )
+  table1_basis <- match.arg(
+    table1_basis,
+    c("compatibility", "column", "row", "overall")
+  )
+  list(
+    strata = strata,
+    include_overall = include_overall,
+    include_missing_stratum = include_missing_stratum,
+    table1_basis = table1_basis,
+    contract = eda_pg_stratifier_contract(source, spec, strata)
   )
 }
 
@@ -253,7 +357,8 @@ eda_db_prepare_output_dir <- function(output_dir,
                                       plots,
                                       max_plot_levels,
                                       map_options,
-                                      layout) {
+                                      layout,
+                                      stratified_options = NULL) {
   if (!is.character(output_dir) || length(output_dir) != 1L || is.na(output_dir) || !nzchar(trimws(output_dir))) {
     stop("output_dir must be one non-empty local directory path.", call. = FALSE)
   }
@@ -273,7 +378,7 @@ eda_db_prepare_output_dir <- function(output_dir,
     if (length(entries) > 0L) {
       eda_db_validate_prior_bundle(
         output_dir, source_fingerprint, spec_fingerprint, plots,
-        max_plot_levels, map_options, layout
+        max_plot_levels, map_options, layout, stratified_options
       )
     }
   }
@@ -288,7 +393,8 @@ eda_db_validate_prior_bundle <- function(output_dir,
                                          plots,
                                          max_plot_levels,
                                          map_options,
-                                         layout) {
+                                         layout,
+                                         stratified_options = NULL) {
   bundle <- tryCatch(
     eda_db_read_bundle(output_dir),
     error = function(error) {
@@ -317,6 +423,30 @@ eda_db_validate_prior_bundle <- function(output_dir,
       as.character(eda_postgres_fingerprint(map_options$map_vars))
     ) &&
     identical(as.integer(metadata$max_map_points[[1]]), map_options$max_map_points)
+  if (!is.null(stratified_options)) {
+    stratified_fields <- c(
+      "strata", "include_overall", "include_missing_stratum", "table1_basis",
+      "stratified_contract"
+    )
+    valid_identity <- valid_identity &&
+      all(stratified_fields %in% names(metadata)) &&
+      identical(as.character(metadata$strata[[1]]), stratified_options$strata) &&
+      identical(
+        toupper(as.character(metadata$include_overall[[1]])),
+        toupper(as.character(stratified_options$include_overall))
+      ) &&
+      identical(
+        toupper(as.character(metadata$include_missing_stratum[[1]])),
+        toupper(as.character(stratified_options$include_missing_stratum))
+      ) &&
+      identical(
+        as.character(metadata$table1_basis[[1]]),
+        stratified_options$table1_basis
+      ) &&
+      identical(as.character(metadata$stratified_contract[[1]]), "stratified-1")
+  } else if (valid_identity) {
+    valid_identity <- !"stratified_contract" %in% names(metadata)
+  }
   if (!valid_identity) stop("Prior bundle source, specification, plot options, or map options do not match this run.", call. = FALSE)
   invisible(TRUE)
 }
@@ -465,7 +595,9 @@ eda_db_write_bundle_tables <- function(staging_dir,
                                        plot_inventory,
                                        map_inventory,
                                        timings,
-                                       layout) {
+                                       layout,
+                                       stratified = NULL,
+                                       table1 = NULL) {
   tables <- list(
     run_metadata = metadata,
     messages = messages,
@@ -494,7 +626,23 @@ eda_db_write_bundle_tables <- function(staging_dir,
       stringsAsFactors = FALSE
     )
   }
-  registry <- eda_db_artifact_registry(layout)
+  if (!is.null(stratified)) {
+    tables <- c(
+      tables,
+      list(
+        stratified_groups = stratified$groups,
+        stratified_variables = stratified$variables,
+        stratified_numeric = stratified$numeric,
+        stratified_categorical = stratified$categorical,
+        stratified_text = stratified$text,
+        stratified_temporal = stratified$temporal,
+        stratified_skipped = stratified$skipped,
+        stratified_metadata = stratified$metadata,
+        table1 = table1
+      )
+    )
+  }
+  registry <- eda_db_artifact_registry(layout, !is.null(stratified))
   for (artifact in names(tables)) {
     relative_path <- registry$path[match(artifact, registry$artifact)]
     directory <- dirname(file.path(staging_dir, relative_path))
@@ -508,7 +656,8 @@ eda_db_write_bundle_tables <- function(staging_dir,
   invisible(TRUE)
 }
 
-eda_db_artifact_registry <- function(layout = c("bundle", "delivery")) {
+eda_db_artifact_registry <- function(layout = c("bundle", "delivery"),
+                                     stratified = FALSE) {
   layout <- match.arg(layout)
   artifacts <- c(
     "manifest", "run_metadata", "messages", "specification", "source_metadata",
@@ -524,12 +673,29 @@ eda_db_artifact_registry <- function(layout = c("bundle", "delivery")) {
   )
   paths <- paste0(artifacts, ".csv")
   paths[artifacts == "manifest"] <- "manifest.csv"
+  if (stratified) {
+    stratified_artifacts <- c(
+      "stratified_groups", "stratified_variables", "stratified_numeric",
+      "stratified_categorical", "stratified_text", "stratified_temporal",
+      "stratified_skipped", "stratified_metadata", "table1"
+    )
+    artifacts <- c(artifacts, stratified_artifacts)
+    types <- c(
+      types,
+      rep("stratified_aggregate", length(stratified_artifacts) - 1L),
+      "table1"
+    )
+    paths <- c(paths, paste0(stratified_artifacts, ".csv"))
+  }
   if (layout == "delivery") {
     qa <- artifacts %in% c(
       "schema", "missing", "summary_variables", "summary_numeric",
       "summary_categorical", "summary_text", "summary_temporal",
       "summary_skipped", "identifier_qa", "geo_qa", "plot_inventory",
-      "map_inventory"
+      "map_inventory", "stratified_groups", "stratified_variables",
+      "stratified_numeric", "stratified_categorical", "stratified_text",
+      "stratified_temporal", "stratified_skipped", "stratified_metadata",
+      "table1"
     )
     paths[qa] <- file.path("QA_QC", paths[qa])
     paths[!qa] <- file.path("run_manifests", paths[!qa])
@@ -588,9 +754,10 @@ eda_db_create_manifest <- function(staging_dir,
                                    plot_inventory,
                                    map_inventory,
                                    layout = c("bundle", "delivery"),
-                                   plot_data_registry = NULL) {
+                                   plot_data_registry = NULL,
+                                   stratified = FALSE) {
   layout <- match.arg(layout)
-  manifest <- eda_db_artifact_registry(layout)
+  manifest <- eda_db_artifact_registry(layout, stratified)
   if (!is.null(plot_data_registry) && nrow(plot_data_registry) > 0L) {
     manifest <- rbind(manifest, plot_data_registry)
   }

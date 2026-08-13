@@ -84,6 +84,15 @@ for (component in components) {
 }
 ```
 
+```{r stratified, echo=FALSE, results='asis'}
+if (!is.null(tables$stratified_metadata)) {
+  cat("## Stratified summaries\n\n")
+  show_table(tables$stratified_metadata, "Stratified-summary metadata")
+  show_table(tables$stratified_groups, "Stratified groups")
+  show_table(tables$table1, "Table 1")
+}
+```
+
 ## Identifier QA
 
 ```{r identifier, echo=FALSE, results='asis'}

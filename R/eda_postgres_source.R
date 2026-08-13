@@ -2,7 +2,7 @@
 #'
 #' Validate a caller-owned RPostgres connection and one schema-qualified
 #' relation without collecting observations. The returned object can be passed
-#' to the four `epi_eda_*` profiling functions and [epi_eda_db_run()].
+#' to the five `epi_eda_*` profiling functions and [epi_eda_db_run()].
 #'
 #' @param con An open, idle connection created by RPostgres.
 #' @param schema One PostgreSQL schema name. Dotted names and SQL fragments are
