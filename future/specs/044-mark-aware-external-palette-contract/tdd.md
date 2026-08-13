@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `044-mark-aware-external-palette-contract`
-Status: Active
+Status: Review
 
 ## Independent Expectations
 

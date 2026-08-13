@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `044-mark-aware-external-palette-contract`
-Status: Active
+Status: Review
 Owner: Codex
 Tracking issue: issue-310
 

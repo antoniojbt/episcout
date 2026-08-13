@@ -2,7 +2,7 @@ id: "044"
 slug: mark-aware-external-palette-contract
 workflow_version: 1
 deliverable: design
-status: active
+status: review
 owner: Codex
 base_branch: master
 working_branch: feature/mark-aware-palette-contract
@@ -12,7 +12,7 @@ updated: 2026-08-13
 tracking_issue: 310
 source_issues:
   - 310
-pull_request: null
+pull_request: 317
 merge_commit: null
 successor_issue: 316
 terminal_reason: null

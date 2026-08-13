@@ -1,7 +1,7 @@
 # Mark-Aware External Palette Contract
 
 Spec ID: `044-mark-aware-external-palette-contract`
-Status: Active
+Status: Review
 
 ## Public Contract
 
