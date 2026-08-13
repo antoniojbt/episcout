@@ -12,6 +12,7 @@
 #'   coordinate pair.
 #' @param map_vars Unique declared variables for additional thematic maps.
 #' @param max_map_points Inclusive maximum number of rows allowed for mapping.
+#' @param plot_style Optional function passed to [epi_eda_profile_plots()].
 #' @return A named list with `metadata`, `schema`, `missing`, `geo`,
 #'   `summaries`, `categorical_display`, `plots`, `maps`, and `map_inventory`
 #'   components.
@@ -25,7 +26,8 @@ epi_eda_run <- function(data,
                         seed = NULL,
                         maps = FALSE,
                         map_vars = character(),
-                        max_map_points = 10000L) {
+                        max_map_points = 10000L,
+                        plot_style = NULL) {
   synthetic <- validate_run_eda_synthetic(synthetic)
   spec <- epi_eda_spec(spec)
   map_options <- eda_map_options(spec, maps, map_vars, max_map_points)
@@ -55,7 +57,7 @@ epi_eda_run <- function(data,
     geo = geo,
     summaries = summaries,
     categorical_display = epi_eda_categorical_display(summaries),
-    plots = epi_eda_profile_plots(data, plot_spec)
+    plots = epi_eda_profile_plots(data, plot_spec, plot_style = plot_style)
   ), map_result)
 
   if (!is.null(output_dir)) {

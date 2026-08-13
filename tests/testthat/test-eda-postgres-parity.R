@@ -403,6 +403,73 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   expect_true(any(plotted$plot_inventory$plot_type == "quantile_box"))
 })
 
+test_that("live PostgreSQL database styling uses compact context and persistent provenance", {
+  con <- postgres_eda_connection()
+  fixture <- postgres_eda_fixture(con)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", DBI::dbQuoteIdentifier(con, fixture$schema), " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
+  source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
+  output_dir <- tempfile("postgres-eda-style-")
+  seen <- new.env(parent = emptyenv())
+  seen$contexts <- list()
+  style <- function(plot, context) {
+    seen$contexts[[length(seen$contexts) + 1L]] <- context
+    plot + ggplot2::theme(plot.background = ggplot2::element_rect(fill = "white"))
+  }
+  styled <- epi_eda_db_run(
+    source, fixture$spec, output_dir,
+    plot_style = style, plot_style_id = "neutral-style-v1"
+  )
+
+  expect_identical(styled$metadata$plot_style_id, "neutral-style-v1")
+  expect_true(length(seen$contexts) >= length(styled$plots))
+  expect_true(all(vapply(seen$contexts, function(context) {
+    identical(
+      names(context),
+      c("name", "label", "type", "plot_type", "n_total", "n_missing", "n_plotted", "n_excluded_non_finite")
+    )
+  }, logical(1L))))
+  expect_false(any(vapply(seen$contexts, function(context) {
+    any(c("data", "source", "con", "sql", "credentials") %in% names(context))
+  }, logical(1L))))
+  replaced <- epi_eda_db_run(
+    source, fixture$spec, output_dir, overwrite = TRUE,
+    plot_style = style, plot_style_id = "neutral-style-v1"
+  )
+  expect_identical(replaced$status, "complete")
+  expect_error(
+    epi_eda_db_run(
+      source, fixture$spec, output_dir, overwrite = TRUE,
+      plot_style = style, plot_style_id = "neutral-style-v2"
+    ),
+    "plot options"
+  )
+  disabled_dir <- tempfile("postgres-eda-style-disabled-")
+  disabled <- epi_eda_db_run(
+    source, fixture$spec, disabled_dir, plots = FALSE,
+    plot_style = function(plot, context) stop("style must not run")
+  )
+  expect_identical(disabled$status, "complete")
+  expect_false("plot_style_id" %in% names(disabled$metadata))
+  failed_dir <- tempfile("postgres-eda-style-failed-")
+  expect_error(
+    epi_eda_db_run(
+      source, fixture$spec, failed_dir,
+      plot_style = function(plot, context) stop("style failure"),
+      plot_style_id = "failing-style-v1"
+    ),
+    "plot_style failed"
+  )
+  expect_false(dir.exists(failed_dir))
+})
+
 test_that("live PostgreSQL delivery mode renders only after aggregate collection", {
   con <- postgres_eda_connection()
   fixture <- postgres_eda_fixture(con)

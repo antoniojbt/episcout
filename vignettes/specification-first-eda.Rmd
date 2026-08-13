@@ -351,6 +351,8 @@ The five direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`,
 
 Without maps, the database bundle contains aggregates, the caller-authored specification and aggregate plot inputs only. When maps are requested, coordinates and selected thematic observations are collected only for map-ready pairs within the inclusive row limit. The query projects only the required coordinates and themes, applies a defensive `max_map_points + 1` limit, and fails rather than truncating or silently dropping rows. The bundle never contains a source-row table, arbitrary SQL, query parameters, credentials or connection attributes; database and driver logs remain the caller's infrastructure responsibility.
 
+Use `plot_style` only for creation-time presentation changes such as an approved theme. The callback receives a completed `ggplot` and compact metadata (`name`, `label`, declared `type`, `plot_type` and aggregate counts), and must return one `ggplot`; it receives no rows, connection, SQL or credentials. For `epi_eda_db_run(plots = TRUE)`, pair it with a stable, non-secret `plot_style_id`. The identifier is recorded in run metadata and must match before an owned bundle is overwritten. Styling runs after the repeatable-read snapshot closes and before staged SVG publication, so the returned and written plots use the same style. `plots = FALSE` does not call the callback.
+
 ## 10. Deliver the owned output root
 
 For data-frame intake, `render = TRUE` creates `report.html` from the saved bundle components. The exact output root is workflow-owned: use `overwrite = TRUE` only to replace a prior valid owned intake bundle. Do not move individual files out of the root without preserving their manifest relationship.

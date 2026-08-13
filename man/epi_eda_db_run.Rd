@@ -19,7 +19,9 @@ epi_eda_db_run(
   strata = NULL,
   include_overall = TRUE,
   include_missing_stratum = TRUE,
-  table1_basis = c("compatibility", "column", "row", "overall")
+  table1_basis = c("compatibility", "column", "row", "overall"),
+  plot_style = NULL,
+  plot_style_id = NULL
 )
 }
 \arguments{
@@ -63,6 +65,12 @@ is supplied.}
 
 \item{table1_basis}{Categorical percentage basis passed to
 \code{\link[=epi_eda_table1]{epi_eda_table1()}} when \code{strata} is supplied.}
+
+\item{plot_style}{Optional function receiving each completed ggplot object
+and compact non-row-level context. It must return one ggplot object.}
+
+\item{plot_style_id}{Required non-secret identifier when \code{plot_style} is
+used with \code{plots = TRUE}; it records persistent bundle provenance.}
 }
 \value{
 An \code{epi_eda_db_run} list with fixed components \code{status},

@@ -59,6 +59,8 @@ Pseudonymisation is a separate restricted-data stage. Its semantic `output_dicti
 
 `epi_eda_db_run(layout = "delivery", maps = FALSE)` reads one relation through a caller-owned open idle RPostgres connection. It performs its profiling in one read-only repeatable-read snapshot, closes the snapshot before rendering and atomically publishes the completed root. A successful call returns `status == "complete"`; validation or publication failures are errors rather than intake-style blocked statuses.
 
+If an approved local theme is needed at creation time, pass `plot_style = function(plot, context) ...` and a stable non-secret `plot_style_id`. The callback receives a completed plot plus compact aggregate metadata, never observations, SQL, credentials or the connection; it must return one plot. It runs after the snapshot and before SVG publication, and the identifier becomes part of the owned-bundle overwrite identity. Do not use callbacks to collect or write restricted information.
+
 The delivery root owns these entry points and evidence:
 
 - `README.md` and `reports/eda-report.html`: human-facing entry points;

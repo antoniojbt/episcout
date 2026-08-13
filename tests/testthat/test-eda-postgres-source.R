@@ -8,13 +8,13 @@ test_that("PostgreSQL EDA public formals and fixed contracts are stable", {
       "source", "spec", "output_dir", "overwrite", "plots",
       "max_plot_levels", "maps", "map_vars", "max_map_points", "layout",
       "quiet", "strata", "include_overall", "include_missing_stratum",
-      "table1_basis"
+      "table1_basis", "plot_style", "plot_style_id"
     )
   )
   expect_identical(names(formals(epi_eda_check_schema)), c("data", "spec"))
   expect_identical(names(formals(epi_eda_profile_missing)), c("data", "spec"))
   expect_identical(names(formals(epi_eda_profile_summaries)), c("data", "spec"))
-  expect_identical(names(formals(epi_eda_profile_plots)), c("data", "spec"))
+  expect_identical(names(formals(epi_eda_profile_plots)), c("data", "spec", "plot_style"))
 })
 
 test_that("categorical summaries reuse the supplied relation count", {

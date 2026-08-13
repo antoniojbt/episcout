@@ -13,7 +13,8 @@ epi_eda_run(
   seed = NULL,
   maps = FALSE,
   map_vars = character(),
-  max_map_points = 10000L
+  max_map_points = 10000L,
+  plot_style = NULL
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ coordinate pair.}
 \item{map_vars}{Unique declared variables for additional thematic maps.}
 
 \item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
+
+\item{plot_style}{Optional function passed to \code{\link[=epi_eda_profile_plots]{epi_eda_profile_plots()}}.}
 }
 \value{
 A named list with \code{metadata}, \code{schema}, \code{missing}, \code{geo},

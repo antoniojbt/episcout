@@ -36,7 +36,7 @@ test_that("public EDA summary interfaces expose one canonical contract", {
     formals(epi_eda_run),
     c(
       "data", "spec", "output_dir", "synthetic", "n", "seed",
-      "maps", "map_vars", "max_map_points"
+      "maps", "map_vars", "max_map_points", "plot_style"
     )
   )
   expect_named(

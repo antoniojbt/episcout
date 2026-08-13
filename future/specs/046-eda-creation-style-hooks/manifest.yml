@@ -1,0 +1,47 @@
+id: "046"
+slug: eda-creation-style-hooks
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: Codex
+base_branch: master
+working_branch: feature/eda-creation-style-hooks
+created: 2026-08-13
+updated: 2026-08-13
+
+tracking_issue: 311
+source_issues:
+  - 310
+  - 316
+  - 311
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: The accepted styling-hook slice completes issue-311; later styling capabilities require a new tracker.
+
+related_files:
+  - R/eda_plot_style.R
+  - R/eda_plots.R
+  - R/run_eda.R
+  - R/eda_db_run.R
+  - tests/testthat/test-eda-plot-style.R
+  - tests/testthat/test-eda-postgres-parity.R
+  - README.md
+  - vignettes/specification-first-eda.Rmd
+  - inst/examples/db-to-report/README.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-plot-style|eda-postgres-source|eda-summaries', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-postgres-parity', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh

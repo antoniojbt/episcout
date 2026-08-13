@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub issues are authoritativ
 
 ## Current sequence
 
-Issue-311 is the active implementation lane after issue-316/spec-045/PR-319 added explicit fill mappings for categorical bars and grouped box plots and merged to canonical `master` as `commit-258c61e`. It adds the dependent generic creation-time styling hook for EDA plots. Terminal issue-313/spec-043 completed through PR-314, merged to canonical `master` as `commit-8421eff`; broader PostgreSQL stratification features require a separate tracker.
+Issue-311/spec-046 is the active implementation lane after issue-316/spec-045/PR-319 added explicit fill mappings for categorical bars and grouped box plots and merged to canonical `master` as `commit-258c61e`. It adds the dependent generic creation-time styling hook for EDA plots. Terminal issue-313/spec-043 completed through PR-314, merged to canonical `master` as `commit-8421eff`; broader PostgreSQL stratification features require a separate tracker.
 
 The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. GitHub release preparation `issue-307`/`spec-042` merged through PR-308 as `commit-9b4d5df`, and release `0.4.0` is published from canonical `commit-ea2a3f1`. No automatic implementation successor is authorised.
 
