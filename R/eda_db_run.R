@@ -325,7 +325,7 @@ eda_db_stratified_options <- function(source,
     return(NULL)
   }
   if (!is.character(strata) || length(strata) != 1L || is.na(strata) ||
-    !nzchar(strata)) {
+        !nzchar(strata)) {
     stop("strata must be NULL or one non-missing character name.", call. = FALSE)
   }
   stratified_validate_flag(include_overall, "include_overall")

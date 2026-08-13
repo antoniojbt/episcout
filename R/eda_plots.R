@@ -160,8 +160,8 @@ eda_collapse_frequencies <- function(frequencies, max_plot_levels) {
   }
   required <- eda_categorical_display_names()
   if (!all(required %in% names(frequencies)) ||
-    any(frequencies$is_missing_level) ||
-    !eda_cat_counts_valid(frequencies$numerator)) {
+        any(frequencies$is_missing_level) ||
+        !eda_cat_counts_valid(frequencies$numerator)) {
     stop("Categorical plot display rows are incompatible.", call. = FALSE)
   }
   frequencies$canonical_order <- seq_len(nrow(frequencies))
@@ -180,7 +180,7 @@ eda_collapse_frequencies <- function(frequencies, max_plot_levels) {
     collapsed <- nrow(ordered) - keep_n
     remainder_rows <- ordered[(keep_n + 1L):nrow(ordered), , drop = FALSE]
     if (length(unique(remainder_rows$denominator)) != 1L ||
-      length(unique(remainder_rows$percentage_basis)) != 1L) {
+          length(unique(remainder_rows$percentage_basis)) != 1L) {
       stop("Collapsed categorical plot denominators did not reconcile.", call. = FALSE)
     }
     remainder <- remainder_rows[1L, required, drop = FALSE]
