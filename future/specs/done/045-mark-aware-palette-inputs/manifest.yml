@@ -2,7 +2,7 @@ id: "045"
 slug: mark-aware-palette-inputs
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: Codex
 base_branch: master
 working_branch: feature/mark-aware-palette-inputs
@@ -14,7 +14,7 @@ source_issues:
   - 310
   - 316
 pull_request: 319
-merge_commit: null
+merge_commit: 258c61e59ae5595573752d7e776c0646dbb561b6
 successor_issue: 311
 terminal_reason: null
 
@@ -32,6 +32,7 @@ documents:
   sdd: sdd.md
   tdd: tdd.md
   acceptance: acceptance.md
+  review: review.md
 
 review_required: true
 
