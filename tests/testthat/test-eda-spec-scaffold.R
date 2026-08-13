@@ -4,7 +4,7 @@ library(testthat)
 library(episcout)
 
 scaffold_columns <- c(
-  "name", "label", "type", "role", "units", "levels", "min", "max",
+  "name", "label", "database_type", "analysis_type", "role", "units", "levels", "min", "max",
   "missing_codes", "required", "group", "description", "geo_role",
   "geo_pair", "geo_crs"
 )
@@ -27,12 +27,12 @@ test_that("scaffold has the lean public contract", {
   expect_named(observed, scaffold_columns)
   expect_identical(observed$name, names(data))
   expect_identical(
-    observed$type,
+    observed$analysis_type,
     c("integer", "numeric", "binary", "categorical", "date", "datetime", "text")
   )
   expect_identical(observed$levels, c("", "", "FALSE;TRUE", "B;A;unused", "", "", ""))
   expect_true(all(is.na(observed$required)))
-  blank <- setdiff(scaffold_columns, c("name", "label", "type", "levels", "required"))
+  blank <- setdiff(scaffold_columns, c("name", "label", "database_type", "analysis_type", "levels", "required"))
   expect_true(all(vapply(observed[blank], function(x) all(x == ""), logical(1))))
   expect_false(any(grepl("PRIVATE_", unlist(observed), fixed = TRUE)))
 })
@@ -47,7 +47,7 @@ test_that("scaffold keeps stable typed empty contracts", {
   zero_columns <- epi_eda_spec_scaffold(data.frame())
 
   expect_named(zero_rows, scaffold_columns)
-  expect_identical(zero_rows$type, c("integer", "text", "date"))
+  expect_identical(zero_rows$analysis_type, c("integer", "text", "date"))
   expect_named(zero_columns, scaffold_columns)
   expect_equal(nrow(zero_columns), 0L)
   expect_type(zero_columns$required, "logical")
@@ -67,7 +67,7 @@ test_that("scaffold uses storage types without value-derived candidates", {
   )
   observed <- epi_eda_spec_scaffold(data)
 
-  expect_identical(observed$type, c("numeric", "text", "text"))
+  expect_identical(observed$analysis_type, c("numeric", "text", "text"))
   expect_false(any(c(
     "observed_class", "n", "n_missing", "n_observed", "n_unique",
     "candidate_type", "candidate_levels", "review_status", "review_reason"

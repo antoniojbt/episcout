@@ -117,11 +117,11 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
     outlier_count = 0, outlier_percentage = 0
   ))
   asymmetric <- c(1, 2, 2, 3, 9, 11)
-  expect_equal(whole$skewness, e1071::skewness(asymmetric, database_type = "text", analysis_type = 3), tolerance = 1e-12)
-  expect_equal(whole$kurtosis, e1071::kurtosis(asymmetric, database_type = "text", analysis_type = 3), tolerance = 1e-12)
+  expect_equal(whole$skewness, e1071::skewness(asymmetric, type = 3), tolerance = 1e-12)
+  expect_equal(whole$kurtosis, e1071::kurtosis(asymmetric, type = 3), tolerance = 1e-12)
   expect_false(isTRUE(all.equal(
-    e1071::skewness(asymmetric, database_type = "text", analysis_type = 3),
-    e1071::skewness(asymmetric, database_type = "text", analysis_type = 1)
+    e1071::skewness(asymmetric, type = 3),
+    e1071::skewness(asymmetric, type = 1)
   )))
   expect_equal(summaries$categorical$n[summaries$categorical$name == "treatment"], c(2L, 1L, 0L, 1L))
   expect_equal(summaries$categorical$level[summaries$categorical$name == "treatment"], c("A", "B", "C", "Z"))
@@ -222,7 +222,7 @@ test_that("PostgreSQL percentile_cont matches independently evaluated R type-7 e
       ),
       params = list(n)
     )
-    expected <- as.numeric(stats::quantile(seq_len(n), c(0.25, 0.5, 0.75), database_type = "text", analysis_type = 7, names = FALSE))
+    expected <- as.numeric(stats::quantile(seq_len(n), c(0.25, 0.5, 0.75), type = 7, names = FALSE))
     expect_equal(as.numeric(observed[1, ]), expected, tolerance = 1e-12)
   }
 })

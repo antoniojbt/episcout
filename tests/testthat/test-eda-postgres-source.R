@@ -300,7 +300,7 @@ test_that("profiler dispatch rejects unsupported objects and incompatible plot i
     name = "x", label = "X", database_type = "text", analysis_type = "numeric", role = "measure",
     stringsAsFactors = FALSE
   )
-  text_spec <- transform(numeric_spec, database_type = "text", analysis_type = "text")
+  text_spec <- transform(numeric_spec, analysis_type = "text")
 
   expect_error(epi_eda_profile_missing(list(), numeric_spec), "data frame")
   expect_error(epi_eda_profile_summaries(list(), numeric_spec), "data frame")

@@ -103,7 +103,7 @@ test_that("opaque key maps are exact and structural errors remain value-free", {
     expect_false(grepl("CANARY|field_a|field_b", message))
   }
 
-  invalid_spec <- transform(spec, database_type = "text", analysis_type = c("TYPE_CANARY", "text"))
+  invalid_spec <- transform(spec, analysis_type = c("TYPE_CANARY", "text"))
   error <- tryCatch(
     epi_eda_qc_proposals(data, invalid_spec, valid),
     error = identity

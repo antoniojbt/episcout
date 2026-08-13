@@ -56,7 +56,7 @@ test_that("canonical display has a fixed typed aggregate contract", {
   ))
   expect_identical(vapply(observed, typeof, character(1)), c(
     variable_order = "integer", level_order = "integer", name = "character",
-    label = "character", database_type = "text", analysis_type = "character", level = "character",
+    label = "character", type = "character", level = "character",
     group_id = "character", group_order = "integer", group_label = "character",
     is_overall = "logical", group_n = "integer", population_n = "integer",
     numerator = "integer", denominator = "integer", proportion = "double",
