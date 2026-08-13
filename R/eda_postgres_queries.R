@@ -414,7 +414,7 @@ eda_postgres_row_count <- function(source, timing_env = NULL) {
 eda_pg_qc_evidence_inside <- function(source, spec, keys) {
   rows <- lapply(seq_len(nrow(spec)), function(index) {
     row <- spec[index, , drop = FALSE]
-    type <- row$type[[1]]
+    type <- row$analysis_type[[1]]
     if (qc_identifier_role(row$role[[1]])) {
       return(qc_unprofiled_evidence(keys[[index]], type, "declared_identifier"))
     }
@@ -646,11 +646,11 @@ eda_postgres_schema_inside <- function(source, spec, timing_env = NULL) {
   expected <- lapply(seq_len(nrow(spec)), function(index) {
     column <- eda_postgres_column(source, spec$name[[index]])
     levels <- if ("levels" %in% names(spec)) eda_spec_levels(spec$levels[[index]]) else character()
-    compatibility <- eda_pg_type_compatibility(column, spec$type[[index]], levels)
+    compatibility <- eda_pg_type_compatibility(column, spec$analysis_type[[index]], levels)
     present <- !is.null(column)
     data.frame(
       name = spec$name[[index]],
-      expected_type = spec$type[[index]],
+      expected_type = spec$analysis_type[[index]],
       observed_type = if (present) eda_postgres_observed_type(column) else NA_character_,
       expected_present = TRUE,
       observed_present = present,
@@ -697,7 +697,7 @@ eda_postgres_missing_inside <- function(source, spec, timing_env = NULL, n_total
       return(NA_integer_)
     }
     contract <- eda_postgres_missing_contract(
-      source, column, spec$type[[index]], eda_missing_codes(spec, name)
+      source, column, spec$analysis_type[[index]], eda_missing_codes(spec, name)
     )
     if (!contract$valid) {
       return(NA_integer_)
@@ -886,7 +886,7 @@ eda_postgres_numeric_summary <- function(source,
 }
 
 eda_pg_categorical_summary <- function(source, column, contract, spec_row, index, n_total, timing_env) {
-  expression <- eda_postgres_value_expression(source, column, as.character(spec_row$type[[1]]))
+  expression <- eda_postgres_value_expression(source, column, as.character(spec_row$analysis_type[[1]]))
   observed <- eda_db_fetch(
     source$con,
     paste0(
@@ -1076,7 +1076,7 @@ eda_postgres_summaries_inside <- function(source,
     label <- as.character(row$label[[1]])
     role <- as.character(row$role[[1]])
     required <- if ("required" %in% names(row)) as.logical(row$required[[1]]) else NA
-    type <- as.character(row$type[[1]])
+    type <- as.character(row$analysis_type[[1]])
     column <- eda_postgres_column(source, name)
     if (is.null(column)) {
       reason <- missing_variable_reason(required)
@@ -1180,7 +1180,7 @@ eda_pg_identifier_qa_inside <- function(source, spec, timing_env = NULL, n_total
       ))
     }
     contract <- eda_postgres_missing_contract(
-      source, column, spec$type[[index]], eda_missing_codes(spec, name)
+      source, column, spec$analysis_type[[index]], eda_missing_codes(spec, name)
     )
     if (!contract$valid) {
       return(data.frame(
@@ -1191,7 +1191,7 @@ eda_pg_identifier_qa_inside <- function(source, spec, timing_env = NULL, n_total
         stringsAsFactors = FALSE
       ))
     }
-    expression <- eda_postgres_value_expression(source, column, spec$type[[index]])
+    expression <- eda_postgres_value_expression(source, column, spec$analysis_type[[index]])
     observed <- eda_db_fetch(
       source$con,
       paste0(
@@ -1283,7 +1283,7 @@ eda_postgres_plot_data_inside <- function(source,
                                           timing_env = NULL) {
   entries <- lapply(seq_len(nrow(spec)), function(index) {
     name <- spec$name[[index]]
-    type <- spec$type[[index]]
+    type <- spec$analysis_type[[index]]
     label <- if (!is.na(spec$label[[index]]) && nzchar(spec$label[[index]])) spec$label[[index]] else name
     variable <- summaries$variables[summaries$variables$name == name, , drop = FALSE]
     if (nrow(variable) != 1L || variable$status[[1]] != "summarised") {

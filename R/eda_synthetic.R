@@ -51,7 +51,7 @@ epi_eda_generate_synthetic_data <- function(spec, n = 100, seed = NULL) { # noli
 }
 
 generate_synthetic_column <- function(row, n) {
-  type <- row$type[[1]]
+  type <- row$analysis_type[[1]]
 
   switch(
     type,

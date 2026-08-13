@@ -19,7 +19,7 @@ postgres_map_spec <- function() {
   data.frame(
     name = c("lon", "lat", "numeric_theme", "category_theme", "text_theme"),
     label = c("Longitude", "Latitude", "Numeric", "Category", "Text"),
-    type = c("numeric", "numeric", "integer", "categorical", "text"),
+    database_type = "text", analysis_type = c("numeric", "numeric", "integer", "categorical", "text"),
     role = c("coordinate", "coordinate", "measure", "group", "comment"),
     levels = c("", "", "", "A;B", ""),
     missing_codes = c("", "", "", "MISSING", "MISSING"),

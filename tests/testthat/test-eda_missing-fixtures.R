@@ -65,7 +65,7 @@ test_that("epi_eda_profile_missing counts sentinel missing codes", {
   spec <- data.frame(
     name = c("age", "status", "complete"),
     label = c("Age", "Status", "Complete"),
-    type = c("numeric", "categorical", "integer"),
+    database_type = "text", analysis_type = c("numeric", "categorical", "integer"),
     role = c("covariate", "covariate", "covariate"),
     levels = c("", "A;B;UNK;REF", ""),
     missing_codes = c("999", "UNK; REF", ""),
@@ -88,7 +88,7 @@ test_that("epi_eda_profile_missing uses NA proportions for zero-row data", {
   spec <- data.frame(
     name = c("age", "status"),
     label = c("Age", "Status"),
-    type = c("numeric", "categorical"),
+    database_type = "text", analysis_type = c("numeric", "categorical"),
     role = c("covariate", "covariate"),
     levels = c("", "A;B"),
     missing_codes = c("999", ""),

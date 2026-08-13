@@ -40,7 +40,7 @@ build_typed_summaries <- function(data, spec, global_missing_codes = NULL) {
     label <- if ("label" %in% names(row)) as.character(row$label[[1]]) else name
     role <- if ("role" %in% names(row)) as.character(row$role[[1]]) else NA_character_
     required <- if ("required" %in% names(row)) as.logical(row$required[[1]]) else NA
-    type <- as.character(row$type[[1]])
+    type <- as.character(row$analysis_type[[1]])
 
     if (!name %in% names(data)) {
       reason <- missing_variable_reason(required)
@@ -307,7 +307,7 @@ eda_apply_summary_exclusions <- function(canonical, data, spec, exclusions) {
     canonical$skipped <- rbind(
       canonical$skipped,
       canonical_skipped_row(
-        name, spec$type[match(name, spec$name)], observed_class,
+        name, spec$analysis_type[match(name, spec$name)], observed_class,
         unname(exclusions[[name]])
       )
     )

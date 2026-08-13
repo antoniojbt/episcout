@@ -16,7 +16,7 @@ make_integer_spec <- function(min, max) {
   data.frame(
     name = "integer_value",
     label = "Integer value",
-    type = "integer",
+    database_type = "text", analysis_type = "integer",
     role = "covariate",
     min = min,
     max = max,
@@ -41,7 +41,7 @@ test_that("synthetic categorical and binary values respect specification levels"
   synthetic <- epi_eda_generate_synthetic_data(spec, n = 100, seed = 1)
 
   categorical_spec <- spec[
-    spec$type %in% c("categorical", "binary") &
+    spec$analysis_type %in% c("categorical", "binary") &
       !is.na(spec$levels) & spec$levels != "",
     ,
     drop = FALSE
@@ -65,7 +65,7 @@ test_that("synthetic numeric and integer values respect specification min and ma
   synthetic <- epi_eda_generate_synthetic_data(spec, n = 100, seed = 1)
 
   ranged_spec <- spec[
-    spec$type %in% c("numeric", "integer") &
+    spec$analysis_type %in% c("numeric", "integer") &
       !is.na(spec$min) & spec$min != "" &
       !is.na(spec$max) & spec$max != "",
     ,

@@ -208,8 +208,8 @@ eda_postgres_geo_pair <- function(source, spec, pair, timing_env) {
   if (is.null(x_column) || is.null(y_column)) {
     stop("Declared coordinate variables are missing from the PostgreSQL source.", call. = FALSE)
   }
-  x_type <- spec$type[[pair$x_row]]
-  y_type <- spec$type[[pair$y_row]]
+  x_type <- spec$analysis_type[[pair$x_row]]
+  y_type <- spec$analysis_type[[pair$y_row]]
   compatible <- eda_pg_type_compatibility(x_column, x_type)$status != "incompatible" &&
     eda_pg_type_compatibility(y_column, y_type)$status != "incompatible"
   if (!compatible) {

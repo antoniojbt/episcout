@@ -114,7 +114,7 @@ test_that("epi_eda_render_report renders complete canonical summary sections", {
   spec <- data.frame(
     name = c("value", "note", "observed"),
     label = c("Value", "Note", "Observed"),
-    type = c("numeric", "text", "date"),
+    database_type = "text", analysis_type = c("numeric", "text", "date"),
     role = c("covariate", "metadata", "covariate")
   )
   output_dir <- tempfile("eda-report-canonical-")

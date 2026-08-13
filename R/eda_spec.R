@@ -1,6 +1,6 @@
 #' Read an EDA specification
 #'
-#' Read and validate a specification-first EDA data dictionary.
+#' Read and validate a specification-first EDA data dictionary. Specifications declare `database_type` for the storage family and `analysis_type` for R/EDA handling; the former `type` field is not accepted.
 #'
 #' @param path_or_data A path to a CSV specification file, or a data frame containing the specification.
 #'
@@ -48,7 +48,10 @@ epi_eda_validate_spec <- function(spec) {
       call. = FALSE
     )
   }
-  required_cols <- c("name", "label", "type", "role")
+  if ("type" %in% names(spec)) {
+    stop("EDA specification field 'type' was removed; use database_type and analysis_type.", call. = FALSE)
+  }
+  required_cols <- c("name", "label", "database_type", "analysis_type", "role")
   missing_cols <- setdiff(required_cols, names(spec))
 
   if (length(missing_cols) > 0) {
@@ -70,7 +73,8 @@ epi_eda_validate_spec <- function(spec) {
     stop("Duplicate variable name found in EDA specification.", call. = FALSE)
   }
 
-  allowed_types <- c(
+  allowed_database_types <- c("numeric", "integer", "boolean", "date", "datetime", "text")
+  allowed_analysis_types <- c(
     "numeric",
     "integer",
     "categorical",
@@ -79,15 +83,20 @@ epi_eda_validate_spec <- function(spec) {
     "datetime",
     "text"
   )
-  spec$type <- tolower(as.character(spec$type))
-  invalid_type <- is.na(spec$type) | !(spec$type %in% allowed_types)
+  spec$database_type <- tolower(as.character(spec$database_type))
+  invalid_database_type <- is.na(spec$database_type) | !(spec$database_type %in% allowed_database_types)
 
-  if (any(invalid_type)) {
+  if (any(invalid_database_type)) {
     stop(
-      "Invalid type in EDA specification: ",
-      paste(unique(spec$type[invalid_type]), collapse = ", "),
+      "Invalid database_type in EDA specification: ",
+      paste(unique(spec$database_type[invalid_database_type]), collapse = ", "),
       call. = FALSE
     )
+  }
+  spec$analysis_type <- tolower(as.character(spec$analysis_type))
+  invalid_analysis_type <- is.na(spec$analysis_type) | !(spec$analysis_type %in% allowed_analysis_types)
+  if (any(invalid_analysis_type)) {
+    stop("Invalid analysis_type in EDA specification: ", paste(unique(spec$analysis_type[invalid_analysis_type]), collapse = ", "), call. = FALSE)
   }
 
   character_fields <- intersect(
@@ -148,7 +157,7 @@ validate_eda_geo_spec <- function(spec) {
   if (length(reviewed) == 0L) {
     return(spec)
   }
-  if (any(!(spec$type[reviewed] %in% c("numeric", "integer")))) {
+  if (any(!(spec$analysis_type[reviewed] %in% c("numeric", "integer")))) {
     stop("EDA coordinate roles require numeric or integer declared types.", call. = FALSE)
   }
   epi_geo_require("sf")

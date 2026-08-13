@@ -8,7 +8,7 @@ preparation_spec <- function(name, type, levels = "", missing_codes = "",
   data.frame(
     name = name,
     label = name,
-    type = type,
+    database_type = "text", analysis_type = type,
     role = "measure",
     levels = levels,
     missing_codes = missing_codes,

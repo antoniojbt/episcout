@@ -7,7 +7,7 @@ geo_spec <- function(crs = "4326") {
   data.frame(
     name = c("x_coord", "y_coord", "value"),
     label = c("Reviewed x", "Reviewed y", "Value"),
-    type = c("numeric", "numeric", "numeric"),
+    database_type = "text", analysis_type = c("numeric", "numeric", "numeric"),
     role = c("", "", ""),
     missing_codes = c("-999", "-999", ""),
     geo_role = c("x", "y", ""),
@@ -23,7 +23,7 @@ test_that("coordinate metadata validates exact reviewed pairs", {
   expect_identical(observed$geo_role, c("x", "y", ""))
   expect_identical(observed$geo_pair, c("reviewed_pair", "reviewed_pair", ""))
 
-  legacy <- geo_spec()[, c("name", "label", "type", "role", "missing_codes")]
+  legacy <- geo_spec()[, c("name", "label", "database_type", "analysis_type", "role", "missing_codes")]
   expect_false(any(c("geo_role", "geo_pair", "geo_crs") %in% names(epi_eda_spec(legacy))))
   empty <- epi_eda_profile_geo(data.frame(
     x_coord = 1, y_coord = 2, value = 3
@@ -62,7 +62,7 @@ test_that("coordinate metadata validates exact reviewed pairs", {
   expect_error(epi_eda_spec(mismatched), "same explicit geo_crs")
 
   text_pair <- geo_spec()
-  text_pair$type[[1]] <- "text"
+  text_pair$analysis_type[[1]] <- "text"
   expect_error(epi_eda_spec(text_pair), "numeric or integer")
 
   unresolved <- geo_spec("not-a-crs")

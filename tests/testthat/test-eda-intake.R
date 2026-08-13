@@ -99,7 +99,7 @@ test_that("removed and malformed specifications return actionable blocked bundle
   expect_match(old$messages$reason, "removed evidence/review scaffold")
   expect_false(file.exists(file.path(output_dir, "specification.csv")))
 
-  malformed <- fixture$spec[, setdiff(names(fixture$spec), "type"), drop = FALSE]
+  malformed <- fixture$spec[, setdiff(names(fixture$spec), "database_type"), drop = FALSE]
   invalid <- epi_eda_intake_run(
     fixture$data, malformed, tempfile("intake-invalid-spec-"),
     render = FALSE
@@ -131,7 +131,7 @@ test_that("audit, blockers and apply retain factual processing outcomes", {
 
   changed <- fixture
   changed$data$value <- c(1L, 2L, NA_integer_, 4L)
-  changed$spec$type[changed$spec$name == "value"] <- "numeric"
+  changed$spec$analysis_type[changed$spec$name == "value"] <- "numeric"
   none <- epi_eda_intake_run(
     changed$data, changed$spec, tempfile("intake-none-"),
     render = FALSE
@@ -148,7 +148,7 @@ test_that("audit, blockers and apply retain factual processing outcomes", {
 test_that("roles describe variables without suppressing summaries or strata", {
   fixture <- make_intake_fixture()
   identifier <- fixture$spec$name == "participant_id"
-  fixture$spec$type[identifier] <- "categorical"
+  fixture$spec$analysis_type[identifier] <- "categorical"
   fixture$spec$levels[identifier] <- "900001;900002;900003;900004"
   observed <- epi_eda_intake_run(
     fixture$data,

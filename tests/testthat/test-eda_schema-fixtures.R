@@ -71,7 +71,7 @@ test_that("epi_eda_check_schema remains descriptive for numeric and binary types
   spec <- data.frame(
     name = c("integer_count", "logical_flag"),
     label = c("Integer count", "Logical flag"),
-    type = c("integer", "binary"),
+    database_type = "text", analysis_type = c("integer", "binary"),
     role = c("covariate", "covariate"),
     stringsAsFactors = FALSE
   )
@@ -119,7 +119,7 @@ test_that("epi_eda_check_schema reports compatibility independently of presence"
   spec <- data.frame(
     name = expected_names,
     label = expected_names,
-    type = c(
+    database_type = "text", analysis_type = c(
       "numeric", "numeric", "integer", "integer", "integer",
       "categorical", "categorical", "categorical", "categorical",
       "binary", "binary", "binary", "text", "text",
@@ -163,7 +163,7 @@ test_that("schema compatibility ignores declared missing codes", {
   spec <- data.frame(
     name = names(data),
     label = names(data),
-    type = c("categorical", "binary", "date", "datetime"),
+    database_type = "text", analysis_type = c("categorical", "binary", "date", "datetime"),
     role = rep("covariate", 4),
     levels = c("1;2", "yes;no", "", ""),
     missing_codes = c("999", "UNK", "MISSING", "MISSING"),

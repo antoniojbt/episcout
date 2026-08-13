@@ -144,7 +144,8 @@ test_that("dictionary scaffold maps technical types without semantic guesses", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
 
   expect_equal(dictionary$source_column, c("subject_code", "group_code", "score"))
-  expect_equal(dictionary$type, c("text", "text", "numeric"))
+  expect_equal(dictionary$database_type, c("text", "text", "numeric"))
+  expect_equal(dictionary$analysis_type, c("text", "text", "numeric"))
   expect_equal(dictionary$label, dictionary$source_column)
   expect_true(all(dictionary$geo_role == ""))
   expect_true(all(dictionary$geo_pair == ""))
@@ -197,7 +198,7 @@ test_that("PostgreSQL inventory validates its inputs and table selection", {
 test_that("dictionary refresh preserves curation and reports source drift", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
   dictionary$label[dictionary$source_column == "group_code"] <- "Study group"
-  dictionary$type[[1]] <- "numeric"
+  dictionary$analysis_type[[1]] <- "numeric"
   dictionary$geo_role[c(1, 3)] <- c("x", "y")
   dictionary$geo_pair[c(1, 3)] <- "site"
   dictionary$geo_crs[c(1, 3)] <- "4326"
@@ -268,8 +269,8 @@ test_that("dictionary validation rejects invalid and removed contract values", {
   )
 
   invalid <- dictionary
-  invalid$type[[1]] <- "unknown"
-  expect_error(epi_eda_dictionary_validate(invalid), "type.*invalid")
+  invalid$analysis_type[[1]] <- "unknown"
+  expect_error(epi_eda_dictionary_validate(invalid), "analysis_type.*invalid")
   invalid <- dictionary
   invalid$privacy_class <- "non_sensitive"
   expect_error(
@@ -302,9 +303,9 @@ test_that("dictionary specifications propagate semantic and geo catalogue values
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
   dictionary$role <- c("id", "covariate", "outcome")
   dictionary$group <- c("identifiers", "design", "measurements")
-  dictionary$type[dictionary$source_column == "group_code"] <- "categorical"
+  dictionary$analysis_type[dictionary$source_column == "group_code"] <- "categorical"
   dictionary$catalog_name[dictionary$source_column == "group_code"] <- "study_group"
-  dictionary$type[[1]] <- "numeric"
+  dictionary$analysis_type[[1]] <- "numeric"
   dictionary$geo_role[c(1, 3)] <- c("x", "y")
   dictionary$geo_pair[c(1, 3)] <- "site"
   dictionary$geo_crs[c(1, 3)] <- "3857"
@@ -358,7 +359,7 @@ test_that("dictionary specifications propagate semantic and geo catalogue values
 
 test_that("catalogue validation rejects malformed definitions", {
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
-  dictionary$type[[2]] <- "categorical"
+  dictionary$analysis_type[[2]] <- "categorical"
   dictionary$catalog_name[[2]] <- "study_group"
   catalogue <- data.frame(
     catalog_name = "study_group",
@@ -396,7 +397,7 @@ test_that("catalogue validation rejects malformed definitions", {
   dictionary$catalog_name[[2]] <- "missing_catalogue"
   expect_error(epi_eda_dictionary_validate(dictionary, catalogue), "missing catalogues")
   dictionary$catalog_name[[2]] <- "study_group"
-  dictionary$type[[2]] <- "text"
+  dictionary$analysis_type[[2]] <- "text"
   expect_error(epi_eda_dictionary_validate(dictionary, catalogue), "categorical or binary")
 })
 
@@ -434,7 +435,7 @@ test_that("catalogue profiling validates explicit source-key selectors before qu
 test_that("catalogue profiling returns bounded aggregate counts for explicit columns", {
   connection <- make_mock_connection()
   dictionary <- epi_eda_dictionary_scaffold(make_test_inventory())
-  dictionary$type[[2]] <- "categorical"
+  dictionary$analysis_type[[2]] <- "categorical"
   selector <- dictionary[2, c("source_schema", "source_table", "source_column")]
 
   profile <- epi_db_catalogue_profile(connection, dictionary, selector, max_levels = 2)

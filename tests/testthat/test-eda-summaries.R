@@ -20,7 +20,7 @@ make_canonical_fixture <- function() {
   spec <- data.frame(
     name = c("numeric value", "integer_value", "category", "binary", "text_value", "date_value", "datetime_value", "missing_variable"),
     label = c("Numeric", "Integer", "Category", "Binary", "Text", "Date", "Datetime", "Missing"),
-    type = c("numeric", "integer", "categorical", "binary", "text", "date", "datetime", "text"),
+    database_type = "text", analysis_type = c("numeric", "integer", "categorical", "binary", "text", "date", "datetime", "text"),
     role = c("outcome", rep("covariate", 7)),
     levels = c("", "", "A;B;C", "No;Yes", "", "", "", ""),
     missing_codes = c("999", "", "", "", "", "", "", ""),
@@ -84,7 +84,7 @@ test_that("numeric summaries use finite values and hand-derived expectations", {
   spec <- data.frame(
     name = "value",
     label = "Value",
-    type = "numeric",
+    database_type = "text", analysis_type = "numeric",
     role = "outcome",
     missing_codes = "999",
     stringsAsFactors = FALSE
@@ -120,7 +120,7 @@ test_that("numeric summaries do not invent zero totals", {
     empty = numeric(),
     stringsAsFactors = FALSE
   )
-  empty_spec <- data.frame(name = "empty", label = "Empty", type = "numeric", role = "covariate")
+  empty_spec <- data.frame(name = "empty", label = "Empty", database_type = "text", analysis_type = "numeric", role = "covariate")
   empty <- epi_eda_profile_summaries(data, empty_spec)
 
   expect_equal(empty$variables$n, 0L)
@@ -137,7 +137,7 @@ test_that("numeric summaries do not invent zero totals", {
     case_spec <- data.frame(
       name = "value",
       label = "Value",
-      type = "numeric",
+      database_type = "text", analysis_type = "numeric",
       role = "covariate",
       missing_codes = "999"
     )
@@ -156,7 +156,7 @@ test_that("categorical summaries reconcile declarations and denominators", {
   spec <- data.frame(
     name = "status",
     label = "Status",
-    type = "categorical",
+    database_type = "text", analysis_type = "categorical",
     role = "covariate",
     levels = "A;B;C",
     missing_codes = "UNK",
@@ -176,7 +176,7 @@ test_that("categorical summaries reconcile declarations and denominators", {
 
 test_that("factor metadata does not become an undeclared result row", {
   data <- data.frame(status = factor(c("A", "B"), levels = c("A", "B", "metadata_only")))
-  spec <- data.frame(name = "status", label = "Status", type = "categorical", role = "covariate")
+  spec <- data.frame(name = "status", label = "Status", database_type = "text", analysis_type = "categorical", role = "covariate")
 
   observed <- epi_eda_profile_summaries(data, spec)$categorical
 
@@ -217,7 +217,7 @@ test_that("invalid temporal values and incompatible classes are explicit skips",
   spec <- data.frame(
     name = c("bad_date", "bad_number"),
     label = c("Bad date", "Bad number"),
-    type = c("date", "numeric"),
+    database_type = "text", analysis_type = c("date", "numeric"),
     role = c("covariate", "covariate")
   )
 

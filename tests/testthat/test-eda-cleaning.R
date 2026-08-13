@@ -102,7 +102,7 @@ test_that("approved rules have an exact canonical schema and pending input is re
   spec <- data.frame(
     name = "field_a",
     label = "Field A",
-    type = "numeric",
+    database_type = "text", analysis_type = "numeric",
     role = "measure",
     stringsAsFactors = FALSE
   )

@@ -54,7 +54,7 @@ test_that("epi_eda_profile_plots excludes numeric and categorical sentinels from
   spec <- data.frame(
     name = c("measurement", "treatment"),
     label = c("Measurement", "Treatment"),
-    type = c("numeric", "categorical"),
+    database_type = "text", analysis_type = c("numeric", "categorical"),
     role = c("outcome", "exposure"),
     missing_codes = c("999", "UNK"),
     stringsAsFactors = FALSE
@@ -81,7 +81,7 @@ test_that("epi_eda_profile_plots masks temporal sentinels before conversion", {
   spec <- data.frame(
     name = c("specimen_date", "specimen_time"),
     label = c("Specimen date", "Specimen time"),
-    type = c("date", "datetime"),
+    database_type = "text", analysis_type = c("date", "datetime"),
     role = c("time", "time"),
     missing_codes = c("MISSING", "MISSING"),
     stringsAsFactors = FALSE
@@ -105,7 +105,7 @@ test_that("epi_eda_profile_plots rejects invalid non-missing temporal values", {
   spec <- data.frame(
     name = "specimen_date",
     label = "Specimen date",
-    type = "date",
+    database_type = "text", analysis_type = "date",
     role = "time",
     missing_codes = "MISSING",
     stringsAsFactors = FALSE
@@ -131,7 +131,7 @@ test_that("epi_eda_profile_plots preserves ISO-8601 timezone offsets", {
   spec <- data.frame(
     name = "specimen_time",
     label = "Specimen time",
-    type = "datetime",
+    database_type = "text", analysis_type = "datetime",
     role = "time",
     stringsAsFactors = FALSE
   )

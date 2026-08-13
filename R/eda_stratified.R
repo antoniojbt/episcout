@@ -53,7 +53,7 @@ epi_eda_profile_stratified <- function(data,
     stop("The strata variable must be present in data.", call. = FALSE)
   }
   strata_row <- spec[match(strata, spec$name), , drop = FALSE]
-  if (!strata_row$type[[1]] %in% c("categorical", "binary")) {
+  if (!strata_row$analysis_type[[1]] %in% c("categorical", "binary")) {
     stop("The strata variable must be declared categorical or binary.", call. = FALSE)
   }
   strata_values <- data[[strata]]
@@ -64,7 +64,7 @@ epi_eda_profile_stratified <- function(data,
   if (!level_contract$safe) {
     stop("Strata levels must be unique and safely represented by the semicolon contract.", call. = FALSE)
   }
-  if (strata_row$type[[1]] == "binary" &&
+  if (strata_row$analysis_type[[1]] == "binary" &&
         !(length(level_contract$levels) == 2L ||
             (length(level_contract$levels) == 0L && is.logical(strata_values)))) {
     stop("Binary strata require exactly two declared levels or logical storage.", call. = FALSE)
@@ -209,7 +209,7 @@ stratified_group_mask <- function(group, values, missing, included) {
 
 stratified_level_universes <- function(data, spec, exclusions) {
   names <- spec$name[
-    spec$type %in% c("categorical", "binary") &
+    spec$analysis_type %in% c("categorical", "binary") &
       spec$name %in% names(data) & !spec$name %in% names(exclusions)
   ]
   out <- stats::setNames(vector("list", length(names)), names)
@@ -233,7 +233,7 @@ stratified_exclusions <- function(data, spec) {
   schema <- epi_eda_check_schema(data, spec)
   incompatible <- schema$name[schema$expected_present & schema$observed_present & schema$type_status == "incompatible"]
   reasons[incompatible] <- "Observed storage is incompatible; run epi_eda_prepare() before stratified summaries."
-  for (index in which(spec$type == "datetime" & spec$name %in% names(data))) {
+  for (index in which(spec$analysis_type == "datetime" & spec$name %in% names(data))) {
     name <- spec$name[[index]]
     values <- data[[name]]
     if (is.character(values)) {
@@ -289,7 +289,7 @@ stratified_numeric <- function(numeric, variables, group, spec) {
   out <- cbind(
     data.frame(
       name = numeric$name,
-      type = spec$type[match(numeric$name, spec$name)],
+      type = spec$analysis_type[match(numeric$name, spec$name)],
       n = variables$n[index],
       n_missing = variables$n_missing[index],
       n_observed = variables$n_observed[index],
@@ -318,7 +318,7 @@ stratified_categorical <- function(categorical, variables, group, spec, universe
     n_observed <- variable$n_observed[[1]]
     rows[[length(rows) + 1L]] <- data.frame(
       name = name,
-      type = spec$type[match(name, spec$name)],
+      type = spec$analysis_type[match(name, spec$name)],
       level = universe$level,
       n = as.integer(counts),
       n_total = rep(as.integer(n_total), nrow(universe)),
@@ -332,7 +332,7 @@ stratified_categorical <- function(categorical, variables, group, spec, universe
     )
     missing_n <- variable$n_missing[[1]]
     rows[[length(rows) + 1L]] <- data.frame(
-      name = name, type = spec$type[match(name, spec$name)],
+      name = name, type = spec$analysis_type[match(name, spec$name)],
       level = NA_character_, n = as.integer(missing_n),
       n_total = as.integer(n_total), n_observed = as.integer(n_observed),
       p_total = summary_safe_proportion(missing_n, n_total),

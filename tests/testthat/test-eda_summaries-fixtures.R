@@ -32,7 +32,7 @@ test_that("epi_eda_profile_summaries numeric output matches hand-computed values
   spec <- data.frame(
     name = c("age", "all_missing"),
     label = c("Age", "All missing"),
-    type = c("numeric", "numeric"),
+    database_type = "text", analysis_type = c("numeric", "numeric"),
     role = c("covariate", "covariate"),
     missing_codes = c("999", "999"),
     stringsAsFactors = FALSE
@@ -65,7 +65,7 @@ test_that("epi_eda_profile_summaries categorical output documents denominators",
   spec <- data.frame(
     name = "status",
     label = "Status",
-    type = "categorical",
+    database_type = "text", analysis_type = "categorical",
     role = "covariate",
     levels = "A;B;C",
     missing_codes = "UNK",
@@ -101,6 +101,6 @@ test_that("blood storage canonical summaries cover every specified variable", {
   expect_equal(observed$variables$name, spec$name)
   expect_true(all(observed$variables$status == "summarised"))
   expect_equal(nrow(observed$skipped), 0L)
-  expect_setequal(observed$numeric$name, spec$name[spec$type %in% c("numeric", "integer")])
-  expect_setequal(unique(observed$categorical$name), spec$name[spec$type %in% c("categorical", "binary")])
+  expect_setequal(observed$numeric$name, spec$name[spec$analysis_type %in% c("numeric", "integer")])
+  expect_setequal(unique(observed$categorical$name), spec$name[spec$analysis_type %in% c("categorical", "binary")])
 })

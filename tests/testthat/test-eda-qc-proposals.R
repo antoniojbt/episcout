@@ -11,7 +11,7 @@ qc_test_spec <- function(name,
   data.frame(
     name = name,
     label = as.character(seq_along(name)),
-    type = type,
+    database_type = rep("text", length(name)), analysis_type = type,
     role = role,
     units = units,
     levels = levels,
@@ -103,7 +103,7 @@ test_that("opaque key maps are exact and structural errors remain value-free", {
     expect_false(grepl("CANARY|field_a|field_b", message))
   }
 
-  invalid_spec <- transform(spec, type = c("TYPE_CANARY", "text"))
+  invalid_spec <- transform(spec, analysis_type = c("TYPE_CANARY", "text"))
   error <- tryCatch(
     epi_eda_qc_proposals(data, invalid_spec, valid),
     error = identity
@@ -274,7 +274,7 @@ test_that("binary precedence and finite screening cases remain prompts only", {
   expect_identical(infinity$candidate_type, "")
   expect_identical(infinity$candidate_allowed_levels, "")
   expect_identical(infinity$rationale_codes, "non_finite_values_present")
-  expect_identical(spec$type, c(rep("integer", 5L), "numeric", "numeric"))
+  expect_identical(spec$analysis_type, c(rep("integer", 5L), "numeric", "numeric"))
   expect_identical(data$imbalanced, c(rep(0L, 20L), 1L))
 })
 

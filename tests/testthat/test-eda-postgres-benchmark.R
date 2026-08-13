@@ -34,7 +34,7 @@ postgres_benchmark_spec <- function() {
       "Record", "Measurement", "Whole number", "Treatment",
       "Flag", "Note", "Specimen date", "Specimen time"
     ),
-    type = c(
+    database_type = "text", analysis_type = c(
       "integer", "numeric", "integer", "categorical",
       "binary", "text", "date", "datetime"
     ),

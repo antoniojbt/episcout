@@ -187,7 +187,7 @@ Create a technical and semantic dictionary from the inventory. It contains EDA l
 
 ```{r dictionary-metadata, eval = FALSE}
 dictionary <- epi_eda_dictionary_scaffold(inventory)
-dictionary$type[dictionary$source_column == "entity_kind"] <- "categorical"
+dictionary$analysis_type[dictionary$source_column == "entity_kind"] <- "categorical"
 dictionary$provenance <- "synthetic_metadata_definition"
 
 epi_eda_dictionary_validate(dictionary, catalogues = NULL)

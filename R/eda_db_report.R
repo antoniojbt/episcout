@@ -318,7 +318,7 @@ eda_db_validate_bundle_tables <- function(tables, manifest, layout) {
   required <- list(
     run_metadata = c("workflow_contract", "status", "n_rows", "n_spec_variables"),
     messages = c("stage", "severity", "subject", "reason", "recommended_action"),
-    specification = c("name", "label", "type", "role"),
+    specification = c("name", "label", "database_type", "analysis_type", "role"),
     source_metadata = c("relation_kind", "column_count", "source_contract"),
     schema = "name",
     missing = c("name", "n", "n_missing", "p_missing"),
@@ -621,7 +621,7 @@ eda_db_report_cat_companions <- function(bundle) {
       drop = FALSE
     ]
     valid_variable <- nrow(summary_variable) == 1L &&
-      variable$type[[1]] %in% c("categorical", "binary") &&
+      variable$analysis_type[[1]] %in% c("categorical", "binary") &&
       identical(as.character(inventory_row$name[[1]]), as.character(variable$name[[1]]))
     if (!valid_variable) {
       stop("A database-EDA frequency companion is inconsistent.", call. = FALSE)
@@ -629,7 +629,7 @@ eda_db_report_cat_companions <- function(bundle) {
     expected <- eda_cat_display_frequency(
       frequencies[, setdiff(names(frequencies), "name"), drop = FALSE],
       name = variable$name[[1]], label = variable$label[[1]],
-      type = variable$type[[1]], n_total = summary_variable$n[[1]],
+      type = variable$analysis_type[[1]], n_total = summary_variable$n[[1]],
       n_missing = summary_variable$n_missing[[1]]
     )
     expected <- eda_collapse_frequencies(expected, max_levels)

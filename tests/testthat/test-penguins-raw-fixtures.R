@@ -89,7 +89,7 @@ test_that("penguins_raw specification has the declared semantic contracts", {
   spec <- epi_eda_spec(spec_path)
 
   expect_identical(spec$name, expected_names)
-  expect_identical(spec$type, expected_types)
+  expect_identical(spec$analysis_type, expected_types)
   expect_identical(spec$role, expected_roles)
   expect_true(all(spec$required))
   expect_true(all(is.na(spec$missing_codes) | trimws(spec$missing_codes) == ""))
@@ -187,7 +187,7 @@ test_that("penguins_raw plot inventory proves specification-based dispatch", {
   plots <- epi_eda_profile_plots(data, spec)
   observed <- data.frame(
     name = unname(names(plots)),
-    type = spec$type,
+    type = spec$analysis_type,
     layer_geom = vapply(plots, function(plot) if (is.null(plot)) NA_character_ else class(plot$layers[[1]]$geom)[1], character(1)),
     layer_stat = vapply(plots, function(plot) if (is.null(plot)) NA_character_ else class(plot$layers[[1]]$stat)[1], character(1)),
     stringsAsFactors = FALSE

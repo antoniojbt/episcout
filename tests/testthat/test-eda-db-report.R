@@ -43,7 +43,7 @@ db_report_fixture <- function(layout = "bundle",
   variable_label <- if (categorical) "Status" else "Measurement"
   variable_type <- if (categorical) "categorical" else "numeric"
   spec <- data.frame(
-    name = variable_name, label = variable_label, type = variable_type,
+    name = variable_name, label = variable_label, database_type = "text", analysis_type = variable_type,
     role = "measure", stringsAsFactors = FALSE
   )
   source <- data.frame(
@@ -89,7 +89,7 @@ db_report_fixture <- function(layout = "bundle",
     geo = db_report_empty(c("geo_pair", "status", "reason"))
   )
   plot_inventory <- data.frame(
-    variable_index = 1L, name = variable_name, type = variable_type,
+    variable_index = 1L, name = variable_name, database_type = "text", analysis_type = variable_type,
     plot_type = if (categorical) "frequency" else "histogram",
     n_total = 42L, n_missing = 2L,
     n_plotted = 40L, n_excluded_non_finite = 0L,
@@ -240,7 +240,7 @@ test_that("delivery dependencies are checked before PostgreSQL preflight", {
     class = c("epi_eda_postgres_source", "list")
   )
   spec <- data.frame(
-    name = "measurement", label = "Measurement", type = "numeric",
+    name = "measurement", label = "Measurement", database_type = "text", analysis_type = "numeric",
     role = "measure", stringsAsFactors = FALSE
   )
   expect_error(

@@ -19,7 +19,8 @@ dictionary_source_columns <- function() {
 dictionary_curated_columns <- function() {
   c(
     "label",
-    "type",
+    "database_type",
+    "analysis_type",
     "role",
     "units",
     "min",
@@ -43,7 +44,7 @@ dictionary_removed_fields <- function() {
 
 #' Create an editable data dictionary scaffold
 #'
-#' Convert an [epi_db_inventory()] result into a deterministic semantic dictionary scaffold. Technical database types are mapped to episcout EDA types, while semantic and geographic fields remain unset.
+#' Convert an [epi_db_inventory()] result into a deterministic semantic dictionary scaffold. `database_type` records the PostgreSQL storage family and `analysis_type` records the EDA treatment; semantic and geographic fields remain unset.
 #'
 #' @param inventory An `epi_db_inventory` object.
 #'
@@ -62,7 +63,8 @@ epi_eda_dictionary_scaffold <- function(inventory) {
 
   dictionary <- columns[dictionary_source_columns()]
   dictionary$label <- dictionary$source_column
-  dictionary$type <- vapply(dictionary$source_data_type, dictionary_eda_type, character(1))
+  dictionary$database_type <- vapply(dictionary$source_data_type, dictionary_database_type, character(1))
+  dictionary$analysis_type <- vapply(dictionary$source_data_type, dictionary_analysis_type, character(1))
   dictionary$role <- ""
   dictionary$units <- ""
   dictionary$min <- ""
@@ -196,7 +198,8 @@ epi_eda_dictionary_spec <- function(dictionary, table, catalogues = NULL) {
   spec <- data.frame(
     name = selected$source_column,
     label = selected$label,
-    type = selected$type,
+    database_type = selected$database_type,
+    analysis_type = selected$analysis_type,
     role = selected$role,
     units = selected$units,
     levels = levels,
@@ -335,7 +338,8 @@ empty_dictionary <- function() {
     source_numeric_scale = numeric(),
     source_column_comment = character(),
     label = character(),
-    type = character(),
+    database_type = character(),
+    analysis_type = character(),
     role = character(),
     units = character(),
     min = character(),
@@ -355,7 +359,7 @@ empty_dictionary <- function() {
   )
 }
 
-dictionary_eda_type <- function(source_type) {
+dictionary_database_type <- function(source_type) {
   type <- tolower(as.character(source_type))
   if (type %in% c("smallint", "integer", "bigint")) {
     return("integer")
@@ -364,7 +368,7 @@ dictionary_eda_type <- function(source_type) {
     return("numeric")
   }
   if (type == "boolean") {
-    return("binary")
+    return("boolean")
   }
   if (type == "date") {
     return("date")
@@ -373,6 +377,12 @@ dictionary_eda_type <- function(source_type) {
     return("datetime")
   }
   "text"
+}
+
+dictionary_analysis_type <- function(source_type) {
+  database_type <- dictionary_database_type(source_type)
+  if (database_type == "boolean") return("binary")
+  database_type
 }
 
 validate_dictionary_shape <- function(dictionary) {
@@ -404,7 +414,8 @@ validate_dictionary_values <- function(dictionary) {
     dictionary_key_columns(),
     "source_data_type",
     "label",
-    "type",
+    "database_type",
+    "analysis_type",
     "provenance",
     "drift_status"
   )
@@ -414,8 +425,10 @@ validate_dictionary_values <- function(dictionary) {
       stop("dictionary column '", column, "' must contain non-empty values.", call. = FALSE)
     }
   }
-  allowed_types <- c("numeric", "integer", "categorical", "binary", "date", "datetime", "text")
-  validate_dictionary_choice(dictionary$type, allowed_types, "type")
+  allowed_database_types <- c("numeric", "integer", "boolean", "date", "datetime", "text")
+  allowed_analysis_types <- c("numeric", "integer", "categorical", "binary", "date", "datetime", "text")
+  validate_dictionary_choice(dictionary$database_type, allowed_database_types, "database_type")
+  validate_dictionary_choice(dictionary$analysis_type, allowed_analysis_types, "analysis_type")
   validate_dictionary_choice(
     dictionary$drift_status,
     c("current", "added", "modified", "removed"),
@@ -448,7 +461,8 @@ validate_dictionary_geo <- function(dictionary) {
     spec <- data.frame(
       name = rows$source_column,
       label = rows$label,
-      type = rows$type,
+      database_type = rows$database_type,
+      analysis_type = rows$analysis_type,
       role = rows$role,
       geo_role = rows$geo_role,
       geo_pair = rows$geo_pair,
@@ -529,7 +543,7 @@ validate_catalogues <- function(dictionary, catalogues) {
     stop("dictionary references missing catalogues: ", paste(missing_references, collapse = ", "), call. = FALSE)
   }
   invalid_catalogue_types <- dictionary$catalog_name != "" &
-    !(dictionary$type %in% c("categorical", "binary"))
+    !(dictionary$analysis_type %in% c("categorical", "binary"))
   if (any(invalid_catalogue_types)) {
     stop("dictionary catalog_name is only valid for categorical or binary fields.", call. = FALSE)
   }

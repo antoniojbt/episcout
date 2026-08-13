@@ -46,7 +46,7 @@ epi_eda_profile_plots <- function(data, spec, plot_style = NULL) {
 eda_data_frame_plot_data <- function(data, spec, max_plot_levels = 20L) {
   entries <- lapply(seq_len(nrow(spec)), function(index) {
     name <- spec$name[[index]]
-    type <- spec$type[[index]]
+    type <- spec$analysis_type[[index]]
     label <- if (!is.na(spec$label[[index]]) && nzchar(spec$label[[index]])) spec$label[[index]] else name
     values <- data[[name]]
     missing <- eda_missing_mask(values, eda_missing_codes(spec, name))
