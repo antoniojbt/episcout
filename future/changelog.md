@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-13
+
+- Completed terminal `issue-313`/`spec-043-postgresql-stratified-summaries` through PR-314, merged to canonical `master` as `commit-8421eff`. `epi_eda_profile_stratified()` now accepts reviewed PostgreSQL sources and returns the existing aggregate-only component contract for Table 1 and optional database-bundle delivery; default database bundles remain unchanged, declared/missing/unexpected and zero-count groups remain explicit, and Shapiro-Wilk is recorded as unavailable rather than collecting an analysis-value vector. Focused offline/live PostgreSQL and delivery tests, complete local and CRAN-oriented checks (with only the inherited new-submission/vignette-index NOTE), plus hosted macOS, Ubuntu, PostgreSQL integration, coverage, CodeFactor and Codecov checks passed. Issue-313 is closed with no automatic successor.
+
 ## 2026-08-12
 
 - Completed GitHub-only release preparation `issue-307`/`spec-042-github-release-0-4-0` through PR-308, merged to canonical `master` as `commit-9b4d5df`. The candidate declares version 0.4.0, promotes the verified NEWS entries, removes two Stack Overflow citations that rejected automated URL checks and retains base-R documentation. Local checks passed; the CRAN-oriented source check had no ERROR or WARNING and retained only the expected new-submission/vignette-index NOTE. A clean-library installation loaded version 0.4.0 and listed all five vignettes; hosted macOS, Ubuntu, PostgreSQL, coverage, CodeFactor and Codecov checks passed. CRAN submission remains deferred under issue-81; tag and GitHub-release publication follow this closeout.

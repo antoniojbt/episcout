@@ -2,8 +2,8 @@ id: "043"
 slug: postgresql-stratified-summaries
 workflow_version: 1
 deliverable: implementation
-status: review
-owner: Codex
+status: completed
+owner: repository-owner
 base_branch: master
 working_branch: feature/postgres-stratified-summaries
 created: 2026-08-13
@@ -13,7 +13,7 @@ tracking_issue: 313
 source_issues:
   - 313
 pull_request: 314
-merge_commit: null
+merge_commit: 8421eff21267700c8ab6f2931d59adf33ca602bb
 successor_issue: null
 terminal_reason: The single-stratifier PostgreSQL contract is complete when issue-313 acceptance passes; later multi-strata or inferential work requires a separate tracker.
 
@@ -28,6 +28,9 @@ related_files:
   - tests/testthat/test-eda-postgres-parity.R
   - README.md
   - vignettes/specification-first-eda.Rmd
+  - PROJECT_MAP.md
+  - future/TODOs.md
+  - future/changelog.md
 
 documents:
   brief: brief.md
@@ -50,3 +53,4 @@ notes:
   - PostgreSQL stratification returns aggregate-only components and never fetches analysis-value vectors.
   - Shapiro-Wilk is explicitly unavailable in the PostgreSQL stratified path because its current implementation requires collecting a value vector.
   - Local package checks passed; the CRAN check has only the repository's known new-submission and missing prebuilt-vignette-index NOTE.
+  - PR-314 merged to canonical master as commit-8421eff; issue-313 closed automatically with no successor.
