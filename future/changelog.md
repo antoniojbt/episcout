@@ -2,6 +2,7 @@
 
 ## 2026-08-13
 
+- Completed design `issue-310`/`spec-044-mark-aware-external-palette-contract` through PR-317, merged to canonical `master` as `commit-425a198`. The accepted contract scopes first implementation to explicit exact `fill_values` mappings for categorical bars and grouped box plots, retains documented legacy `custom_palette` recycling for compatibility, does not yet invent a generic colour contract, and retains historical IMSS exports pending downstream evidence. Hosted macOS, Ubuntu, PostgreSQL, coverage, CodeFactor and Codecov checks passed. Issue-316 is the sole implementation successor; issue-311 remains blocked until it closes out.
 - Completed terminal `issue-313`/`spec-043-postgresql-stratified-summaries` through PR-314, merged to canonical `master` as `commit-8421eff`. `epi_eda_profile_stratified()` now accepts reviewed PostgreSQL sources and returns the existing aggregate-only component contract for Table 1 and optional database-bundle delivery; default database bundles remain unchanged, declared/missing/unexpected and zero-count groups remain explicit, and Shapiro-Wilk is recorded as unavailable rather than collecting an analysis-value vector. Focused offline/live PostgreSQL and delivery tests, complete local and CRAN-oriented checks (with only the inherited new-submission/vignette-index NOTE), plus hosted macOS, Ubuntu, PostgreSQL integration, coverage, CodeFactor and Codecov checks passed. Issue-313 is closed with no automatic successor.
 
 ## 2026-08-12
