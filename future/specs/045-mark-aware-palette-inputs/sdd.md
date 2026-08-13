@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `045-mark-aware-palette-inputs`
-Status: Active
+Status: Review
 
 `fill_values` accepts `NULL`, a complete unnamed character vector in displayed level order, or an exact named character mapping. Every colour is validated by `grDevices::col2rgb()`. Named mappings require non-empty unique names and exactly the displayed categories; explicit vectors are never recycled. Factor levels, including declared unused levels, establish display order; character input uses observed order. Missing values remain unassigned.
 

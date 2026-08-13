@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `045-mark-aware-palette-inputs`
-Status: Active
+Status: Review
 Owner: Codex
 Tracking issue: issue-316
 
