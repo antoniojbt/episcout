@@ -17,6 +17,8 @@ This is the repository's synchronised task index. GitHub issues are authoritativ
 
 ## Current sequence
 
+- [ ] Complete issue-313/spec-043: extend the released stratified summary and Table 1 aggregate contract to reviewed PostgreSQL sources without collecting analysis rows. The implementation is in review on `feature/postgres-stratified-summaries`; merge and post-merge closeout remain pending, and no roadmap is required for this independently authorised integration gap.
+
 The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. GitHub release preparation `issue-307`/`spec-042` merged through PR-308 as `commit-9b4d5df`, and release `0.4.0` is published from canonical `commit-ea2a3f1`. No automatic implementation successor is authorised.
 
 ## Deferred owner action

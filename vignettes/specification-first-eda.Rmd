@@ -283,7 +283,7 @@ table1 <- epi_eda_table1(stratified)
 table1
 ```
 
-`epi_eda_profile_stratified()` is a data-frame interface for exactly one declared categorical or binary stratifier. PostgreSQL-backed EDA does not provide a stratified or Table 1 database entry point; collect only an authorised data frame or use reviewed database aggregates outside this workflow when that output is required.
+`epi_eda_profile_stratified()` accepts either a data frame or an `epi_eda_postgres_source` for exactly one declared categorical or binary stratifier. PostgreSQL stratification runs in one read-only repeatable-read transaction and returns only grouped or scalar aggregates. It does not collect the analysis-value vector required by Shapiro-Wilk, so PostgreSQL stratified numeric `shapiro_p` values are unavailable and this limitation is recorded in result metadata. The returned object works unchanged with `epi_eda_table1()` and `epi_eda_categorical_display()`.
 
 `epi_eda_categorical_display()` is the shared aggregate calculation behind categorical presentation. Every row retains an integer `numerator`, integer `denominator`, numeric `proportion`, percentage-basis fields and explicit missingness treatment. Standard missing values and declared missing codes are combined into one missing-level row. A zero denominator remains integer zero and its proportion is `NA_real_`; it is never presented as zero percent.
 
@@ -340,12 +340,14 @@ db_results <- epi_eda_db_run(
   output_dir = "YYYYMMDD_eda_cycle",
   plots = TRUE,
   maps = FALSE,
+  strata = "study_group",
+  table1_basis = "column",
   layout = "delivery"
 )
 DBI::dbDisconnect(con)
 ```
 
-The four direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`, `epi_eda_profile_summaries()` and `epi_eda_profile_plots()` also accept a PostgreSQL source; each direct call owns its own read-only repeatable-read transaction. `epi_eda_db_run()` performs catalogue revalidation, schema and missingness checks, canonical summaries, identifier QA, compact plot preparation and map-readiness QA in one read-only repeatable-read snapshot. Rendering and atomic filesystem publication occur after the snapshot ends.
+The five direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`, `epi_eda_profile_summaries()`, `epi_eda_profile_plots()` and `epi_eda_profile_stratified()` also accept a PostgreSQL source; each direct call owns its own read-only repeatable-read transaction. `epi_eda_db_run()` performs catalogue revalidation, schema and missingness checks, canonical summaries, identifier QA, compact plot preparation, optional stratification and map-readiness QA in one read-only repeatable-read snapshot. Rendering and atomic filesystem publication occur after the snapshot ends. Supplying `strata` adds manifest-owned stratified components and Table 1 while leaving the default bundle unchanged. Stratified database bundles reject source-row maps and disable Shapiro-Wilk in both Overall and grouped numeric summaries to preserve the no-analysis-vector boundary.
 
 Without maps, the database bundle contains aggregates, the caller-authored specification and aggregate plot inputs only. When maps are requested, coordinates and selected thematic observations are collected only for map-ready pairs within the inclusive row limit. The query projects only the required coordinates and themes, applies a defensive `max_map_points + 1` limit, and fails rather than truncating or silently dropping rows. The bundle never contains a source-row table, arbitrary SQL, query parameters, credentials or connection attributes; database and driver logs remain the caller's infrastructure responsibility.
 

@@ -216,7 +216,8 @@ test_that("database report public formals and default bundle paths are compatibl
     c(
       "source", "spec", "output_dir", "overwrite", "plots",
       "max_plot_levels", "maps", "map_vars", "max_map_points", "layout",
-      "quiet"
+      "quiet", "strata", "include_overall", "include_missing_stratum",
+      "table1_basis"
     )
   )
   registry <- getFromNamespace("eda_db_artifact_registry", "episcout")

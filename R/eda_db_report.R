@@ -211,7 +211,21 @@ eda_db_read_bundle <- function(bundle) {
     stop("Database-EDA bundle checksums do not match the manifest.", call. = FALSE)
   }
 
-  registry <- eda_db_artifact_registry(layout)
+  base_registry <- eda_db_artifact_registry(layout)
+  full_registry <- eda_db_artifact_registry(layout, stratified = TRUE)
+  stratified_artifacts <- setdiff(
+    full_registry$artifact,
+    base_registry$artifact
+  )
+  stratified_present <- stratified_artifacts %in% manifest$artifact
+  if (any(stratified_present) && !all(stratified_present)) {
+    stop(
+      "The database-EDA bundle has an incomplete stratified aggregate contract.",
+      call. = FALSE
+    )
+  }
+  has_stratified <- all(stratified_present)
+  registry <- if (has_stratified) full_registry else base_registry
   index <- match(registry$artifact, manifest$artifact)
   registry_valid <- !anyNA(index) &&
     identical(as.character(manifest$type[index]), as.character(registry$type)) &&
@@ -400,6 +414,38 @@ eda_db_validate_bundle_tables <- function(tables, manifest, layout) {
         as.character(delivery$root_contract[[1]]),
         "canonical-output-root-1"
       )
+  }
+  if (!is.null(tables$stratified_metadata)) {
+    stratified <- structure(
+      list(
+        groups = tables$stratified_groups,
+        variables = tables$stratified_variables,
+        numeric = tables$stratified_numeric,
+        categorical = tables$stratified_categorical,
+        text = tables$stratified_text,
+        temporal = tables$stratified_temporal,
+        skipped = tables$stratified_skipped,
+        metadata = tables$stratified_metadata
+      ),
+      class = c("epi_eda_stratified", "list")
+    )
+    table1_required <- c(
+      "variable_order", "row_order", "name", "label", "type", "level",
+      "level_label", "statistic", "group_id", "group_label", "group_n",
+      "denominator", "display", "note"
+    )
+    stratified_valid <- tryCatch(
+      {
+        stratified_validate_table(stratified)
+        eda_pg_reconcile_stratified(stratified)
+        TRUE
+      },
+      error = function(error) FALSE
+    )
+    valid <- valid && stratified_valid &&
+      is.data.frame(tables$table1) &&
+      all(table1_required %in% names(tables$table1)) &&
+      all(tables$table1$group_id %in% stratified$groups$group_id)
   }
   if (!valid) {
     stop("The database-EDA aggregate schemas are incomplete or inconsistent.", call. = FALSE)

@@ -7,7 +7,8 @@ test_that("PostgreSQL EDA public formals and fixed contracts are stable", {
     c(
       "source", "spec", "output_dir", "overwrite", "plots",
       "max_plot_levels", "maps", "map_vars", "max_map_points", "layout",
-      "quiet"
+      "quiet", "strata", "include_overall", "include_missing_stratum",
+      "table1_basis"
     )
   )
   expect_identical(names(formals(epi_eda_check_schema)), c("data", "spec"))

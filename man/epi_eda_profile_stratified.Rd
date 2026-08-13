@@ -13,7 +13,8 @@ epi_eda_profile_stratified(
 )
 }
 \arguments{
-\item{data}{A data frame containing observed or prepared data.}
+\item{data}{A data frame containing observed or prepared data, or an
+\code{\link[=epi_eda_postgres_source]{epi_eda_postgres_source()}}.}
 
 \item{spec}{An EDA specification accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
@@ -35,4 +36,11 @@ Text output contains aggregate diagnostics only. No files are written.
 Calculate canonical descriptive summaries overall and across exactly one
 categorical or binary specification variable. Results are long-form,
 machine-readable, and retain declared empty, unexpected, and missing strata.
+}
+\details{
+PostgreSQL sources are profiled inside one read-only repeatable-read
+transaction. Queries return grouped or scalar aggregates only. Shapiro-Wilk
+p-values are \code{NA} for PostgreSQL stratified numeric summaries because that
+calculation would require collecting an analysis-value vector; all other
+supported canonical numeric fields remain aggregate queries.
 }

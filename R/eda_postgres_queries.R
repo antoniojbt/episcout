@@ -178,10 +178,22 @@ eda_checked_count <- function(value, field = "PostgreSQL count") {
 }
 
 eda_postgres_table_sql <- function(source) {
-  as.character(DBI::dbQuoteIdentifier(
+  relation <- as.character(DBI::dbQuoteIdentifier(
     source$con,
     DBI::Id(schema = source$schema, table = source$relation)
   ))
+  filter <- attr(source, "eda_row_filter_sql", exact = TRUE)
+  if (is.null(filter)) {
+    return(relation)
+  }
+  if (!inherits(filter, "SQL") || length(filter) != 1L || is.na(filter)) {
+    stop("Internal PostgreSQL row filter is invalid.", call. = FALSE)
+  }
+  alias <- as.character(DBI::dbQuoteIdentifier(
+    source$con,
+    "__episcout_filtered_relation"
+  ))
+  paste0("(SELECT * FROM ", relation, " WHERE ", as.character(filter), ") AS ", alias)
 }
 
 eda_postgres_column_sql <- function(source, name) {
@@ -738,7 +750,12 @@ eda_postgres_basic_counts <- function(source, column, contract, expression, inde
   )
 }
 
-eda_postgres_numeric_summary <- function(source, column, contract, index, timing_env) {
+eda_postgres_numeric_summary <- function(source,
+                                         column,
+                                         contract,
+                                         index,
+                                         timing_env,
+                                         allow_value_vector = TRUE) {
   expression <- eda_postgres_value_expression(source, column, "numeric")
   finite <- "value NOT IN ('Infinity'::double precision, '-Infinity'::double precision)"
   observed <- eda_db_fetch(
@@ -832,7 +849,7 @@ eda_postgres_numeric_summary <- function(source, column, contract, index, timing
     kurtosis <- ((moment[["m4"]] / n_finite) / population_sd^4) * correction^2 - 3
   }
   shapiro <- NA_real_
-  if (n_finite > 3L && n_finite < 5000L && has_variation) {
+  if (allow_value_vector && n_finite > 3L && n_finite < 5000L && has_variation) {
     vector <- eda_db_fetch(
       source$con,
       paste0(
@@ -1043,7 +1060,11 @@ eda_postgres_integer_exact <- function(source, column, contract, index, timing_e
   suppressWarnings(as.numeric(observed$maximum[[1]])) <= 9007199254740991
 }
 
-eda_postgres_summaries_inside <- function(source, spec, timing_env = NULL, n_total = NULL) {
+eda_postgres_summaries_inside <- function(source,
+                                          spec,
+                                          timing_env = NULL,
+                                          n_total = NULL,
+                                          allow_value_vectors = TRUE) {
   if (is.null(n_total)) n_total <- eda_postgres_row_count(source, timing_env)
   outputs <- list(
     variables = list(), numeric = list(), categorical = list(), text = list(),
@@ -1089,7 +1110,14 @@ eda_postgres_summaries_inside <- function(source, spec, timing_env = NULL, n_tot
       next
     }
     result <- if (type %in% c("numeric", "integer")) {
-      eda_postgres_numeric_summary(source, column, contract, index, timing_env)
+      eda_postgres_numeric_summary(
+        source,
+        column,
+        contract,
+        index,
+        timing_env,
+        allow_value_vector = allow_value_vectors
+      )
     } else if (type %in% c("categorical", "binary")) {
       eda_pg_categorical_summary(
         source, column, contract, row, index, n_total, timing_env

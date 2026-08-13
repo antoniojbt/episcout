@@ -1,0 +1,52 @@
+id: "043"
+slug: postgresql-stratified-summaries
+workflow_version: 1
+deliverable: implementation
+status: review
+owner: Codex
+base_branch: master
+working_branch: feature/postgres-stratified-summaries
+created: 2026-08-13
+updated: 2026-08-13
+
+tracking_issue: 313
+source_issues:
+  - 313
+pull_request: 314
+merge_commit: null
+successor_issue: null
+terminal_reason: The single-stratifier PostgreSQL contract is complete when issue-313 acceptance passes; later multi-strata or inferential work requires a separate tracker.
+
+related_files:
+  - R/eda_stratified.R
+  - R/eda_postgres_queries.R
+  - R/eda_db_run.R
+  - R/eda_db_report.R
+  - R/eda_stratified_postgres.R
+  - inst/report-template/eda-db.qmd
+  - tests/testthat/test-eda-stratified-postgres.R
+  - tests/testthat/test-eda-postgres-parity.R
+  - README.md
+  - vignettes/specification-first-eda.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-(stratified-postgres|table1|categorical-display|postgres-parity)', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-stratified-postgres', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
+
+notes:
+  - Existing data-frame behaviour and database bundle defaults remain compatible.
+  - PostgreSQL stratification returns aggregate-only components and never fetches analysis-value vectors.
+  - Shapiro-Wilk is explicitly unavailable in the PostgreSQL stratified path because its current implementation requires collecting a value vector.
+  - Local package checks passed; the CRAN check has only the repository's known new-submission and missing prebuilt-vignette-index NOTE.
