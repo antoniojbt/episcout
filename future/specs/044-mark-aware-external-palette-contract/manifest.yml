@@ -1,0 +1,42 @@
+id: "044"
+slug: mark-aware-external-palette-contract
+workflow_version: 1
+deliverable: design
+status: active
+owner: Codex
+base_branch: master
+working_branch: feature/mark-aware-palette-contract
+created: 2026-08-13
+updated: 2026-08-13
+
+tracking_issue: 310
+source_issues:
+  - 310
+pull_request: null
+merge_commit: null
+successor_issue: 316
+terminal_reason: null
+
+related_files:
+  - R/epi_plot_bar.R
+  - R/epi_plot_box.R
+  - R/epi_plot_colour_palettes.R
+  - tests/testthat/test-plotting.R
+  - tests/testthat/test-additional_coverage.R
+  - tests/testthat/test-epi_plot_box_layers.R
+  - future/TODOs.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'plotting|additional_coverage|epi_plot_box_layers', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
