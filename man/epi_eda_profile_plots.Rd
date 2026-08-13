@@ -4,13 +4,16 @@
 \alias{epi_eda_profile_plots}
 \title{Profile plots using an EDA specification}
 \usage{
-epi_eda_profile_plots(data, spec)
+epi_eda_profile_plots(data, spec, plot_style = NULL)
 }
 \arguments{
 \item{data}{A data frame or an \code{\link[=epi_eda_postgres_source]{epi_eda_postgres_source()}} containing
 observed data.}
 
 \item{spec}{An EDA specification data frame or CSV path.}
+
+\item{plot_style}{Optional function receiving a completed ggplot object and
+compact non-row-level context. It must return one ggplot object.}
 }
 \value{
 A named list containing one ggplot object per specification row, in

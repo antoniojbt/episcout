@@ -8,15 +8,18 @@
 #' @param data A data frame or an [epi_eda_postgres_source()] containing
 #'   observed data.
 #' @param spec An EDA specification data frame or CSV path.
+#' @param plot_style Optional function receiving a completed ggplot object and
+#'   compact non-row-level context. It must return one ggplot object.
 #'
 #' @return A named list containing one ggplot object per specification row, in
 #'   specification order.
 #'
 #' @export
-epi_eda_profile_plots <- function(data, spec) {
+epi_eda_profile_plots <- function(data, spec, plot_style = NULL) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("The ggplot2 package is required for epi_eda_profile_plots().", call. = FALSE)
   }
+  style_options <- eda_plot_style_options(plot_style)
   spec <- epi_eda_spec(spec)
   if (inherits(data, "epi_eda_postgres_source")) {
     prepared <- eda_postgres_transaction(data, {
@@ -27,7 +30,7 @@ epi_eda_profile_plots <- function(data, spec) {
       summaries <- eda_postgres_summaries_inside(data, spec)
       eda_postgres_plot_data_inside(data, spec, summaries, 20L)
     })
-    return(eda_render_plot_entries(prepared$entries))
+    return(eda_render_plot_entries(prepared$entries, style_options$plot_style))
   }
   if (!is.data.frame(data)) {
     stop("EDA data must be a data frame or an epi_eda_postgres_source.", call. = FALSE)
@@ -37,7 +40,7 @@ epi_eda_profile_plots <- function(data, spec) {
     stop("EDA data is missing specified variables: ", paste(missing_vars, collapse = ", "), call. = FALSE)
   }
   prepared <- eda_data_frame_plot_data(data, spec, max_plot_levels = 20L)
-  eda_render_plot_entries(prepared$entries)
+  eda_render_plot_entries(prepared$entries, style_options$plot_style)
 }
 
 eda_data_frame_plot_data <- function(data, spec, max_plot_levels = 20L) {
@@ -210,12 +213,12 @@ eda_frequency_companion_names <- function() {
   )
 }
 
-eda_render_plot_entries <- function(entries) {
+eda_render_plot_entries <- function(entries, plot_style = NULL) {
   plots <- lapply(entries, function(entry) {
     if (is.null(entry$data)) {
       return(NULL)
     }
-    eda_render_compact_plot(entry)
+    eda_apply_plot_style(eda_render_compact_plot(entry), entry, plot_style)
   })
   names(plots) <- names(entries)
   plots

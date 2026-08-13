@@ -30,6 +30,10 @@
 #'   `strata` is supplied; otherwise record omitted rows in stratified metadata.
 #' @param table1_basis Categorical percentage basis passed to
 #'   [epi_eda_table1()] when `strata` is supplied.
+#' @param plot_style Optional function receiving each completed ggplot object
+#'   and compact non-row-level context. It must return one ggplot object.
+#' @param plot_style_id Required non-secret identifier when `plot_style` is
+#'   used with `plots = TRUE`; it records persistent bundle provenance.
 #'
 #' @return An `epi_eda_db_run` list with fixed components `status`,
 #'   `output_dir`, `manifest`, `source`, `spec`, `schema`, `missing`,
@@ -66,13 +70,19 @@ epi_eda_db_run <- function(source,
                            include_missing_stratum = TRUE,
                            table1_basis = c(
                              "compatibility", "column", "row", "overall"
-                           )) {
+                           ),
+                           plot_style = NULL,
+                           plot_style_id = NULL) {
   if (!inherits(source, "epi_eda_postgres_source")) {
     stop("source must be an epi_eda_postgres_source.", call. = FALSE)
   }
   layout <- match.arg(layout)
   intake_validate_flag(overwrite, "overwrite")
   intake_validate_flag(plots, "plots")
+  style_options <- eda_plot_style_options(plot_style, plot_style_id)
+  if (plots && !is.null(style_options$plot_style) && is.null(style_options$plot_style_id)) {
+    stop("plot_style_id is required when database EDA plots use plot_style.", call. = FALSE)
+  }
   if (layout == "delivery") {
     intake_validate_flag(quiet, "quiet")
     eda_db_report_dependencies()
@@ -100,7 +110,8 @@ epi_eda_db_run <- function(source,
   spec_fingerprint <- eda_postgres_fingerprint(spec)
   paths <- eda_db_prepare_output_dir(
     output_dir, overwrite, source_fingerprint, spec_fingerprint, plots,
-    max_plot_levels, map_options, layout, stratified_options
+    max_plot_levels, map_options, layout, stratified_options,
+    style_options$plot_style_id
   )
   published <- FALSE
   on.exit(
@@ -163,12 +174,12 @@ epi_eda_db_run <- function(source,
     timing_env = timing_env
   )
 
-  rendered <- if (plots) eda_render_plot_entries(snapshot$plot_data$entries) else stats::setNames(vector("list", 0L), character())
+  rendered <- if (plots) eda_render_plot_entries(snapshot$plot_data$entries, style_options$plot_style) else stats::setNames(vector("list", 0L), character())
   plot_inventory <- eda_db_bundle_plot_inventory(
     snapshot$plot_data$entries, plots
   )
   if (plots) {
-    eda_db_write_plots(paths$staging_dir, snapshot$plot_data$entries, rendered, plot_inventory)
+    eda_db_write_plots(paths$staging_dir, snapshot$plot_data$entries, rendered, plot_inventory, style_options$plot_style)
   }
   map_result <- eda_data_frame_maps(
     snapshot$map_data, spec, snapshot$geo, map_options
@@ -219,6 +230,9 @@ epi_eda_db_run <- function(source,
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
+  if (!is.null(style_options$plot_style_id)) {
+    metadata$plot_style_id <- style_options$plot_style_id
+  }
   if (!is.null(stratified_options)) {
     metadata$strata <- stratified_options$strata
     metadata$include_overall <- stratified_options$include_overall
@@ -358,7 +372,8 @@ eda_db_prepare_output_dir <- function(output_dir,
                                       max_plot_levels,
                                       map_options,
                                       layout,
-                                      stratified_options = NULL) {
+                                      stratified_options = NULL,
+                                      plot_style_id = NULL) {
   if (!is.character(output_dir) || length(output_dir) != 1L || is.na(output_dir) || !nzchar(trimws(output_dir))) {
     stop("output_dir must be one non-empty local directory path.", call. = FALSE)
   }
@@ -378,7 +393,8 @@ eda_db_prepare_output_dir <- function(output_dir,
     if (length(entries) > 0L) {
       eda_db_validate_prior_bundle(
         output_dir, source_fingerprint, spec_fingerprint, plots,
-        max_plot_levels, map_options, layout, stratified_options
+        max_plot_levels, map_options, layout, stratified_options,
+        plot_style_id
       )
     }
   }
@@ -394,7 +410,8 @@ eda_db_validate_prior_bundle <- function(output_dir,
                                          max_plot_levels,
                                          map_options,
                                          layout,
-                                         stratified_options = NULL) {
+                                         stratified_options = NULL,
+                                         plot_style_id = NULL) {
   bundle <- tryCatch(
     eda_db_read_bundle(output_dir),
     error = function(error) {
@@ -423,6 +440,13 @@ eda_db_validate_prior_bundle <- function(output_dir,
       as.character(eda_postgres_fingerprint(map_options$map_vars))
     ) &&
     identical(as.integer(metadata$max_map_points[[1]]), map_options$max_map_points)
+  recorded_style_id <- if ("plot_style_id" %in% names(metadata)) {
+    as.character(metadata$plot_style_id[[1]])
+  } else {
+    NA_character_
+  }
+  requested_style_id <- if (is.null(plot_style_id)) NA_character_ else plot_style_id
+  valid_identity <- valid_identity && identical(recorded_style_id, requested_style_id)
   if (!is.null(stratified_options)) {
     stratified_fields <- c(
       "strata", "include_overall", "include_missing_stratum", "table1_basis",
@@ -528,13 +552,19 @@ eda_render_quantile_box <- function(entry) {
     ggplot2::theme_minimal()
 }
 
-eda_db_write_plots <- function(staging_dir, entries, rendered, inventory) {
+eda_db_write_plots <- function(staging_dir, entries, rendered, inventory, plot_style = NULL) {
   plots_dir <- file.path(staging_dir, "plots")
   if (!dir.create(plots_dir, showWarnings = FALSE)) stop("The database-EDA plot directory could not be created.", call. = FALSE)
   for (row_index in which(inventory$status == "created")) {
     row <- inventory[row_index, , drop = FALSE]
     entry <- entries[[row$variable_index[[1]]]]
-    plot <- if (row$plot_type[[1]] == "quantile_box") eda_render_quantile_box(entry) else rendered[[entry$name]]
+    plot <- if (row$plot_type[[1]] == "quantile_box") {
+      box_entry <- entry
+      box_entry$plot_type <- "quantile_box"
+      eda_apply_plot_style(eda_render_quantile_box(entry), box_entry, plot_style)
+    } else {
+      rendered[[entry$name]]
+    }
     path <- file.path(staging_dir, row$path[[1]])
     tryCatch(
       ggplot2::ggsave(path, plot = plot, device = grDevices::svg, width = 8, height = 5, units = "in"),
