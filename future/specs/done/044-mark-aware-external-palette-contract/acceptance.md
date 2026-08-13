@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `044-mark-aware-external-palette-contract`
-Status: Review
+Status: Completed
 
 - [x] The maintained helper and palette-export inventory is recorded.
 - [x] The first helper set, mark aesthetics, mapping semantics, compatibility path and non-goals are explicit.
@@ -10,4 +10,5 @@ Status: Review
 - [x] The test and visual-review approach is recorded with independently derived mapping expectations.
 - [x] Issue-316 is created as the single implementation successor and is dispatcher-blocked pending this planning issue's closeout.
 - [x] Draft PR-317 records the planning contract for review.
-- [ ] PR-317 passes review, required workflow checks and post-merge closeout.
+- [x] PR-317 merged to canonical `master` as `commit-425a198f1a7101cc47cec07691e1f6371118036e` with all required hosted checks passing.
+- [x] The completed specification is archived under `future/specs/done/` after this closeout.

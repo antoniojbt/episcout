@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub issues are authoritativ
 
 ## Current sequence
 
-Design issue-310/spec-044 is in review through PR-317. It defines the public mark-aware external palette contract before implementation. Issue-316 is its single dispatcher-blocked implementation successor. Issue-311 remains separately dispatcher-blocked because its creation-time EDA styling hook depends on the accepted palette semantics. Terminal issue-313/spec-043 completed through PR-314, merged to canonical `master` as `commit-8421eff`; broader PostgreSQL stratification features require a separate tracker.
+Issue-316 is the active implementation successor to completed design issue-310/spec-044/PR-317, merged to canonical `master` as `commit-425a198`. It implements explicit fill mappings for categorical bars and grouped box plots. Issue-311 remains dispatcher-blocked until issue-316 is merged and closed out. Terminal issue-313/spec-043 completed through PR-314, merged to canonical `master` as `commit-8421eff`; broader PostgreSQL stratification features require a separate tracker.
 
 The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. GitHub release preparation `issue-307`/`spec-042` merged through PR-308 as `commit-9b4d5df`, and release `0.4.0` is published from canonical `commit-ea2a3f1`. No automatic implementation successor is authorised.
 
