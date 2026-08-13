@@ -16,7 +16,7 @@ make_stratified_fixture <- function() {
   spec <- data.frame(
     name = c("arm", "value", "status", "note", "visit", "participant_id", "absent"),
     label = c("Study arm", "Value", "Status", "Note", "Visit", "Participant", "Absent"),
-    type = c("categorical", "numeric", "categorical", "text", "date", "integer", "text"),
+    database_type = "text", analysis_type = c("categorical", "numeric", "categorical", "text", "date", "integer", "text"),
     role = c("exposure", "measure", "measure", "measure", "measure", "identifier", "measure"),
     levels = c("B;A;D", "", "no;yes;unused", "", "", "", ""),
     missing_codes = c("MISS", "999", "", "", "", "", ""),
@@ -181,7 +181,7 @@ test_that("all-missing strata and local character datetimes remain explicit", {
   data <- data.frame(arm = NA_character_, when = "2024-01-01T12:00:00")
   spec <- data.frame(
     name = c("arm", "when"), label = c("Arm", ""),
-    type = c("categorical", "datetime"), role = "measure",
+    database_type = "text", analysis_type = c("categorical", "datetime"), role = "measure",
     levels = c("A", ""), missing_codes = "", stringsAsFactors = FALSE
   )
   observed <- epi_eda_profile_stratified(
@@ -210,7 +210,7 @@ test_that("integer, binary, datetime and numeric edge semantics remain canonical
   )
   spec <- data.frame(
     name = names(data), label = names(data),
-    type = c("categorical", "integer", "binary", "numeric", "numeric", "numeric", "datetime"),
+    database_type = "text", analysis_type = c("categorical", "integer", "binary", "numeric", "numeric", "numeric", "datetime"),
     role = "measure", levels = c("A;B", "", "no;yes", "", "", "", ""),
     missing_codes = "", stringsAsFactors = FALSE
   )

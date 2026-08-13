@@ -1,6 +1,6 @@
 #' Scaffold an EDA specification from existing data
 #'
-#' Create an editable semantic EDA specification from the storage classes of an existing data frame. The result does not infer scientific roles, sentinel missing values, units, validation ranges or geographic meaning, and it never includes observed values or aggregate evidence.
+#' Create an editable semantic EDA specification from the storage classes of an existing data frame. The result declares both `database_type` and `analysis_type`; it does not infer scientific roles, sentinel missing values, units, validation ranges or geographic meaning, and it never includes observed values or aggregate evidence.
 #'
 #' @param data A data frame or data-frame subclass. File reading is deliberately outside this function.
 #'
@@ -122,7 +122,8 @@ scaffold_eda_column <- function(name, values) {
   data.frame(
     name = name,
     label = name,
-    type = type,
+    database_type = scaffold_database_type(type),
+    analysis_type = type,
     role = "",
     units = "",
     levels = scaffold_declared_levels(values, type),
@@ -138,6 +139,12 @@ scaffold_eda_column <- function(name, values) {
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
+}
+
+scaffold_database_type <- function(analysis_type) {
+  if (analysis_type == "binary") return("boolean")
+  if (analysis_type == "categorical") return("text")
+  analysis_type
 }
 
 scaffold_declared_levels <- function(values, type) {
@@ -161,7 +168,8 @@ empty_eda_spec_scaffold <- function() {
   data.frame(
     name = character(),
     label = character(),
-    type = character(),
+    database_type = character(),
+    analysis_type = character(),
     role = character(),
     units = character(),
     levels = character(),

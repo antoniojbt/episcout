@@ -26,7 +26,7 @@ epi_eda_check_schema <- function(data, spec) {
 
   expected <- data.frame(
     name = expected_names,
-    expected_type = spec$type,
+    expected_type = spec$analysis_type,
     observed_type = unname(vapply(
       expected_names,
       function(name) {
@@ -53,7 +53,7 @@ epi_eda_check_schema <- function(data, spec) {
     }
     eda_type_compatibility(
       data[[name]],
-      spec$type[[i]],
+      spec$analysis_type[[i]],
       if ("levels" %in% names(spec)) eda_spec_levels(spec$levels[[i]]) else character(),
       eda_missing_codes(spec, name)
     )

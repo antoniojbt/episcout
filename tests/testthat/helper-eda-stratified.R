@@ -11,7 +11,8 @@ make_stratified_fixture <- function() {
   spec <- data.frame(
     name = c("arm", "value", "status", "note", "visit", "participant_id", "absent"),
     label = c("Study arm", "Value", "Status", "Note", "Visit", "Participant", "Absent"),
-    type = c("categorical", "numeric", "categorical", "text", "date", "integer", "text"),
+    database_type = "text",
+    analysis_type = c("categorical", "numeric", "categorical", "text", "date", "integer", "text"),
     role = c("exposure", "measure", "measure", "measure", "measure", "identifier", "measure"),
     levels = c("B;A;D", "", "no;yes;unused", "", "", "", ""),
     missing_codes = c("MISS", "999", "", "", "", "", ""),

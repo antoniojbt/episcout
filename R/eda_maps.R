@@ -11,7 +11,7 @@ eda_map_options <- function(spec,
     stop("map_vars contains variables not declared in the EDA specification: ", paste(missing, collapse = ", "), ".", call. = FALSE)
   }
   supported <- c("numeric", "integer", "categorical", "binary", "text")
-  unsupported <- map_vars[!spec$type[match(map_vars, spec$name)] %in% supported]
+  unsupported <- map_vars[!spec$analysis_type[match(map_vars, spec$name)] %in% supported]
   if (length(unsupported) > 0L) {
     stop("map_vars supports only numeric, integer, categorical, binary, or text variables: ", paste(unsupported, collapse = ", "), ".", call. = FALSE)
   }
@@ -225,7 +225,7 @@ eda_postgres_map_data_inside <- function(source,
       stop("A requested map column is unavailable from the PostgreSQL source.", call. = FALSE)
     }
     compatibility <- eda_pg_type_compatibility(
-      column, spec$type[[spec_index]], eda_spec_levels(spec$levels[[spec_index]])
+      column, spec$analysis_type[[spec_index]], eda_spec_levels(spec$levels[[spec_index]])
     )
     if (compatibility$status == "incompatible") {
       stop("A requested map column has incompatible PostgreSQL storage.", call. = FALSE)
@@ -233,7 +233,7 @@ eda_postgres_map_data_inside <- function(source,
     contract <- eda_postgres_missing_contract(
       source,
       column,
-      spec$type[[spec_index]],
+      spec$analysis_type[[spec_index]],
       eda_missing_codes(spec, name),
       offset = length(params)
     )
@@ -241,7 +241,7 @@ eda_postgres_map_data_inside <- function(source,
       stop("A requested map missing-value declaration cannot be represented safely in PostgreSQL.", call. = FALSE)
     }
     value <- eda_postgres_value_expression(
-      source, column, spec$type[[spec_index]]
+      source, column, spec$analysis_type[[spec_index]]
     )
     alias <- eda_postgres_column_sql(source, name)
     expressions[[index]] <- paste0(

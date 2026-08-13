@@ -13,7 +13,7 @@ epi_eda_dictionary_scaffold(inventory)
 A data frame with one row per source column.
 }
 \description{
-Convert an \code{\link[=epi_db_inventory]{epi_db_inventory()}} result into a deterministic semantic dictionary scaffold. Technical database types are mapped to episcout EDA types, while semantic and geographic fields remain unset.
+Convert an \code{\link[=epi_db_inventory]{epi_db_inventory()}} result into a deterministic semantic dictionary scaffold. \code{database_type} records the PostgreSQL storage family and \code{analysis_type} records the EDA treatment; semantic and geographic fields remain unset.
 }
 \details{
 The scaffold contains technical and semantic metadata only. Privacy and pseudonymisation policy belongs to \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.

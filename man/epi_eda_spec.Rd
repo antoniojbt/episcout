@@ -13,5 +13,5 @@ epi_eda_spec(path_or_data)
 A validated data frame specification.
 }
 \description{
-Read and validate a specification-first EDA data dictionary.
+Read and validate a specification-first EDA data dictionary. Specifications declare \code{database_type} for the storage family and \code{analysis_type} for R/EDA handling; the former \code{type} field is not accepted.
 }

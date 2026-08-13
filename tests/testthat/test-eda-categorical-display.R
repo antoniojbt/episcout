@@ -11,7 +11,7 @@ make_cat_display_fixture <- function() {
   )
   spec <- data.frame(
     name = c("arm", "status"), label = c("Arm", "Status"),
-    type = c("categorical", "categorical"), role = c("exposure", "measure"),
+    database_type = "text", analysis_type = c("categorical", "categorical"), role = c("exposure", "measure"),
     levels = c("A;B;C", "no;yes;unused;never"),
     missing_codes = c("", "MISS"), required = TRUE,
     stringsAsFactors = FALSE
@@ -56,7 +56,7 @@ test_that("canonical display has a fixed typed aggregate contract", {
   ))
   expect_identical(vapply(observed, typeof, character(1)), c(
     variable_order = "integer", level_order = "integer", name = "character",
-    label = "character", type = "character", level = "character",
+    label = "character", database_type = "text", analysis_type = "character", level = "character",
     group_id = "character", group_order = "integer", group_label = "character",
     is_overall = "logical", group_n = "integer", population_n = "integer",
     numerator = "integer", denominator = "integer", proportion = "double",
@@ -109,7 +109,7 @@ test_that("empty and corrupt aggregate inputs fail or remain explicit", {
   numeric <- epi_eda_profile_summaries(
     data.frame(value = numeric()),
     data.frame(
-      name = "value", label = "Value", type = "numeric", role = "measure",
+      name = "value", label = "Value", database_type = "text", analysis_type = "numeric", role = "measure",
       stringsAsFactors = FALSE
     )
   )

@@ -181,7 +181,7 @@ prepare_dataset_rows <- function(data, spec) {
 prepare_variable_plan <- function(data, spec, index, unexpected_levels) {
   row <- spec[index, , drop = FALSE]
   name <- row$name[[1]]
-  type <- row$type[[1]]
+  type <- row$analysis_type[[1]]
   required <- if ("required" %in% names(row)) row$required[[1]] else NA
   present <- name %in% names(data)
 
@@ -314,7 +314,7 @@ prepare_is_vector_column <- function(values) {
 }
 
 prepare_type_plan <- function(values, remaining, row) {
-  type <- row$type[[1]]
+  type <- row$analysis_type[[1]]
   n <- length(values)
   n_remaining <- as.integer(sum(remaining))
   plain_numeric <- (is.double(values) || is.integer(values)) &&
@@ -434,7 +434,7 @@ prepare_type_result <- function(action, status, class_after, n_invalid, n_affect
 }
 
 prepare_levels_plan <- function(values, remaining, row, unexpected_levels, type_status) {
-  type <- row$type[[1]]
+  type <- row$analysis_type[[1]]
   declared <- prepare_declared_levels(row)
   if (!declared$safe) {
     return(prepare_level_result("validate_declared_levels", "blocking", NA_character_, character(), 0L, 0L, 0L, "Declared level metadata is empty, duplicated or unsafe for the semicolon contract."))
@@ -746,7 +746,7 @@ prepare_apply_plan <- function(data, spec, plan, extra_variables) {
 }
 
 prepare_apply_column <- function(values, row, levels, missing_codes) {
-  type <- row$type[[1]]
+  type <- row$analysis_type[[1]]
   standard <- is.na(values)
   sentinel <- summary_missing_mask(values, missing_codes) & !standard
   if (type == "numeric") {

@@ -42,7 +42,7 @@ populate_catalogue_fixture <- function(con, schema_sql) {
 
 catalogue_profile_dictionary <- function(con, schema) {
   dictionary <- epi_eda_dictionary_scaffold(epi_db_inventory(con, schema))
-  dictionary$type <- "categorical"
+  dictionary$analysis_type <- "categorical"
   dictionary$provenance <- "synthetic_postgresql_fixture"
   dictionary
 }

@@ -26,7 +26,7 @@ test_that("categorical summaries reuse the supplied relation count", {
   column <- data.frame(name = "group", stringsAsFactors = FALSE)
   contract <- list(sql = "FALSE", params = list())
   spec_row <- data.frame(
-    type = "categorical",
+    database_type = "text", analysis_type = "categorical",
     levels = "A;B",
     stringsAsFactors = FALSE
   )
@@ -68,7 +68,7 @@ test_that("categorical summaries reuse the supplied relation count", {
 test_that("categorical plot companions reuse summaries without a database fetch", {
   plot_data <- getFromNamespace("eda_postgres_plot_data_inside", "episcout")
   spec <- data.frame(
-    name = "status", label = "Status", type = "categorical", role = "measure",
+    name = "status", label = "Status", database_type = "text", analysis_type = "categorical", role = "measure",
     stringsAsFactors = FALSE
   )
   summaries <- list(
@@ -136,7 +136,7 @@ test_that("explicit PostgreSQL dispatch rejects forged and generic DBI objects",
   skip_if_not_installed("RSQLite")
   con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   on.exit(DBI::dbDisconnect(con), add = TRUE)
-  spec <- data.frame(name = "x", label = "X", type = "numeric", role = "measure")
+  spec <- data.frame(name = "x", label = "X", database_type = "text", analysis_type = "numeric", role = "measure")
   forged <- structure(
     list(con = con, schema = "main", relation = "x", relation_kind = "table", columns = data.frame(), source_version = "postgres-source-1"),
     class = c("epi_eda_postgres_source", "list")
@@ -297,10 +297,10 @@ test_that("storage matrix and sentinel parsing are explicit", {
 test_that("profiler dispatch rejects unsupported objects and incompatible plot inputs", {
   skip_if_not_installed("ggplot2")
   numeric_spec <- data.frame(
-    name = "x", label = "X", type = "numeric", role = "measure",
+    name = "x", label = "X", database_type = "text", analysis_type = "numeric", role = "measure",
     stringsAsFactors = FALSE
   )
-  text_spec <- transform(numeric_spec, type = "text")
+  text_spec <- transform(numeric_spec, database_type = "text", analysis_type = "text")
 
   expect_error(epi_eda_profile_missing(list(), numeric_spec), "data frame")
   expect_error(epi_eda_profile_summaries(list(), numeric_spec), "data frame")
@@ -349,7 +349,7 @@ test_that("data-frame roles do not suppress text summaries or plots", {
   )
   spec <- data.frame(
     name = c("participant_id", "note"), label = c("Participant", "Note"),
-    type = c("text", "text"), role = c("identifier", "comment"),
+    database_type = "text", analysis_type = c("text", "text"), role = c("identifier", "comment"),
     stringsAsFactors = FALSE
   )
 

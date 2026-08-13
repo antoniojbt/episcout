@@ -37,7 +37,7 @@ geo_eda_postgres_fixture <- function(con) {
   spec <- data.frame(
     name = c("x coordinate", "y coordinate", "value"),
     label = c("Reviewed x", "Reviewed y", "Value"),
-    type = c("numeric", "numeric", "integer"),
+    database_type = "text", analysis_type = c("numeric", "numeric", "integer"),
     role = c("", "", ""),
     missing_codes = c("-999", "-999", ""),
     geo_role = c("x", "y", ""),
@@ -115,7 +115,7 @@ test_that("PostgreSQL numeric storage families follow declared coordinate types"
   spec <- data.frame(
     name = names,
     label = names,
-    type = c("integer", "integer", rep("numeric", 6L)),
+    database_type = "text", analysis_type = c("integer", "integer", rep("numeric", 6L)),
     role = "",
     geo_role = rep(c("x", "y"), 4L),
     geo_pair = rep(c("integer", "numeric", "real", "double"), each = 2L),

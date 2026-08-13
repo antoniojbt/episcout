@@ -89,7 +89,7 @@ test_that("Table 1 falls back labels and states temporal timezone and units", {
   )
   spec <- data.frame(
     name = c("arm", "when"), label = c("Arm", ""),
-    type = c("categorical", "datetime"), role = "measure",
+    database_type = "text", analysis_type = c("categorical", "datetime"), role = "measure",
     levels = c("A;B", ""), missing_codes = "", stringsAsFactors = FALSE
   )
   result <- epi_eda_profile_stratified(data, spec, "arm")

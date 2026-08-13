@@ -13,7 +13,7 @@ epi_eda_spec_scaffold(data)
 An ordinary data frame with one row per source column in source order and the lean semantic EDA fields.
 }
 \description{
-Create an editable semantic EDA specification from the storage classes of an existing data frame. The result does not infer scientific roles, sentinel missing values, units, validation ranges or geographic meaning, and it never includes observed values or aggregate evidence.
+Create an editable semantic EDA specification from the storage classes of an existing data frame. The result declares both \code{database_type} and \code{analysis_type}; it does not infer scientific roles, sentinel missing values, units, validation ranges or geographic meaning, and it never includes observed values or aggregate evidence.
 }
 \details{
 Factor levels and fixed logical levels are storage metadata and are copied to the core \code{levels} field. Factor metadata that cannot be represented safely by the package's semicolon-delimited specification format is refused. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.

@@ -7,7 +7,7 @@ geo_spec <- function(crs = "4326") {
   data.frame(
     name = c("x_coord", "y_coord", "value"),
     label = c("Reviewed x", "Reviewed y", "Value"),
-    type = c("numeric", "numeric", "numeric"),
+    database_type = "text", analysis_type = c("numeric", "numeric", "numeric"),
     role = c("", "", ""),
     missing_codes = c("-999", "-999", ""),
     geo_role = c("x", "y", ""),

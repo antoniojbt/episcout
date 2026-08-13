@@ -36,7 +36,7 @@ postgres_eda_fixture <- function(con) {
   spec <- data.frame(
     name = c("participant_id", "measurement", "whole_number", "treatment", "flag", "note", "specimen_date", "specimen_time", "local_time"),
     label = c("Participant", "Measurement", "Whole number", "Treatment", "Flag", "Note", "Specimen date", "Specimen time", "Local time"),
-    type = c("text", "numeric", "integer", "categorical", "binary", "text", "date", "datetime", "datetime"),
+    database_type = "text", analysis_type = c("text", "numeric", "integer", "categorical", "binary", "text", "date", "datetime", "datetime"),
     role = c("identifier", "measure", "measure", "exposure", "outcome", "comment", "time", "time", "time"),
     levels = c("", "", "", "A;B;C", "FALSE;TRUE", "", "", "", ""),
     missing_codes = c("", "999", "", "MISSING", "", "SECRET_CANARY", "2024-01-03", "", ""),
@@ -117,11 +117,11 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
     outlier_count = 0, outlier_percentage = 0
   ))
   asymmetric <- c(1, 2, 2, 3, 9, 11)
-  expect_equal(whole$skewness, e1071::skewness(asymmetric, type = 3), tolerance = 1e-12)
-  expect_equal(whole$kurtosis, e1071::kurtosis(asymmetric, type = 3), tolerance = 1e-12)
+  expect_equal(whole$skewness, e1071::skewness(asymmetric, database_type = "text", analysis_type = 3), tolerance = 1e-12)
+  expect_equal(whole$kurtosis, e1071::kurtosis(asymmetric, database_type = "text", analysis_type = 3), tolerance = 1e-12)
   expect_false(isTRUE(all.equal(
-    e1071::skewness(asymmetric, type = 3),
-    e1071::skewness(asymmetric, type = 1)
+    e1071::skewness(asymmetric, database_type = "text", analysis_type = 3),
+    e1071::skewness(asymmetric, database_type = "text", analysis_type = 1)
   )))
   expect_equal(summaries$categorical$n[summaries$categorical$name == "treatment"], c(2L, 1L, 0L, 1L))
   expect_equal(summaries$categorical$level[summaries$categorical$name == "treatment"], c("A", "B", "C", "Z"))
@@ -175,7 +175,7 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   expect_identical(summaries$variables, data.frame(
     name = fixture$spec$name,
     label = fixture$spec$label,
-    type = fixture$spec$type,
+    database_type = "text", analysis_type = fixture$spec$analysis_type,
     role = fixture$spec$role,
     required = rep(TRUE, 9L),
     n = rep(6L, 9L),
@@ -189,7 +189,7 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   ))
   expect_identical(summaries$skipped, data.frame(
     name = "local_time",
-    type = "datetime",
+    database_type = "text", analysis_type = "datetime",
     observed_class = "timestamp without time zone",
     reason = local_time_reason,
     stringsAsFactors = FALSE
@@ -222,7 +222,7 @@ test_that("PostgreSQL percentile_cont matches independently evaluated R type-7 e
       ),
       params = list(n)
     )
-    expected <- as.numeric(stats::quantile(seq_len(n), c(0.25, 0.5, 0.75), type = 7, names = FALSE))
+    expected <- as.numeric(stats::quantile(seq_len(n), c(0.25, 0.5, 0.75), database_type = "text", analysis_type = 7, names = FALSE))
     expect_equal(as.numeric(observed[1, ]), expected, tolerance = 1e-12)
   }
 })
@@ -275,7 +275,7 @@ test_that("authorised relation kinds work and temporary/catalogue drift fail clo
 
   source <- epi_eda_postgres_source(con, schema, "base_table")
   DBI::dbExecute(con, paste0("ALTER TABLE ", schema_sql, ".base_table ADD COLUMN changed text"))
-  spec <- data.frame(name = "value", label = "Value", type = "integer", role = "measure")
+  spec <- data.frame(name = "value", label = "Value", database_type = "text", analysis_type = "integer", role = "measure")
   expect_error(epi_eda_check_schema(source, spec), "catalogue changed")
 })
 
@@ -314,7 +314,7 @@ test_that("live PostgreSQL storage matrix preserves zero-row schemas", {
       "Small", "Integer", "Big", "Decimal", "Real", "Double", "Fixed", "Varying",
       "Plain", "Flag", "Mood", "Date", "Datetime", "Local datetime", "Payload"
     ),
-    type = c(
+    database_type = "text", analysis_type = c(
       "integer", "integer", "integer", "numeric", "numeric", "numeric", "text",
       "categorical", "text", "binary", "categorical", "date", "datetime", "datetime", "text"
     ),

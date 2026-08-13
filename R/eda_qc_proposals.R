@@ -156,31 +156,31 @@ qc_data_frame_evidence <- function(data, spec, keys) {
   rows <- lapply(seq_len(nrow(spec)), function(index) {
     row <- spec[index, , drop = FALSE]
     if (qc_identifier_role(row$role[[1]])) {
-      return(qc_unprofiled_evidence(keys[[index]], row$type[[1]], "declared_identifier"))
+      return(qc_unprofiled_evidence(keys[[index]], row$analysis_type[[1]], "declared_identifier"))
     }
 
     name <- row$name[[1]]
     if (!name %in% names(data)) {
-      return(qc_unprofiled_evidence(keys[[index]], row$type[[1]], "missing_variable"))
+      return(qc_unprofiled_evidence(keys[[index]], row$analysis_type[[1]], "missing_variable"))
     }
     values <- data[[name]]
     if (!qc_storage_supported(values)) {
-      return(qc_unprofiled_evidence(keys[[index]], row$type[[1]], "unsupported_storage"))
+      return(qc_unprofiled_evidence(keys[[index]], row$analysis_type[[1]], "unsupported_storage"))
     }
     levels <- if ("levels" %in% names(row)) eda_spec_levels(row$levels) else character()
     compatibility <- eda_type_compatibility(
       values,
-      row$type[[1]],
+      row$analysis_type[[1]],
       levels,
       eda_missing_codes(spec, name)
     )
     if (!compatibility$status %in% c("compatible", "coercible")) {
-      return(qc_unprofiled_evidence(keys[[index]], row$type[[1]], "incompatible_storage"))
+      return(qc_unprofiled_evidence(keys[[index]], row$analysis_type[[1]], "incompatible_storage"))
     }
 
     qc_df_profiled_evidence(
       values,
-      row$type[[1]],
+      row$analysis_type[[1]],
       eda_missing_codes(spec, name),
       keys[[index]]
     )
@@ -345,7 +345,7 @@ qc_pending_proposals <- function(evidence, spec) {
       return(NULL)
     }
     row <- evidence[index, , drop = FALSE]
-    type <- spec$type[[index]]
+    type <- spec$analysis_type[[index]]
     units <- if ("units" %in% names(spec)) spec$units[[index]] else ""
     units_prompt <- type %in% c("numeric", "integer", "date", "datetime") &&
       (is.na(units) || trimws(as.character(units)) == "")

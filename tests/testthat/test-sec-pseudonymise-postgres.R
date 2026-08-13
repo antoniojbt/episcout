@@ -95,7 +95,7 @@ pg_pseudonym_dictionary <- function(connection, source_schema) {
     row_counts = "none"
   )
   dictionary <- epi_eda_dictionary_scaffold(inventory)
-  dictionary$type[dictionary$source_column == "entity_kind"] <- "categorical"
+  dictionary$analysis_type[dictionary$source_column == "entity_kind"] <- "categorical"
   dictionary$catalog_name[dictionary$source_column == "entity_kind"] <- "entity_kinds"
   dictionary$provenance <- "reviewed_synthetic_fixture"
   dictionary

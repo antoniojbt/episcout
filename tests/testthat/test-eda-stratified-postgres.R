@@ -48,7 +48,7 @@ stratified_postgres_fixture <- function(con) {
       "Study arm", "Value", "Status", "Note", "Visit", "Participant",
       "Normality", "Moment", "Absent"
     ),
-    type = c(
+    database_type = "text", analysis_type = c(
       "categorical", "numeric", "categorical", "text", "date", "integer",
       "numeric", "datetime", "text"
     ),

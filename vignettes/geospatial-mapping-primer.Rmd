@@ -199,7 +199,8 @@ Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fi
 coordinate_spec <- data.frame(
   name = c("longitude", "latitude", "group"),
   label = c("Declared longitude", "Declared latitude", "Declared group"),
-  type = c("numeric", "numeric", "categorical"),
+  database_type = c("numeric", "numeric", "text"),
+  analysis_type = c("numeric", "numeric", "categorical"),
   role = c("", "", ""),
   geo_role = c("x", "y", ""),
   geo_pair = c("neutral_sites", "neutral_sites", ""),

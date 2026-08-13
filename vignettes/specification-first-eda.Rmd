@@ -32,7 +32,7 @@ The installed `project-template/README.md` provides a file-based data-frame scaf
 
 ## 2. Create and review the dictionary
 
-For a data frame without a dictionary, `epi_eda_spec_scaffold()` uses storage metadata only. It returns the 15 semantic fields `name`, `label`, `type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. It does not infer scientific roles, sentinel missing values, units, validation ranges, geographic meaning, privacy policy or approval status, and it does not inspect observed values for evidence.
+For a data frame without a dictionary, `epi_eda_spec_scaffold()` uses storage metadata only. It returns the 16 semantic fields `name`, `label`, `database_type`, `analysis_type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. `database_type` records the storage family and `analysis_type` selects the R/EDA treatment. It does not infer scientific roles, sentinel missing values, units, validation ranges, geographic meaning, privacy policy or approval status, and it does not inspect observed values for evidence.
 
 ```{r}
 library(episcout)
@@ -54,7 +54,7 @@ Storage-derived types are only a starting point. Declare the intended semantics 
 ```{r}
 spec$role <- c("covariate", "exposure", "coordinate", "coordinate")
 spec$required <- TRUE
-spec$type[spec$name == "study_group"] <- "categorical"
+spec$analysis_type[spec$name == "study_group"] <- "categorical"
 spec$levels[spec$name == "study_group"] <- "A;B"
 spec$geo_role[spec$name %in% c("longitude", "latitude")] <- c("x", "y")
 spec$geo_pair[spec$name %in% c("longitude", "latitude")] <- "site"

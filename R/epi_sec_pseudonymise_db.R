@@ -987,7 +987,7 @@ sec_validate_catalogues <- function(dictionary,
     any(!(referenced %in% catalogues$catalog_name))
   invalid_types <- selected_key %in% retained_key &
     selected$catalog_name != "" &
-    !(selected$type %in% c("categorical", "binary"))
+    !(selected$analysis_type %in% c("categorical", "binary"))
   invalid <- invalid || any(invalid_types)
   if (invalid) {
     stop(
@@ -1143,7 +1143,8 @@ sec_output_dictionary <- function(context) {
     rows$source_numeric_precision[[id_index]] <- NA
     rows$source_numeric_scale[[id_index]] <- NA
     rows$label[[id_index]] <- "Pseudonym token"
-    rows$type[[id_index]] <- "text"
+    rows$database_type[[id_index]] <- "text"
+    rows$analysis_type[[id_index]] <- "text"
     rows$role[[id_index]] <- "id"
     for (field in intersect(
       c(

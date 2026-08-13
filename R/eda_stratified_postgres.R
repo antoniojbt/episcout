@@ -45,7 +45,7 @@ eda_pg_stratifier_contract <- function(source, spec, strata) {
     stop("The strata variable must be present in data.", call. = FALSE)
   }
   strata_row <- spec[match(strata, spec$name), , drop = FALSE]
-  if (!strata_row$type[[1]] %in% c("categorical", "binary")) {
+  if (!strata_row$analysis_type[[1]] %in% c("categorical", "binary")) {
     stop(
       "The strata variable must be declared categorical or binary.",
       call. = FALSE
@@ -59,7 +59,7 @@ eda_pg_stratifier_contract <- function(source, spec, strata) {
     )
   }
   family <- eda_postgres_storage_family(column)
-  if (strata_row$type[[1]] == "binary" &&
+  if (strata_row$analysis_type[[1]] == "binary" &&
         !(length(declared$levels) == 2L ||
             (length(declared$levels) == 0L && family == "boolean"))) {
     stop(
@@ -69,7 +69,7 @@ eda_pg_stratifier_contract <- function(source, spec, strata) {
   }
   compatibility <- eda_pg_type_compatibility(
     column,
-    strata_row$type[[1]],
+    strata_row$analysis_type[[1]],
     declared$levels
   )
   if (!compatibility$status %in% c("compatible", "coercible")) {
@@ -81,7 +81,7 @@ eda_pg_stratifier_contract <- function(source, spec, strata) {
   missing <- eda_postgres_missing_contract(
     source,
     column,
-    strata_row$type[[1]],
+    strata_row$analysis_type[[1]],
     eda_missing_codes(spec, strata)
   )
   if (!missing$valid) {
@@ -188,7 +188,7 @@ eda_pg_strata_groups <- function(source,
   expression <- eda_postgres_value_expression(
     source,
     column,
-    strata_row$type[[1]]
+    strata_row$analysis_type[[1]]
   )
   observed <- eda_db_fetch(
     source$con,
@@ -347,7 +347,7 @@ eda_pg_filtered_source <- function(source, filter) {
 }
 
 eda_pg_stratified_universes <- function(summary, spec) {
-  names <- spec$name[spec$type %in% c("categorical", "binary")]
+  names <- spec$name[spec$analysis_type %in% c("categorical", "binary")]
   out <- stats::setNames(vector("list", length(names)), names)
   for (name in names) {
     out[[name]] <- summary$categorical[
