@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `043`
-Status: Active
+Status: Review
 Owner: Codex
 Tracking issue: issue-313
 

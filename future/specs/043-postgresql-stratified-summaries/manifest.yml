@@ -2,7 +2,7 @@ id: "043"
 slug: postgresql-stratified-summaries
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: Codex
 base_branch: master
 working_branch: feature/postgres-stratified-summaries
@@ -12,7 +12,7 @@ updated: 2026-08-13
 tracking_issue: 313
 source_issues:
   - 313
-pull_request: null
+pull_request: 314
 merge_commit: null
 successor_issue: null
 terminal_reason: The single-stratifier PostgreSQL contract is complete when issue-313 acceptance passes; later multi-strata or inferential work requires a separate tracker.

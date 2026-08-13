@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `043`
-Status: Active
+Status: Review
 
 - [x] SDD is complete before implementation.
 - [x] TDD plan is complete before implementation.
@@ -12,7 +12,7 @@ Status: Active
 - [x] Optional database-bundle publication is manifest-owned and defaults remain compatible.
 - [x] Documentation states the aggregate boundary and Shapiro limitation.
 - [x] Checks listed in `manifest.yml` pass or are explicitly deferred.
-- [ ] Review notes and the draft pull request are recorded.
+- [x] Review notes and draft PR-314 are recorded.
 - [ ] The pull request is merged to canonical `master` and the exact merge commit is recorded.
 - [ ] The tracking issue is reconciled and the terminal outcome is recorded.
 - [ ] The manifest is `completed` and this specification is moved under `future/specs/done/`.
