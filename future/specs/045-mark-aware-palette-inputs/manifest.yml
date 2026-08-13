@@ -1,0 +1,42 @@
+id: "045"
+slug: mark-aware-palette-inputs
+workflow_version: 1
+deliverable: implementation
+status: review
+owner: Codex
+base_branch: master
+working_branch: feature/mark-aware-palette-inputs
+created: 2026-08-13
+updated: 2026-08-13
+
+tracking_issue: 316
+source_issues:
+  - 310
+  - 316
+pull_request: 319
+merge_commit: null
+successor_issue: 311
+terminal_reason: null
+
+related_files:
+  - R/epi_plot_fill_values.R
+  - R/epi_plot_bar.R
+  - R/epi_plot_box.R
+  - tests/testthat/test-additional_coverage.R
+  - tests/testthat/test-epi_plot_box_layers.R
+  - man/epi_plot_bar.Rd
+  - man/epi_plot_box.Rd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'plotting|additional_coverage|epi_plot_box_layers', reporter = 'summary')"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh

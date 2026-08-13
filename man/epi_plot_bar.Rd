@@ -14,6 +14,7 @@ epi_plot_bar(
   y_lab = "Count",
   x_lab = var_x,
   custom_palette = NULL,
+  fill_values = NULL,
   ...
 )
 }
@@ -34,7 +35,9 @@ epi_plot_bar(
 
 \item{x_lab}{x-axis label. Default is x_var.}
 
-\item{custom_palette}{Optional vector of fill colours to override the default palette. If provided, colours are recycled to match the number of levels.}
+\item{custom_palette}{Deprecated positional vector of fill colours. It is recycled for compatibility; use \code{fill_values} for a deterministic mapping.}
+
+\item{fill_values}{Optional exact fill mapping for categorical marks. Supply either a named vector whose names exactly match the displayed categories or an unnamed vector with one valid colour per displayed category in factor-level order. Values are never recycled.}
 
 \item{...}{pass further arguments to ggplot2::geom_bar()}
 }

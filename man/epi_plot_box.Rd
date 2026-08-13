@@ -10,6 +10,7 @@ epi_plot_box(
   var_x = "",
   outlier_alpha = 0.7,
   fill = "grey80",
+  fill_values = NULL,
   colour = "grey20",
   stat_geom = "errorbar",
   stat_width = 0.5,
@@ -33,6 +34,8 @@ epi_plot_box(
 \item{outlier_alpha}{Outlier transparency. Default is 0.7.}
 
 \item{fill}{Interior colour used to fill. If only passing var_y it defaults to 'grey80'. If passing both var_y and var_x, it uses var_x.}
+
+\item{fill_values}{Optional exact fill mapping for grouped box plots. Supply either a named vector whose names exactly match the displayed groups or an unnamed vector with one valid colour per displayed group in factor-level order. Values are never recycled.}
 
 \item{colour}{Aesthetics for ggplot2. Default is 'grey20' if only var_y.}
 
@@ -104,5 +107,5 @@ my_boxplot +
 \code{\link{epi_plot_list}}, \code{\link{epi_plots_to_grid}}, \code{\link{epi_plot_hist}}, \code{\link[ggplot2]{ggplot}}, \code{\link[ggplot2]{geom_boxplot}}.
 }
 \author{
-Antonio Berlanga-Taylor <\url{https://github.com/AntonioJBT/episcout}>
+Antonio Berlanga-Taylor \if{html}{\out{<\url{https://github.com/AntonioJBT/episcout}>}}
 }

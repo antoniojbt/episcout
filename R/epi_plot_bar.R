@@ -10,7 +10,8 @@
 #' @param guides_fill Fill for ggplot2 guides. Default is 'none'.
 #' @param y_lab y-axis label. Default is 'Count'.
 #' @param x_lab x-axis label. Default is x_var.
-#' @param custom_palette Optional vector of fill colours to override the default palette. If provided, colours are recycled to match the number of levels.
+#' @param custom_palette Deprecated positional vector of fill colours. It is recycled for compatibility; use `fill_values` for a deterministic mapping.
+#' @param fill_values Optional exact fill mapping for categorical marks. Supply either a named vector whose names exactly match the displayed categories or an unnamed vector with one valid colour per displayed category in factor-level order. Values are never recycled.
 #' @param ... pass further arguments to ggplot2::geom_bar()
 #'
 #' @return Prints a ggplot2 barplot
@@ -62,13 +63,11 @@
 #' }
 #'
 #' @export
-#'
-
-
 epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
                          bar_colour = "black", guides_fill = "none",
                          y_lab = "Count", x_lab = var_x,
-                         custom_palette = NULL, # Default to NULL
+                         custom_palette = NULL,
+                         fill_values = NULL,
                          ...) {
   # Load required packages
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -81,13 +80,20 @@ epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
   # Check if `fill` is NULL and default to `var_x` for coloring
   if (is.null(fill)) fill <- var_x
 
-  # Get the number of levels in the fill variable
-  num_levels <- length(unique(df[[fill]]))
+  fill_levels <- epi_plot_fill_levels(df[[fill]])
 
-  # If a custom palette is provided, recycle colors if needed
-  if (!is.null(custom_palette)) {
-    custom_palette <- rep(custom_palette, length.out = num_levels)
+  if (!is.null(custom_palette) && !is.null(fill_values)) {
+    stop("custom_palette and fill_values cannot be supplied together.", call. = FALSE)
   }
+
+  # Retain released positional recycling while routing new mappings through exact validation.
+  legacy_custom_palette <- !is.null(custom_palette)
+  if (legacy_custom_palette) {
+    warning("custom_palette is deprecated; use fill_values for an explicit fill mapping.", call. = FALSE)
+    fill_values <- rep(custom_palette, length.out = length(fill_levels))
+  }
+  fill_mapping <- epi_plot_fill_mapping(fill_values, fill_levels)
+  fill_scale_values <- if (legacy_custom_palette) unname(fill_mapping) else fill_mapping
 
   # Handle the plot creation
   if (var_y == "") {
@@ -100,10 +106,9 @@ epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
       ggplot2::guides(fill = guides_fill) +
       ggplot2::labs(y = y_lab, x = x_lab)
 
-    # Apply custom color palette if provided
-    if (!is.null(custom_palette)) {
+    if (!is.null(fill_mapping)) {
       bar_plot_one <- bar_plot_one +
-        ggplot2::scale_fill_manual(values = custom_palette)
+        ggplot2::scale_fill_manual(values = fill_scale_values, limits = fill_levels, drop = FALSE)
     }
 
     bar_plot_one
@@ -117,10 +122,9 @@ epi_plot_bar <- function(df = NULL, var_x = NULL, var_y = "", fill = NULL,
       ggplot2::geom_bar(stat = "identity", position = "dodge", ...) +
       ggplot2::labs(y = y_lab, x = x_lab)
 
-    # Apply custom color palette if provided
-    if (!is.null(custom_palette)) {
+    if (!is.null(fill_mapping)) {
       bar_plot <- bar_plot +
-        ggplot2::scale_fill_manual(values = custom_palette)
+        ggplot2::scale_fill_manual(values = fill_scale_values, limits = fill_levels, drop = FALSE)
     }
 
     bar_plot

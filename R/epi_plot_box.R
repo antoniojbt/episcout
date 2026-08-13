@@ -7,6 +7,7 @@
 #' @param var_x Variable to plot on x-axis, pass as a string.
 #' @param outlier_alpha Outlier transparency. Default is 0.7.
 #' @param fill Interior colour used to fill. If only passing var_y it defaults to 'grey80'. If passing both var_y and var_x, it uses var_x.
+#' @param fill_values Optional exact fill mapping for grouped box plots. Supply either a named vector whose names exactly match the displayed groups or an unnamed vector with one valid colour per displayed group in factor-level order. Values are never recycled.
 #' @param colour Aesthetics for ggplot2. Default is 'grey20' if only var_y.
 #' @param stat_geom ggplot2::stat_boxplot parameter used for 2 variable boxplot only. Default is 'errorbar'.
 #' @param stat_width ggplot2::stat_boxplot parameter used for 2 variable boxplot only. Default is 0.5.
@@ -69,6 +70,7 @@ epi_plot_box <- function(df = NULL,
                          var_x = "",
                          outlier_alpha = 0.7,
                          fill = "grey80",
+                         fill_values = NULL,
                          colour = "grey20", #' black',
                          stat_geom = "errorbar",
                          stat_width = 0.5,
@@ -102,6 +104,8 @@ epi_plot_box <- function(df = NULL,
 
     box_plot_one
   } else if (!is.null(var_x)) {
+    fill_levels <- epi_plot_fill_levels(df[[var_x]])
+    fill_mapping <- epi_plot_fill_mapping(fill_values, fill_levels)
     # If both x and y are passed, boxplot of two variables:
     box_plot <- ggplot2::ggplot(
       data = df,
@@ -128,6 +132,10 @@ epi_plot_box <- function(df = NULL,
         size = sum_size
       ) +
       epi_plot_theme_2()
+    if (!is.null(fill_mapping)) {
+      box_plot <- box_plot +
+        ggplot2::scale_fill_manual(values = fill_mapping, limits = fill_levels, drop = FALSE)
+    }
     box_plot
   }
 }

@@ -34,3 +34,14 @@ test_that("jitter parameters are applied", {
   expect_equal(jitter_layer$aes_params$shape, 17)
   expect_equal(jitter_layer$aes_params$alpha, 0.6)
 })
+
+test_that("grouped box plots route fill_values to the fill scale", {
+  p <- epi_plot_box(
+    df_box,
+    var_x = "group",
+    var_y = "value",
+    fill_values = c(A = "red", B = "blue")
+  )
+  expect_equal(p$scales$scales[[1]]$palette(2), c(A = "red", B = "blue"))
+  expect_equal(p$scales$scales[[1]]$aesthetics, "fill")
+})
