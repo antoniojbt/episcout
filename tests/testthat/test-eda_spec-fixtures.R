@@ -13,13 +13,13 @@ test_that("blood_storage_spec.csv loads as an EDA specification", {
 
   expect_s3_class(spec, "data.frame")
   expect_equal(spec$name, raw_spec$name)
-  expect_true(all(c("name", "label", "type", "role") %in% names(spec)))
+  expect_true(all(c("name", "label", "database_type", "analysis_type", "role") %in% names(spec)))
 })
 
 test_that("blood_storage_spec.csv has required specification columns", {
   spec <- epi_eda_spec(spec_path)
 
-  expect_true(all(c("name", "label", "type", "role") %in% names(spec)))
+  expect_true(all(c("name", "label", "database_type", "analysis_type", "role") %in% names(spec)))
 })
 
 test_that("blood_storage specification variable names are unique", {

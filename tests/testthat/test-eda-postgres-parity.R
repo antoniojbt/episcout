@@ -175,7 +175,7 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   expect_identical(summaries$variables, data.frame(
     name = fixture$spec$name,
     label = fixture$spec$label,
-    database_type = "text", analysis_type = fixture$spec$analysis_type,
+    type = fixture$spec$analysis_type,
     role = fixture$spec$role,
     required = rep(TRUE, 9L),
     n = rep(6L, 9L),
@@ -189,7 +189,7 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   ))
   expect_identical(summaries$skipped, data.frame(
     name = "local_time",
-    database_type = "text", analysis_type = "datetime",
+    type = "datetime",
     observed_class = "timestamp without time zone",
     reason = local_time_reason,
     stringsAsFactors = FALSE

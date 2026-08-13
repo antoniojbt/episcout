@@ -49,7 +49,8 @@ epi_stats_summary <- function(df = NULL,
     spec <- data.frame(
       name = names(df),
       label = names(df),
-      type = unname(types),
+      database_type = vapply(unname(types), scaffold_database_type, character(1)),
+      analysis_type = unname(types),
       role = rep(NA_character_, ncol(df)),
       levels = unname(levels),
       stringsAsFactors = FALSE

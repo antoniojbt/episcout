@@ -99,7 +99,7 @@ test_that("removed and malformed specifications return actionable blocked bundle
   expect_match(old$messages$reason, "removed evidence/review scaffold")
   expect_false(file.exists(file.path(output_dir, "specification.csv")))
 
-  malformed <- fixture$spec[, setdiff(names(fixture$spec), "type"), drop = FALSE]
+  malformed <- fixture$spec[, setdiff(names(fixture$spec), "database_type"), drop = FALSE]
   invalid <- epi_eda_intake_run(
     fixture$data, malformed, tempfile("intake-invalid-spec-"),
     render = FALSE

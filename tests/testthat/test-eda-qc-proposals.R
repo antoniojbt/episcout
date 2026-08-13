@@ -11,7 +11,7 @@ qc_test_spec <- function(name,
   data.frame(
     name = name,
     label = as.character(seq_along(name)),
-    database_type = "text", analysis_type = type,
+    database_type = rep("text", length(name)), analysis_type = type,
     role = role,
     units = units,
     levels = levels,
