@@ -1,0 +1,53 @@
+id: "047"
+slug: documentation-version-alignment
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: Codex
+base_branch: master
+working_branch: feature/documentation-alignment
+created: 2026-08-14
+updated: 2026-08-14
+
+tracking_issue: 327
+source_issues:
+  - 323
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+related_files:
+  - DESCRIPTION
+  - NEWS.md
+  - README.md
+  - R/
+  - man/
+  - vignettes/
+  - inst/project-template/
+  - inst/examples/
+  - tests/testthat/test-project-template.R
+  - PROJECT_MAP.md
+  - future/TODOs.md
+  - future/changelog.md
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'project-template|eda-spec-scaffold|eda_spec|eda_schema', reporter = 'summary')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::build_vignettes()"
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - scripts/check-workflow-state.sh
+
+notes:
+  - Preserve the published 0.4.1 tag; do not retag or rewrite published history.
+  - Verify the installed database-to-report walkthrough against a disposable PostgreSQL service.
+  - No exported interface or data-processing behaviour changes in this specification.

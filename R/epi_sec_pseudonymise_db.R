@@ -1,4 +1,4 @@
-#' Pseudonymise related PostgreSQL tables through a stable identity registry
+#' Pseudonymise related PostgreSQL tables through a persisted identity registry
 #'
 #' Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, explicit output actions and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
 #'
@@ -21,6 +21,8 @@
 #' @return An `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `output_type`. When `include_issue_values = TRUE`, ordinary `issue_values` columns are `issue_code`, source relation/column metadata and `source_value`. Status is `audit_complete`, `not_written` or `complete`.
 #'
 #' @details Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. `existing = "replace"` is deliberately opt-in and is limited to declared ordinary destination tables without `CASCADE`. Source tables are never altered.
+#'
+#' Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity namespace and alias/crosswalk mapping. A separate registry creates independent assignments and does not establish cross-run identity stability.
 #'
 #' Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 #'

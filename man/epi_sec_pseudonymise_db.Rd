@@ -2,7 +2,7 @@
 % Please edit documentation in R/epi_sec_pseudonymise_db.R
 \name{epi_sec_pseudonymise_db}
 \alias{epi_sec_pseudonymise_db}
-\title{Pseudonymise related PostgreSQL tables through a stable identity registry}
+\title{Pseudonymise related PostgreSQL tables through a persisted identity registry}
 \usage{
 epi_sec_pseudonymise_db(
   con,
@@ -57,6 +57,8 @@ Audit or transactionally create pseudonymised copies of related PostgreSQL table
 }
 \details{
 Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. \code{existing = "replace"} is deliberately opt-in and is limited to declared ordinary destination tables without \code{CASCADE}. Source tables are never altered.
+
+Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity namespace and alias/crosswalk mapping. A separate registry creates independent assignments and does not establish cross-run identity stability.
 
 Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 

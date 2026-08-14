@@ -17,11 +17,11 @@ This is the repository's synchronised task index. GitHub issues are authoritativ
 
 ## Current sequence
 
-Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification. Documentation and version alignment require a separate tracking issue and specification after this closeout.
+Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification, and its closeout completed through PR-326 at `commit-7ac8ea1`. Issue-327/spec-047 is the active documentation-only successor aligning package versions, NEWS, generated help, guides, templates and installed walkthroughs without changing exported behaviour.
 
 No EDA styling implementation lane is active. Issue-310/spec-044/PR-317 defined the mark-aware palette contract, issue-316/spec-045/PR-319 implemented its exact categorical fill mappings, and terminal issue-311/spec-046/PR-321 added creation-time EDA styling hooks; all are merged to canonical `master`. Terminal issue-313/spec-043 completed through PR-314, merged to canonical `master` as `commit-8421eff`; broader PostgreSQL stratification features require a separate tracker.
 
-The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. GitHub release preparation `issue-307`/`spec-042` merged through PR-308 as `commit-9b4d5df`, and release `0.4.0` is published from canonical `commit-ea2a3f1`. No automatic implementation successor is authorised.
+The authorised cleaning lane is complete. `issue-271`/`spec-039`, `issue-272`/`spec-040` and terminal `issue-273`/`spec-041` completed through PR-299, PR-301 and PR-303, merged to canonical `master` as `commit-78a4776`, `commit-6713a79` and `commit-db839d0`; final closeout PR-304 is canonical at `commit-43c87ea`. GitHub release preparation `issue-307`/`spec-042` merged through PR-308 as `commit-9b4d5df`; releases `0.4.0` and `0.4.1` are published from canonical commits `ea2a3f1` and `caa2812`, with the latter tag retaining `Version: 0.4.0` in `DESCRIPTION`. CRAN work remains independently deferred under issue-81.
 
 ## Deferred owner action
 

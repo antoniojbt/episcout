@@ -1,6 +1,6 @@
 # Database-to-EDA-delivery walkthrough
 
-This installed example is a numbered R script for an approved disposable PostgreSQL 17 or later database. It starts with a deliberately duplicated neutral synthetic longitudinal CSV, creates related source tables, builds and reviews a semantic dictionary, declares separate linkage column policy, pseudonymises both tables through one stable identity registry, hands the pseudonymised visit dictionary to PostgreSQL-backed EDA, and publishes a manifest-owned delivery whose HTML report is derived from the completed bundle.
+This installed example is a numbered R script for an approved disposable PostgreSQL 17 or later database. It starts with a deliberately duplicated neutral synthetic longitudinal CSV, creates related source tables, builds and reviews a semantic dictionary, declares separate linkage column policy, pseudonymises both tables through one identity registry, hands the pseudonymised visit dictionary to PostgreSQL-backed EDA, and publishes a manifest-owned delivery whose HTML report is derived from the completed bundle.
 
 Use `vignette("specification-first-eda", package = "episcout")` for the canonical data-frame and PostgreSQL EDA contracts. Use `vignette("longitudinal-pseudonymisation", package = "episcout")` for detailed linkage, recovery and restricted-data controls. This walkthrough connects those workflows without replacing either guide.
 
@@ -46,7 +46,7 @@ For a repository checkout, open `inst/examples/db-to-report/walkthrough.R` direc
 4. Inventory source metadata, scaffold the extended dictionary, declare its semantics and profile only explicitly selected catalogue fields.
 5. Declare linkage tables, columns and record keys, then initialise the identity registry.
 6. Audit and explicitly apply pseudonymisation into the output schema.
-7. Convert the pseudonymisation output dictionary into the 15-field EDA specification, profile the PostgreSQL relation and publish `layout = "delivery"`.
+7. Convert the pseudonymisation output dictionary into the 16-field EDA specification, profile the PostgreSQL relation and publish `layout = "delivery"`.
 8. Reconcile the five-column manifest, disconnect and optionally remove the disposable schemas.
 
 The script prints the unique schema names and output root near the end. Set `EPISCOUT_WALKTHROUGH_RUN_ID` only to a unique 6-to-20-character lower-case alphanumeric value when a reproducible name is needed. Set `EPISCOUT_WALKTHROUGH_OUTPUT` to an explicit local output parent when the default current-directory parent is unsuitable.
@@ -74,4 +74,4 @@ The core manifest fields are exactly `artifact`, `type`, `path`, `status` and `c
 
 With maps disabled, this delivery contains no source rows, raw text examples, observed identifiers, pseudonymisation bridge tables, map coordinates or thematic row values. Its summaries, dictionary metadata, category labels, small cells and plots can still be sensitive, so aggregate-only does not mean anonymous or automatically disclosure-controlled. episcout creates the outputs explicitly requested by the analyst and does not decide whether they may be shared.
 
-Pseudonymisation replaces or separates direct identifiers under a controlled registry and linkage process. Pseudonymised observations remain restricted personal data; pseudonymisation is not anonymity, publication approval or disclosure control.
+Pseudonymisation replaces or separates direct identifiers under a controlled registry and linkage process. Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity mapping; this walkthrough creates a new uniquely named registry by default, so separate executions do not establish cross-run stability. Pseudonymised observations remain restricted personal data; pseudonymisation is not anonymity, publication approval or disclosure control.

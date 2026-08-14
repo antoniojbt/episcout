@@ -14,9 +14,9 @@ This scaffold is a file-based starting point for specification-first exploratory
 
 ## 1. Review the dictionary
 
-The copied dictionary has the same 15-field semantic contract returned by `epi_eda_spec_scaffold()`: `name`, `label`, `type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. Replace the example row with source-authorised declarations. Blank coordinate fields mean that no coordinate pair is declared.
+The copied dictionary has the same 16-field contract returned by `epi_eda_spec_scaffold()`: `name`, `label`, `database_type`, `analysis_type`, `role`, `units`, `levels`, `min`, `max`, `missing_codes`, `required`, `group`, `description`, `geo_role`, `geo_pair` and `geo_crs`. `database_type` records the storage family and `analysis_type` selects the R/EDA treatment. Replace the example row with source-authorised declarations. Blank coordinate fields mean that no coordinate pair is declared.
 
-Do not add database credentials, privacy classification, pseudonymisation policy or approval status to this dictionary. Follow the package's separate longitudinal pseudonymisation workflow when related restricted tables require stable pseudonyms.
+Do not add database credentials, privacy classification, pseudonymisation policy or approval status to this dictionary. Follow the package's separate longitudinal pseudonymisation workflow when related restricted tables require recurring pseudonymous identifiers, and reuse the same persisted registry and compatible identity mapping when stability is required across runs.
 
 ## 2. Audit and prepare authorised data
 

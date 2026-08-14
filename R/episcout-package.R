@@ -1,8 +1,8 @@
 #' episcout: cleaning, exploration and declared data workflows
 #'
-#' @description Helpers for cleaning, exploring and visualising data, including explicit static geospatial mapping, specification-first EDA and an audit-first PostgreSQL workflow for stable longitudinal pseudonymisation.
+#' @description Helpers for cleaning, exploring and visualising data, including explicit static geospatial mapping, specification-first EDA and an audit-first persisted-registry PostgreSQL workflow for longitudinal pseudonymisation.
 #'
-#' @details Start with `vignette("introduction_episcout")` for package helpers, `vignette("geospatial-mapping-primer")` for explicit vector mapping, `vignette("specification-first-eda")` for semantic EDA, or `vignette("longitudinal-pseudonymisation")` for one stable pseudonymous identity across related PostgreSQL tables. The installed `examples/db-to-report/walkthrough.R` script provides a synthetic exercise from duplicate checks and database setup through pseudonymisation and a manifest-owned EDA delivery with an aggregate-derived HTML report.
+#' @details Start with `vignette("introduction_episcout")` for package helpers, `vignette("geospatial-mapping-primer")` for explicit vector mapping, `vignette("specification-first-eda")` for semantic EDA, or `vignette("longitudinal-pseudonymisation")` for recurring pseudonymous identities across related PostgreSQL tables and runs that reuse the same persisted registry. Separate registries do not establish cross-run stability. The installed `examples/db-to-report/walkthrough.R` script provides a synthetic exercise from duplicate checks and database setup through pseudonymisation and a manifest-owned EDA delivery with an aggregate-derived HTML report.
 #'
 #' Pseudonymised data remain restricted personal data. They are not anonymous or automatically disclosure-controlled.
 #'

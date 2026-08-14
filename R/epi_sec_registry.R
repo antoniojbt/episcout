@@ -1,6 +1,6 @@
 #' Initialise a PostgreSQL identity registry
 #'
-#' Audit or create the tables used to assign stable pseudonym tokens across related PostgreSQL tables. The registry schema must already exist.
+#' Audit or create the tables used to assign pseudonym tokens across related PostgreSQL tables. Assignments remain stable when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability. The registry schema must already exist.
 #'
 #' @param con An open PostgreSQL DBI connection created with RPostgres.
 #' @param registry_schema A single existing PostgreSQL schema for the identity registry.

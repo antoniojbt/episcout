@@ -10,7 +10,7 @@
 #'
 #' @details Source names are used only to look up caller-managed keys and are not returned. Observed extrema and Tukey 1.5-IQR fences are descriptive signals from the profiled snapshot, not scientific validity limits. An integral numeric or integer variable with exactly both zero and one observed may receive a pending binary candidate, but its reviewed type and values are never changed. Units and missing-value codes are never inferred.
 #'
-#'   The reviewed specification remains authoritative for semantic `type`, `units`, `levels`, `min`, `max`, and `missing_codes`. This function does not approve or apply rules, clean data, return a modified specification, or write files or database objects. Aggregate results can still be sensitive in context and require caller review before saving or sharing.
+#'   The reviewed specification remains authoritative for `analysis_type`, `units`, `levels`, `min`, `max`, and `missing_codes`. This function does not approve or apply rules, clean data, return a modified specification, or write files or database objects. Aggregate results can still be sensitive in context and require caller review before saving or sharing.
 #'
 #' @export
 epi_eda_qc_proposals <- function(data, spec, variable_keys) {

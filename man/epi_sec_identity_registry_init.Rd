@@ -27,7 +27,7 @@ epi_sec_identity_registry_init(
 An \code{epi_sec_registry_result} with scalar \code{status}, \code{mode}, \code{writes}, \code{registry_schema} and \code{next_action}; \code{metadata} columns \code{registry_id}, \code{registry_version}, \code{token_prefix}, \code{n_bytes}, \code{created_at}; and \code{objects} columns \code{object}, \code{status}. Status is \code{incompatible} when existing objects do not have the expected structure or version, \code{initialisation_required} when audit finds no registry objects and \code{ready} when a compatible registry exists or has been created.
 }
 \description{
-Audit or create the tables used to assign stable pseudonym tokens across related PostgreSQL tables. The registry schema must already exist.
+Audit or create the tables used to assign pseudonym tokens across related PostgreSQL tables. Assignments remain stable when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability. The registry schema must already exist.
 }
 \details{
 Audit mode is the default and never writes. Apply creates \code{registry_metadata}, \code{namespaces}, \code{entities}, \code{aliases}, \code{runs} and \code{run_tables} in one transaction using the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges. Audit reports structurally incompatible existing objects as \code{incompatible}; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.

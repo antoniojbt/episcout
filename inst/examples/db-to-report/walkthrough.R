@@ -198,7 +198,7 @@ roles <- c(
 )
 
 dictionary$label <- unname(labels[dictionary$source_column])
-dictionary$type <- unname(types[dictionary$source_column])
+dictionary$analysis_type <- unname(types[dictionary$source_column])
 dictionary$role <- unname(roles[dictionary$source_column])
 dictionary$description <- paste(
   dictionary$label,
@@ -268,6 +268,8 @@ catalogues <- data.frame(
 epi_eda_dictionary_validate(dictionary, catalogues)
 
 # 5. Declare longitudinal linkage and initialise the registry -----------------
+
+# This execution uses one registry for both related tables. Reusing the same persisted registry and compatible identity mapping is required for stable pseudonymous identifiers across later runs; a separately initialised registry has independent assignments.
 
 linkage_draft <- epi_sec_linkage_scaffold(
   dictionary,
