@@ -1,73 +1,75 @@
-# Approved cleaning rules are an explicit executable contract separate from the
-# descriptive EDA dictionary and pending QC proposals. This module validates
-# that contract, applies only missing-code, bound and allowed-value operations,
-# and publishes complete file or PostgreSQL outputs after aggregate
-# reconciliation. It never returns source names, rule values or destination
-# identity in its audit and display interfaces.
+# Cleaning rules are a neutral executable contract separate from descriptive
+# EDA metadata and review processes. This module validates that contract,
+# applies only missing-code, bound and allowed-value operations, and publishes
+# complete file or PostgreSQL outputs after aggregate reconciliation. It never
+# returns source names, rule values or destination identity in its audit and
+# display interfaces.
 
 clean_rule_columns <- function() {
   c(
-    "variable_key", "rule_state", "declared_type", "valid_min",
-    "valid_max", "allowed_values", "missing_codes", "approval_id"
+    "variable_key", "declared_type", "valid_min", "valid_max",
+    "allowed_values", "missing_codes"
   )
 }
 
-#' Validate analyst-approved cleaning rules
+#' Validate neutral cleaning rules
 #'
 #' Create the executable rule object consumed by
-#' [epi_eda_apply_cleaning_rules()]. This schema is separate from descriptive
-#' EDA dictionaries and the pending result returned by
-#' [epi_eda_qc_proposals()].
+#' [epi_eda_apply_cleaning_rules()]. The six fields define technical data
+#' transformations without workflow state or process identifiers.
 #'
 #' @param rules A non-empty data frame containing exactly `variable_key`,
-#'   `rule_state`, `declared_type`, `valid_min`, `valid_max`, `allowed_values`,
-#'   `missing_codes`, and `approval_id` in that order. See Details.
+#'   `declared_type`, `valid_min`, `valid_max`, `allowed_values`, and
+#'   `missing_codes` in that order. See Details.
 #'
-#' @return An `epi_eda_approved_rules` data frame in canonical opaque-key order.
+#' @return An `epi_eda_cleaning_rules` data frame in canonical opaque-key order.
 #'
-#' @details `rule_state` must be `"approved"`. Supported declared types are
-#'   `numeric`, `integer`, `categorical`, and `binary`. Numeric and integer rules
-#'   may contain finite `valid_min`/`valid_max` bounds and approved semicolon-
-#'   delimited `missing_codes`; categorical and binary rules may contain exact
-#'   semicolon-delimited `allowed_values` and `missing_codes`. Every row must
-#'   define at least one operation. A populated binary allowed set contains
-#'   exactly two values. Allowed and missing sets must not overlap.
+#' @details Supported declared types are `numeric`, `integer`, `categorical`,
+#'   and `binary`. Numeric and integer rules may contain finite
+#'   `valid_min`/`valid_max` bounds and semicolon-delimited `missing_codes`;
+#'   categorical and binary rules may contain exact semicolon-delimited
+#'   `allowed_values` and `missing_codes`. Every row must define at least one
+#'   operation. A populated binary allowed set contains exactly two values.
+#'   Allowed and missing sets must not overlap.
 #'
-#'   `variable_key` must match `^var_[a-z0-9]{16,64}$`. `approval_id` is a
-#'   caller-managed opaque reference matching
-#'   `^approval_[a-z0-9]{16,64}$`; episcout validates the declared state and
-#'   structure but does not authenticate the approving analyst. Pending
-#'   proposal objects, descriptive dictionary bounds, unsupported types,
-#'   contradictory bounds, non-finite numeric instructions, duplicate keys,
-#'   empty list tokens, and extra or reordered fields are rejected.
+#'   `variable_key` must match `^var_[a-z0-9]{16,64}$`. Descriptive dictionary
+#'   bounds, unsupported types, contradictory bounds, non-finite numeric
+#'   instructions, duplicate keys, empty list tokens, and extra or reordered
+#'   fields are rejected. Rows are returned in deterministic opaque-key order,
+#'   with list tokens in canonical order.
+#'
+#' @section Deprecated interface:
+#' `epi_eda_approved_rules()` is a temporary deprecated redirect to
+#' `epi_eda_cleaning_rules()` and will be removed in the next breaking release.
+#' It accepts only this six-field schema and returns `epi_eda_cleaning_rules`;
+#' the former eight-field schema is rejected rather than translated or stripped.
 #'
 #' @export
-epi_eda_approved_rules <- function(rules) {
+epi_eda_cleaning_rules <- function(rules) {
   if (!is.data.frame(rules)) {
-    stop("rules must be a data frame using the approved-rule schema.", call. = FALSE)
+    stop("rules must be a data frame using the cleaning-rule schema.", call. = FALSE)
   }
   if (!identical(names(rules), clean_rule_columns())) {
     stop(
-      "rules must contain exactly the approved-rule fields in the required order.",
+      "rules must contain exactly the cleaning-rule fields in the required order.",
       call. = FALSE
     )
   }
   rules <- as.data.frame(rules, stringsAsFactors = FALSE)
   if (nrow(rules) == 0L) {
-    stop("rules must contain at least one approved rule.", call. = FALSE)
+    stop("rules must contain at least one cleaning rule.", call. = FALSE)
   }
   character_fields <- c(
-    "variable_key", "rule_state", "declared_type", "allowed_values",
-    "missing_codes", "approval_id"
+    "variable_key", "declared_type", "allowed_values", "missing_codes"
   )
   if (!all(vapply(rules[character_fields], is.character, logical(1)))) {
-    stop("Approved-rule character fields must use character vectors.", call. = FALSE)
+    stop("Cleaning-rule character fields must use character vectors.", call. = FALSE)
   }
   if (!is.numeric(rules$valid_min) || !is.numeric(rules$valid_max)) {
-    stop("Approved-rule bounds must use numeric vectors with typed NA when absent.", call. = FALSE)
+    stop("Cleaning-rule bounds must use numeric vectors with typed NA when absent.", call. = FALSE)
   }
   if (anyNA(rules[character_fields])) {
-    stop("Approved-rule character fields must not be missing.", call. = FALSE)
+    stop("Cleaning-rule character fields must not be missing.", call. = FALSE)
   }
   valid_keys <- validUTF8(rules$variable_key)
   valid_keys[valid_keys] <- grepl(
@@ -75,22 +77,11 @@ epi_eda_approved_rules <- function(rules) {
     rules$variable_key[valid_keys]
   )
   if (!all(valid_keys) || anyDuplicated(rules$variable_key)) {
-    stop("Approved rules require unique caller-managed opaque variable keys.", call. = FALSE)
-  }
-  if (!all(rules$rule_state == "approved")) {
-    stop("Every executable rule must have rule_state equal to approved.", call. = FALSE)
+    stop("Cleaning rules require unique caller-managed opaque variable keys.", call. = FALSE)
   }
   supported <- c("numeric", "integer", "categorical", "binary")
   if (!all(rules$declared_type %in% supported)) {
-    stop("Approved rules contain an unsupported declared type.", call. = FALSE)
-  }
-  valid_approvals <- validUTF8(rules$approval_id)
-  valid_approvals[valid_approvals] <- grepl(
-    "^approval_[a-z0-9]{16,64}$",
-    rules$approval_id[valid_approvals]
-  )
-  if (!all(valid_approvals)) {
-    stop("Approved rules require opaque approval identifiers matching the required pattern.", call. = FALSE)
+    stop("Cleaning rules contain an unsupported declared type.", call. = FALSE)
   }
 
   normalised_allowed <- character(nrow(rules))
@@ -102,45 +93,45 @@ epi_eda_approved_rules <- function(rules) {
     lower <- as.numeric(rules$valid_min[[index]])
     upper <- as.numeric(rules$valid_max[[index]])
     if (is.nan(lower) || is.nan(upper)) {
-      stop("Approved-rule bounds must use typed NA when absent.", call. = FALSE)
+      stop("Cleaning-rule bounds must use typed NA when absent.", call. = FALSE)
     }
 
     if (type %in% c("numeric", "integer")) {
       if (length(allowed) > 0L) {
-        stop("Numeric and integer approved rules must not contain allowed_values.", call. = FALSE)
+        stop("Numeric and integer cleaning rules must not contain allowed_values.", call. = FALSE)
       }
       invalid_lower <- !is.na(lower) && !is.finite(lower)
       invalid_upper <- !is.na(upper) && !is.finite(upper)
       if (invalid_lower || invalid_upper) {
-        stop("Approved numeric bounds must be finite when present.", call. = FALSE)
+        stop("Cleaning-rule numeric bounds must be finite when present.", call. = FALSE)
       }
       if (!is.na(lower) && !is.na(upper) && lower > upper) {
-        stop("Approved numeric bounds are contradictory.", call. = FALSE)
+        stop("Cleaning-rule numeric bounds are contradictory.", call. = FALSE)
       }
       if (type == "integer") {
         present_bounds <- c(lower, upper)[!is.na(c(lower, upper))]
         whole_bounds <- present_bounds == trunc(present_bounds)
         exact_bounds <- abs(present_bounds) <= 9007199254740991
         if (!all(whole_bounds) || !all(exact_bounds)) {
-          stop("Approved integer bounds must be exactly represented whole numbers.", call. = FALSE)
+          stop("Cleaning-rule integer bounds must be exactly represented whole numbers.", call. = FALSE)
         }
       }
       missing <- clean_numeric_rule_tokens(missing, type)
     } else {
       if (!is.na(lower) || !is.na(upper)) {
-        stop("Categorical and binary approved rules must not contain numeric bounds.", call. = FALSE)
+        stop("Categorical and binary cleaning rules must not contain numeric bounds.", call. = FALSE)
       }
       if (type == "binary" && length(allowed) > 0L && length(allowed) != 2L) {
         stop("A populated binary allowed_values field must contain exactly two values.", call. = FALSE)
       }
       if (length(intersect(allowed, missing)) > 0L) {
-        stop("Approved allowed values and missing codes are contradictory.", call. = FALSE)
+        stop("Cleaning-rule allowed values and missing codes are contradictory.", call. = FALSE)
       }
     }
     has_operation <- !is.na(lower) || !is.na(upper) ||
       length(allowed) > 0L || length(missing) > 0L
     if (!has_operation) {
-      stop("Every approved rule must contain at least one executable operation.", call. = FALSE)
+      stop("Every cleaning rule must contain at least one executable operation.", call. = FALSE)
     }
     normalised_allowed[[index]] <- paste(allowed, collapse = ";")
     normalised_missing[[index]] <- paste(missing, collapse = ";")
@@ -152,16 +143,23 @@ epi_eda_approved_rules <- function(rules) {
   rules$missing_codes <- normalised_missing
   rules <- rules[order(rules$variable_key, method = "radix"), , drop = FALSE]
   row.names(rules) <- NULL
-  class(rules) <- c("epi_eda_approved_rules", "data.frame")
+  class(rules) <- c("epi_eda_cleaning_rules", "data.frame")
   rules
+}
+
+#' @rdname epi_eda_cleaning_rules
+#' @export
+epi_eda_approved_rules <- function(rules) {
+  .Deprecated("epi_eda_cleaning_rules", package = "episcout")
+  epi_eda_cleaning_rules(rules)
 }
 
 clean_rule_tokens <- function(value) {
   if (!is.character(value) || length(value) != 1L || is.na(value)) {
-    stop("Approved-rule list fields must be non-missing character values.", call. = FALSE)
+    stop("Cleaning-rule list fields must be non-missing character values.", call. = FALSE)
   }
   if (!validUTF8(value)) {
-    stop("Approved-rule list fields must use valid UTF-8 text.", call. = FALSE)
+    stop("Cleaning-rule list fields must use valid UTF-8 text.", call. = FALSE)
   }
   if (trimws(value) == "") {
     return(character())
@@ -169,7 +167,7 @@ clean_rule_tokens <- function(value) {
   tokens <- strsplit(value, ";", fixed = TRUE)[[1L]]
   tokens <- trimws(tokens)
   if (any(tokens == "") || anyDuplicated(tokens) || !all(validUTF8(tokens))) {
-    stop("Approved-rule list fields contain malformed or duplicate values.", call. = FALSE)
+    stop("Cleaning-rule list fields contain malformed or duplicate values.", call. = FALSE)
   }
   sort(enc2utf8(tokens), method = "radix")
 }
@@ -180,14 +178,14 @@ clean_numeric_rule_tokens <- function(tokens, type) {
   }
   values <- suppressWarnings(as.numeric(tokens))
   if (any(!is.finite(values))) {
-    stop("Approved numeric missing codes must be finite numeric values.", call. = FALSE)
+    stop("Cleaning-rule numeric missing codes must be finite numeric values.", call. = FALSE)
   }
   if (type == "integer") {
     syntax_ok <- grepl("^[+-]?[0-9]+$", tokens)
     whole_values <- values == trunc(values)
     exact_values <- abs(values) <= 9007199254740991
     if (!all(syntax_ok) || !all(whole_values) || !all(exact_values)) {
-      stop("Approved integer missing codes must be exactly represented whole numbers.", call. = FALSE)
+      stop("Cleaning-rule integer missing codes must be exactly represented whole numbers.", call. = FALSE)
     }
     canonical <- sprintf("%.0f", values)
   } else {
@@ -195,37 +193,54 @@ clean_numeric_rule_tokens <- function(tokens, type) {
     canonical <- sprintf("%.17g", values)
   }
   if (anyDuplicated(canonical)) {
-    stop("Approved numeric missing codes contain duplicate values.", call. = FALSE)
+    stop("Cleaning-rule numeric missing codes contain duplicate values.", call. = FALSE)
   }
   sort(canonical, method = "radix")
 }
 
 #' @export
+print.epi_eda_cleaning_rules <- function(x, ...) {
+  cat("<episcout cleaning rules>\n")
+  cat("  cleaning rules: ", nrow(x), "\n", sep = "")
+  cat("  rule values: <not displayed>\n")
+  invisible(x)
+}
+
+#' @export
+str.epi_eda_cleaning_rules <- function(object, ...) {
+  cat("<episcout cleaning rules>\n")
+  cat("  cleaning rules: ", nrow(object), "\n", sep = "")
+  cat("  variable keys and rule values: <not displayed>\n")
+  invisible(object)
+}
+
+# Retain value-safe display for previously serialised, non-executable objects.
+#' @export
 print.epi_eda_approved_rules <- function(x, ...) {
-  cat("<episcout approved cleaning rules>\n")
-  cat("  approved rules: ", nrow(x), "\n", sep = "")
-  cat("  rule values and approval references: <not displayed>\n")
+  cat("<episcout legacy cleaning-rule object>\n")
+  cat("  rules: ", nrow(x), "\n", sep = "")
+  cat("  legacy rule contents: <not displayed>\n")
   invisible(x)
 }
 
 #' @export
 str.epi_eda_approved_rules <- function(object, ...) {
-  cat("<episcout approved cleaning rules>\n")
-  cat("  approved rules: ", nrow(object), "\n", sep = "")
-  cat("  variable keys, rule values and approval references: <not displayed>\n")
+  cat("<episcout legacy cleaning-rule object>\n")
+  cat("  rules: ", nrow(object), "\n", sep = "")
+  cat("  legacy rule contents: <not displayed>\n")
   invisible(object)
 }
 
-#' Apply approved cleaning rules and materialise a complete processed output
+#' Apply neutral cleaning rules and materialise a complete processed output
 #'
-#' Apply separately approved bounds, allowed values, and missing-value codes to
-#' a data frame or PostgreSQL source without modifying the source. Validation
-#' and aggregate reconciliation complete before the function reports success.
+#' Apply declared bounds, allowed values, and missing-value codes to a data
+#' frame or PostgreSQL source without modifying the source. Validation and
+#' aggregate reconciliation complete before the function reports success.
 #'
 #' @param data A data frame or an [epi_eda_postgres_source()].
-#' @param rules An unmodified object returned by [epi_eda_approved_rules()].
+#' @param rules An unmodified object returned by [epi_eda_cleaning_rules()].
 #' @param variable_keys A caller-owned data frame containing exactly `name` and
-#'   `variable_key`. Every approved key must resolve exactly once. Additional
+#'   `variable_key`. Every rule key must resolve exactly once. Additional
 #'   unruled mappings are permitted.
 #' @param output_path For a data-frame source, an optional new destination file.
 #' @param output_format When `output_path` is supplied, exactly `"csv"` or
@@ -250,15 +265,15 @@ str.epi_eda_approved_rules <- function(object, ...) {
 #'   back. PostgreSQL relations have no physical row-order contract, but the
 #'   projection does not filter or explicitly reorder rows.
 #'
-#'   Numeric values outside approved inclusive bounds become typed missing.
+#'   Numeric values outside declared inclusive bounds become typed missing.
 #'   Categorical and binary values outside a populated allowed set become typed
-#'   missing. Approved missing codes become typed missing. Existing missing
+#'   missing. Declared missing codes become typed missing. Existing missing
 #'   values remain missing. Data-frame row count, row order, row names, column
 #'   order and vector storage are preserved. The source object or relation is
 #'   never changed.
 #'
 #'   The returned audit and custom display methods omit source names, paths,
-#'   relation identities, rule values, approval references, and row-level data.
+#'   relation identities, rule values, process metadata, and row-level data.
 #'   Aggregate counts and hashes can still be sensitive in context and require
 #'   caller review before sharing.
 #'
@@ -346,17 +361,17 @@ clean_checked_count <- function(value) {
 }
 
 clean_revalidate_rules <- function(rules) {
-  valid_class <- inherits(rules, "epi_eda_approved_rules") &&
-    identical(class(rules), c("epi_eda_approved_rules", "data.frame"))
+  valid_class <- inherits(rules, "epi_eda_cleaning_rules") &&
+    identical(class(rules), c("epi_eda_cleaning_rules", "data.frame"))
   if (!valid_class) {
-    stop("rules must be an unmodified object returned by epi_eda_approved_rules().", call. = FALSE)
+    stop("rules must be an unmodified object returned by epi_eda_cleaning_rules().", call. = FALSE)
   }
   rebuilt <- tryCatch(
-    epi_eda_approved_rules(clean_plain_rules(rules)),
+    epi_eda_cleaning_rules(clean_plain_rules(rules)),
     error = function(error) NULL
   )
   if (is.null(rebuilt) || !identical(rules, rebuilt)) {
-    stop("rules must be an unmodified object returned by epi_eda_approved_rules().", call. = FALSE)
+    stop("rules must be an unmodified object returned by epi_eda_cleaning_rules().", call. = FALSE)
   }
   rules
 }
@@ -384,7 +399,7 @@ clean_validate_variable_keys <- function(variable_keys, rule_keys) {
   }
   matched <- match(rule_keys, variable_keys$variable_key)
   if (anyNA(matched)) {
-    stop("variable_keys must resolve every approved rule exactly once.", call. = FALSE)
+    stop("variable_keys must resolve every cleaning rule exactly once.", call. = FALSE)
   }
   variable_keys$name[matched]
 }
@@ -488,12 +503,12 @@ clean_memory_plans <- function(data, rules, source_names) {
   for (index in seq_len(nrow(rules))) {
     name <- source_names[[index]]
     if (!name %in% names(data)) {
-      stop("Every approved rule must resolve to a present source variable.", call. = FALSE)
+      stop("Every cleaning rule must resolve to a present source variable.", call. = FALSE)
     }
     rule <- rules[index, , drop = FALSE]
     missing_codes <- clean_rule_missing_values(rule)
     if (!clean_memory_supported(data[[name]], rule$declared_type[[1L]], missing_codes)) {
-      stop("An approved rule is incompatible with source storage.", call. = FALSE)
+      stop("A cleaning rule is incompatible with source storage.", call. = FALSE)
     }
     plans[[index]] <- list(
       name = name,
@@ -544,7 +559,7 @@ clean_assign_missing <- function(values, transition) {
   } else if (is.logical(values)) {
     values[transition] <- NA
   } else {
-    stop("An approved rule is incompatible with source storage.", call. = FALSE)
+    stop("A cleaning rule is incompatible with source storage.", call. = FALSE)
   }
   values
 }
@@ -685,17 +700,17 @@ clean_result <- function(data, summary, variables) {
 
 #' @export
 print.epi_eda_cleaning_result <- function(x, ...) {
-  cat("<episcout approved cleaning result>\n")
+  cat("<episcout cleaning result>\n")
   cat("  publication: ", x$audit$summary$publication[[1L]], "\n", sep = "")
   cat("  rows: ", x$audit$summary$destination_rows[[1L]], "\n", sep = "")
-  cat("  approved rules: ", nrow(x$audit$variables), "\n", sep = "")
+  cat("  cleaning rules: ", nrow(x$audit$variables), "\n", sep = "")
   cat("  source, destination and rule values: <not displayed>\n")
   invisible(x)
 }
 
 #' @export
 str.epi_eda_cleaning_result <- function(object, ...) {
-  cat("<episcout approved cleaning result>\n")
+  cat("<episcout cleaning result>\n")
   cat("  publication: ", object$audit$summary$publication[[1L]], "\n", sep = "")
   dimensions <- paste0(
     object$audit$summary$destination_rows[[1L]],
@@ -704,7 +719,7 @@ str.epi_eda_cleaning_result <- function(object, ...) {
     " columns"
   )
   cat("  dimensions: ", dimensions, "\n", sep = "")
-  cat("  approved rules: ", nrow(object$audit$variables), "\n", sep = "")
+  cat("  cleaning rules: ", nrow(object$audit$variables), "\n", sep = "")
   cat("  source, destination, keys and rule values: <not displayed>\n")
   invisible(object)
 }
@@ -855,7 +870,7 @@ clean_pg_rule_plan <- function(source, rule, name, offset = 0L) {
   column <- eda_postgres_column(source, name)
   type <- rule$declared_type[[1L]]
   if (!clean_pg_compatible(column, type)) {
-    stop("An approved rule is incompatible with PostgreSQL source storage.", call. = FALSE)
+    stop("A cleaning rule is incompatible with PostgreSQL source storage.", call. = FALSE)
   }
   column_sql <- eda_postgres_column_sql(source, name)
   standard <- clean_pg_standard_missing(source, column)

@@ -1,24 +1,18 @@
-context("approved cleaning rules and processed outputs")
+context("technical cleaning rules and processed outputs")
 
 cleaning_test_rules <- function(variable_key,
                                 declared_type,
                                 valid_min = rep(NA_real_, length(variable_key)),
                                 valid_max = rep(NA_real_, length(variable_key)),
                                 allowed_values = rep("", length(variable_key)),
-                                missing_codes = rep("", length(variable_key)),
-                                approval_id = rep(
-                                  "approval_0000000000000001",
-                                  length(variable_key)
-                                )) {
+                                missing_codes = rep("", length(variable_key))) {
   data.frame(
     variable_key = variable_key,
-    rule_state = rep("approved", length(variable_key)),
     declared_type = declared_type,
     valid_min = valid_min,
     valid_max = valid_max,
     allowed_values = allowed_values,
     missing_codes = missing_codes,
-    approval_id = approval_id,
     stringsAsFactors = FALSE
   )
 }
@@ -60,12 +54,12 @@ cleaning_fixture <- function() {
   list(
     data = data,
     keys = keys,
-    rules = episcout::epi_eda_approved_rules(rules)
+    rules = episcout::epi_eda_cleaning_rules(rules)
   )
 }
 
-test_that("approved rules have an exact canonical schema and pending input is rejected", {
-  expect_identical(names(formals(epi_eda_approved_rules)), "rules")
+test_that("cleaning rules have one exact canonical schema and pending input is rejected", {
+  expect_identical(names(formals(epi_eda_cleaning_rules)), "rules")
   expect_identical(
     names(formals(epi_eda_apply_cleaning_rules)),
     c(
@@ -81,14 +75,14 @@ test_that("approved rules have an exact canonical schema and pending input is re
     allowed_values = c(" B ; A ", ""),
     missing_codes = c("M", "0999.0")
   )
-  observed <- epi_eda_approved_rules(raw)
+  observed <- epi_eda_cleaning_rules(raw)
 
-  expect_identical(class(observed), c("epi_eda_approved_rules", "data.frame"))
+  expect_identical(class(observed), c("epi_eda_cleaning_rules", "data.frame"))
   expect_named(
     observed,
     c(
-      "variable_key", "rule_state", "declared_type", "valid_min",
-      "valid_max", "allowed_values", "missing_codes", "approval_id"
+      "variable_key", "declared_type", "valid_min", "valid_max",
+      "allowed_values", "missing_codes"
     )
   )
   expect_identical(
@@ -98,6 +92,8 @@ test_that("approved rules have an exact canonical schema and pending input is re
   expect_identical(observed$missing_codes[[1]], "999")
   expect_identical(observed$allowed_values[[2]], "A;B")
   expect_type(observed$valid_min, "double")
+  expect_error(epi_eda_cleaning_rules(raw[, rev(names(raw)), drop = FALSE]))
+  expect_error(epi_eda_cleaning_rules(raw[, -ncol(raw), drop = FALSE]))
 
   spec <- data.frame(
     name = "field_a",
@@ -108,25 +104,106 @@ test_that("approved rules have an exact canonical schema and pending input is re
   )
   keys <- cleaning_test_keys(spec$name)
   pending <- epi_eda_qc_proposals(data.frame(field_a = c(0, 1)), spec, keys)
-  expect_error(epi_eda_approved_rules(pending$proposals), "approved-rule fields")
-  expect_error(epi_eda_approved_rules(pending), "data frame")
+  expect_error(epi_eda_cleaning_rules(pending$proposals))
+  expect_error(epi_eda_cleaning_rules(pending), "data frame")
+})
+
+test_that("the old symbol redirects only the neutral schema and the old class never executes", {
+  raw <- cleaning_test_rules(
+    "var_0000000000000001",
+    "numeric",
+    valid_min = 0,
+    valid_max = 10
+  )
+  redirected <- expect_warning(
+    epi_eda_approved_rules(raw),
+    "deprecated"
+  )
+  expect_identical(class(redirected), c("epi_eda_cleaning_rules", "data.frame"))
+  expect_identical(redirected, epi_eda_cleaning_rules(raw))
+
+  old_schema <- data.frame(
+    variable_key = raw$variable_key,
+    rule_state = "approved",
+    declared_type = raw$declared_type,
+    valid_min = raw$valid_min,
+    valid_max = raw$valid_max,
+    allowed_values = raw$allowed_values,
+    missing_codes = raw$missing_codes,
+    approval_id = "approval_0000000000000001",
+    stringsAsFactors = FALSE
+  )
+  expect_error(
+    suppressWarnings(epi_eda_approved_rules(old_schema)),
+    "required order"
+  )
+
+  forged <- old_schema
+  class(forged) <- c("epi_eda_approved_rules", "data.frame")
+  legacy_display <- paste(
+    capture.output(print(forged)),
+    capture.output(str(forged)),
+    collapse = "\n"
+  )
+  expect_false(grepl(
+    "var_|approval_|rule_state|approval_id|valid_min|allowed_values|approved|pending",
+    legacy_display,
+    ignore.case = TRUE
+  ))
+  expect_error(
+    epi_eda_apply_cleaning_rules(
+      data.frame(value = 1),
+      forged,
+      cleaning_test_keys("value")
+    ),
+    "epi_eda_cleaning_rules|unmodified object"
+  )
 })
 
 test_that("malformed contradictory and unsupported rules fail without echoing values", {
   base <- cleaning_test_rules("var_0000000000000001", "numeric", 0, 10)
+  expect_error(epi_eda_cleaning_rules(base[0, , drop = FALSE]), "at least one")
+
+  invalid_utf8 <- rawToChar(as.raw(255))
+  Encoding(invalid_utf8) <- "UTF-8"
+  factor_type <- base
+  factor_type$declared_type <- factor(factor_type$declared_type)
+  character_bounds <- base
+  character_bounds$valid_min <- "0"
+  missing_key <- base
+  missing_key$variable_key <- NA_character_
+  invalid_utf8_key <- base
+  invalid_utf8_key$variable_key <- paste0("KEY_CANARY", invalid_utf8)
+  invalid_utf8_list <- base
+  invalid_utf8_list$missing_codes <- paste0("VALUE_CANARY", invalid_utf8)
+  missing_allowed <- base
+  missing_allowed$allowed_values <- NA_character_
+  missing_codes <- base
+  missing_codes$missing_codes <- NA_character_
+  non_scalar_list <- base
+  non_scalar_list$missing_codes <- I(list(c("VALUE_CANARY_A", "VALUE_CANARY_B")))
   invalid <- list(
-    transform(base, rule_state = "pending"),
+    factor_type,
+    character_bounds,
+    missing_key,
+    invalid_utf8_key,
+    invalid_utf8_list,
+    missing_allowed,
+    missing_codes,
+    non_scalar_list,
     transform(base, declared_type = "TEXT_TYPE_CANARY"),
     transform(base, valid_min = 11, valid_max = 10),
     transform(base, valid_min = Inf),
     transform(base, valid_min = NaN),
     transform(base, allowed_values = "VALUE_CANARY"),
     transform(base, variable_key = "KEY_CANARY"),
-    transform(base, approval_id = "APPROVAL_CANARY"),
     transform(base, valid_min = NA_real_, valid_max = NA_real_),
     transform(base, missing_codes = "1;;2"),
     transform(base, missing_codes = "1;01"),
-    transform(base, missing_codes = "0;-0")
+    transform(base, missing_codes = "0;-0"),
+    transform(base, missing_codes = "Inf"),
+    transform(base, missing_codes = "-Inf"),
+    transform(base, missing_codes = "NaN")
   )
   categorical <- cleaning_test_rules(
     "var_0000000000000001", "categorical",
@@ -148,20 +225,22 @@ test_that("malformed contradictory and unsupported rules fail without echoing va
     list(
       transform(integer, valid_min = 0.5),
       transform(integer, missing_codes = "1.5"),
+      transform(integer, valid_max = 9007199254740992),
+      transform(integer, missing_codes = "9007199254740992"),
       cbind(base, extra_canary = "EXTRA_CANARY", stringsAsFactors = FALSE)
     )
   )
 
   for (value in invalid) {
-    error <- tryCatch(epi_eda_approved_rules(value), error = identity)
+    error <- tryCatch(epi_eda_cleaning_rules(value), error = identity)
     expect_s3_class(error, "error")
     expect_false(grepl(
-      "CANARY|VALUE_CANARY|KEY_CANARY|APPROVAL_CANARY",
+      "CANARY|VALUE_CANARY|KEY_CANARY",
       conditionMessage(error)
     ))
   }
   duplicated <- rbind(base, base)
-  expect_error(epi_eda_approved_rules(duplicated), "unique")
+  expect_error(epi_eda_cleaning_rules(duplicated), "unique")
 })
 
 test_that("in-memory rules preserve source order and produce literal audit counts", {
@@ -240,7 +319,8 @@ test_that("in-memory rules preserve source order and produce literal audit count
   raw_reordered <- rules_before[rev(seq_len(nrow(rules_before))), , drop = FALSE]
   class(raw_reordered) <- "data.frame"
   raw_reordered$allowed_values[raw_reordered$declared_type == "categorical"] <- "B;A"
-  canonical <- epi_eda_approved_rules(raw_reordered)
+  raw_reordered$allowed_values[raw_reordered$declared_type == "binary"] <- "TRUE;FALSE"
+  canonical <- epi_eda_cleaning_rules(raw_reordered)
   repeated <- epi_eda_apply_cleaning_rules(fixture$data, canonical, fixture$keys)
   expect_identical(
     repeated$audit$summary$rule_set_sha256,
@@ -251,7 +331,7 @@ test_that("in-memory rules preserve source order and produce literal audit count
 
 test_that("zero rows all-missing values and data.table sources remain stable", {
   keys <- cleaning_test_keys(c("measure", "category"))
-  rules <- epi_eda_approved_rules(cleaning_test_rules(
+  rules <- epi_eda_cleaning_rules(cleaning_test_rules(
     keys$variable_key,
     c("numeric", "categorical"),
     valid_min = c(0, NA),
@@ -303,7 +383,7 @@ test_that("all in-memory validation completes before transformation", {
   expect_identical(fixture$data, source_before)
 
   mutated <- fixture$rules
-  mutated$rule_state[[1]] <- "pending"
+  mutated$allowed_values[mutated$declared_type == "categorical"] <- "B;A"
   expect_error(
     epi_eda_apply_cleaning_rules(fixture$data, mutated, fixture$keys),
     "unmodified object"
@@ -384,6 +464,67 @@ test_that("CSV and RDS publication is explicit reconciled and no-replace", {
   )
 })
 
+test_that("a neutral CSV-backed rule set reaches cleaning and existing EDA", {
+  directory <- tempfile("eda-cleaning-config-")
+  dir.create(directory)
+  on.exit(unlink(directory, recursive = TRUE), add = TRUE)
+  rules_path <- file.path(directory, "cleaning-rules.csv")
+  source <- data.frame(
+    sequence = 1:5,
+    measure = c(NA_real_, -1, 5, 11, 999),
+    category = c(NA_character_, "A", "B", "X", "M"),
+    unruled = letters[1:5],
+    stringsAsFactors = FALSE
+  )
+  source_before <- source
+  keys <- cleaning_test_keys(names(source))
+  raw_rules <- cleaning_test_rules(
+    keys$variable_key[match(c("measure", "category"), keys$name)],
+    c("numeric", "categorical"),
+    valid_min = c(0, NA),
+    valid_max = c(10, NA),
+    allowed_values = c("", "A;B"),
+    missing_codes = c("999", "M")
+  )
+  utils::write.csv(raw_rules, rules_path, row.names = FALSE, na = "")
+
+  from_file <- utils::read.csv(
+    rules_path,
+    colClasses = "character",
+    check.names = FALSE,
+    stringsAsFactors = FALSE,
+    na.strings = character()
+  )
+  from_file$valid_min <- suppressWarnings(as.numeric(from_file$valid_min))
+  from_file$valid_max <- suppressWarnings(as.numeric(from_file$valid_max))
+  rules <- epi_eda_cleaning_rules(from_file)
+  cleaned <- epi_eda_apply_cleaning_rules(source, rules, keys)
+
+  expect_identical(source, source_before)
+  expect_identical(cleaned$data$sequence, source$sequence)
+  expect_identical(cleaned$data$measure, c(NA_real_, NA, 5, NA, NA))
+  expect_identical(cleaned$data$category, c(NA_character_, "A", "B", NA, NA))
+  expect_identical(cleaned$data$unruled, source$unruled)
+  expect_identical(
+    cleaned$audit$variables$n_transitioned_to_missing,
+    c(3L, 2L)
+  )
+
+  spec <- data.frame(
+    name = names(source),
+    label = c("Sequence", "Measure", "Category", "Unruled"),
+    database_type = rep("text", ncol(source)),
+    analysis_type = c("integer", "numeric", "categorical", "text"),
+    role = rep("covariate", ncol(source)),
+    levels = c("", "", "A;B", ""),
+    missing_codes = rep("", ncol(source)),
+    stringsAsFactors = FALSE
+  )
+  missing <- epi_eda_profile_missing(cleaned$data, spec)
+  expect_identical(missing$n, rep(5L, 4L))
+  expect_identical(missing$n_missing, c(0L, 4L, 3L, 0L))
+})
+
 test_that("file staging and reconciliation failures leave no artifact", {
   fixture <- cleaning_fixture()
   directory <- tempfile("eda-cleaning-failure-")
@@ -455,7 +596,7 @@ test_that("CSV rejects non-scalar columns before creating a destination", {
   expect_false(file.exists(target))
 })
 
-test_that("display methods omit keys rule values and approval references", {
+test_that("rule objects audits and displays omit process metadata and displays redact rule values", {
   fixture <- cleaning_fixture()
   result <- epi_eda_apply_cleaning_rules(fixture$data, fixture$rules, fixture$keys)
   rule_display <- paste(
@@ -468,9 +609,16 @@ test_that("display methods omit keys rule values and approval references", {
     capture.output(str(result)),
     collapse = "\n"
   )
-  expect_false(grepl("var_|999|approval_", rule_display))
-  expect_false(grepl("var_|999|approval_|measure|category", result_display))
-  expect_match(result_display, "approved rules: 4", fixed = TRUE)
+  expect_false(any(c("rule_state", "approval_id", "approved", "pending") %in% names(fixture$rules)))
+  expect_false(any(c("rule_state", "approval_id", "approved", "pending") %in%
+                     unlist(lapply(result$audit, names), use.names = FALSE)))
+  expect_false(grepl("var_|999|approval_|approved|pending", rule_display, ignore.case = TRUE))
+  expect_false(grepl(
+    "var_|999|approval_|approved|pending|measure|category",
+    result_display,
+    ignore.case = TRUE
+  ))
+  expect_match(result_display, "cleaning rules: 4", fixed = TRUE)
 })
 
 test_that("PostgreSQL plans bind rule values in server-side CASE expressions", {
@@ -489,7 +637,7 @@ test_that("PostgreSQL plans bind rule values in server-side CASE expressions", {
       stringsAsFactors = FALSE
     )
   )
-  rule <- epi_eda_approved_rules(cleaning_test_rules(
+  rule <- epi_eda_cleaning_rules(cleaning_test_rules(
     "var_0000000000000001",
     "numeric",
     valid_min = 0,
@@ -511,7 +659,7 @@ test_that("PostgreSQL plans bind rule values in server-side CASE expressions", {
   expect_match(statement, "$2::double precision", fixed = TRUE)
   expect_match(statement, "$3::double precision", fixed = TRUE)
   expect_match(statement, "untouched", fixed = TRUE)
-  expect_false(grepl("999|approval_|var_", statement))
+  expect_false(grepl("999|approval_|approved|pending|var_", statement, ignore.case = TRUE))
   expect_identical(length(plan$params), 3L)
 })
 
@@ -580,7 +728,7 @@ test_that("PostgreSQL publication is equivalent new-only and transactional", {
     c("measure", "whole", "category", "flag", "all_missing"),
     keys$name
   )
-  rules <- epi_eda_approved_rules(cleaning_test_rules(
+  rules <- epi_eda_cleaning_rules(cleaning_test_rules(
     keys$variable_key[selected],
     c("numeric", "integer", "categorical", "binary", "numeric"),
     valid_min = c(0, 0, NA, NA, 0),
@@ -679,7 +827,7 @@ test_that("PostgreSQL publication is equivalent new-only and transactional", {
     )
   )
   empty_keys <- cleaning_test_keys("measure")
-  empty_rules <- epi_eda_approved_rules(cleaning_test_rules(
+  empty_rules <- epi_eda_cleaning_rules(cleaning_test_rules(
     empty_keys$variable_key,
     "numeric",
     valid_min = 0
