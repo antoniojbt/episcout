@@ -193,7 +193,7 @@ episcout does not accept credentials, connection strings, predicates, ordering e
 
 ## 7. Declare coordinate roles for specification-first EDA
 
-Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. Declare exactly one numeric/integer `x` row and one `y` row with the same non-empty pair identifier and the same explicit resolvable CRS text. A partial pair, duplicate axis, mismatched CRS or non-numeric declared type fails validation.
+Specification scaffolds reserve `geo_role`, `geo_pair` and `geo_crs` as blank fields; episcout never fills them from names, values, ranges or correlations. Declare exactly one `x` row and one `y` row whose `analysis_type` is `numeric` or `integer`, with the same non-empty pair identifier and the same explicit resolvable CRS text. A partial pair, duplicate axis, mismatched CRS or non-numeric analytical type fails validation.
 
 ```{r eda-coordinate-qa}
 coordinate_spec <- data.frame(

@@ -22,5 +22,5 @@ Profile aggregate quality-control evidence without changing observations or the 
 \details{
 Source names are used only to look up caller-managed keys and are not returned. Observed extrema and Tukey 1.5-IQR fences are descriptive signals from the profiled snapshot, not scientific validity limits. An integral numeric or integer variable with exactly both zero and one observed may receive a pending binary candidate, but its reviewed type and values are never changed. Units and missing-value codes are never inferred.
 
-The reviewed specification remains authoritative for semantic \code{type}, \code{units}, \code{levels}, \code{min}, \code{max}, and \code{missing_codes}. This function does not approve or apply rules, clean data, return a modified specification, or write files or database objects. Aggregate results can still be sensitive in context and require caller review before saving or sharing.
+The reviewed specification remains authoritative for \code{analysis_type}, \code{units}, \code{levels}, \code{min}, \code{max}, and \code{missing_codes}. This function does not approve or apply rules, clean data, return a modified specification, or write files or database objects. Aggregate results can still be sensitive in context and require caller review before saving or sharing.
 }

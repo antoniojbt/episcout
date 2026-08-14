@@ -61,6 +61,26 @@ test_that("project template is bundled with the expected scaffold", {
   expect_no_match(read_project_targets(template_path), "\\brender_eda_report\\b")
 })
 
+test_that("project template dictionary uses the current EDA specification", {
+  dictionary_path <- system.file(
+    "project-template", "metadata", "data_dictionary.csv",
+    package = "episcout"
+  )
+
+  expect_true(nzchar(dictionary_path))
+  specification <- epi_eda_spec(dictionary_path)
+  expect_identical(
+    names(specification),
+    c(
+      "name", "label", "database_type", "analysis_type", "role", "units",
+      "levels", "min", "max", "missing_codes", "required", "group",
+      "description", "geo_role", "geo_pair", "geo_crs"
+    )
+  )
+  expect_identical(specification$database_type, "numeric")
+  expect_identical(specification$analysis_type, "numeric")
+})
+
 test_that("epi_eda_create_project creates the expected scaffold", {
   project_path <- tempfile("episcout-project-")
 

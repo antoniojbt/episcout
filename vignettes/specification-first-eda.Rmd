@@ -64,7 +64,7 @@ spec <- epi_eda_spec(spec)
 
 `missing_codes` accepts semicolon-separated declared sentinels. Standard missing values and these declared codes are treated as missing in EDA calculations. Roles describe variables; `id`, `identifier` and coordinate roles do not suppress ordinary summaries, plots or strata.
 
-For PostgreSQL, inventory the caller-selected schema, then create the extended technical and semantic dictionary. Inventory reads metadata by default; request `row_counts = "exact"` only when the aggregate count is needed and acceptable for the source. Convert one reviewed active table into the same 15-field EDA specification.
+For PostgreSQL, inventory the caller-selected schema, then create the extended technical and semantic dictionary. Inventory reads metadata by default; request `row_counts = "exact"` only when the aggregate count is needed and acceptable for the source. Convert one reviewed active table into the same 16-field EDA specification.
 
 ```{r eval = FALSE}
 inventory <- epi_db_inventory(

@@ -24,7 +24,7 @@ This vignette describes the technical workflow and recovery behaviour. For a run
 
 ## 1. What this workflow does and when to use it
 
-Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same stable pseudonymous token over time. A dictionary and linkage specification declare the requested projection and exact identity semantics, and a registry preserves token stability across runs.
+Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same pseudonymous token over time. A dictionary and linkage specification declare the requested projection and exact identity semantics. Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability.
 
 The workflow performs exact matching only. It does not trim or case-fold text identifiers, infer identity from similar records, detect personal information, perform fuzzy linkage, aggregate conflicting observations or make data anonymous. PostgreSQL through RPostgres is the supported persistent backend.
 
@@ -309,7 +309,7 @@ registry_audit <- epi_sec_identity_registry_init(
 registry_audit
 ```
 
-To create a registry in an empty schema, explicitly request initialisation. The defaults use prefix `E` and 24 random bytes. Those token settings are immutable for the registry. Assignments persist across later calls to the same registry, while identity namespaces and crosswalks determine which source identifiers resolve to the same token.
+To create a registry in an empty schema, explicitly request initialisation. The defaults use prefix `E` and 24 random bytes. Those token settings are immutable for the registry. Assignments persist across later calls to the same registry, while identity namespaces and crosswalks determine which source identifiers resolve to the same token. A separately initialised registry has independent assignments and cannot be used as evidence of cross-run identity stability.
 
 ```{r registry-apply, eval = FALSE}
 registry_apply <- epi_sec_identity_registry_init(
@@ -386,7 +386,7 @@ applied$manifest
 
 Confirm each table's `n_input`, `n_output` and `n_exact_removed` counts reconcile, and compare `duplicate_audit$n_exact_excess` with the chosen report/drop action. The `n_invalid_id`, `n_unmatched` and `n_missing_key` columns are zero on a completed run. The function neither queries nor changes schema or table privileges; PostgreSQL applies the connected role's ownership and default-privilege configuration to newly created tables. Do not print tokens merely to verify the workflow.
 
-To confirm stability, create a second linkage specification with new destination names, inspect or apply it, then compare token sets inside PostgreSQL and return only an aggregate Boolean. Stability applies to the same registry assignment: registry, identity namespace and any alias/crosswalk mapping must resolve the identifier to the same stored entity token.
+To confirm stability, create a second linkage specification with new destination names, inspect or apply it against the same persisted registry, then compare token sets inside PostgreSQL and return only an aggregate Boolean. Stability applies only to that registry assignment: registry, identity namespace and any alias/crosswalk mapping must resolve the identifier to the same stored entity token. A separate registry is not a stability comparison.
 
 ```{r stable-token-rerun, eval = FALSE}
 repeat_tables <- linkage$tables

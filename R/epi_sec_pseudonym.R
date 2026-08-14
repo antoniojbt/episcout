@@ -10,7 +10,7 @@
 #'
 #' @return A tibble with columns `participant_id` and `token_id`.
 #'
-#' @details Tokens are generated from cryptographic random bytes using `openssl::rand_bytes()`. The function does not accept a seed and does not provide deterministic output. This single-vector helper does not maintain stable tokens across later calls or rewrite related tables. For stable linkage across PostgreSQL tables, start with [epi_sec_linkage_scaffold()] and follow `vignette("longitudinal-pseudonymisation")`.
+#' @details Tokens are generated from cryptographic random bytes using `openssl::rand_bytes()`. The function does not accept a seed and does not provide deterministic output. This single-vector helper does not maintain stable tokens across later calls or rewrite related tables. For stable linkage across PostgreSQL tables and runs, start with [epi_sec_linkage_scaffold()], reuse the same persisted identity registry and compatible identity mapping, and follow `vignette("longitudinal-pseudonymisation")`; separate registries do not establish cross-run stability.
 #'
 #' The bridge table remains re-identifying information. Store it separately from pseudonymised analysis datasets and protect it with appropriate access controls. Pseudonymisation reduces risk but does not by itself anonymise a dataset.
 #'

@@ -1,6 +1,6 @@
 Package: episcout
 Title: Quickly Clean, Explore and Visualise Large Epidemiological Datasets
-Version: 0.4.0
+Version: 0.4.1.9000
 Depends:
     R (>= 4.0.0)
 Authors@R: 

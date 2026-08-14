@@ -8,12 +8,14 @@ episcout provides lower-level helper functions and specification-first workflows
 
 ## Install
 
-Install the published 0.4.0 release from GitHub:
+Install the published 0.4.1 release from GitHub:
 
 ```r
 install.packages("devtools")
-devtools::install_github("AntonioJBT/episcout@0.4.0")
+devtools::install_github("AntonioJBT/episcout@0.4.1")
 ```
+
+The immutable 0.4.1 tag retains `Version: 0.4.0` in its `DESCRIPTION`. Published history is preserved; current `master` uses development version `0.4.1.9000`.
 
 Install from `master` only when you deliberately need the current development version:
 
@@ -33,12 +35,12 @@ For an end-to-end learning example that combines disposable PostgreSQL tables, p
 ## Features
 
 - `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*` provide lower-level helpers for data preparation, descriptive work, plotting and utilities.
-- `epi_eda_*` provides specification-first EDA for in-memory data and supported PostgreSQL sources. Optional `plot_style` callbacks receive a completed plot and compact plot metadata, then return one plot; database bundles also require a non-secret `plot_style_id` so styled output has explicit provenance.
+- `epi_eda_*` provides specification-first EDA for in-memory data and supported PostgreSQL sources. Specifications use separate `database_type` storage families and `analysis_type` EDA treatments. Optional `plot_style` callbacks receive a completed plot and compact plot metadata, then return one plot; database bundles also require a non-secret `plot_style_id` so styled output has explicit provenance.
 - `epi_eda_profile_stratified()` and opt-in `epi_eda_db_run(strata = ...)` produce PostgreSQL-native grouped aggregates and Table 1 without collecting analysis rows; Shapiro-Wilk is unavailable on this path because it requires an analysis-value vector.
 - `epi_eda_qc_proposals()` links aggregate descriptive evidence to explicitly pending review prompts through caller-managed opaque variable keys; it never changes the reviewed dictionary or data and never approves or applies a cleaning rule.
 - `epi_eda_approved_rules()` and `epi_eda_apply_cleaning_rules()` validate a separate analyst-approved rule schema and apply bounds, allowed values and missing codes to a complete new data-frame, CSV, RDS or PostgreSQL output without replacing the source or an existing destination.
 - `epi_eda_approved_civil_dates()` and `epi_eda_derive_civil_dates()` require an explicit reviewed civil-date declaration, preserve local timestamp sources and add separate dates only after every non-missing value passes exact-midnight validation; they never infer or assign a timezone.
-- `epi_sec_*` provides auditable longitudinal pseudonymisation for related PostgreSQL tables.
+- `epi_sec_*` provides auditable longitudinal pseudonymisation for related PostgreSQL tables. Recurring identities retain their pseudonymous identifiers only when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability.
 - `epi_geo_*` provides explicit vector and coordinate mapping with optional `sf` support.
 
 ## Contributing
