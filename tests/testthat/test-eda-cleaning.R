@@ -382,6 +382,27 @@ test_that("all in-memory validation completes before transformation", {
   expect_false(grepl("CANARY|measure", conditionMessage(error)))
   expect_identical(fixture$data, source_before)
 
+  unresolved_keys <- fixture$keys[fixture$keys$name != "measure", , drop = FALSE]
+  unresolved_error <- tryCatch(
+    epi_eda_apply_cleaning_rules(fixture$data, fixture$rules, unresolved_keys),
+    error = identity
+  )
+  expect_s3_class(unresolved_error, "error")
+  expect_match(conditionMessage(unresolved_error), "resolve every cleaning rule")
+  expect_false(grepl("measure|var_", conditionMessage(unresolved_error)))
+  expect_identical(fixture$data, source_before)
+
+  incompatible <- fixture$data
+  incompatible$measure <- rep("STORAGE_VALUE_CANARY", nrow(incompatible))
+  storage_error <- tryCatch(
+    epi_eda_apply_cleaning_rules(incompatible, fixture$rules, fixture$keys),
+    error = identity
+  )
+  expect_s3_class(storage_error, "error")
+  expect_match(conditionMessage(storage_error), "incompatible with source storage")
+  expect_false(grepl("CANARY|measure", conditionMessage(storage_error)))
+  expect_identical(fixture$data, source_before)
+
   mutated <- fixture$rules
   mutated$allowed_values[mutated$declared_type == "categorical"] <- "B;A"
   expect_error(
@@ -644,7 +665,8 @@ test_that("PostgreSQL plans bind rule values in server-side CASE expressions", {
     valid_max = 10,
     missing_codes = "999"
   ))
-  plan <- getFromNamespace("clean_pg_rule_plan", "episcout")(
+  plan_builder <- getFromNamespace("clean_pg_rule_plan", "episcout")
+  plan <- plan_builder(
     source,
     rule,
     "measure"
@@ -661,6 +683,16 @@ test_that("PostgreSQL plans bind rule values in server-side CASE expressions", {
   expect_match(statement, "untouched", fixed = TRUE)
   expect_false(grepl("999|approval_|approved|pending|var_", statement, ignore.case = TRUE))
   expect_identical(length(plan$params), 3L)
+
+  incompatible <- source
+  incompatible$columns$base_udt_name[[1]] <- "text"
+  storage_error <- tryCatch(
+    plan_builder(incompatible, rule, "measure"),
+    error = identity
+  )
+  expect_s3_class(storage_error, "error")
+  expect_match(conditionMessage(storage_error), "incompatible with PostgreSQL source storage")
+  expect_false(grepl("measure|source_table", conditionMessage(storage_error)))
 })
 
 cleaning_postgres_connection <- function() {
