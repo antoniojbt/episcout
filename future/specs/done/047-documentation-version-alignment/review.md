@@ -22,6 +22,7 @@ No implementation findings remain after local review. The first installed walkth
 ## Closeout Notes
 
 - Pull request: PR-328, merged to canonical `master` as `commit-dc84687a3d71efef9a60e392155714edfae229c6`.
+- Lifecycle closeout pull request: PR-329.
 - Required local checks pass. The CRAN incoming-feasibility NOTE is recorded above and does not identify a package defect in this development documentation slice.
 - Tracking issue and roadmap disposition: issue-327 is closed; no roadmap is active.
 - Successor issue or terminal reason: no successor; later package-code or release work requires a new tracker.
