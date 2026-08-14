@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-14
+
+- Completed `issue-323` through PR-324, merged to canonical `master` as `commit-915b86d`. The public EDA specification now separates declared PostgreSQL storage families in `database_type` from R/EDA treatment in `analysis_type`; scaffolds and dictionaries emit both fields, validators require them and reject the removed `type` field, and PostgreSQL compatibility checks remain separate from analysis semantics. Hosted macOS, Ubuntu, PostgreSQL integration, coverage, CodeFactor and Codecov checks passed. The implementation had no numbered specification; documentation and version alignment require a separate tracker after repository closeout.
+
 ## 2026-08-13
 
 - Completed terminal `issue-311`/`spec-046-eda-creation-style-hooks` through PR-321, merged to canonical `master` as `commit-038f7d0`. `epi_eda_profile_plots()` and `epi_eda_run()` now accept an optional creation-time `plot_style` callback with compact non-row context, while `epi_eda_db_run()` applies the same callback after its repeatable-read snapshot and before staged SVG publication. Styled database bundles require caller-owned non-secret `plot_style_id` provenance for safe overwrite compatibility; defaults remain unchanged. Focused/local/CRAN checks, live PostgreSQL integration, manual render inspection and hosted macOS, Ubuntu, PostgreSQL integration, coverage and CodeFactor checks passed. No automatic successor is authorised.

@@ -43,6 +43,7 @@ Pseudonymisation and descriptive EDA are separate technical stages. Pseudonymise
 ## Planning Status
 
 - GitHub release `0.4.0` is published from canonical commit `ea2a3f1`; CRAN work remains deferred under issue #81.
+- Completed issue-323/PR-324 replaced the ambiguous EDA specification field `type` with required `database_type` and `analysis_type`, merged to canonical `master` as `commit-915b86d`. The implementation had no numbered specification; documentation and version alignment require a separate tracker after closeout.
 - No roadmap is active: completed issue-310/spec-044/PR-317 defined the mark-aware palette contract, issue-316/spec-045/PR-319 added exact categorical fill mappings, and terminal issue-311/spec-046/PR-321 added creation-time EDA styling hooks. `future/TODOs.md` is the synchronised task index, `future/README.md` defines the lifecycle and `future/changelog.md` records completed outcomes.
 - Completed terminal `issue-313`/`spec-043-postgresql-stratified-summaries` records `PR-314`, merged to canonical `master` as `commit-8421eff`. A reviewed PostgreSQL source now supports the existing stratified aggregate component contract and optional Table 1 delivery without collecting analysis rows; broader multi-strata or inferential work requires a separate tracker.
 - Completed spec `025-curp-validation-and-reconciliation` records issue #225 and PR #231, merged to canonical `master` as `7e42f22`. Checksum verification remains `not_verified`; owner-resolved issue #230 closed without adopting an unofficial algorithm.
