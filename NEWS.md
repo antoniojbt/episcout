@@ -2,6 +2,7 @@
 
 ## 0.4.1.9000
 
+- Replaced process-metadata cleaning rules with `epi_eda_cleaning_rules()` and one exact six-field technical contract for data-frame and PostgreSQL execution. Hashes now derive only from the canonical technical fields. The released `epi_eda_approved_rules()` symbol is a deprecated redirect that accepts only the new schema and returns the neutral class; former eight-field objects are rejected and cannot execute.
 - Replaced the ambiguous EDA specification field `type` with required `database_type` and `analysis_type` fields. Storage-family compatibility and EDA treatment are now declared and validated separately; the removed field is rejected rather than treated as a compatibility alias.
 
 ## 0.4.1

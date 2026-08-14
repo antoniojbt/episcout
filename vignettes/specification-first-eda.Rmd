@@ -112,30 +112,28 @@ qc$proposals
 
 The `evidence` table has one `evidence_state = "descriptive"` row per specification row. It reports aggregate counts and, for numeric or integer variables, finite observed extrema and type-7 Tukey 1.5-IQR fences. These values describe only the profiled snapshot: they are not scientific validity limits and do not replace semantic `min` or `max`. Explicit `id` or `identifier` roles are not profiled, high-cardinality variables contribute a scalar distinct count without returned values, and incompatible or unsupported storage receives a fixed unavailable status.
 
-The separate `proposals` table contains only `proposal_state = "pending"` prompts. An observed numeric or integer variable containing exactly both 0 and 1 may receive a binary candidate, finite observations beyond a Tukey fence may receive candidate screening bounds, and a blank unit may prompt review. The function never reclassifies a variable, infers a unit or missing-value code, enumerates general observed levels, changes data or the semantic dictionary, approves a rule, or writes an output. Approved executable rules use the separate contract below; editing `proposal_state` does not make this result executable.
+The separate `proposals` table contains only `proposal_state = "pending"` prompts. An observed numeric or integer variable containing exactly both 0 and 1 may receive a binary candidate, finite observations beyond a Tukey fence may receive candidate screening bounds, and a blank unit may prompt review. The function never reclassifies a variable, infers a unit or missing-value code, enumerates general observed levels, changes data or the semantic dictionary, creates a cleaning rule, or writes an output. Executable cleaning rules use the separate contract below; editing `proposal_state` does not make this result executable.
 
 The same call accepts an `epi_eda_postgres_source` and performs scalar aggregate queries in one read-only repeatable-read snapshot. QC proposals are not added automatically to intake, report or database bundles. Aggregate counts and extrema can still be sensitive in context, so review disclosure risk before saving or sharing either table.
 
-## 4. Apply separately approved cleaning rules
+## 4. Apply neutral cleaning rules
 
-Create executable rules only after external analyst review. `epi_eda_approved_rules()` requires an exact schema with `rule_state = "approved"`, an opaque variable key and an opaque caller-managed `approval_id`. Executable bounds are named `valid_min` and `valid_max`; descriptive dictionary `min` and `max` remain metadata. The package validates the declared approval record but does not authenticate the analyst or decide whether a rule is scientifically justified.
+`epi_eda_cleaning_rules()` requires exactly six ordered technical fields: `variable_key`, `declared_type`, `valid_min`, `valid_max`, `allowed_values` and `missing_codes`. Executable bounds are named `valid_min` and `valid_max`; descriptive dictionary `min` and `max` remain metadata. The caller remains responsible for deciding whether each rule is scientifically justified.
 
 ```{r}
-approved_rules <- epi_eda_approved_rules(data.frame(
+cleaning_rules <- epi_eda_cleaning_rules(data.frame(
   variable_key = variable_keys$variable_key[variable_keys$name == "age"],
-  rule_state = "approved",
   declared_type = "integer",
   valid_min = 0,
   valid_max = 120,
   allowed_values = "",
   missing_codes = "",
-  approval_id = "approval_0000000000000001",
   stringsAsFactors = FALSE
 ))
 
 cleaning <- epi_eda_apply_cleaning_rules(
   received_data,
-  approved_rules,
+  cleaning_rules,
   variable_keys
 )
 analysis_data <- cleaning$data
@@ -144,14 +142,16 @@ cleaning$audit$variables
 stopifnot(identical(received_data, source_before))
 ```
 
-Numeric or integer values outside inclusive approved bounds become typed missing values. Categorical or binary values outside a populated semicolon-delimited `allowed_values` set become typed missing, and approved `missing_codes` become typed missing for any supported rule. Every rule and source mapping is validated before transformation. The result preserves data-frame row count, order, row names, column order and source storage and returns aggregate before/after and transition counts linked only by opaque variable key.
+Numeric or integer values outside inclusive declared bounds become typed missing values. Categorical or binary values outside a populated semicolon-delimited `allowed_values` set become typed missing, and declared `missing_codes` become typed missing for any supported rule. Every rule and source mapping is validated before transformation. The result preserves data-frame row count, order, row names, column order and source storage and returns aggregate before/after and transition counts linked only by opaque variable key.
+
+The released `epi_eda_approved_rules()` symbol remains temporarily as a deprecated redirect and will be removed in the next breaking release. It accepts only the same six-field schema, warns, and returns `epi_eda_cleaning_rules`; input using the former eight-field schema fails rather than having fields ignored or removed.
 
 Supply both `output_path` and explicit `output_format = "csv"` or `"rds"` to publish the same complete processed data without replacing an existing file. For PostgreSQL, pass an `epi_eda_postgres_source` plus a new `destination_schema` and `destination_table`; server-side transformations, destination collision checks, dimension checks and missingness reconciliation run in one write transaction. Failure leaves no destination table. PostgreSQL tables have no physical row-order contract, but the operation neither filters nor explicitly reorders source rows.
 
 ```{r eval = FALSE}
 file_result <- epi_eda_apply_cleaning_rules(
   received_data,
-  approved_rules,
+  cleaning_rules,
   variable_keys,
   output_path = "processed-data.rds",
   output_format = "rds"
@@ -159,14 +159,14 @@ file_result <- epi_eda_apply_cleaning_rules(
 
 database_result <- epi_eda_apply_cleaning_rules(
   source,
-  approved_rules,
+  cleaning_rules,
   variable_keys,
   destination_schema = "analysis",
   destination_table = "processed_observations"
 )
 ```
 
-The audit omits source names, paths, relation identities, allowed or disallowed values, bounds, missing codes and approval references. Its aggregate counts and deterministic rule hash can still be sensitive in context, so review them before sharing. Text, date and datetime rules, RData, Parquet, overwriting, row filtering, imputation, winsorisation and civil-date derivation are outside this contract.
+The audit omits source names, paths, relation identities, allowed or disallowed values, bounds, missing codes and process metadata. Its aggregate counts and deterministic rule hash can still be sensitive in context, so review them before sharing. Text, date and datetime rules, RData, Parquet, overwriting, row filtering, imputation, winsorisation and civil-date derivation are outside this contract.
 
 ## 5. Derive explicitly reviewed civil dates
 
@@ -262,7 +262,7 @@ intake$table1
 
 With `spec = NULL`, intake generates, saves and uses a storage-derived scaffold as `specification.csv`; use that shortcut only when its undeclared semantic fields are acceptable for the current run. Intake creates a missing output directory. Its five-column manifest has `artifact`, `type`, `path`, `status` and `checksum_md5`, and manifest paths are relative to the exact output root. It never writes source or prepared rows, row previews, raw free-text examples, identifier values or pseudonymisation bridge tables.
 
-PostgreSQL-backed EDA has no `epi_eda_prepare()` audit/apply mode. Use `epi_eda_apply_cleaning_rules()` only for the separately approved bounded operations above, then construct a new PostgreSQL source from the processed destination. Resolve every other storage compatibility or semantic recoding need in a reviewed relation or view before EDA.
+PostgreSQL-backed EDA has no `epi_eda_prepare()` audit/apply mode. Use `epi_eda_apply_cleaning_rules()` only for the declared bounded operations above, then construct a new PostgreSQL source from the processed destination. Resolve every other storage compatibility or semantic recoding need in a reviewed relation or view before EDA.
 
 ## 7. Run summaries, plots and optional stratification
 
