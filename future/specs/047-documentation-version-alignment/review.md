@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `047-documentation-version-alignment`
-Status: Active
+Status: Review
 
 ## Findings
 
@@ -16,11 +16,11 @@ No implementation findings remain after local review. The first installed walkth
 - `scripts/check-workflow-state.sh` passed against GitHub and canonical `master`.
 - `scripts/check-local.sh` passed with zero errors, warnings or notes after documentation, lint, tests, vignette builds and local package check.
 - `scripts/check-cran.sh` completed with one incoming-feasibility NOTE: the repository is seen as a new submission with a large-component development version and has no prebuilt vignette index. Installation, tests, vignettes and PDF/HTML manuals passed.
-- Hosted checks and review feedback remain pending until the implementation PR is open.
+- PR-328 is open against canonical `master`; hosted checks and review feedback remain pending.
 
 ## Closeout Notes
 
-- Pull request and merge commit: pending.
+- Pull request: PR-328. Merge commit: pending.
 - Required local checks pass. The CRAN incoming-feasibility NOTE is recorded above and does not identify a package defect in this development documentation slice.
 - Tracking issue and roadmap disposition: issue-327 remains active; no roadmap is active.
 - Successor issue or terminal reason: no successor; later package-code or release work requires a new tracker.

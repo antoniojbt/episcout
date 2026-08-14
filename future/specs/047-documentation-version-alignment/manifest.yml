@@ -2,7 +2,7 @@ id: "047"
 slug: documentation-version-alignment
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: Codex
 base_branch: master
 working_branch: feature/documentation-alignment
@@ -12,7 +12,7 @@ updated: 2026-08-14
 tracking_issue: 327
 source_issues:
   - 323
-pull_request: null
+pull_request: 328
 merge_commit: null
 successor_issue: null
 terminal_reason: null

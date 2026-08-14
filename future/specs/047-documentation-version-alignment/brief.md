@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `047-documentation-version-alignment`
-Status: Active
+Status: Review
 Owner: Codex
 Tracking issue: issue-327
 

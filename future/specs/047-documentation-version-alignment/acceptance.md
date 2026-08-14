@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `047-documentation-version-alignment`
-Status: Active
+Status: Review
 
 - [x] SDD and TDD define the documentation-only contract before implementation.
 - [x] `DESCRIPTION` identifies development version `0.4.1.9000` without changing tag `0.4.1`.

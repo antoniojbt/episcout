@@ -2,7 +2,7 @@
 
 ## 2026-08-14
 
-- Activated `issue-327`/`spec-047-documentation-version-alignment` after issue-323 closeout PR-326 merged to canonical `master` as `commit-7ac8ea1`. The documentation-only slice aligns development version `0.4.1.9000`, release chronology, generated help, all vignettes, the starter project and installed walkthroughs with the current two-type EDA contract; it preserves the immutable release-0.4.1 tag and changes no exported behaviour.
+- Activated `issue-327`/`spec-047-documentation-version-alignment` after issue-323 closeout PR-326 merged to canonical `master` as `commit-7ac8ea1`, then opened implementation PR-328 for review. The documentation-only slice aligns development version `0.4.1.9000`, release chronology, generated help, all vignettes, the starter project and installed walkthroughs with the current two-type EDA contract; it preserves the immutable release-0.4.1 tag and changes no exported behaviour.
 - Completed `issue-323` through PR-324, merged to canonical `master` as `commit-915b86d`. The public EDA specification now separates declared PostgreSQL storage families in `database_type` from R/EDA treatment in `analysis_type`; scaffolds and dictionaries emit both fields, validators require them and reject the removed `type` field, and PostgreSQL compatibility checks remain separate from analysis semantics. Hosted macOS, Ubuntu, PostgreSQL integration, coverage, CodeFactor and Codecov checks passed. The implementation had no numbered specification; documentation and version alignment require a separate tracker after repository closeout.
 
 ## 2026-08-13

@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `047-documentation-version-alignment`
-Status: Active
+Status: Review
 
 ## Executable Tests
 
