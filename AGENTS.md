@@ -140,28 +140,20 @@ Passing tests and successful execution do not establish that analytical behaviou
 
 ## CodeFactor follow-up
 
-- A CodeFactor failure is non-blocking by default. Before merge, closeout or authorised successor stacking, inspect the changed code and the reported finding when available; do not infer that a finding is minor merely from the check status.
+- A CodeFactor failure is non-blocking by default. Inspect the changed code and the reported finding when available; do not infer that a finding is minor merely from the check status.
 - Treat a CodeFactor finding as blocking when there is concrete evidence that it affects correctness, data integrity, security, privacy, performance, concurrency, resource lifetime, public-interface compatibility or a consequential documentation claim. Fix it in the current slice or create a separate tracked issue before proceeding.
-- For style, naming, formatting, duplication or local maintainability findings without such impact, record the PR, rule/file and short rationale in issue-288. Do not interrupt the current delivery with one-off style churn.
-- Triage issue-288 as one focused maintenance batch after ten recorded PR entries, when one rule recurs in maintained code, or when the owner requests it. Group fixes by rule, use focused verification and split any newly identified higher-risk finding into its own issue.
+- For style, naming, formatting, duplication or local maintainability findings without such impact, report the finding and address it only when the current change benefits or a focused maintenance task is warranted.
 
-## Work lifecycle and continuity
+## Tracking and optional specifications
 
-GitHub issues and the current roadmap issue are the authoritative live task state. `future/TODOs.md`, specification manifests, `future/changelog.md` and `PROJECT_MAP.md` are synchronised repository records; when they disagree with GitHub, stop new work and reconcile them first.
+GitHub issues and pull requests are the live work record. Use `future/` for design notes, optional specifications and retained completion evidence; it does not govern package behaviour or prevent unrelated work when a record is stale.
 
-Use this lifecycle for tracked work: `candidate` (issue only), `draft` (specification unresolved), `active` (accepted contract and implementation in progress), `review` (pull request open), `merged/pending-closeout` (derived transient state) and `completed` (default branch verified and all closeout conditions satisfied). Commit only `draft`, `active`, `review` or `completed` in versioned manifests. Record blocked or deferred scheduling in the tracking issue and roadmap rather than inventing additional manifest states.
+- Use a numbered specification when consequential semantics, several dependent components, migration risk or cross-session hand-off make a written contract useful. Small and well-defined changes may proceed directly from an issue or user request.
+- When a task uses a specification, keep its manifest and supporting records accurate for that task and run `scripts/check-workflow-state.sh` as a focused consistency check. The script is not a prerequisite for work that does not use this workflow.
+- Use one coherent branch and pull request for a reviewable change. Link the relevant issue or specification when one exists; do not create a successor issue, roadmap entry, lifecycle state or closeout pull request solely to satisfy process.
+- After merge, update only records whose current claims became inaccurate. Historical completed specifications remain retained evidence and need not be rewritten to match later process changes.
 
 In prose, plans and status reports, prefix identifiers with their artefact type so references are unambiguous: for example, `issue-278`, `PR-280`, `spec-034`, `commit-cc05cb0` and `release-0.3.0`. Avoid bare numeric or hash-style references such as `278`, `#278` or `034` except where GitHub syntax requires them, such as `Closes #278` in a pull-request description.
-
-- Run `scripts/check-workflow-state.sh` at the start of tracked work, before pull-request handoff and during post-merge closeout. Use `--offline` only when GitHub access is genuinely unavailable and report that limitation.
-- Keep at most one implementation specification in `active` or `review`. Draft design research may coexist, but it must not overtake the active lane, rewrite shared status files independently or merge ahead without explicit owner approval.
-- Give every non-trivial change one tracking issue. Use a numbered specification when required by the core approach, then use one scoped branch and one pull request for the accepted slice.
-- Use `Closes #<issue>` only when the pull request completes the issue's stated outcome. Before closing a planning-only issue, create and link its next implementation issue or record an explicit terminal reason.
-- Treat pull-request creation as `review`, not completion. At handoff, state the tracking issue, specification, checks, compatibility impact, unresolved limits, successor disposition and that merge/closeout remains pending.
-- After merge, verify the canonical `upstream/master` commit and required checks; close or update the tracking issue and roadmap; finalize acceptance/review evidence; set the manifest to `completed`; move the spec to `future/specs/done/`; update `future/TODOs.md` and `future/changelog.md`; update `PROJECT_MAP.md` only when architecture or durable pointers changed; and create or confirm the successor tracker.
-- Use a focused closeout pull request when default-branch files require merge-derived evidence. A closeout-only pull request is terminal maintenance and does not recursively require another documentation pull request.
-- Do not begin the successor task until prior closeout passes the workflow-state check. If a merge occurs after a session ends, the next session must perform closeout before any new planning or implementation.
-- After closeout merges, synchronize local and fork `master` with canonical `upstream/master`. Remove only clean, fully merged worktrees and branches, and delete remote branches only when the owner has authorized that cleanup.
 
 ## Git and GitHub
 
@@ -184,7 +176,7 @@ A PR description should state:
 4. Material coverage change, if measured.
 5. Unresolved limitations or failures, explicitly stating when none remain.
 
-It should also identify the tracking issue, specification when present, current lifecycle state, successor or terminal disposition and post-merge closeout owner. A PR that only plans later implementation must not close the implementation tracker.
+Link the tracking issue or specification when one exists. Use `Closes #<issue>` only when the pull request delivers the issue's complete outcome.
 
 Before requesting review, run `scripts/check-local.sh`. Run `scripts/check-cran.sh` for release-oriented changes or when CRAN behaviour is in scope.
 

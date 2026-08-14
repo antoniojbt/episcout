@@ -1,16 +1,13 @@
 # TODOs
 
-This is the repository's synchronised task index. GitHub issues are authoritative for live state; no roadmap is active while the remaining work is independently deferred.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active.
 
-## Working rules
+## Maintenance notes
 
-- Keep one numbered package-code specification active at a time.
-- Run `scripts/check-workflow-state.sh` before new tracked work, at pull-request handoff and during post-merge closeout.
-- Promote multi-step or consequential work to a numbered SDD/TDD specification before changing package code.
-- Record baseline checks before implementation and reconcile this file, acceptance evidence and `changelog.md` whenever status changes.
-- Keep draft, active and review specs directly under `future/specs/`; move completed specs to `future/specs/done/` only after canonical merge verification and closeout.
-- Before closing planning-only work, create its next implementation issue or record an explicit terminal reason.
-- Do not start a successor while the previous PR is merged but its closeout remains incomplete.
+- Use a numbered SDD/TDD specification when the complexity or consequences make the written contract useful.
+- Run `scripts/check-workflow-state.sh` for work that uses a numbered specification.
+- Update this summary, acceptance evidence or `changelog.md` only when the current task changes their claims.
+- Keep active specification material easy to distinguish from the completed records under `future/specs/done/`.
 - Edit roxygen sources rather than generated `man/` files.
 - Keep fixture expectations independently justified and routine tests offline.
 - Never record an old or replacement Codecov credential.

@@ -25,21 +25,17 @@ future/
 
 ## Workflow
 
-GitHub issues and the current roadmap issue are the live source of truth. `TODOs.md`, specification manifests and `changelog.md` are synchronised repository records; do not start later work while they disagree with GitHub.
+GitHub issues and pull requests are the live work record. Use a numbered specification when consequential semantics, several dependent components, migration risk or cross-session hand-off make a written contract useful. Small and well-defined work does not require a specification or roadmap.
 
-1. Record candidate work in a GitHub issue and add it to the current roadmap or explicitly mark it deferred. Mirror the actionable queue in `TODOs.md`.
-2. Promote consequential or multi-step work to a numbered directory under `specs/`, set its versioned manifest to `draft` and complete `brief.md`, `sdd.md`, `tdd.md`, `acceptance.md` and `review.md` before implementation.
-3. Resolve every activation gate, set the manifest to `active` and record the baseline before changing package code. Keep at most one implementation spec `active` or `review`.
-4. Write executable tests under `tests/testthat/`, implement package code under current package directories, update user documentation and generated files together, and record review evidence.
-5. Set the manifest to `review` when its pull request opens. The PR may close the tracking issue only when it delivers the issue's complete outcome; planning-only work must first create its successor implementation issue or record a terminal reason.
-6. Treat a merged PR whose manifest or trackers still say `review`, `active` or `implemented` as `merged/pending-closeout`. Do not begin the next task.
-7. During closeout, verify the canonical default-branch merge and required checks, reconcile the tracking issue and roadmap, finalize acceptance and review evidence, set the manifest to `completed`, move the spec to `specs/done/`, update `TODOs.md` and `changelog.md`, and confirm the successor issue or terminal reason.
-8. Use a focused closeout PR when merge-derived evidence must change tracked files. Closeout-only PRs do not require a recursive documentation PR.
-9. Run `scripts/check-workflow-state.sh` at task start, review handoff and closeout. Move completed cross-spec reviews to `reviews/done/`.
+1. Define the outcome, interfaces, important decisions and verification in the issue, specification or task record appropriate to the work.
+2. When a numbered specification is useful, keep its brief, design, test and acceptance records together under `specs/` and update its manifest as the work progresses.
+3. Write executable tests under `tests/testthat/`, implement package code under current package directories, and update affected user documentation and generated files together.
+4. Run `scripts/check-workflow-state.sh` when the task uses a numbered specification. The script checks that workflow's records; it is not a prerequisite for work outside it.
+5. After merge, update only records whose current claims changed. Move a completed specification to `specs/done/` when doing so makes the active planning area clearer.
 
 ### Manifest lifecycle fields
 
-New and current manifests use `workflow_version: 1`, `deliverable`, `status`, `tracking_issue`, `source_issues`, `pull_request`, `merge_commit`, `successor_issue` and `terminal_reason`. Valid committed statuses are `draft`, `active`, `review` and `completed`. Historical completed manifests without `workflow_version` remain valid legacy records.
+Existing manifests use `workflow_version: 1`, `deliverable`, `status`, `tracking_issue`, `source_issues`, `pull_request`, `merge_commit`, `successor_issue` and `terminal_reason`. The current checker recognises `draft`, `active`, `review` and `completed`. These fields describe specifications that use this optional workflow; they are not repository-wide work states. Historical completed manifests without `workflow_version` remain retained records.
 
 ## R Command Policy
 
