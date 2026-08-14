@@ -17,7 +17,7 @@ This is the repository's synchronised task index. GitHub issues are authoritativ
 
 ## Current sequence
 
-Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification, and its closeout completed through PR-326 at `commit-7ac8ea1`. Issue-327/spec-047 is in review through PR-328 as the documentation-only successor aligning package versions, NEWS, generated help, guides, templates and installed walkthroughs without changing exported behaviour.
+Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification, and its closeout completed through PR-326 at `commit-7ac8ea1`. Documentation-only issue-327/spec-047 completed through PR-328 at `commit-dc84687`, aligning package versions, NEWS, release notes, generated help, guides, templates and installed walkthroughs without changing exported behaviour. No successor is authorised.
 
 No EDA styling implementation lane is active. Issue-310/spec-044/PR-317 defined the mark-aware palette contract, issue-316/spec-045/PR-319 implemented its exact categorical fill mappings, and terminal issue-311/spec-046/PR-321 added creation-time EDA styling hooks; all are merged to canonical `master`. Terminal issue-313/spec-043 completed through PR-314, merged to canonical `master` as `commit-8421eff`; broader PostgreSQL stratification features require a separate tracker.
 

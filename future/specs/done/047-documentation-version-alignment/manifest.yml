@@ -2,7 +2,7 @@ id: "047"
 slug: documentation-version-alignment
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: Codex
 base_branch: master
 working_branch: feature/documentation-alignment
@@ -13,9 +13,9 @@ tracking_issue: 327
 source_issues:
   - 323
 pull_request: 328
-merge_commit: null
+merge_commit: dc84687a3d71efef9a60e392155714edfae229c6
 successor_issue: null
-terminal_reason: null
+terminal_reason: Documentation and version alignment is complete; later package-code or release work requires a new tracker.
 
 related_files:
   - DESCRIPTION

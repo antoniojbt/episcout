@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `047-documentation-version-alignment`
-Status: Review
+Status: Completed
 
 ## Scope And Sources Of Truth
 
