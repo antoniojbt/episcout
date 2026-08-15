@@ -182,6 +182,7 @@ print("Function being tested: epi_plot_bar with two variables")
 test_that("epi_plot_bar", {
   # Barplot for two variables side by side:
   df_bar <- reshape2::melt(df[, c("w", "z", "id_unique")], id.vars = "id_unique")
+  df_bar$id_unique <- factor(df_bar$id_unique, levels = unique(df$id_unique))
   # epi_head_and_tail(df, cols = 7)
   # epi_head_and_tail(df_bar, cols = 3)
   # ggplot(df_bar, aes(x = id_unique, y = value, fill = variable)) +
@@ -199,6 +200,7 @@ test_that("epi_plot_bar", {
   expect_identical(plot_bar$labels$y, "Count")
   expect_equal(nrow(plot_bar$data), 40L)
   expect_named(plot_bar$data, c("id_unique", "variable", "value"))
+  expect_identical(levels(plot_bar$data$id_unique), unique(df$id_unique))
   # plot_bar
   vdiffr::expect_doppelganger("epi_plot_bar_2_var", plot_bar)
 })
@@ -250,6 +252,17 @@ test_that("epi_plot_heatmap", {
     renamed_triangles$cormat_melted_triangle_r,
     renamed_triangles$cormat_melted_triangle_pval,
     show_values = "pval" # "corr"
+  )
+  nicer_fill_scale <- nicer_triangle$scales$get_scales("fill")
+  expect_equal(nicer_fill_scale$limits, c(-1, 1))
+  expect_identical(
+    nicer_fill_scale$name,
+    "Spearman correlation (colour scale)\nand unadjusted P-values"
+  )
+  expect_length(nicer_triangle$layers, 2L)
+  expect_equal(
+    nicer_triangle$layers[[2]]$data,
+    renamed_triangles$cormat_melted_triangle_pval
   )
   # skip("legend.position.inside not supported")
   vdiffr::expect_doppelganger("epi_plot_heat_nicer_triangle", nicer_triangle)
