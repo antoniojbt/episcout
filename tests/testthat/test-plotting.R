@@ -8,36 +8,10 @@ library(magrittr)
 library(ggplot2)
 library(cowplot)
 library(ggthemes)
-skip("vdiffr snapshot tests disabled in this environment")
 ######################
 
 ######################
 # Working directory for informal tests, should be from pkg/tests/testthat/:
-######################
-
-######################
-# Dummy tests for workflow with ggplot2, testthat and vdiffr for image regression testing
-# See create_an_r_package_2.R for more info and references
-# Workflow:
-# Add test cases in eg XXXX/episcout/tests/testthat/test-plotting.R such as:
-context("dummy_tests_vdiffr") # this will be the name that the folder wil get as eg
-# XXXX/episcout/tests/figs/distributions
-test_that("histograms draw correctly - vdiffr dummy run", {
-  skip_on_ci()
-  #  skip("vdiffr snapshot skipped")
-  hist_ggplot <- ggplot(mtcars, aes(disp)) +
-    geom_histogram()
-  vdiffr::expect_doppelganger("ggplot2 histogram", hist_ggplot)
-
-  hist_base <- function() hist(mtcars$disp)
-  vdiffr::expect_doppelganger("Base graphics histogram", hist_base)
-})
-# Run:
-# vdiffr::manage_cases(filter = 'plot')
-# within RStudio to get the vdiffr widget and validate images manually
-# Run devtools::test() as usual to test
-# Update as needed for failed tests
-# Consider these as monitoring tools with regression testing as opposed to strict unit tests
 ######################
 
 ######################
@@ -73,8 +47,8 @@ my_plot_list <- epi_plot_list(vars_to_plot)
 # my_plot_list
 
 test_that("epi_plot_list", {
-  skip_on_ci()
-  expect_output(str(names(my_plot_list)), '"x" "z" "w"')
+  expect_named(my_plot_list, c("x", "z", "w"))
+  expect_true(all(vapply(my_plot_list, is.null, logical(1))))
 })
 ######################
 
@@ -86,7 +60,8 @@ print("Function being tested: epi_plots_to_grid")
 my_plot_grid <- epi_plots_to_grid(my_plot_list[seq_along(my_plot_list)])
 
 test_that("epi_plots_to_grid", {
-  skip_on_ci()
+  expect_s3_class(my_plot_grid, "ggplot")
+  expect_length(my_plot_grid$layers, 3L)
   vdiffr::expect_doppelganger("epi_plots_to_grid", my_plot_grid)
 })
 ######################
@@ -113,8 +88,6 @@ test_that("epi_plot_cow_save", {
 print("Function being tested: epi_plot_hist")
 
 test_that("epi_plot_hist", {
-  skip_on_ci()
-  #  skip("vdiffr snapshot skipped")
   # my_hist_plot <- epi_plot_hist(df, 'x') # pass with quotes as using ggplot2::aes_string()
   # Change the bins:
   my_hist_plot <- epi_plot_hist(df, "x", breaks = seq(-3, 3, by = 1))
@@ -125,11 +98,19 @@ test_that("epi_plot_hist", {
   # Add axis limits:
   my_hist_plot <- my_hist_plot +
     coord_cartesian(xlim = c(-4, 4), ylim = c(0, 10))
+  expect_s3_class(my_hist_plot, "ggplot")
+  expect_identical(my_hist_plot$labels$title, "Histogram for X")
+  expect_identical(my_hist_plot$labels$x, "X")
+  expect_identical(my_hist_plot$labels$y, "Count")
+  expect_equal(my_hist_plot$coordinates$limits$x, c(-4, 4))
+  expect_equal(my_hist_plot$coordinates$limits$y, c(0, 10))
+  expect_identical(my_hist_plot$data$x, df$x)
   # my_hist_plot
   vdiffr::expect_doppelganger("epi_plot_hist_1", my_hist_plot)
 
   # Histogram with density curve:
   my_hist_plot <- my_hist_plot + geom_density(col = 2)
+  expect_length(my_hist_plot$layers, 2L)
   # my_hist_plot
   vdiffr::expect_doppelganger("epi_plot_hist_density", my_hist_plot)
 
@@ -145,6 +126,8 @@ test_that("epi_plot_hist", {
     ) +
     geom_density(alpha = 0.2, fill = "#FF6666") + # Overlay with transparent density plot
     ylab("Density")
+  expect_identical(my_hist_plot$labels$y, "Density")
+  expect_length(my_hist_plot$layers, 4L)
   # my_hist_plot
   vdiffr::expect_doppelganger("epi_plot_hist_kernel", my_hist_plot)
 })
@@ -154,31 +137,26 @@ test_that("epi_plot_hist", {
 print("Function being tested: epi_plot_box")
 
 test_that("epi_plot_box", {
-  skip_on_ci()
-  #  skip("vdiffr snapshot skipped")
   # Boxplot of one variable:
   my_boxplot <- epi_plot_box(df, var_y = "x")
+  expect_s3_class(my_boxplot, "ggplot")
+  expect_identical(my_boxplot$data$x, df$x)
+  expect_length(my_boxplot$layers, 1L)
   vdiffr::expect_doppelganger("epi_plot_box_1_var", my_boxplot)
 
   # Add notch:
   my_boxplot <- epi_plot_box(df, var_y = "x", notch = TRUE)
+  expect_true(my_boxplot$layers[[1]]$geom_params$notch)
   vdiffr::expect_doppelganger("epi_plot_box_1_var_notch", my_boxplot)
 
   # Boxplot for x and y variables:
   # df$x # continuous variable
   # df$var_to_rep # factor
   my_boxplot <- epi_plot_box(df, var_x = "var_to_rep", var_y = "x")
+  expect_identical(my_boxplot$data$var_to_rep, df$var_to_rep)
+  expect_identical(my_boxplot$data$x, df$x)
   vdiffr::expect_doppelganger("epi_plot_box_2_var", my_boxplot)
 
-  # Change colours, remove legend, etc.:
-  my_boxplot <- epi_plot_box(df, var_x = "var_to_rep", var_y = "x")
-  my_boxplot +
-    # scale_fill_grey() +
-    scale_fill_brewer(palette = "Blues") +
-    # scale_fill_brewer(palette = "Dark2") +
-    theme(legend.position = "none") # Remove legend
-  # my_boxplot
-  vdiffr::expect_doppelganger("epi_plot_box_2_var_colours", my_boxplot)
 })
 
 ######################
@@ -187,23 +165,21 @@ test_that("epi_plot_box", {
 # Bar plots of one and two variables:
 print("Function being tested: epi_plot_bar")
 test_that("epi_plot_bar", {
-  skip_on_ci()
-  #  skip("vdiffr snapshot skipped")
   # df
   # lapply(df, class)
   # Barplot for single variable:
   # summary(df$var_to_rep)
   plot_bar <- epi_plot_bar(df, "var_to_rep")
+  expect_s3_class(plot_bar, "ggplot")
+  expect_identical(plot_bar$labels$x, "var_to_rep")
+  expect_identical(plot_bar$labels$y, "Count")
+  expect_identical(plot_bar$data$var_to_rep, df$var_to_rep)
   # plot_bar
   vdiffr::expect_doppelganger("epi_plot_bar_1_var", plot_bar)
 })
 
 print("Function being tested: epi_plot_bar with two variables")
 test_that("epi_plot_bar", {
-  # never run on Linux CI
-  skip_on_os("linux") # or skip_on_ci() to skip on *any* CI environment
-  skip_if_not(interactive())
-
   # Barplot for two variables side by side:
   df_bar <- reshape2::melt(df[, c("w", "z", "id_unique")], id.vars = "id_unique")
   # epi_head_and_tail(df, cols = 7)
@@ -218,6 +194,11 @@ test_that("epi_plot_bar", {
     fill = "variable"
   ) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  expect_s3_class(plot_bar, "ggplot")
+  expect_identical(plot_bar$labels$x, "id_unique")
+  expect_identical(plot_bar$labels$y, "Count")
+  expect_equal(nrow(plot_bar$data), 40L)
+  expect_named(plot_bar$data, c("id_unique", "variable", "value"))
   # plot_bar
   vdiffr::expect_doppelganger("epi_plot_bar_2_var", plot_bar)
 })
@@ -227,8 +208,6 @@ test_that("epi_plot_bar", {
 print("Functions being tested: epi_plot_heatmap and epi_plot_heatmap_triangle")
 
 test_that("epi_plot_heatmap", {
-  skip_on_ci()
-  #  skip("vdiffr snapshot skipped")
   # Set-up data:
   df[, "y"] <- as.integer(df[, "y"])
   df_corr <- df %>% select_if(~ epi_clean_cond_numeric(.))
@@ -248,12 +227,21 @@ test_that("epi_plot_heatmap", {
   # Test epi_plot_heatmap:
   # Correlation values:
   heat_r <- epi_plot_heatmap(cormat_all$cormat_melted_r)
+  expect_s3_class(heat_r, "ggplot")
+  expect_named(heat_r$data, c("Var1", "Var2", "correlation", "value"))
+  expect_equal(nrow(heat_r$data), 9L)
+  expect_equal(heat_r$data$value, heat_r$data$correlation)
+  expect_equal(max(heat_r$data$value), 1)
+  expect_identical(heat_r$labels$x, "")
+  expect_identical(heat_r$labels$y, "")
   vdiffr::expect_doppelganger("epi_plot_heat_r", heat_r)
   # As a triangle:
   heat_r_triangle <- epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_r)
+  expect_equal(heat_r_triangle$data, renamed_triangles$cormat_melted_triangle_r)
   vdiffr::expect_doppelganger("epi_plot_heat_r_triangle", heat_r_triangle)
   # P-values as a triangle:
   heat_p_triangle <- epi_plot_heatmap(renamed_triangles$cormat_melted_triangle_pval)
+  expect_equal(heat_p_triangle$data, renamed_triangles$cormat_melted_triangle_pval)
   vdiffr::expect_doppelganger("epi_plot_heat_p_triangle", heat_p_triangle)
 
   # Test epi_plot_heatmap_triangle:

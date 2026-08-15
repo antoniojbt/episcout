@@ -45,4 +45,4 @@ For an end-to-end learning example that combines disposable PostgreSQL tables, p
 
 ## Contributing
 
-Read [AGENTS.md](AGENTS.md) for development and contribution instructions, [PROJECT_MAP.md](PROJECT_MAP.md) for implemented workflows and package locations, and use the canonical checks in `scripts/check-local.sh` and `scripts/check-cran.sh`. Report defects or propose changes through the [issue tracker](https://github.com/AntonioJBT/episcout/issues).
+Read [AGENTS.md](AGENTS.md) for development and contribution instructions, [PROJECT_MAP.md](PROJECT_MAP.md) for implemented workflows and package locations, and use the canonical checks in `scripts/check-local.sh` and `scripts/check-cran.sh`. SVG visual snapshots are regression evidence for rendering only: they do not independently validate plot labels, ordering, denominators, scales, input semantics or accessibility. Report defects or propose changes through the [issue tracker](https://github.com/AntonioJBT/episcout/issues).
