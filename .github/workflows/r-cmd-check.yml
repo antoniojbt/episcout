@@ -23,13 +23,13 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     # Keep the established status-check name while pinning the rendering stack.
-    name: ubuntu-latest (release)
+    name: ${{ matrix.config.check_name }}
 
     strategy:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-24.04,  r: '4.6.1'}
+          - {os: ubuntu-24.04, r: '4.6.1', check_name: 'ubuntu-latest (release)'}
 #          - {os: ubuntu-latest,  r: 'devel', http-user-agent: 'release'}
 #          - {os: ubuntu-latest,  r: 'oldrel-1'}
 #          - {os: windows-latest, r: 'release'}
