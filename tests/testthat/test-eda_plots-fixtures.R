@@ -64,10 +64,25 @@ test_that("epi_eda_profile_plots excludes numeric and categorical sentinels from
   missing <- epi_eda_profile_missing(data, spec)
   expect_equal(missing$n_missing, c(2L, 2L))
   expect_equal(sum(plots$measurement$data$count), 3)
+  expect_equal(nrow(plots$measurement$data), 30L)
   expect_lt(max(plots$measurement$data$midpoint[plots$measurement$data$count > 0]), 10)
-  expect_equal(sort(plots$treatment$data$count), c(1, 2))
+  expect_identical(plots$measurement$labels$title, "Measurement")
+  expect_identical(plots$measurement$labels$x, "Measurement")
+  expect_identical(plots$measurement$labels$y, "Count")
+  expect_identical(plots$treatment$labels$title, "Treatment")
+  expect_identical(plots$treatment$labels$x, "Treatment")
+  expect_identical(plots$treatment$labels$y, "Count")
+  expect_identical(as.character(plots$treatment$data$level), c("control", "case"))
+  expect_identical(plots$treatment$data$count, c(2L, 1L))
+  expect_identical(plots$treatment$data$display_order, c(1L, 2L))
+  expect_identical(plots$treatment$data$denominator, c(3L, 3L))
+  expect_equal(plots$treatment$data$proportion, c(2 / 3, 1 / 3))
   expect_equal(sum(plots$treatment$data$count), 3)
   expect_false(any(c("UNK", "999") %in% unlist(lapply(plots, names))))
+
+  # SVG agreement covers the rendered maintained plot; the assertions above
+  # independently protect the compact-input and display semantics.
+  vdiffr::expect_doppelganger("eda profile categorical sentinel exclusion", plots$treatment)
 })
 
 test_that("epi_eda_profile_plots masks temporal sentinels before conversion", {

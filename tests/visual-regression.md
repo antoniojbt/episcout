@@ -1,0 +1,15 @@
+# Visual regression contract
+
+The maintained first visual slice covers the public `epi_plot_hist()`, `epi_plot_box()`, `epi_plot_bar()`, `epi_plot_heatmap()`, `epi_plot_heatmap_triangle()`, `epi_plot_list()`/`epi_plots_to_grid()` and compact categorical `epi_eda_profile_plots()` surfaces exercised by their adjacent testthat cases. The former generic ggplot2 and base-graphics demonstration cases and the duplicate unmodified box-colour case are retired because they do not exercise a distinct Episcout rendering contract; their snapshots were removed with those cases.
+
+Object and data assertions beside each visual expectation protect consequential inputs, plot classes, labels, limits, ordering, denominators and layer structure before SVG comparison. The SVGs detect renderer-visible regressions only. Snapshot agreement does not independently validate analytical meaning, accessibility or the correctness of those assertions.
+
+The required hosted execution platform is the `ubuntu-latest (release)` status check in `.github/workflows/r-cmd-check.yml`; its execution stack is pinned to Ubuntu 24.04 and R 4.6.1, with DejaVu fonts installed explicitly. The repository wrapper executes the same cases locally. `scripts/check-local.sh` performs documentation in a temporary copy and fails if any test or check changes the checkout, so accepted snapshots are never silently rewritten or deleted.
+
+Every SVG under `tests/testthat/_snaps/` must map to an executing `vdiffr::expect_doppelganger()` call. A maintainer reviewing a plot change must inspect the object/data assertions and rendered difference before accepting a new baseline. Retire an obsolete snapshot only in the same change that retires its test case; never regenerate the directory wholesale.
+
+## Baseline review for the first slice
+
+The 2026-08-15 review compared each retained case with its adjacent object/data assertions and inspected the generated SVG markup and visible text. Histogram baselines retain the declared labels, limits and layer variants; box baselines retain the input grouping and notch variant; bar baselines retain counts and now use an explicit source-order factor independent of locale; heatmap baselines retain their data, labels and the triangle's `[-1, 1]` colour scale; the grid retains its three-panel contract; and the categorical EDA baseline retains the reviewed order, denominator, proportions and sentinel exclusion. Ten legacy package snapshots were refreshed for the current renderer without visible-text changes, the two-variable bar snapshot was separately regenerated for the explicit source order, and the new categorical EDA snapshot was inspected against its aggregate assertions. The bar-one-variable and three-panel-grid SVGs did not require regeneration.
+
+The generic base and ggplot2 histogram demonstrations and the duplicate unstyled box-colour case were reviewed as non-contract examples and retired with their expectation calls. Future baseline changes require the same per-case assertion and rendered-difference review; this record does not make SVG agreement analytical or accessibility validation.
