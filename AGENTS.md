@@ -1,6 +1,6 @@
 # Episcout Repository Instructions
 
-Episcout is a public R package for cleaning, exploring, and visualising epidemiological data. Apply the mac11 routed guidance and the project-specific rules below.
+Episcout is a public R package for cleaning, exploring, and visualising epidemiological data. Apply the repository-specific rules below.
 
 ## Start here
 
@@ -30,7 +30,7 @@ Use `scripts/check-local.sh` before review. Use `scripts/check-cran.sh` for rele
 - Edit roxygen source in `R/`, regenerate `man/`, and do not hand-edit generated Rd files, `NAMESPACE`, or other generated declarations.
 - Match established British English and do not hard-wrap prose.
 
-Apply the routed data guidance to analytical and missingness semantics. Expected values must come from authoritative methods, explicit domain rules, or independently justified fixtures; passing package tests and snapshots are not independent scientific validation.
+For analytical and missingness semantics, expected values must come from authoritative methods, explicit domain rules, or independently justified fixtures; passing package tests and snapshots are not independent scientific validation.
 
 ## Project checks and records
 
