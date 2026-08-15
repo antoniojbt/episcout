@@ -86,6 +86,61 @@ spec <- epi_eda_dictionary_spec(
 
 The extended dictionary contains technical source metadata and semantic declarations. `epi_db_catalogue_profile()` reads values only for an explicit `source_schema`, `source_table`, `source_column` selection and a caller-supplied `max_levels` bound. Privacy classification, column retention and pseudonymisation policy do not belong in either EDA dictionary; use the separate `epi_sec_*` workflow when those controls are required. A pseudonymisation result's semantic `output_dictionary` and `output_catalogues` can pass directly to `epi_eda_dictionary_spec()`.
 
+Before deciding how repeated code and label fields should be represented in a reviewed specification, inspect an explicit same-table pair with a separate combination bound. The profiler returns aggregate mappings, missingness and multiplicity exceptions; it does not decide that fields are equivalent, redundant or canonical.
+
+```{r relationship-profile, eval = FALSE}
+relationship_pairs <- data.frame(
+  left_schema = "study",
+  left_table = "observations",
+  left_column = "group_code",
+  right_schema = "study",
+  right_table = "observations",
+  right_column = "group_label"
+)
+
+relationship_profile <- epi_db_relationship_profile(
+  con,
+  dictionary,
+  pairs = relationship_pairs,
+  max_levels = 100
+)
+
+relationship_profile$summary
+relationship_profile$mappings
+relationship_profile$conflicts
+
+# Only after reviewing the relationship evidence and source documentation,
+# profile the selected catalogue field and author its semantics explicitly.
+catalogue_profile <- epi_db_catalogue_profile(
+  con,
+  dictionary,
+  columns = data.frame(
+    source_schema = "study",
+    source_table = "observations",
+    source_column = "group_code"
+  ),
+  max_levels = 100
+)
+catalogue_profile$values
+catalogue_profile$missing
+
+catalogues <- data.frame(
+  catalog_name = c("study_group", "study_group"),
+  source_value = c("A", "B"),
+  label = c("Group A", "Group B"),
+  display_order = c(1, 2),
+  is_missing = c(FALSE, FALSE),
+  provenance = c("reviewed source definition", "reviewed source definition")
+)
+dictionary$analysis_type[dictionary$source_column == "group_code"] <-
+  "categorical"
+dictionary$catalog_name[dictionary$source_column == "group_code"] <-
+  "study_group"
+epi_eda_dictionary_validate(dictionary, catalogues)
+```
+
+PostgreSQL NULL is counted in exclusive row partitions and never returned as a mapping value. Literal empty text, `"NA"` and `"NULL"` remain ordinary observed values. Review this technical evidence alongside source documentation, then curate catalogue definitions or the EDA specification explicitly; the profiler changes neither source data nor dictionary semantics.
+
 ## 3. Generate review-only QC prompts
 
 `epi_eda_qc_proposals()` accepts the reviewed specification plus a caller-created, persisted key map containing exactly `name` and `variable_key`. Each key is an opaque identifier beginning `var_` followed by 16 to 64 lower-case letters or digits. The package uses names only for exact input lookup and returns no name/key crosswalk, so reuse the same private map when comparing equivalent in-memory and PostgreSQL sources.

@@ -214,6 +214,32 @@ catalogue_profile$missing
 
 `values` contains only non-NULL source values and counts, so its rows can be copied into a draft normalised catalogue for labelling. `missing` reports one aggregate PostgreSQL NULL count per profiled column, including zero for an empty table. PostgreSQL NULL is not a catalogue `source_value`, and this technical profile does not decide whether a sentinel represents missingness.
 
+When a source table repeats information across two scalar columns, request that relationship explicitly rather than inferring candidates from names or inventory metadata:
+
+```{r relationship-profile, eval = FALSE}
+relationship_pairs <- data.frame(
+  left_schema = "source_data",
+  left_table = "entities",
+  left_column = "entity_kind",
+  right_schema = "source_data",
+  right_table = "entities",
+  right_column = "entity_kind_label"
+)
+
+relationship_profile <- epi_db_relationship_profile(
+  con,
+  dictionary,
+  pairs = relationship_pairs,
+  max_levels = 100
+)
+
+relationship_profile$summary
+relationship_profile$mappings
+relationship_profile$conflicts
+```
+
+This bounded profile separates SQL NULL from observed text and reports directional multiplicity without choosing a canonical field or recommending column removal. Use source documentation and review to decide whether the aggregate evidence should inform catalogue curation; it does not alter the dictionary, linkage specification or database.
+
 ## 5. Linkage scaffold and specification
 
 Create the value-free draft without reading source rows. The scaffold covers every selected semantic dictionary column in a separate `columns` component and leaves every `output_action` blank. It does not infer an ID column or decide which other columns to retain.
