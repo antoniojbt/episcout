@@ -38,6 +38,8 @@ Validation errors indicate malformed or structurally inconsistent metadata and d
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
 
 Other longitudinal pseudonymisation:
+\code{\link[=epi_sec_alias_db]{epi_sec_alias_db()}},
+\code{\link[=epi_sec_alias_spec]{epi_sec_alias_spec()}},
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
 \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},

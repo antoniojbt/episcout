@@ -76,6 +76,8 @@ Pseudonymisation is reversible through the registry and is not anonymisation or 
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}
 
 Other longitudinal pseudonymisation:
+\code{\link[=epi_sec_alias_db]{epi_sec_alias_db()}},
+\code{\link[=epi_sec_alias_spec]{epi_sec_alias_spec()}},
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
 \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},
