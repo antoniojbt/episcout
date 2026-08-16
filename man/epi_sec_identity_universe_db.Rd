@@ -49,6 +49,8 @@ The materialised universe records distinct observed identifiers and source membe
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}
 
 Other longitudinal pseudonymisation:
+\code{\link[=epi_sec_alias_db]{epi_sec_alias_db()}},
+\code{\link[=epi_sec_alias_spec]{epi_sec_alias_spec()}},
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}},

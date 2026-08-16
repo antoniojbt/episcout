@@ -322,6 +322,41 @@ linkage <- epi_sec_linkage_spec(
 
 Many aliases may resolve to one entity. Conflicting mappings, chains or cycles, missing canonical targets and unmatched dependent identities produce error-severity issues that prevent apply. Unused crosswalk rows are reported by count only. episcout never infers that similar identifiers or records belong to the same entity.
 
+### Auditing and materialising an exact alias crosswalk
+
+When the source itself explicitly co-observes two identifier systems, use
+`epi_sec_alias_spec()` and `epi_sec_alias_db()` rather than constructing an
+unreviewed crosswalk externally. The specification names the source relation,
+the two identifier columns, and the caller-selected alias and canonical
+namespaces; it contains no identifier values. An audit returns aggregate,
+value-free counts for incomplete identifiers, duplicate pairs and mapping
+multiplicity. Alias-to-many-canonical and canonical-to-many-alias evidence is
+an error, not a precedence decision.
+
+```{r alias-crosswalk, eval = FALSE}
+alias_spec <- epi_sec_alias_spec(
+  data.frame(
+    source_schema = "identity_data",
+    source_table = "explicit_identifier_pairs",
+    alias_id_column = "secondary_identifier",
+    canonical_id_column = "primary_identifier",
+    alias_namespace = "secondary_namespace",
+    canonical_namespace = "primary_namespace",
+    provenance = "declared_exact_co_observation",
+    stringsAsFactors = FALSE
+  )
+)
+alias_audit <- epi_sec_alias_db(con, alias_spec)
+```
+
+After all error findings are resolved, materialisation creates a new ordinary
+PostgreSQL table with `alias_id` and `canonical_id`; it never replaces an
+existing table. Pass that relation and its two column names to
+`epi_sec_linkage_spec()` as normal crosswalk metadata. This establishes only
+the exact relationships the caller declared. A fallback identifier choice is
+not alias resolution, and neither mechanism infers identity from similar
+records.
+
 ## 7. Registry audit and initialisation
 
 Start with the default read-only registry audit. It reports whether initialisation is required and never creates a table.
