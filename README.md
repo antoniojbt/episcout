@@ -32,6 +32,47 @@ devtools::install_github("AntonioJBT/episcout")
 
 For an end-to-end learning example that combines disposable PostgreSQL tables, pseudonymisation and aggregate EDA delivery, use the [database-to-EDA-delivery walkthrough](inst/examples/db-to-report/README.md). Its synthetic data are for learning and testing, not inference; aggregate output is not automatically disclosure-controlled.
 
+## Generic analytical pipeline contract
+
+The following is the reference sequence for projects that compose episcout with an ingestion layer such as Epidepot. It is a design contract rather than a claim that every box already has a dedicated public function; implementation work is tracked in [#340](https://github.com/AntonioJBT/episcout/issues/340).
+
+```mermaid
+flowchart TD
+    A["Source delivery"] --> B["Source-wide ingestion + raw retention<br/>(external ingestion layer, e.g. Epidepot)"]
+    B --> C["Project selects analytical relation<br/>(selection may remain unset until analysis)"]
+    C --> D["Technical typing / schema contract"]
+
+    D --> E["Identifier QC<br/>missing/blank · counts/distinct · whitespace · length<br/>format/pattern · duplicates/conflicts"]
+    E --> F["Optional project-approved derivations from identifiers<br/>before source identifiers are removed"]
+    F --> G["Identity resolution + pseudonymisation"]
+
+    subgraph T["Transversal / single-period analytical contract"]
+        G --> H["First-pass QC"]
+        H --> I["QC report"]
+        I --> J["Specification-driven cleaning<br/>+ dictionary/catalogue application"]
+        J --> K["Transversal EDA"]
+        K --> L["Transversal EDA report"]
+    end
+
+    L --> M["Completed curated period"]
+    M --> N["Accumulate completed periods"]
+
+    subgraph LONG["Longitudinal analytical contract"]
+        N --> O["Construct longitudinal dataset"]
+        O --> P["Longitudinal first-pass QC"]
+        P --> Q["Longitudinal QC report"]
+        Q --> R["Longitudinal cleaning<br/>+ dictionary/catalogue application"]
+        R --> S["Longitudinal EDA"]
+        S --> U["Longitudinal EDA report"]
+    end
+```
+
+Identifier QC is deliberately separate from identity resolution and pseudonymisation. Identifiers are normally treated as text unless the caller declares another technical contract; the first pass should at least assess missing and blank values, row/distinct counts, duplicate frequency, leading/trailing or unusual whitespace, observed and expected lengths, and optional exact pattern or character-class violations. QC should report evidence rather than silently normalise identifiers.
+
+If a structured identifier contains analytically useful components, a project may declare deterministic derivations before pseudonymisation removes the source identifier from the analytical relation. Derived dates, geography and similar fields can remain quasi-identifiers and are not automatically anonymous or safe to disclose.
+
+The period-level QC report is distinct from the later EDA report: it documents the observed state before reviewed cleaning and dictionary/catalogue decisions are applied. A completed curated period is a first-class output. Longitudinal work consumes completed periods and repeats the same QC → reviewed cleaning/dictionaries → EDA/report pattern on the constructed longitudinal dataset.
+
 ## Features
 
 - `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*` provide lower-level helpers for data preparation, descriptive work, plotting and utilities.
