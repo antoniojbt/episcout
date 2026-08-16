@@ -1,0 +1,3 @@
+name,expected_length,n_input,n_null,n_blank,n_nonblank,n_distinct,duplicate_excess,max_frequency,n_leading_whitespace,n_trailing_whitespace,n_internal_whitespace,min_length,max_length,n_expected_length_violations,n_pattern_violations,n_case_variations
+primary_identifier,18,12,1,1,10,9,1,2,1,1,0,17,18,1,1,0
+secondary_identifier,,12,0,2,10,10,0,1,0,0,1,5,7,0,0,1
