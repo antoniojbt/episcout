@@ -2,7 +2,7 @@ id: "049"
 slug: "longitudinal-variable-drift"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: completed
 owner: MacBotticus
 base_branch: master
 working_branch: feature/longitudinal-variable-drift
@@ -13,8 +13,8 @@ tracking_issue: 347
 source_issues:
   - 346
   - 347
-pull_request: null
-merge_commit: null
+pull_request: 352
+merge_commit: b4eddf077784a5fac5c23c7affcc8753c3bff5e6
 successor_issue: 348
 terminal_reason: null
 
