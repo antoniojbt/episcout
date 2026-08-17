@@ -2,7 +2,7 @@ id: "048"
 slug: longitudinal-population-key-qc
 workflow_version: 1
 deliverable: implementation
-status: active
+status: completed
 owner: Antonio J. Berlanga-Taylor
 base_branch: master
 working_branch: agent/issue-346-feature-add-aggregate-longitudinal-populatio
@@ -12,8 +12,8 @@ updated: 2026-08-17
 tracking_issue: 346
 source_issues: []
 pull_request: 350
-merge_commit: null
-successor_issue: null
+merge_commit: 54ed478093ab9af3264e4dd3bf4da71b21e9c481
+successor_issue: 347
 terminal_reason: null
 
 related_files:

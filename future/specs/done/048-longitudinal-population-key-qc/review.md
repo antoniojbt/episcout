@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: `048`
-Status: Active
+Status: Completed
 
 ## Findings
 
@@ -19,11 +19,12 @@ Software-verification review covered inputs, result schemas, failure/rollback bo
 
 ## Open Questions
 
-None in the frozen contract. Hosted PostgreSQL and cross-platform checks remain required PR integration evidence.
+None in the completed contract. The separately tracked longitudinal-drift work remains in issue-347.
 
 ## Closeout Notes
 
-- Pull request: #350 is open for required review; merge commit remains pending.
-- Required checks and material exceptions: focused unit tests, live PostgreSQL integration and the broader local check passed; hosted checks remain pending publication.
-- Tracking issue and roadmap disposition: unchanged.
-- Successor issue or terminal reason: pending the live contribution lifecycle.
+- Pull request: PR-350 merged to canonical `master` as `commit-54ed478093ab9af3264e4dd3bf4da71b21e9c481`.
+- Lifecycle closeout pull request: PR-351.
+- Required checks and material exceptions: focused unit tests, disposable PostgreSQL integration, the broader local check, hosted PostgreSQL integration, Ubuntu, coverage, CodeQL and CodeFactor passed. No material exception remains.
+- Tracking issue and roadmap disposition: issue-346 closed automatically when PR-350 merged.
+- Successor: issue-347 is the authorised longitudinal-drift implementation and remains independently gated.
