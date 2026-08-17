@@ -24,6 +24,7 @@ Other EDA:
 \code{\link[=epi_eda_identifier_qc]{epi_eda_identifier_qc()}},
 \code{\link[=epi_eda_identifier_qc_spec]{epi_eda_identifier_qc_spec()}},
 \code{\link[=epi_eda_longitudinal_drift]{epi_eda_longitudinal_drift()}},
-\code{\link[=epi_eda_longitudinal_qc]{epi_eda_longitudinal_qc()}}
+\code{\link[=epi_eda_longitudinal_qc]{epi_eda_longitudinal_qc()}},
+\code{\link[=epi_eda_longitudinal_transitions]{epi_eda_longitudinal_transitions()}}
 }
 \concept{EDA}

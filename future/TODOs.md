@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. Issue-348 is the queued longitudinal successor.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. Issue-348 is the active longitudinal successor.
 
 ## Maintenance notes
 

@@ -1,0 +1,49 @@
+id: "050"
+slug: "longitudinal-state-transitions"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: MacBotticus
+base_branch: master
+working_branch: agent/issue-348-feature-add-generic-longitudinal-state-trans
+created: 2026-08-17
+updated: 2026-08-17
+
+tracking_issue: 348
+source_issues:
+  - 346
+  - 347
+  - 348
+pull_request: null
+merge_commit: null
+successor_issue: 349
+terminal_reason: null
+
+related_files:
+  - R/eda_longitudinal_transitions.R
+  - tests/testthat/test-eda-longitudinal-transitions.R
+  - tests/testthat/test-eda-longitudinal-postgres-transitions.R
+  - README.md
+  - vignettes/longitudinal-pseudonymisation.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "parse('R/eda_longitudinal_transitions.R')"
+  - scripts/rscript_env_caller.R -e "lintr::lint('R/eda_longitudinal_transitions.R')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-longitudinal-transitions', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-longitudinal-postgres-transitions', reporter = 'summary')"
+  - scripts/check-workflow-state.sh --offline
+  - scripts/check-local.sh
+
+notes:
+  - Recovered from a blocked dispatcher checkout before publication; no commit or PR existed.
+  - The issue contract and its behaviour-audit clarifications dated 2026-08-17 are controlling.
+  - Public population and cell counts use the exact base-R double contract through 2^53 - 1.
