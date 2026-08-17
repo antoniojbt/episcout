@@ -241,6 +241,35 @@ For categorical and binary fields, `max_levels` is a hard limit on declared leve
 
 All validation, categorical bound checks and aggregate summaries run in one read-only repeatable-read snapshot on the caller-owned connection. The function creates no database object. A source, catalogue, query, count-range, reconciliation or transaction failure returns no partial result and leaves the connection open and reusable.
 
+## 3D. Summarise retained-entity state transitions
+
+Population continuity and marginal variable drift do not show how the same retained entities move between states. `epi_eda_longitudinal_transitions()` provides that separate, generic primitive for explicitly selected categorical or binary variables. It compares adjacent periods only and requires the caller to name at least one variable; selecting the entity column or any specification row whose trimmed, case-insensitive role is `id` or `identifier` fails before database work begins.
+
+```{r longitudinal-state-transitions, eval = FALSE}
+longitudinal_transitions <- epi_eda_longitudinal_transitions(
+  completed_periods,
+  entity_id = "token_id",
+  spec = reviewed_spec,
+  variables = c("role_group", "programme_status"),
+  max_levels = 50L
+)
+
+longitudinal_transitions$state_audit
+longitudinal_transitions$transition_summary
+longitudinal_transitions$transition_counts
+longitudinal_transitions$issues
+```
+
+The population contract is the same as longitudinal QC: null entity identifiers and applicable blank text representations are excluded, and repeated rows do not multiply period membership. Within one entity-period, zero distinct non-missing canonical values is a missing state, one is usable, and more than one is conflicting. Repeated copies of the same value and a mixture of one value with missing rows remain usable. A conflicting entity-period never has a state selected for it.
+
+For each adjacent pair, `n_retained` is the distinct valid-entity intersection. It reconciles exactly to `n_eligible + n_excluded_missing + n_excluded_conflict`; conflict takes precedence when an entity is both conflicting on one side and missing on the other. `n_eligible` is the denominator for every transition proportion. When it is zero, proportions are unavailable and a `zero_eligible` warning is returned rather than a zero proportion.
+
+An available pair uses one complete square domain. First-occurrence-deduplicated declared levels retain specification order, then unexpected usable states observed in either period follow in bytewise order. Zero-count cells remain visible, missing values never become a level, and an empty domain has no count rows. `max_levels` bounds each declaration, usable period domain and adjacent union; v1 accepts at most 50 states and therefore at most 2,500 cells per variable and pair. Exceeding any bound fails the whole call rather than truncating the domain. Counts remain exact through `2^53 - 1`, while `n_transition_cells` is an R integer.
+
+Absent variables, incompatible storage, invalid missing-code contracts and unsupported analysis types produce period-scoped unavailable evidence. Conflicting entity-period states and zero eligible pairs are warnings. All entity-state reconciliation and transition aggregation occurs inside PostgreSQL in one read-only repeatable-read snapshot. Only explicitly selected, bounded state labels and aggregate counts leave the database; entity values, row-level entity-state records and source rows do not.
+
+The three longitudinal interfaces answer different descriptive questions. `epi_eda_longitudinal_qc()` describes population retention, entry and exit. `epi_eda_longitudinal_drift()` describes period-level schema, missingness and marginal distributions without joining entities. `epi_eda_longitudinal_transitions()` describes adjacent state-to-state counts among retained eligible entities. None decides whether an observed change is desirable or plausible, and none derives project-specific concepts such as a job change from generic states.
+
 ## 4. Inventory and semantic dictionary
 
 Create a technical and semantic dictionary from the inventory. It contains EDA labels, types, roles, units, missingness, catalogue and geographic declarations, but no privacy classification or retained-column action.
