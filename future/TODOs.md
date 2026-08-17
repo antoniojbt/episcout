@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. Issue-349 is the queued longitudinal successor.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. The generic longitudinal package sequence is complete.
 
 ## Maintenance notes
 
@@ -14,7 +14,7 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
-Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353. Issue-348/spec-050 completed through PR-354, merged as `commit-dc2e616`; the package now adds bounded aggregate-only adjacent state transitions with explicit missing/conflict exclusions and eligible denominators. Issue-349 is the authorised post-curation longitudinal EDA successor.
+Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353. Issue-348/spec-050 completed through PR-354, merged as `commit-dc2e616`, with lifecycle closeout PR-355. Issue-349/spec-051 completed through PR-356, merged as `commit-0a5e3a8`; the package now has generic aggregate-only population/key QC, drift, categorical transitions and post-curation long-form EDA. Project-specific reporting and pipeline integration are tracked downstream, not as another package successor.
 
 Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification, and its closeout completed through PR-326 at `commit-7ac8ea1`. Documentation-only issue-327/spec-047 completed through PR-328 at `commit-dc84687` and terminal closeout PR-329, aligning package versions, NEWS, release notes, generated help, guides, templates and installed walkthroughs without changing exported behaviour. No successor is authorised.
 
