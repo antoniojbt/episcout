@@ -1,7 +1,7 @@
 # Test Design
 
 Spec ID: `048`
-Status: Active
+Status: Completed
 
 ## Test Files
 

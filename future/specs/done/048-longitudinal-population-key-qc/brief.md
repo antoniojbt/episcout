@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `048`
-Status: Active
+Status: Completed
 Owner: Antonio J. Berlanga-Taylor
 Tracking issue: #346
 

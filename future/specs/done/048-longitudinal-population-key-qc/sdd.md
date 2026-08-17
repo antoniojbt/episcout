@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `048`
-Status: Active
+Status: Completed
 
 ## Scope
 

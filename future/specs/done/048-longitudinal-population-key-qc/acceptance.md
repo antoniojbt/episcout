@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `048`
-Status: Active
+Status: Completed
 
 - [x] The SDD and exact component schemas were frozen before package edits.
 - [x] The TDD plan and independent fixture expectations were frozen before package edits.
@@ -12,4 +12,6 @@ Status: Active
 - [x] Software-verification, truth/semantics and copy-edit checklists are applied.
 - [x] Final source, generated interface, tests and documentation diffs are inspected.
 - [x] All task changes are prepared for one scoped commit and a clean worktree.
-- [ ] Pull-request, merge, tracking closeout and terminal/successor decisions remain pending publication.
+- [x] PR-350 passed hosted PostgreSQL, Ubuntu, coverage, CodeQL and CodeFactor checks and merged to canonical `master` as `commit-54ed478`.
+- [x] Issue-346 closed automatically; issue-347 is the explicit longitudinal-drift successor.
+- [x] The manifest is completed and this specification is retained under `future/specs/done/`.

@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-17
+
+- Completed `issue-346`/`spec-048-longitudinal-population-key-qc` through PR-350, merged to canonical `master` as `commit-54ed478`. `epi_eda_longitudinal_qc()` now produces exact aggregate period, adjacent-membership, all-pairs overlap, key-integrity and follow-up evidence from ordered PostgreSQL sources in one read-only repeatable-read snapshot. Independent four-period truth, empty-period, identifier/key, exact-count, concurrent-snapshot, rollback and non-leakage tests passed locally and in hosted PostgreSQL integration; Ubuntu, coverage, CodeQL and CodeFactor also passed. Issue-347 is the explicit generic longitudinal-drift successor.
+
 ## 2026-08-14
 
 - Completed `issue-327`/`spec-047-documentation-version-alignment` through PR-328, merged to canonical `master` as `commit-dc84687`, and terminal closeout PR-329 after issue-323 closeout PR-326 at `commit-7ac8ea1`. The documentation-only slice aligns development version `0.4.1.9000`, NEWS and release-0.4.1 chronology, generated help, all vignettes, the starter project and installed walkthroughs with the current two-type EDA contract; it preserves the immutable release-0.4.1 tag, records its retained `Version: 0.4.0`, and changes no exported behaviour. No successor is authorised.
