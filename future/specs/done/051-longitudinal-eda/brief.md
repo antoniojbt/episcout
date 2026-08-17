@@ -1,6 +1,6 @@
 # Longitudinal EDA
 
-Status: Active. Tracking issue: #349.
+Status: Completed. Tracking issue: #349; implementation PR: #356.
 
 Provide one neutral, post-curation long-form panel description: structure, follow-up, presence, present-cell completeness, unchanged ordinary summaries and signed numeric changes. The explicit identifier and reviewed discrete time variable define the panel.
 

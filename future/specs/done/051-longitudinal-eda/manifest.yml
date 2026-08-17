@@ -2,18 +2,18 @@ id: "051"
 slug: "longitudinal-eda"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: completed
 owner: MacBotticus
 base_branch: master
-working_branch: agent/issue-349-feature-add-a-thin-longitudinal-eda-layer-fo
+working_branch: chore/closeout-longitudinal-eda
 created: 2026-08-17
 updated: 2026-08-17
 tracking_issue: 349
-source_issues: [349]
-pull_request: null
-merge_commit: null
-successor_issue: 195
-terminal_reason: null
+source_issues: [346, 347, 348, 349]
+pull_request: 356
+merge_commit: 0a5e3a8249a0b192bed489e2844e8b8b6cb87a0e
+successor_issue: null
+terminal_reason: "Generic longitudinal EDA package sequence complete; project-specific reporting is downstream."
 related_files:
   - R/eda_longitudinal.R
   - tests/testthat/test-eda-longitudinal.R
@@ -33,5 +33,6 @@ check_commands:
   - scripts/check-cran.sh
   - git diff --check
 notes:
+  - Recovered from a blocked dispatcher checkout, repaired through independent review and published through PR 356.
   - The GitHub issue body is the normative v1 contract.
-  - Local implementation review passed; hosted checks remain pending until publication.
+  - Local and hosted checks passed; downstream Oferta reports remain project-owned and outside Episcout.

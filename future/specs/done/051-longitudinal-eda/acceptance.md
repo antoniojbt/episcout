@@ -1,5 +1,8 @@
 # Acceptance
 
+Spec ID: 051
+Status: Completed
+
 - Hand-authored fixtures cover balanced and unbalanced panels, entry, last observation, reappearance, duplicates, invalid identifiers, missing time and declared empty timepoints.
 - Custom structure, follow-up, timepoint, missingness and change denominators reconcile exactly.
 - Canonical summaries are literally identical to `epi_eda_profile_stratified()` on each backend, except the documented PostgreSQL Shapiro limitation.
@@ -23,4 +26,4 @@
 - `git diff --check` passed.
 - An independent read-only review rejected four successive schema/denominator/privacy gaps; all were corrected and the final review found no remaining blocker.
 
-Hosted required checks and canonical post-merge checks remain pending until publication.
+PR-356 passed hosted PostgreSQL integration, Ubuntu R CMD CHECK, coverage, CodeQL, CodeFactor and Codecov checks and merged as `0a5e3a8249a0b192bed489e2844e8b8b6cb87a0e`. Issue #349 closed automatically. Canonical post-merge CodeQL, coverage and R CMD CHECK (including PostgreSQL and Ubuntu) also passed.
