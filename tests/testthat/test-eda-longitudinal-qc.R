@@ -28,7 +28,7 @@ test_that("ordered source and declaration validation is deterministic", {
   second <- longitudinal_fake_source(con)
 
   observed <- validate(
-    list(later = second, earlier = first), "entity", c("key")
+    list(later = second, earlier = first), "entity", "key"
   )
   expect_identical(observed$period_labels, c("later", "earlier"))
   expect_identical(observed$entity_id, "entity")
