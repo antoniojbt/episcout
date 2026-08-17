@@ -252,6 +252,36 @@ test_that("PostgreSQL zero-row and all-missing strata remain explicit", {
   expect_identical(omitted$metadata$n_omitted_missing_stratum, 1L)
 })
 
+test_that("PostgreSQL all-missing categorical variables retain group totals", {
+  con <- stratified_postgres_connection()
+  fixture <- stratified_postgres_fixture(con)
+  on.exit(stratified_postgres_cleanup(con, fixture), add = TRUE)
+  relation <- DBI::Id(schema = fixture$schema, table = fixture$relation)
+  relation_sql <- as.character(DBI::dbQuoteIdentifier(con, relation))
+  DBI::dbExecute(
+    con,
+    paste0("ALTER TABLE ", relation_sql, " ADD COLUMN all_missing text")
+  )
+  all_missing_spec <- data.frame(
+    name = "all_missing", label = "All missing", database_type = "text",
+    analysis_type = "categorical", role = "measure", levels = "",
+    missing_codes = "", required = TRUE, stringsAsFactors = FALSE
+  )
+  spec <- rbind(fixture$spec, all_missing_spec)
+  source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
+
+  observed <- epi_eda_profile_stratified(source, spec, "arm")
+  categorical <- observed$categorical[
+    observed$categorical$name == "all_missing", , drop = FALSE
+  ]
+
+  expect_identical(categorical$group_id, observed$groups$group_id)
+  expect_identical(categorical$n, observed$groups$n)
+  expect_true(all(categorical$is_missing_level))
+  expect_true(all(categorical$n_observed == 0L))
+  expect_true(all(is.na(categorical$p_observed)))
+})
+
 test_that("PostgreSQL stratification rejects unsafe boundaries", {
   con <- stratified_postgres_connection()
   fixture <- stratified_postgres_fixture(con)

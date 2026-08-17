@@ -317,8 +317,11 @@ stratified_categorical <- function(categorical, variables, group, spec, universe
     n_total <- variable$n[[1]]
     n_observed <- variable$n_observed[[1]]
     rows[[length(rows) + 1L]] <- data.frame(
-      name = name,
-      type = spec$analysis_type[match(name, spec$name)],
+      name = rep(name, nrow(universe)),
+      type = rep(
+        spec$analysis_type[match(name, spec$name)],
+        nrow(universe)
+      ),
       level = universe$level,
       n = as.integer(counts),
       n_total = rep(as.integer(n_total), nrow(universe)),
@@ -327,7 +330,7 @@ stratified_categorical <- function(categorical, variables, group, spec, universe
       p_observed = summary_safe_proportion(counts, n_observed),
       is_declared = universe$is_declared,
       is_unexpected = universe$is_unexpected,
-      is_missing_level = FALSE,
+      is_missing_level = rep(FALSE, nrow(universe)),
       stringsAsFactors = FALSE
     )
     missing_n <- variable$n_missing[[1]]
