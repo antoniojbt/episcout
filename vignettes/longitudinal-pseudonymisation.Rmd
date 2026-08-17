@@ -181,6 +181,38 @@ Materialisation repeats all validation in one protected transaction and creates 
 
 The result creates no token and writes no identity-registry row. A caller may declare `identity_data.identity_universe` as the sole `can_enrol = TRUE` source in `epi_sec_linkage_spec()`, with `canonical_identifier` as its ID column and the same namespace, for a separate registry/pseudonymisation operation. The exact universe calculation does not establish that identifiers denote distinct people.
 
+## 3B. Inspect population continuity across completed periods
+
+Identity resolution and pseudonymisation, completed-period construction, longitudinal population/key QC, later variable-drift QC, reviewed cleaning and EDA are separate stages. After a project has constructed reviewed completed-period relations, `epi_eda_longitudinal_qc()` can compare their aggregate entity membership without collecting entity identifiers or record-key values into R.
+
+List order is the time contract; labels are returned for interpretation but are not sorted. Every source must be an unmodified `epi_eda_postgres_source` on the same open, idle RPostgres connection. Ordinary tables, partitioned tables, views, materialised views and foreign tables are accepted through the existing source boundary.
+
+```{r longitudinal-population-qc, eval = FALSE}
+completed_periods <- list(
+  period_1 = epi_eda_postgres_source(con, "analysis_data", "completed_period_1"),
+  period_2 = epi_eda_postgres_source(con, "analysis_data", "completed_period_2"),
+  period_3 = epi_eda_postgres_source(con, "analysis_data", "completed_period_3")
+)
+
+longitudinal_qc <- epi_eda_longitudinal_qc(
+  completed_periods,
+  entity_id = "token_id",
+  record_key = c("token_id", "event_sequence")
+)
+
+longitudinal_qc$period_summary
+longitudinal_qc$adjacent_membership
+longitudinal_qc$pairwise_overlap
+longitudinal_qc$history_summary
+longitudinal_qc$issues
+```
+
+Null entity identifiers and blank text representations are excluded from every membership set. Repeated entity rows remain descriptive population structure. A separately declared complete simple or composite `record_key` controls only within-period uniqueness evidence; rows with any null or applicable blank key component are counted as missing keys and excluded from distinct and duplicate-key calculations.
+
+Adjacent output reports retention, exit and entry with explicit source or target denominators. Pairwise output includes every increasing pair, including non-adjacent periods. History output groups entities by first period, last period, number of periods observed and the number of unobserved periods inside that span, making one-period entities and aggregate gaps visible without returning membership values. A zero denominator leaves its proportion unavailable rather than treating it as zero.
+
+The four possible issues are warning-severity technical evidence for an empty period, invalid entity identifiers, missing record keys and duplicate complete record keys. Non-zero entry, exit, retention loss, reappearance and repeated entity rows do not produce warnings or scientific thresholds. Every calculation and source revalidation occurs in one read-only repeatable-read snapshot; a connection, source, catalogue, type, query, count-range or reconciliation failure returns no partial longitudinal object and leaves the caller-owned connection open and idle.
+
 ## 4. Inventory and semantic dictionary
 
 Create a technical and semantic dictionary from the inventory. It contains EDA labels, types, roles, units, missingness, catalogue and geographic declarations, but no privacy classification or retained-column action.

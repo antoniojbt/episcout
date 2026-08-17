@@ -1,0 +1,47 @@
+id: "048"
+slug: longitudinal-population-key-qc
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: Antonio J. Berlanga-Taylor
+base_branch: master
+working_branch: agent/issue-346-feature-add-aggregate-longitudinal-populatio
+created: 2026-08-17
+updated: 2026-08-17
+
+tracking_issue: 346
+source_issues: []
+pull_request: 350
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+related_files:
+  - R/eda_longitudinal_qc.R
+  - tests/testthat/test-eda-longitudinal-qc.R
+  - tests/testthat/test-eda-longitudinal-postgres.R
+  - man/epi_eda_longitudinal_qc.Rd
+  - NAMESPACE
+  - README.md
+  - NEWS.md
+  - vignettes/longitudinal-pseudonymisation.Rmd
+  - PROJECT_MAP.md
+  - .github/workflows/r-cmd-check.yml
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/check-workflow-state.sh --offline
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-longitudinal', reporter = 'summary')"
+  - scripts/check-local.sh
+
+notes:
+  - The frozen issue-346 audit contract is the sole behavioural authority for this implementation.
+  - Publication proceeds only after local truth, PostgreSQL, package and independent comparison checks.

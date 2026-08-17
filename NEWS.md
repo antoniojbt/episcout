@@ -2,6 +2,7 @@
 
 ## 0.4.1.9000
 
+- Added `epi_eda_longitudinal_qc()` for aggregate population membership and optional complete record-key quality across caller-ordered PostgreSQL periods. It calculates period, adjacent, all-pairs and grouped observation-history evidence in one read-only repeatable-read snapshot, returns no entity or key values, and guards double counts through `2^53 - 1` without changing existing count contracts.
 - Added `epi_db_relationship_profile()` for deterministic, bounded PostgreSQL profiling of explicitly selected same-table column pairs. It reports aggregate mappings, missingness and observed multiplicity without collecting source rows or inferring equivalence, redundancy, canonical fields or transformations.
 - Replaced process-metadata cleaning rules with `epi_eda_cleaning_rules()` and one exact six-field technical contract for data-frame and PostgreSQL execution. Hashes now derive only from the canonical technical fields. The released `epi_eda_approved_rules()` symbol is a deprecated redirect that accepts only the new schema and returns the neutral class; former eight-field objects are rejected and cannot execute.
 - Replaced the ambiguous EDA specification field `type` with required `database_type` and `analysis_type` fields. Storage-family compatibility and EDA treatment are now declared and validated separately; the removed field is rejected rather than treated as a compatibility alias.

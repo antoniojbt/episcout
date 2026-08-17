@@ -73,6 +73,8 @@ If a structured identifier contains analytically useful components, a project ma
 
 The period-level QC report is distinct from the later EDA report: it documents the observed state before reviewed cleaning and dictionary/catalogue decisions are applied. A completed curated period is a first-class output. Longitudinal work consumes completed periods and repeats the same QC → reviewed cleaning/dictionaries → EDA/report pattern on the constructed longitudinal dataset.
 
+`epi_eda_longitudinal_qc()` implements the aggregate population-membership and optional record-key part of longitudinal first-pass QC for explicitly ordered completed PostgreSQL periods. It reports period populations, adjacent retention/exit/entry, every pairwise overlap, aggregate first/last/period-count/gap histories and four technical warning types without returning entity or key values. It does not construct a row-level longitudinal dataset, resolve identity, pseudonymise, clean data, inspect variable drift or make a scientific judgement about observed population change.
+
 ## Features
 
 - `epi_clean_*`, `epi_stats_*`, `epi_plot_*` and `epi_utils_*` provide lower-level helpers for data preparation, descriptive work, plotting and utilities.
@@ -81,6 +83,7 @@ The period-level QC report is distinct from the later EDA report: it documents t
 - `epi_eda_qc_proposals()` links aggregate descriptive evidence to explicitly pending review prompts through caller-managed opaque variable keys; it never changes the reviewed dictionary or data and never approves or applies a cleaning rule.
 - `epi_eda_cleaning_rules()` and `epi_eda_apply_cleaning_rules()` validate a neutral six-field technical rule schema and apply bounds, allowed values and missing codes to a complete new data-frame, CSV, RDS or PostgreSQL output without replacing the source or an existing destination.
 - `epi_eda_approved_civil_dates()` and `epi_eda_derive_civil_dates()` require an explicit reviewed civil-date declaration, preserve local timestamp sources and add separate dates only after every non-missing value passes exact-midnight validation; they never infer or assign a timezone.
+- `epi_eda_longitudinal_qc()` compares aggregate entity membership and optional complete record-key uniqueness across caller-ordered PostgreSQL periods in one read-only repeatable-read snapshot. Counts are exact through `2^53 - 1`, every proportion names its denominator, and zero denominators produce unavailable proportions.
 - `epi_sec_*` provides auditable longitudinal pseudonymisation for related PostgreSQL tables. Recurring identities retain their pseudonymous identifiers only when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability.
 - `epi_geo_*` provides explicit vector and coordinate mapping with optional `sf` support.
 
