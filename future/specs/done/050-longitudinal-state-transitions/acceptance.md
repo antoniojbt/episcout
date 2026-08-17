@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: 050
-Status: Active
+Status: Completed
 
 - [x] The final #348 authority is represented in sdd.md.
 - [x] The exact public interface, class, component order and typed schemas are implemented and documented.
@@ -15,9 +15,9 @@ Status: Active
 - [x] Help, README, NEWS, project map and longitudinal vignette explain the generic boundary.
 - [x] Focused parse, lint, unit, disposable PostgreSQL, workflow-state, full local and CRAN checks pass with recorded notes only.
 - [x] Independent review has no unresolved substantive finding.
-- [ ] Hosted required checks pass before merge.
-- [ ] PR, merge commit, issue closure and successor are recorded only after canonical lifecycle completion.
+- [x] Hosted required checks pass before merge.
+- [x] PR, merge commit, issue closure and successor are recorded after canonical lifecycle completion.
 
 ## Current Evidence Boundary
 
-The recovered implementation now passes focused unit and PostgreSQL 17 tests, workflow-state, full local and CRAN checks. Full checks report no errors or warnings; only the repository's known/environmental notes remain. Hosted checks and GitHub lifecycle evidence are still pending.
+The recovered implementation passed focused unit and PostgreSQL 17 tests, workflow-state, full local and CRAN checks. Full checks reported no errors or warnings; only the repository's known/environmental notes remained. PR-354 passed hosted PostgreSQL, Ubuntu, coverage, CodeQL, CodeFactor and Codecov checks and merged as commit-dc2e616; issue-348 closed and issue-349 remains the explicit successor.

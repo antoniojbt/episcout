@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: 050
-Status: Active
+Status: Completed
 
 ## Frozen Decisions
 

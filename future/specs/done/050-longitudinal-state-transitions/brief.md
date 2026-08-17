@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: 050
-Status: Active
+Status: Completed
 Owner: MacBotticus
 Tracking issue: #348
 
