@@ -1,0 +1,37 @@
+id: "051"
+slug: "longitudinal-eda"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: MacBotticus
+base_branch: master
+working_branch: agent/issue-349-feature-add-a-thin-longitudinal-eda-layer-fo
+created: 2026-08-17
+updated: 2026-08-17
+tracking_issue: 349
+source_issues: [349]
+pull_request: null
+merge_commit: null
+successor_issue: 195
+terminal_reason: null
+related_files:
+  - R/eda_longitudinal.R
+  - tests/testthat/test-eda-longitudinal.R
+  - tests/testthat/test-eda-longitudinal-layer-postgres.R
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+review_required: true
+check_commands:
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "devtools::test(filter='eda-longitudinal', stop_on_failure=TRUE)"
+  - scripts/rscript_env_caller.R -e "lintr::lint('R/eda_longitudinal.R')"
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+notes:
+  - The GitHub issue body is the normative v1 contract.
+  - Local implementation review passed; hosted checks remain pending until publication.

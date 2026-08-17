@@ -268,7 +268,35 @@ An available pair uses one complete square domain. First-occurrence-deduplicated
 
 Absent variables, incompatible storage, invalid missing-code contracts and unsupported analysis types produce period-scoped unavailable evidence. Conflicting entity-period states and zero eligible pairs are warnings. All entity-state reconciliation and transition aggregation occurs inside PostgreSQL in one read-only repeatable-read snapshot. Only explicitly selected, bounded state labels and aggregate counts leave the database; entity values, row-level entity-state records and source rows do not.
 
-The three longitudinal interfaces answer different descriptive questions. `epi_eda_longitudinal_qc()` describes population retention, entry and exit. `epi_eda_longitudinal_drift()` describes period-level schema, missingness and marginal distributions without joining entities. `epi_eda_longitudinal_transitions()` describes adjacent state-to-state counts among retained eligible entities. None decides whether an observed change is desirable or plausible, and none derives project-specific concepts such as a job change from generic states.
+The three multi-relation longitudinal interfaces answer different descriptive questions. `epi_eda_longitudinal_qc()` describes population retention, entry and exit. `epi_eda_longitudinal_drift()` describes period-level schema, missingness and marginal distributions without joining entities. `epi_eda_longitudinal_transitions()` describes adjacent state-to-state counts among retained eligible entities. None decides whether an observed change is desirable or plausible, and none derives project-specific concepts from generic states.
+
+## 3E. Describe one curated long-form panel
+
+After a project has deliberately constructed one long-form panel, `epi_eda_longitudinal()` provides a separate thin EDA layer for that relation. The caller explicitly names distinct identifier and time columns. Time order comes only from reviewed categorical or binary levels in the EDA specification; unexpected observed non-missing time values fail the call, while reviewed time points with no observations remain visible.
+
+```{r longitudinal-panel-eda, eval = FALSE}
+panel_source <- epi_eda_postgres_source(con, "analysis_data", "curated_panel")
+
+panel_eda <- epi_eda_longitudinal(
+  panel_source,
+  spec = reviewed_spec,
+  id = "token_id",
+  time = "visit",
+  variables = c("age_years", "role_group", "observation_date")
+)
+
+panel_eda$structure
+panel_eda$followup
+panel_eda$timepoints
+panel_eda$missingness
+panel_eda$summaries
+panel_eda$change
+panel_eda$issues
+```
+
+Valid panel membership excludes null identifiers, applicable blank textual identifiers and reviewed missing time values. Within each valid entity-time cell, zero distinct non-missing values is missing, one is usable and more than one is conflicting; repeated identical values and one value mixed with missing rows remain usable. Signed change is limited to selected numeric or integer variables and reports first-to-last plus adjacent comparisons with missing, conflict and non-finite exclusions reconciled explicitly. A zero-eligible comparison remains an available aggregate row with unavailable summary values and the explicit reason `zero_eligible`.
+
+The `summaries` component is the ordinary `epi_eda_profile_stratified()` result for the deterministic time-plus-selected-variable specification; the longitudinal layer does not redefine means, medians, category denominators or missing codes. PostgreSQL returns only aggregates, performs identifier grouping inside the database, and runs every component in the same read-only repeatable-read snapshot. The interface does not replace the multi-relation population QC, drift or categorical-transition functions, and it makes no cleaning, balancing, threshold or scientific judgement.
 
 ## 4. Inventory and semantic dictionary
 
