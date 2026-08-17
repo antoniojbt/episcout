@@ -1,7 +1,7 @@
 # Software Design
 
 Spec ID: `049`
-Status: Active
+Status: Completed
 
 ## Frozen implementation decisions after #346 closeout (2026-08-17)
 

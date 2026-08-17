@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `049`
-Status: Active
+Status: Completed
 Owner: MacBotticus
 Tracking issue: [#347](https://github.com/antoniojbt/episcout/issues/347)
 
