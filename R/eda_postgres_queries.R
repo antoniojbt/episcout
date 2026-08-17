@@ -885,22 +885,36 @@ eda_postgres_numeric_summary <- function(source,
   list(data = data, counts = counts)
 }
 
-eda_pg_categorical_summary <- function(source, column, contract, spec_row, index, n_total, timing_env) {
+eda_pg_categorical_summary <- function(source,
+                                       column,
+                                       contract,
+                                       spec_row,
+                                       index,
+                                       n_total,
+                                       timing_env,
+                                       max_levels = Inf) {
   expression <- eda_postgres_value_expression(source, column, as.character(spec_row$analysis_type[[1]]))
+  bounded <- is.finite(max_levels)
+  fetch_limit <- if (bounded) as.integer(max_levels + 1L) else Inf
+  sql_limit <- if (bounded) paste0(" ORDER BY value LIMIT ", fetch_limit) else ""
   observed <- eda_db_fetch(
     source$con,
     paste0(
       "WITH v AS (SELECT ", expression, " AS value, ", contract$sql, " AS missing FROM ",
       eda_postgres_table_sql(source), ") ",
-      "SELECT value AS level, count(*)::text AS n FROM v WHERE NOT missing GROUP BY value"
+      "SELECT value AS level, count(*)::text AS n FROM v WHERE NOT missing GROUP BY value",
+      sql_limit
     ),
     params = contract$params,
     query_kind = "categorical_frequency",
-    limit = Inf,
+    limit = fetch_limit,
     timing_env = timing_env,
     variable_index = index,
     name = column$name[[1]]
   )
+  if (bounded && nrow(observed) > max_levels) {
+    stop("A PostgreSQL categorical period domain exceeds max_levels.", call. = FALSE)
+  }
   counts <- if (nrow(observed) == 0L) {
     integer()
   } else {
@@ -914,6 +928,9 @@ eda_pg_categorical_summary <- function(source, column, contract, spec_row, index
   has_declared <- length(declared) > 0L
   unexpected <- sort(setdiff(names(counts), declared), method = "radix")
   levels_out <- if (has_declared) c(declared, unexpected) else sort(names(counts), method = "radix")
+  if (bounded && length(levels_out) > max_levels) {
+    stop("A PostgreSQL categorical period domain exceeds max_levels.", call. = FALSE)
+  }
   level_counts <- unname(counts[levels_out])
   level_counts[is.na(level_counts)] <- 0L
   n_observed <- sum(level_counts)
@@ -1027,6 +1044,11 @@ eda_postgres_temporal_summary <- function(source, column, contract, type, index,
   )
   list(
     data = data,
+    numeric_values = c(
+      min = quantiles[["min"]], q1 = quantiles[["q1"]],
+      median = quantiles[["median"]], q3 = quantiles[["q3"]],
+      max = quantiles[["max"]], range_value = data$range_value[[1L]]
+    ),
     counts = list(
       n_missing = counts$n_missing,
       n_observed = counts$n_observed,
