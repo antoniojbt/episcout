@@ -2,10 +2,10 @@ id: "050"
 slug: "longitudinal-state-transitions"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: completed
 owner: MacBotticus
 base_branch: master
-working_branch: agent/issue-348-feature-add-generic-longitudinal-state-trans
+working_branch: chore/closeout-longitudinal-state-transitions
 created: 2026-08-17
 updated: 2026-08-17
 
@@ -15,7 +15,7 @@ source_issues:
   - 347
   - 348
 pull_request: 354
-merge_commit: null
+merge_commit: dc2e6161e3f73152b3d6032ece6a9dda7dde5a00
 successor_issue: 349
 terminal_reason: null
 
@@ -44,6 +44,6 @@ check_commands:
   - scripts/check-local.sh
 
 notes:
-  - Recovered from a blocked dispatcher checkout before publication; no commit or PR existed.
+  - Recovered from a blocked dispatcher checkout, repaired, independently reviewed and published through PR 354.
   - The issue contract and its behaviour-audit clarifications dated 2026-08-17 are controlling.
   - Public population and cell counts use the exact base-R double contract through 2^53 - 1.

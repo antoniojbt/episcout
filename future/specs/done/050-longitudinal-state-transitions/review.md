@@ -1,7 +1,7 @@
 # Review Notes
 
 Spec ID: 050
-Status: Active
+Status: Completed
 
 ## Recovery Findings
 
@@ -15,6 +15,6 @@ The unavailable-pair schema now uses 0L, adjacent domains receive a PostgreSQL U
 
 Focused unit and disposable PostgreSQL 17 tests passed. Workflow-state and git diff checks passed. scripts/check-local.sh completed with zero errors, zero warnings and two known notes for clock verification and the existing docs directory. scripts/check-cran.sh completed with zero errors, zero warnings and two repository/publication notes. An independent read-only review found no remaining analytical, denominator, SQL/snapshot, privacy, API/schema or documentation blocker. Its two optional evidence suggestions do not change the accepted behaviour.
 
-## Remaining Lifecycle
+## Closeout
 
-Draft PR-354 is the implementation review surface. Hosted checks, PR merge, canonical issue closure and closeout remain pending. Do not mark the specification completed, record a merge commit or move it under done until those gates pass.
+PR-354 passed PostgreSQL integration, Ubuntu R CMD CHECK, coverage, CodeQL, CodeFactor and Codecov checks and merged to canonical master as commit-dc2e6161e3f73152b3d6032ece6a9dda7dde5a00. Issue-348 closed automatically. Lifecycle closeout PR-355 moves spec-050 under done and records issue-349 as the separately gated successor.

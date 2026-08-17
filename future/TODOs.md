@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. Issue-348 is the active longitudinal successor.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. Issue-349 is the queued longitudinal successor.
 
 ## Maintenance notes
 
@@ -14,7 +14,7 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
-Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353; the package now adds aggregate-only schema, missingness, numeric, categorical and temporal comparison across ordered PostgreSQL periods without thresholds or source values. Issue-348 is the authorised state-transition successor, and issue-349 remains gated behind it.
+Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353. Issue-348/spec-050 completed through PR-354, merged as `commit-dc2e616`; the package now adds bounded aggregate-only adjacent state transitions with explicit missing/conflict exclusions and eligible denominators. Issue-349 is the authorised post-curation longitudinal EDA successor.
 
 Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification, and its closeout completed through PR-326 at `commit-7ac8ea1`. Documentation-only issue-327/spec-047 completed through PR-328 at `commit-dc84687` and terminal closeout PR-329, aligning package versions, NEWS, release notes, generated help, guides, templates and installed walkthroughs without changing exported behaviour. No successor is authorised.
 
