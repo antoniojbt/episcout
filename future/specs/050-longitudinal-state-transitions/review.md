@@ -17,4 +17,4 @@ Focused unit and disposable PostgreSQL 17 tests passed. Workflow-state and git d
 
 ## Remaining Lifecycle
 
-Hosted checks, PR merge, canonical issue closure and closeout remain pending. Do not mark the specification completed, record a merge commit or move it under done until those gates pass.
+Draft PR-354 is the implementation review surface. Hosted checks, PR merge, canonical issue closure and closeout remain pending. Do not mark the specification completed, record a merge commit or move it under done until those gates pass.
