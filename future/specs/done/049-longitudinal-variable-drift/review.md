@@ -16,7 +16,7 @@ None in the completed contract. The separately tracked state-transition work rem
 ## Closeout Notes
 
 - Pull request: PR-352 merged to canonical `master` as `commit-b4eddf077784a5fac5c23c7affcc8753c3bff5e6`.
-- Lifecycle closeout pull request: pending.
+- Lifecycle closeout pull request: PR-353.
 - Required checks and material exceptions: focused and full local checks passed. R CMD check had zero errors and zero warnings; its three notes concerned `.git`, inability to verify the system clock and the repository's existing `docs` directory. Hosted PostgreSQL integration, Ubuntu, coverage and CodeFactor passed. No material exception remains.
 - Tracking issue disposition: issue-347 closed automatically when PR-352 merged.
 - Successor: issue-348 is the authorised generic state-transition implementation and remains independently gated.
