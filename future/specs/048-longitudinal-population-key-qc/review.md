@@ -23,7 +23,7 @@ None in the frozen contract. Hosted PostgreSQL and cross-platform checks remain 
 
 ## Closeout Notes
 
-- Pull request and merge commit: not created; GitHub modification is outside this outcome.
+- Pull request: #350 is open for required review; merge commit remains pending.
 - Required checks and material exceptions: focused unit tests, live PostgreSQL integration and the broader local check passed; hosted checks remain pending publication.
 - Tracking issue and roadmap disposition: unchanged.
 - Successor issue or terminal reason: pending the live contribution lifecycle.
