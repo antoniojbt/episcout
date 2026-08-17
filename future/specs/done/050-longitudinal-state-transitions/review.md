@@ -17,4 +17,4 @@ Focused unit and disposable PostgreSQL 17 tests passed. Workflow-state and git d
 
 ## Closeout
 
-PR-354 passed PostgreSQL integration, Ubuntu R CMD CHECK, coverage, CodeQL, CodeFactor and Codecov checks and merged to canonical master as commit-dc2e6161e3f73152b3d6032ece6a9dda7dde5a00. Issue-348 closed automatically. This closeout moves spec-050 under done and records issue-349 as the separately gated successor.
+PR-354 passed PostgreSQL integration, Ubuntu R CMD CHECK, coverage, CodeQL, CodeFactor and Codecov checks and merged to canonical master as commit-dc2e6161e3f73152b3d6032ece6a9dda7dde5a00. Issue-348 closed automatically. Lifecycle closeout PR-355 moves spec-050 under done and records issue-349 as the separately gated successor.
