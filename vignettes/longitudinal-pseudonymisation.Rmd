@@ -213,6 +213,34 @@ Adjacent output reports retention, exit and entry with explicit source or target
 
 The four possible issues are warning-severity technical evidence for an empty period, invalid entity identifiers, missing record keys and duplicate complete record keys. Non-zero entry, exit, retention loss, reappearance and repeated entity rows do not produce warnings or scientific thresholds. Every calculation and source revalidation occurs in one read-only repeatable-read snapshot; a connection, source, catalogue, type, query, count-range or reconciliation failure returns no partial longitudinal object and leaves the caller-owned connection open and idle.
 
+## 3C. Describe reviewed-variable continuity across completed periods
+
+Population continuity does not describe whether reviewed variables have the same availability, storage compatibility or ordinary distribution across periods. `epi_eda_longitudinal_drift()` provides that separate descriptive evidence for an explicitly selected EDA specification. It does not identify people, return source rows, decide that a change is problematic, apply cleaning, or alter the specification.
+
+```{r longitudinal-variable-drift, eval = FALSE}
+reviewed_spec <- epi_eda_spec("reviewed-spec.csv")
+
+longitudinal_drift <- epi_eda_longitudinal_drift(
+  completed_periods,
+  spec = reviewed_spec,
+  variables = c("age_years", "role_group", "observation_date"),
+  max_levels = 50L
+)
+
+longitudinal_drift$schema
+longitudinal_drift$missingness
+longitudinal_drift$missingness_adjacent
+longitudinal_drift$numeric
+longitudinal_drift$categorical
+longitudinal_drift$temporal
+```
+
+List order defines time order, and an explicit `variables` vector retains its order. Numeric and integer fields receive canonical finite-value summaries; categorical and binary fields receive counts with total-row and observed-value denominators; dates and datetimes receive endpoint and range summaries. Every selected field receives schema and missingness evidence. Text fields are retained there and marked explicitly as unsupported for distribution summaries.
+
+For categorical and binary fields, `max_levels` is a hard limit on declared levels, the observed domain in each period and every adjacent-period union. The default is `50L`. If any of those domains exceeds the bound, the call fails without truncating the categories or returning a partial result. Missing values appear in missingness evidence, never as an invented category. Adjacent changes are signed right-minus-left descriptive differences with their denominators retained; they are not thresholds, tests or anomaly classifications.
+
+All validation, categorical bound checks and aggregate summaries run in one read-only repeatable-read snapshot on the caller-owned connection. The function creates no database object. A source, catalogue, query, count-range, reconciliation or transaction failure returns no partial result and leaves the connection open and reusable.
+
 ## 4. Inventory and semantic dictionary
 
 Create a technical and semantic dictionary from the inventory. It contains EDA labels, types, roles, units, missingness, catalogue and geographic declarations, but no privacy classification or retained-column action.

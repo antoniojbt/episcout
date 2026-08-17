@@ -21,6 +21,7 @@ this contract never trims, changes case, pads, or recodes identifiers.
 \seealso{
 Other EDA:
 \code{\link[=epi_eda_identifier_qc]{epi_eda_identifier_qc()}},
+\code{\link[=epi_eda_longitudinal_drift]{epi_eda_longitudinal_drift()}},
 \code{\link[=epi_eda_longitudinal_qc]{epi_eda_longitudinal_qc()}},
 \code{\link[=epi_eda_render_identifier_qc_report]{epi_eda_render_identifier_qc_report()}}
 }

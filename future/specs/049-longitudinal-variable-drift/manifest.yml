@@ -1,0 +1,49 @@
+id: "049"
+slug: "longitudinal-variable-drift"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: MacBotticus
+base_branch: master
+working_branch: feature/longitudinal-variable-drift
+created: 2026-08-17
+updated: 2026-08-17
+
+tracking_issue: 347
+source_issues:
+  - 346
+  - 347
+pull_request: null
+merge_commit: null
+successor_issue: 348
+terminal_reason: null
+
+related_files:
+  - R/eda_longitudinal_drift.R
+  - R/eda_longitudinal_qc.R
+  - R/eda_postgres_queries.R
+  - tests/testthat/test-eda-longitudinal-drift.R
+  - tests/testthat/test-eda-longitudinal-postgres-drift.R
+  - README.md
+  - vignettes/longitudinal-pseudonymisation.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "parse('R/eda_longitudinal_drift.R')"
+  - scripts/rscript_env_caller.R -e "lintr::lint('R/eda_longitudinal_drift.R')"
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-longitudinal-drift', reporter = 'summary')"
+  - EPISCOUT_TEST_POSTGRES=1 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'eda-longitudinal-postgres-drift', reporter = 'summary')"
+  - scripts/check-workflow-state.sh --offline
+  - scripts/check-local.sh
+
+notes:
+  - The frozen issue contract dated 2026-08-17 is reproduced in this specification before package edits.
+  - Counts use the existing R integer contract and fail above .Machine$integer.max.

@@ -80,7 +80,7 @@ epi_eda_longitudinal_qc <- function(sources,
                                     entity_id,
                                     record_key = NULL) {
   inputs <- longitudinal_qc_inputs(sources, entity_id, record_key)
-  longitudinal_qc_transaction(inputs$sources, {
+  eda_longitudinal_transaction(inputs$sources, {
     context <- longitudinal_qc_context(
       inputs$sources, inputs$period_labels, inputs$entity_id,
       inputs$record_key
@@ -103,7 +103,7 @@ epi_eda_longitudinal_qc <- function(sources,
       ),
       class = c("epi_eda_longitudinal_qc", "list")
     )
-  })
+  }, operation = "population QC")
 }
 
 #' @export
@@ -164,14 +164,31 @@ longitudinal_qc_inputs <- function(sources, entity_id, record_key) {
   )
 }
 
-longitudinal_qc_transaction <- function(sources, code) {
+eda_longitudinal_source_inputs <- function(sources) {
+  valid_list <- is.list(sources) && !is.data.frame(sources) && length(sources) >= 2L && !is.null(names(sources))
+  if (!valid_list || anyNA(names(sources)) ||
+        any(!nzchar(trimws(names(sources)))) ||
+        any(grepl("[\r\n\t]", names(sources))) ||
+        anyDuplicated(names(sources))) {
+    stop("sources must be a uniquely named list of at least two PostgreSQL EDA sources.", call. = FALSE)
+  }
+  if (!all(vapply(sources, function(source) identical(class(source), c("epi_eda_postgres_source", "list")), logical(1)))) {
+    stop("Every sources element must be an unmodified epi_eda_postgres_source object.", call. = FALSE)
+  }
+  if (!all(vapply(sources[-1L], function(source) identical(source$con, sources[[1L]]$con), logical(1)))) {
+    stop("Every longitudinal source must share one caller-owned PostgreSQL connection.", call. = FALSE)
+  }
+  list(sources = sources, period_labels = names(sources))
+}
+
+eda_longitudinal_transaction <- function(sources, code, operation = "operation") {
   for (source in sources) {
     eda_validate_postgres_source(source, require_idle = TRUE)
   }
   con <- sources[[1L]]$con
   eda_db_lifecycle_call(
     eda_db_begin(con),
-    "PostgreSQL longitudinal QC transaction could not begin; review restricted database logs."
+    paste0("PostgreSQL longitudinal ", operation, " transaction could not begin; review restricted database logs.")
   )
   finished <- FALSE
   on.exit(
@@ -193,10 +210,14 @@ longitudinal_qc_transaction <- function(sources, code) {
   value <- force(code)
   eda_db_lifecycle_call(
     eda_db_commit(con),
-    "PostgreSQL longitudinal QC transaction could not commit safely; review restricted database logs."
+    paste0("PostgreSQL longitudinal ", operation, " transaction could not commit safely; review restricted database logs.")
   )
   finished <- TRUE
   value
+}
+
+longitudinal_qc_transaction <- function(sources, code) {
+  eda_longitudinal_transaction(sources, code, operation = "QC")
 }
 
 longitudinal_qc_context <- function(sources,
