@@ -24,6 +24,7 @@ None in the completed contract. The separately tracked longitudinal-drift work r
 ## Closeout Notes
 
 - Pull request: PR-350 merged to canonical `master` as `commit-54ed478093ab9af3264e4dd3bf4da71b21e9c481`.
+- Lifecycle closeout pull request: PR-351.
 - Required checks and material exceptions: focused unit tests, disposable PostgreSQL integration, the broader local check, hosted PostgreSQL integration, Ubuntu, coverage, CodeQL and CodeFactor passed. No material exception remains.
 - Tracking issue and roadmap disposition: issue-346 closed automatically when PR-350 merged.
 - Successor: issue-347 is the authorised longitudinal-drift implementation and remains independently gated.

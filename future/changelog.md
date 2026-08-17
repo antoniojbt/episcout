@@ -2,7 +2,7 @@
 
 ## 2026-08-17
 
-- Completed `issue-346`/`spec-048-longitudinal-population-key-qc` through PR-350, merged to canonical `master` as `commit-54ed478`. `epi_eda_longitudinal_qc()` now produces exact aggregate period, adjacent-membership, all-pairs overlap, key-integrity and follow-up evidence from ordered PostgreSQL sources in one read-only repeatable-read snapshot. Independent four-period truth, empty-period, identifier/key, exact-count, concurrent-snapshot, rollback and non-leakage tests passed locally and in hosted PostgreSQL integration; Ubuntu, coverage, CodeQL and CodeFactor also passed. Issue-347 is the explicit generic longitudinal-drift successor.
+- Completed `issue-346`/`spec-048-longitudinal-population-key-qc` through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. `epi_eda_longitudinal_qc()` now produces exact aggregate period, adjacent-membership, all-pairs overlap, key-integrity and follow-up evidence from ordered PostgreSQL sources in one read-only repeatable-read snapshot. Independent four-period truth, empty-period, identifier/key, exact-count, concurrent-snapshot, rollback and non-leakage tests passed locally and in hosted PostgreSQL integration; Ubuntu, coverage, CodeQL and CodeFactor also passed. Issue-347 is the explicit generic longitudinal-drift successor.
 
 ## 2026-08-14
 

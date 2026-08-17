@@ -14,7 +14,7 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
-Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`. The package now provides aggregate-only longitudinal population, key, overlap, retention, entry, exit and follow-up evidence from one read-only PostgreSQL snapshot without returning identifier values. Issue-347 is the authorised successor for generic drift summaries; issues 348 and 349 remain gated behind it.
+Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. The package now provides aggregate-only longitudinal population, key, overlap, retention, entry, exit and follow-up evidence from one read-only PostgreSQL snapshot without returning identifier values. Issue-347 is the authorised successor for generic drift summaries; issues 348 and 349 remain gated behind it.
 
 Issue-323 completed through PR-324, merged to canonical `master` as `commit-915b86d`; the public EDA specification now requires separate `database_type` and `analysis_type` fields and rejects the removed `type` field. The implementation had no numbered specification, and its closeout completed through PR-326 at `commit-7ac8ea1`. Documentation-only issue-327/spec-047 completed through PR-328 at `commit-dc84687` and terminal closeout PR-329, aligning package versions, NEWS, release notes, generated help, guides, templates and installed walkthroughs without changing exported behaviour. No successor is authorised.
 
