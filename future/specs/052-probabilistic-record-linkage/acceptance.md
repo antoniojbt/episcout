@@ -16,7 +16,7 @@ Status: Active design
 - [x] Routine outputs are value-free; record IDs and comparison values require opt-in.
 - [x] The synthetic Mexican-name workflow covers the full issue reference set without a Mexico-specific engine.
 - [x] No probabilistic result enters an exact crosswalk or identity registry automatically.
-- [ ] Required focused, local, CRAN-oriented and hosted checks pass or any exception is explicitly accepted.
+- [x] Required focused, local, CRAN-oriented and hosted checks pass or any exception is explicitly accepted.
 - [ ] Review notes record independent comparison of code, statistical truth, privacy behaviour and rendered documentation.
 - [ ] Each issue, branch, commit, PR, merge and successor/terminal state is read back and reconciled.
 
@@ -27,4 +27,5 @@ Status: Active design
 - `scripts/check-local.sh`: all tests and six vignettes passed; R CMD check completed with 0 errors, 0 warnings and the two existing current-time/top-level-`docs` notes.
 - `scripts/check-cran.sh`: build, tests, vignette rebuild and PDF/HTML manuals passed with 0 errors and 0 warnings; three expected notes cover incoming feasibility, current time and top-level `docs`.
 - `scripts/check-workflow-state.sh --offline` is structurally consistent and `git diff --check` passes.
-- Hosted CI and behaviour-sensitive independent review remain pending.
+- Planning PR #363, foundation PR #364 and terminal implementation PR #365 passed Ubuntu R CMD check, PostgreSQL integration, coverage, Codecov project/patch and CodeFactor at their recorded implementation heads. The one initial foundation coverage run failed in an unrelated existing civil-date transaction test; its single retry passed all steps.
+- Behaviour-sensitive independent review remains pending.
