@@ -1,7 +1,7 @@
 # Review
 
 Spec ID: `054-transversal-association-diagnostics-audit`
-Status: Active
+Status: Review
 
 ## Independent Behaviour Evidence
 

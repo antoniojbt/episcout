@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `054-transversal-association-diagnostics-audit`
-Status: Active
+Status: Review
 
 - [x] Current lower-level statistics, canonical summaries, PostgreSQL queries, stratified EDA and plotting helpers were audited before proposing new code.
 - [x] Oferta's Spearman calculation is classified as a small reusable gap without changing released `epi_stats_corr()` behaviour.

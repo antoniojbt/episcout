@@ -2,7 +2,7 @@ id: "054"
 slug: "transversal-association-diagnostics-audit"
 workflow_version: 1
 deliverable: design
-status: active
+status: review
 owner: repository-owner
 base_branch: master
 working_branch: feature/transversal-association-audit
@@ -11,7 +11,7 @@ updated: 2026-08-20
 
 tracking_issue: 358
 source_issues: []
-pull_request: null
+pull_request: 367
 merge_commit: null
 successor_issue: null
 terminal_reason: null
