@@ -1,9 +1,9 @@
 # Acceptance
 
 Spec ID: 052
-Status: Active design
+Status: Completed
 
-- [ ] The planning PR is accepted before either implementation PR merges.
+- [x] The planning PR is accepted before either implementation PR merges.
 - [x] Issue #361 delivers only declaration, preparation, candidates and comparisons.
 - [x] Issue #362 delivers scoring, classification, validation and documentation on top of #361.
 - [x] Every public role, field, block, comparison, probability and threshold is caller-declared.
@@ -18,7 +18,7 @@ Status: Active design
 - [x] No probabilistic result enters an exact crosswalk or identity registry automatically.
 - [x] Required focused, local, CRAN-oriented and hosted checks pass or any exception is explicitly accepted.
 - [ ] Review notes record independent comparison of code, statistical truth, privacy behaviour and rendered documentation.
-- [ ] Each issue, branch, commit, PR, merge and successor/terminal state is read back and reconciled.
+- [x] Each issue, branch, commit, PR, merge and successor/terminal state is read back and reconciled.
 
 ## Local implementation evidence
 
@@ -28,4 +28,6 @@ Status: Active design
 - `scripts/check-cran.sh`: build, tests, vignette rebuild and PDF/HTML manuals passed with 0 errors and 0 warnings; three expected notes cover incoming feasibility, current time and top-level `docs`.
 - `scripts/check-workflow-state.sh --offline` is structurally consistent and `git diff --check` passes.
 - Planning PR #363, foundation PR #364 and terminal implementation PR #365 passed Ubuntu R CMD check, PostgreSQL integration, coverage, Codecov project/patch and CodeFactor at their recorded implementation heads. The one initial foundation coverage run failed in an unrelated existing civil-date transaction test; its single retry passed all steps.
-- Behaviour-sensitive independent review remains pending.
+- PR #363 merged as `a92ed8e81bfe1699862fdb2b0932d77c5b939fec`, PR #364 as `3feb5c89a0e6bd82d9e460a172e3795922a2f376` and PR #365 as `a9e81770a107ab0c604db136170266afc40f1efe`. Issues #361 and #362 closed automatically; parent #360 closed during lifecycle reconciliation.
+- Canonical post-merge CodeQL, Ubuntu R CMD check, PostgreSQL integration and coverage workflows passed at `a9e81770a107ab0c604db136170266afc40f1efe`.
+- No separate independent GitHub review artefact is recorded for the behaviour-sensitive comparison. The owner merged the stack after its required checks passed; this closeout records, rather than retroactively fills, that acceptance-evidence gap.

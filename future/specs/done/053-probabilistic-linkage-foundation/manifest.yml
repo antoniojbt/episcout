@@ -2,18 +2,18 @@ id: "053"
 slug: "probabilistic-linkage-foundation"
 workflow_version: 1
 deliverable: implementation
-status: review
+status: completed
 owner: MacBotticus
 base_branch: feature/probabilistic-linkage-spec
-working_branch: feature/probabilistic-linkage-foundation
+working_branch: chore/closeout-probabilistic-linkage
 created: 2026-08-20
 updated: 2026-08-20
 tracking_issue: 361
 source_issues: [360, 361]
 pull_request: 364
-merge_commit: null
+merge_commit: 3feb5c89a0e6bd82d9e460a172e3795922a2f376
 successor_issue: 362
-terminal_reason: null
+terminal_reason: "Foundation completed; terminal successor 362 completed through PR 365."
 related_files:
   - DESCRIPTION
   - R/epi_linkage_spec.R
@@ -40,5 +40,6 @@ check_commands:
   - git diff --check
 notes:
   - This branch is stacked on planning PR 363.
+  - Planning PR 363 merged before this foundation PR 364; terminal PR 365 then completed successor 362.
   - Source and derived values are sensitive even when routine methods redact them.
   - Focused file coverage measured 89.91%; uncovered lines are predominantly validation branches and redacted S3 adapters.

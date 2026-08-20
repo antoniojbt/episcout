@@ -1,7 +1,7 @@
 # Test design
 
 Spec ID: 052
-Status: Implemented; independent review pending
+Status: Completed
 
 ## Independent truth fixture
 
