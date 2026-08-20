@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. Probabilistic-linkage roadmap issue [#360](https://github.com/antoniojbt/episcout/issues/360) is active under design spec 052, with ordered implementation successors #361 and #362.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. The probabilistic-linkage sequence is complete and no roadmap is currently active.
 
 ## Maintenance notes
 
@@ -14,7 +14,7 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
-Issue-360/spec-052 defines the generic, two-source probabilistic-linkage contract through draft planning PR #363. Draft foundation PR #364 implements issue-361 (declarations, derived preparation, bounded candidates and comparisons), and stacked draft terminal PR #365 implements issue-362 (declared Fellegi-Sunter scoring, caller thresholds, complete-truth validation and the synthetic Mexican-name guide). Probabilistic output remains separate from exact alias resolution and never enters the persistent identity registry automatically. All three PRs are unmerged and behaviour-sensitive independent review remains pending.
+Issue-360/spec-052 completed the generic two-source probabilistic-linkage contract through PR #363 at `a92ed8e`; foundation issue-361/spec-053/PR #364 merged at `3feb5c8`; and terminal scoring, classification, complete-truth validation and synthetic-guide issue-362/PR #365 merged at `a9e8177`. Probabilistic output remains separate from exact alias resolution and never enters the persistent identity registry automatically. All three issues are closed, completed records are under `future/specs/done/`, and no automatic successor is authorised.
 
 Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353. Issue-348/spec-050 completed through PR-354, merged as `commit-dc2e616`, with lifecycle closeout PR-355. Issue-349/spec-051 completed through PR-356, merged as `commit-0a5e3a8`; the package now has generic aggregate-only population/key QC, drift, categorical transitions and post-curation long-form EDA. Project-specific reporting and pipeline integration are tracked downstream, not as another package successor.
 

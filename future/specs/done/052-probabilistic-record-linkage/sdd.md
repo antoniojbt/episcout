@@ -1,7 +1,7 @@
 # Software design
 
 Spec ID: 052
-Status: Active design
+Status: Completed
 
 ## Scope and invariants
 

@@ -1,6 +1,6 @@
 # Probabilistic record linkage
 
-Status: Active design. Parent issue: #360. Ordered implementation issues: #361 and #362.
+Status: Completed. Parent issue: #360. Ordered implementation issues: #361 and #362.
 
 ## Problem
 

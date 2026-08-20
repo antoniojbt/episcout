@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-20
+
+- Completed the probabilistic-linkage sequence through design issue #360/spec 052/PR #363 at `a92ed8e`, foundation issue #361/spec 053/PR #364 at `3feb5c8`, and terminal scoring/validation issue #362/PR #365 at `a9e8177`. The additive in-memory `epi_linkage_*` workflow now provides caller-declared text representations, exact bounded blocking, five comparison methods, explicit missing evidence, caller-supplied Fellegi--Sunter likelihood-ratio parameters, three-way thresholds and complete-Cartesian-truth validation. Focused tests, local/CRAN checks, hosted Ubuntu, PostgreSQL, coverage, CodeFactor and Codecov checks, and canonical post-merge CodeQL/package/PostgreSQL/coverage workflows passed. Model posteriors remain explicitly uncalibrated, value-bearing evidence requires opt-in, and no result is written to a crosswalk or exact identity registry. All three issues are closed and no automatic successor is authorised; no separate independent GitHub review artefact was recorded before owner merge.
+
 ## 2026-08-17
 
 - Completed `issue-349`/`spec-051-longitudinal-eda` through PR-356, merged to canonical `master` as `commit-0a5e3a8`. `epi_eda_longitudinal()` now describes one curated long-form panel through exact aggregate structure, follow-up, declared-time population, entity-aware missingness, unchanged canonical time-stratified summaries and signed numeric change on data-frame and PostgreSQL backends. Hand-derived balanced/unbalanced, gap, duplicate, absence/missing/conflict, `NaN`/infinity and delta truth passed; PostgreSQL snapshot, catalogue/source change, rollback/reuse and privacy-canary tests passed. Hosted PostgreSQL, Ubuntu, coverage, CodeQL, CodeFactor and Codecov checks passed, and canonical post-merge workflows are green. Project-specific reporting remains downstream.

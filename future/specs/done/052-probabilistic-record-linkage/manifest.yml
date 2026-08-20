@@ -2,19 +2,19 @@ id: "052"
 slug: "probabilistic-record-linkage"
 workflow_version: 1
 deliverable: design
-status: review
+status: completed
 owner: MacBotticus
 base_branch: master
-working_branch: feature/probabilistic-linkage-spec
+working_branch: chore/closeout-probabilistic-linkage
 created: 2026-08-20
 updated: 2026-08-20
 
 tracking_issue: 360
 source_issues: [338, 340, 360]
 pull_request: 363
-merge_commit: null
+merge_commit: a92ed8e81bfe1699862fdb2b0932d77c5b939fec
 successor_issue: 361
-terminal_reason: null
+terminal_reason: "Design and both ordered implementation slices completed; no automatic successor."
 
 related_files:
   - R/epi_linkage_spec.R
@@ -43,5 +43,7 @@ check_commands:
 
 notes:
   - Issue 360 is the parent design goal; issues 361 and 362 are the ordered implementation slices.
+  - Planning PR 363 merged as a92ed8e; foundation PR 364 merged as 3feb5c8; terminal PR 365 merged as a9e8177.
   - The implementation uses an explicit Fellegi-Sunter likelihood-ratio contract and does not claim empirical calibration.
   - No probabilistic result is persisted or promoted into the existing exact identity registry by this workflow.
+  - The owner merged the stack without a separately recorded independent GitHub review artefact; closeout preserves that evidence gap rather than inferring review.
