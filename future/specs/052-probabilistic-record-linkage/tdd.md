@@ -61,7 +61,7 @@ Expected normalised strings, block membership, candidate pairs, per-field simila
 
 ```bash
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'linkage', reporter = 'summary', stop_on_failure = TRUE)"
-scripts/rscript_env_caller.R -e "lintr::lint(c('R/epi_linkage_spec.R', 'R/epi_linkage_prepare.R', 'R/epi_linkage_score.R'))"
+scripts/rscript_env_caller.R -e "lapply(c('R/epi_linkage_spec.R', 'R/epi_linkage_prepare.R', 'R/epi_linkage_score.R'), lintr::lint)"
 scripts/check-workflow-state.sh
 scripts/check-local.sh
 scripts/check-cran.sh
