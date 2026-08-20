@@ -2,7 +2,7 @@ id: "053"
 slug: "probabilistic-linkage-foundation"
 workflow_version: 1
 deliverable: implementation
-status: active
+status: review
 owner: MacBotticus
 base_branch: feature/probabilistic-linkage-spec
 working_branch: feature/probabilistic-linkage-foundation
@@ -10,7 +10,7 @@ created: 2026-08-20
 updated: 2026-08-20
 tracking_issue: 361
 source_issues: [360, 361]
-pull_request: null
+pull_request: 364
 merge_commit: null
 successor_issue: 362
 terminal_reason: null
