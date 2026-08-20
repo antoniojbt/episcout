@@ -50,7 +50,7 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 ## Current Status
 
-Issue [#358](https://github.com/antoniojbt/episcout/issues/358)/spec 054 is in review as a design-only audit. It maps Oferta's current aggregate association calculations onto existing Episcout contracts and proposes no package change in the audit contribution. The current decision is to reuse stratified EDA for cross-tabs, retain project plotting and SIAP semantics downstream, and gate one later implementation successor for explicit-pair Spearman, aggregate-count Cramér's V and bounded stratified domains.
+Issue [#358](https://github.com/antoniojbt/episcout/issues/358)/spec 054 completed through PR #367, merged to canonical `master` as `3d8bbdb`. The design-only audit reuses stratified EDA for cross-tabs, retains project plotting and SIAP semantics downstream, and created separately blocked successor [#369](https://github.com/antoniojbt/episcout/issues/369) for explicit-pair Spearman, aggregate-count Cramér's V and bounded stratified domains. The completed record is under `future/specs/done/`; no implementation is active.
 
 Probabilistic-linkage issues [#360](https://github.com/antoniojbt/episcout/issues/360), [#361](https://github.com/antoniojbt/episcout/issues/361) and [#362](https://github.com/antoniojbt/episcout/issues/362) completed through PRs #363, #364 and #365. Specs 052 and 053 are archived under `future/specs/done/`; no automatic successor is authorised and no roadmap is active.
 

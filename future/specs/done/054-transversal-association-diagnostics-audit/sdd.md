@@ -1,7 +1,7 @@
 # Gap Assessment And Successor Design
 
 Spec ID: `054-transversal-association-diagnostics-audit`
-Status: Review
+Status: Completed
 
 ## Evidence Basis
 
