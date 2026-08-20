@@ -1,0 +1,45 @@
+id: "054"
+slug: "transversal-association-diagnostics-audit"
+workflow_version: 1
+deliverable: design
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: feature/transversal-association-audit
+created: 2026-08-20
+updated: 2026-08-20
+
+tracking_issue: 358
+source_issues: []
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+related_files:
+  - R/epi_stats_corr.R
+  - R/epi_stats_contingency_2x2.R
+  - R/epi_stats_contigency_nxn.R
+  - R/eda_stratified.R
+  - R/eda_stratified_postgres.R
+  - R/eda_postgres_queries.R
+  - R/epi_plot_heatmap.R
+  - R/epi_plot_heatmap_triangle.R
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/check-workflow-state.sh
+  - git diff --check
+
+notes:
+  - This is a design-only audit for issue 358 and changes no package behaviour.
+  - The audit uses only repository-owned synthetic fixtures and aggregate evidence from Oferta.
+  - Any implementation is owned by one separately approved successor and must not begin through this specification.
