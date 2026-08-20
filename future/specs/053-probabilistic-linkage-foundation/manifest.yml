@@ -1,0 +1,44 @@
+id: "053"
+slug: "probabilistic-linkage-foundation"
+workflow_version: 1
+deliverable: implementation
+status: active
+owner: MacBotticus
+base_branch: feature/probabilistic-linkage-spec
+working_branch: feature/probabilistic-linkage-foundation
+created: 2026-08-20
+updated: 2026-08-20
+tracking_issue: 361
+source_issues: [360, 361]
+pull_request: null
+merge_commit: null
+successor_issue: 362
+terminal_reason: null
+related_files:
+  - DESCRIPTION
+  - R/epi_linkage_spec.R
+  - R/epi_linkage_prepare.R
+  - NAMESPACE
+  - man/epi_linkage_candidates.Rd
+  - man/epi_linkage_compare.Rd
+  - man/epi_linkage_prepare.Rd
+  - man/epi_linkage_spec.Rd
+  - man/epi_linkage_text_profile.Rd
+  - tests/testthat/test-linkage-foundation.R
+documents:
+  brief: brief.md
+  sdd: ../052-probabilistic-record-linkage/sdd.md
+  tdd: ../052-probabilistic-record-linkage/tdd.md
+  acceptance: acceptance.md
+  review: review.md
+review_required: true
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'linkage-foundation', reporter = 'summary', stop_on_failure = TRUE)"
+  - scripts/rscript_env_caller.R -e "lapply(c('R/epi_linkage_spec.R', 'R/epi_linkage_prepare.R'), lintr::lint)"
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+  - git diff --check
+notes:
+  - This branch is stacked on planning PR 363.
+  - Source and derived values are sensitive even when routine methods redact them.
+  - Focused file coverage measured 89.91%; uncovered lines are predominantly validation branches and redacted S3 adapters.

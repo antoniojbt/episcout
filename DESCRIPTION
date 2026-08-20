@@ -30,6 +30,8 @@ Imports:
     tidyr,
     e1071,
     purrr,
+    stringdist,
+    stringi,
     stringr,
     foreach
 Suggests:
@@ -37,7 +39,6 @@ Suggests:
     RSQLite,
     data.table,
     compare,
-    stringi,
     lubridate,
     Hmisc,
     ggplot2,
