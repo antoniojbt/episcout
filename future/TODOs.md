@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state; no roadmap is currently active. The generic longitudinal package sequence is complete.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. Probabilistic-linkage roadmap issue [#360](https://github.com/antoniojbt/episcout/issues/360) is active under design spec 052, with ordered implementation successors #361 and #362.
 
 ## Maintenance notes
 
@@ -13,6 +13,8 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 - Never record an old or replacement Codecov credential.
 
 ## Current sequence
+
+Issue-360/spec-052 defines the generic, two-source probabilistic-linkage contract. Planning precedes foundation issue-361 (declarations, derived preparation, bounded candidates and comparisons), followed by terminal issue-362 (declared Fellegi-Sunter scoring, caller thresholds, complete-truth validation and the synthetic Mexican-name guide). Probabilistic output remains separate from exact alias resolution and never enters the persistent identity registry automatically.
 
 Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353. Issue-348/spec-050 completed through PR-354, merged as `commit-dc2e616`, with lifecycle closeout PR-355. Issue-349/spec-051 completed through PR-356, merged as `commit-0a5e3a8`; the package now has generic aggregate-only population/key QC, drift, categorical transitions and post-curation long-form EDA. Project-specific reporting and pipeline integration are tracked downstream, not as another package successor.
 

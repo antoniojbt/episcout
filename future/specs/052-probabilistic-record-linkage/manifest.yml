@@ -1,0 +1,47 @@
+id: "052"
+slug: "probabilistic-record-linkage"
+workflow_version: 1
+deliverable: design
+status: active
+owner: MacBotticus
+base_branch: master
+working_branch: feature/probabilistic-linkage-spec
+created: 2026-08-20
+updated: 2026-08-20
+
+tracking_issue: 360
+source_issues: [338, 340, 360]
+pull_request: null
+merge_commit: null
+successor_issue: 361
+terminal_reason: null
+
+related_files:
+  - R/epi_linkage_spec.R
+  - R/epi_linkage_prepare.R
+  - R/epi_linkage_score.R
+  - tests/testthat/test-linkage-foundation.R
+  - tests/testthat/test-linkage-scoring.R
+  - vignettes/probabilistic-record-linkage.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'linkage', reporter = 'summary', stop_on_failure = TRUE)"
+  - scripts/rscript_env_caller.R -e "lintr::lint(c('R/epi_linkage_spec.R', 'R/epi_linkage_prepare.R', 'R/epi_linkage_score.R'))"
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+  - scripts/check-cran.sh
+  - git diff --check
+
+notes:
+  - Issue 360 is the parent design goal; issues 361 and 362 are the ordered implementation slices.
+  - The implementation uses an explicit Fellegi-Sunter likelihood-ratio contract and does not claim empirical calibration.
+  - No probabilistic result is persisted or promoted into the existing exact identity registry by this workflow.
