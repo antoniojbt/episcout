@@ -10,7 +10,7 @@ Status: Active
 - [x] Value-bearing evidence requires explicit opt-in.
 - [x] Existing exact identity interfaces remain unchanged in the full local suite.
 - [x] Focused tests, lint, workflow state and `scripts/check-local.sh` pass.
-- [x] Planning PR #363 remains the stack base; successor #362 remains blocked.
+- [x] Planning PR #363 remains the stack base; successor #362 is active as the terminal stacked implementation slice.
 
 ## Local evidence
 

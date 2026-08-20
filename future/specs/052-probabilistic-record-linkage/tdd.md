@@ -1,7 +1,7 @@
 # Test design
 
 Spec ID: 052
-Status: Active design
+Status: Implemented; independent review pending
 
 ## Independent truth fixture
 
@@ -21,47 +21,47 @@ Expected normalised strings, block membership, candidate pairs, per-field simila
 
 ## Issue #361 tests
 
-- [ ] Profile validation covers every allowed option, invalid option, duplicate/drop token, missing/blank token and ordering rule.
-- [ ] Unicode/case/diacritic/punctuation/whitespace/token transformations match literal expected values and never mutate sources.
-- [ ] No particle is dropped unless explicitly declared.
-- [ ] Spec validation rejects missing, extra, duplicate and unsupported declarations before partial output.
-- [ ] Record IDs must exist and be unique, non-missing and non-blank; ordinary field missingness remains allowed.
-- [ ] Multiple block passes implement AND within pass, OR across passes, deterministic union and exact duplicate accounting.
-- [ ] Missing block components do not match; zero-row sources retain typed diagnostics.
-- [ ] Missing blocks, Cartesian requests, candidate-cap overflow and non-exact possible-pair counts fail value-free.
-- [ ] Exact, Jaro-Winkler, token-Jaccard, numeric-tolerance and date-tolerance comparisons have independent boundary expectations.
-- [ ] Either-side and both-side missingness produce `missing`, not agreement or disagreement.
-- [ ] NaN, infinity, decorated numeric input, invalid date classes and type mismatch fail value-free.
-- [ ] Print, summary, warnings and errors contain privacy canaries only in the input and never in captured conditions/output.
-- [ ] `include_values = FALSE` excludes IDs and values; explicit opt-in includes only declared IDs and derived comparison values.
+- [x] Profile validation covers every allowed option, invalid option, duplicate/drop token, missing/blank token and ordering rule.
+- [x] Unicode/case/diacritic/punctuation/whitespace/token transformations match literal expected values and never mutate sources.
+- [x] No particle is dropped unless explicitly declared.
+- [x] Spec validation rejects missing, extra, duplicate and unsupported declarations before partial output.
+- [x] Record IDs must exist and be unique, non-missing and non-blank; ordinary field missingness remains allowed.
+- [x] Multiple block passes implement AND within pass, OR across passes, deterministic union and exact duplicate accounting.
+- [x] Missing block components do not match; zero-row sources retain typed diagnostics.
+- [x] Missing blocks, Cartesian requests, candidate-cap overflow and non-exact possible-pair counts fail value-free.
+- [x] Exact, Jaro-Winkler, token-Jaccard, numeric-tolerance and date-tolerance comparisons have independent boundary expectations.
+- [x] Either-side and both-side missingness produce `missing`, not agreement or disagreement.
+- [x] NaN, infinity, decorated numeric input, invalid date classes and type mismatch fail value-free.
+- [x] Print, summary, warnings and errors contain privacy canaries only in the input and never in captured conditions/output.
+- [x] `include_values = FALSE` excludes IDs and values; explicit opt-in includes only declared IDs and derived comparison values.
 
 ## Issue #362 tests
 
-- [ ] A two-field literal example hand-calculates agreement/disagreement log2 weights and the prior-to-posterior conversion.
-- [ ] All-missing evidence has zero weight and posterior exactly equal to declared prevalence.
-- [ ] Model declarations reject missing comparisons, extra rows, invalid probabilities, `m <= u`, zero/one prevalence and non-finite values.
-- [ ] Threshold declarations reject defaults, equality, reversal, out-of-range and non-finite values.
-- [ ] Exact lower and upper boundaries classify `non_match` and `match`; the interior is `review`.
-- [ ] Similarity, state, per-field weight contribution, total linkage weight, model posterior and decision remain separately inspectable.
-- [ ] Complete truth is required; duplicate, missing, extra or out-of-range pairs and missing labels fail.
-- [ ] Candidate recall includes blocking misses; final recall counts review pairs as not classified matches; missed-match and review counts remain separate.
-- [ ] Precision, recall, false-match proportion and both review-burden denominators are hand reconciled, with typed NA at zero denominators.
-- [ ] End-to-end output is deterministic across repeated runs and source row order changes when record keys and equivalent ordering are reconciled.
-- [ ] No run or validation call mutates either source, persists a file, writes a database object or calls a registry function.
-- [ ] Existing `epi_sec_*` exact linkage tests pass unchanged.
+- [x] A literal example hand-calculates agreement/disagreement log2 weights and the prior-to-posterior conversion.
+- [x] All-missing evidence has zero weight and posterior exactly equal to declared prevalence.
+- [x] Model declarations reject missing comparisons, extra rows, invalid probabilities, `m <= u`, zero/one prevalence and non-finite values.
+- [x] Threshold declarations reject defaults, equality, reversal, out-of-range and non-finite values.
+- [x] Exact lower and upper boundaries classify `non_match` and `match`; the interior is `review`.
+- [x] Similarity, state, per-field weight contribution, total linkage weight, model posterior and decision remain separately inspectable.
+- [x] Complete truth is required; duplicate, missing, extra or out-of-range pairs and missing labels fail.
+- [x] Candidate recall includes blocking misses; final recall counts review pairs as not classified matches; missed-match and review counts remain separate.
+- [x] Precision, recall, false-match proportion and both review-burden denominators are hand reconciled, with typed NA at zero denominators.
+- [x] End-to-end output is deterministic across repeated runs and source row order changes when record keys and equivalent ordering are reconciled.
+- [x] No run or validation call mutates either source, persists a file, writes a database object or calls a registry function.
+- [x] Existing `epi_sec_*` exact linkage tests pass unchanged.
 
 ## Documentation tests
 
-- [ ] Generated help documents all exported contracts and makes threshold/model responsibility explicit.
-- [ ] The vignette renders offline from synthetic data and identifies assumptions, inappropriate use, blocking recall, manual review and non-persistence.
-- [ ] Examples distinguish field similarity, comparison state, linkage weight and model posterior.
-- [ ] The vignette does not imply that Mexican naming structure is universal or inferred.
+- [x] Generated help documents all exported contracts and makes threshold/model responsibility explicit.
+- [x] The vignette renders offline from synthetic data and identifies assumptions, inappropriate use, blocking recall, manual review and non-persistence.
+- [x] Examples distinguish field similarity, comparison state, linkage weight and model posterior.
+- [x] The vignette does not imply that Mexican naming structure is universal or inferred.
 
 ## Acceptance commands
 
 ```bash
 scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'linkage', reporter = 'summary', stop_on_failure = TRUE)"
-scripts/rscript_env_caller.R -e "lapply(c('R/epi_linkage_spec.R', 'R/epi_linkage_prepare.R', 'R/epi_linkage_score.R'), lintr::lint)"
+scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
 scripts/check-workflow-state.sh
 scripts/check-local.sh
 scripts/check-cran.sh

@@ -1,0 +1,214 @@
+---
+title: "Probabilistic record linkage"
+author: "episcout contributors"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Probabilistic record linkage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(episcout)
+```
+
+> **Technical boundary:** Probabilistic linkage produces sensitive candidate evidence and model-based decisions, not verified identities. The package does not supply model parameters or thresholds, calibrate a model, resolve manual review, write a crosswalk or promote a result into the exact longitudinal identity registry.
+
+## 1. Choose the appropriate identity path
+
+Use exact identifiers and the `epi_sec_*` workflow when the sources share one reviewed identifier namespace. Use probabilistic linkage only when exact linkage is unavailable and the project has justified comparison fields, a bounded candidate strategy, independently estimated model parameters, reviewed decision thresholds and representative labelled truth for validation.
+
+This vignette is an executable interface example, not a scientifically calibrated linkage model. Every person and record below is synthetic. The probabilities and thresholds are illustrative and must not be reused for real data.
+
+The workflow has six explicit stages:
+
+1. declare derived text profiles, blocking, comparisons, model parameters and thresholds;
+2. prepare separate derived representations without changing the sources;
+3. create exact bounded candidate pairs;
+4. compare declared fields;
+5. calculate Fellegi--Sunter likelihood-ratio weights and apply the declared three-way thresholds; and
+6. validate blocking and classification against complete truth.
+
+## 2. Synthetic sources
+
+The two sources illustrate accent and punctuation differences, reordered name tokens, a typographical error, a plausible homonym, an absent maternal surname, an omitted second given name and a caller-reviewed comparison representation for a stored married-name variation. The source strings remain unchanged.
+
+```{r sources}
+x <- data.frame(
+  record_id = paste0("x", 1:6),
+  full_name = c(
+    "José Luis Hernández García",
+    "María del Carmen de la Cruz",
+    "Juan Pérez López",
+    "Ana Sofía Torres Morales",
+    "Lucía Fernanda del Río Vega",
+    "Elena Márquez Soto"
+  ),
+  birth_date = as.Date(c(
+    "1980-05-12", "1975-02-20", "1990-01-01",
+    "1988-07-10", "1995-09-03", "1968-11-22"
+  )),
+  recorded_sex = c("M", "F", "M", "F", "F", "F"),
+  region = c("01", "02", "03", "04", "05", "06"),
+  stringsAsFactors = FALSE
+)
+
+y <- data.frame(
+  source_key = paste0("y", 1:7),
+  name_text = c(
+    "JOSE-LUIS HERNANDEZ, GARCIA",
+    "Cruz Maria del Carmen de la",
+    "Juan Perez Lpoez",
+    "Juan Perez Lopez",
+    "Ana Sofia Torres",
+    "Lucia del Rio Vega",
+    "Elena Soto de Ramirez"
+  ),
+  comparison_name = c(
+    "JOSE-LUIS HERNANDEZ, GARCIA",
+    "Cruz Maria del Carmen de la",
+    "Juan Perez Lpoez",
+    "Juan Perez Lopez",
+    "Ana Sofia Torres",
+    "Lucia del Rio Vega",
+    "Elena Marquez Soto"
+  ),
+  dob = as.Date(c(
+    "1980-05-12", "1975-02-20", "1990-01-01", "1987-07-08",
+    "1988-07-10", "1995-09-03", "1968-11-22"
+  )),
+  sex = c("M", "F", "M", "M", "F", "F", "F"),
+  area = c("01", "02", "03", "03", "04", "05", "06"),
+  stringsAsFactors = FALSE
+)
+```
+
+`comparison_name` is an explicit, caller-reviewed input. episcout does not infer that a stored married-name form is equivalent to another name, remove particles or interpret name components.
+
+## 3. Declare the complete contract
+
+Blocking uses exact region and recorded sex together in the first pass, plus exact date of birth in a second pass. Fields within one pass use AND; distinct passes use OR. Missing block components do not match. `max_candidates` is a hard failure boundary, not a truncation target.
+
+Name comparisons use separately derived accent-insensitive profiles while retaining the source values. Token sorting is declared only for the token-Jaccard representation. The remaining fields use exact or declared-tolerance comparisons.
+
+```{r specification}
+profiles <- list(
+  latin = epi_linkage_text_profile(diacritics = "strip"),
+  latin_sorted = epi_linkage_text_profile(
+    diacritics = "strip",
+    token_order = "sort"
+  )
+)
+
+blocks <- data.frame(
+  pass = c(1L, 1L, 2L),
+  x_field = c("region", "recorded_sex", "birth_date"),
+  y_field = c("area", "sex", "dob"),
+  profile = rep("identity", 3L),
+  stringsAsFactors = FALSE
+)
+
+comparisons <- data.frame(
+  comparison = c("name_tokens", "name_jw", "birth_date", "sex", "region"),
+  x_field = c("full_name", "full_name", "birth_date", "recorded_sex", "region"),
+  y_field = c("comparison_name", "comparison_name", "dob", "sex", "area"),
+  profile = c("latin_sorted", "latin", rep("identity", 3L)),
+  method = c(
+    "token_jaccard", "jaro_winkler", "date_tolerance", "exact", "exact"
+  ),
+  parameter = c(0.65, 0.84, 1, 1, 1),
+  stringsAsFactors = FALSE
+)
+
+model_parameters <- data.frame(
+  comparison = comparisons$comparison,
+  m_probability = c(0.80, 0.85, 0.99, 0.95, 0.90),
+  u_probability = c(0.10, 0.20, 0.02, 0.50, 0.25),
+  stringsAsFactors = FALSE
+)
+
+spec <- epi_linkage_spec(
+  x_id = "record_id",
+  y_id = "source_key",
+  profiles = profiles,
+  blocks = blocks,
+  comparisons = comparisons,
+  max_candidates = 100,
+  model = list(
+    parameters = model_parameters,
+    match_prevalence = 0.05
+  ),
+  thresholds = list(
+    metric = "model_posterior",
+    nonmatch_max = 0.05,
+    match_min = 0.90
+  )
+)
+spec
+```
+
+For comparison (j), agreement contributes (log_2(m_j/u_j)), disagreement contributes (log_2((1-m_j)/(1-u_j))), and a missing comparison contributes zero under the declared ignorable pairwise-missingness assumption. The reported posterior combines the total weight with `match_prevalence`; it is a model result and is explicitly labelled as not empirically calibrated.
+
+Conditional independence between comparison fields is another model assumption. It can be especially implausible for two similarities derived from the same name. Real projects must estimate and validate the complete model on their target population, examine dependence and subgroup performance, and revise the comparison set when assumptions are not defensible.
+
+## 4. Run without returning values
+
+The convenience function composes all in-memory stages. `include_values = FALSE` keeps declared record keys and derived comparison values out of the returned field-evidence table. Pair indices, scores and decisions can still be sensitive and require appropriate controls.
+
+```{r run}
+result <- epi_linkage_run(x, y, spec, include_values = FALSE)
+result
+result$candidate_diagnostics$overall
+result$decisions
+```
+
+The lower and upper boundaries are inclusive: a model posterior at or below `nonmatch_max` is `non_match`, one at or above `match_min` is `match`, and an interior value is `review`. These labels do not establish identity. `epi_linkage_run()` changes neither input and writes nothing.
+
+When an authorised reviewer needs record keys and derived values, call the component stages and opt in explicitly. The resulting object is sensitive and should not be printed, logged or placed in ordinary analytical output.
+
+```{r value-bearing-review, eval = FALSE}
+prepared <- epi_linkage_prepare(x, y, spec)
+candidates <- epi_linkage_candidates(prepared)
+comparisons_with_values <- epi_linkage_compare(
+  candidates,
+  include_values = TRUE
+)
+```
+
+## 5. Validate with complete labelled truth
+
+Version 1 requires every Cartesian pair in the labelled truth table. This avoids treating pairs excluded by blocking as known non-matches. The example marks the six true synthetic correspondences explicitly; the homonym `x3:y4` is a non-match.
+
+```{r validation}
+truth <- expand.grid(
+  x_index = seq_len(nrow(x)),
+  y_index = seq_len(nrow(y)),
+  KEEP.OUT.ATTRS = FALSE,
+  stringsAsFactors = FALSE
+)
+truth_key <- paste(truth$x_index, truth$y_index, sep = ":")
+truth$is_match <- truth_key %in% c(
+  "1:1", "2:2", "3:3", "4:5", "5:6", "6:7"
+)
+
+validation <- epi_linkage_validate(result, truth)
+validation
+validation$metrics
+```
+
+Candidate recall measures whether blocking retained labelled true pairs. Precision, recall, false-match rate, missed matches and review burden measure the final three-way decisions, with every numerator and denominator retained. A zero denominator produces an unavailable proportion rather than an invented zero. Truth values and source values are not retained in the validation object.
+
+One synthetic run cannot validate a real linkage procedure. Before operational use, use representative independently reviewed truth, assess selection and labelling error, examine performance across relevant subgroups and source periods, quantify uncertainty, test sensitivity to blocking/model/threshold choices, and document the consequences of false matches and missed matches.
+
+## 6. Keep decisions out of the exact registry
+
+The result contains evidence for a caller-governed review process. episcout does not resolve `review` pairs, enforce one-to-one assignment, write a crosswalk or update an `epi_sec_*` identity registry. If a project later accepts a mapping, it must create and independently review an exact crosswalk outside this workflow before using the separate exact pseudonymisation contract.
+
+Do not use this interface when candidate evidence cannot be handled as sensitive data, when no defensible complete model or threshold policy exists, when labelled truth is not representative enough for the intended claims, or when a deterministic reviewed identifier is available instead.

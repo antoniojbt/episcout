@@ -4,18 +4,28 @@ Spec ID: 052
 Status: Active design
 
 - [ ] The planning PR is accepted before either implementation PR merges.
-- [ ] Issue #361 delivers only declaration, preparation, candidates and comparisons.
-- [ ] Issue #362 delivers scoring, classification, validation and documentation on top of #361.
-- [ ] Every public role, field, block, comparison, probability and threshold is caller-declared.
-- [ ] Raw sources remain unchanged and derived representations are explicit.
-- [ ] No unbounded Cartesian candidate path exists.
-- [ ] Candidate and validation counts reconcile to independently authored truth.
-- [ ] Similarity, comparison state, linkage weight, model posterior and decision are distinct.
-- [ ] The package makes no empirical calibration claim.
-- [ ] Missing evidence is explicit and its modelling assumption is documented.
-- [ ] Routine outputs are value-free; record IDs and comparison values require opt-in.
-- [ ] The synthetic Mexican-name workflow covers the full issue reference set without a Mexico-specific engine.
-- [ ] No probabilistic result enters an exact crosswalk or identity registry automatically.
-- [ ] Required focused, local, CRAN-oriented and hosted checks pass or any exception is explicitly accepted.
+- [x] Issue #361 delivers only declaration, preparation, candidates and comparisons.
+- [x] Issue #362 delivers scoring, classification, validation and documentation on top of #361.
+- [x] Every public role, field, block, comparison, probability and threshold is caller-declared.
+- [x] Raw sources remain unchanged and derived representations are explicit.
+- [x] No unbounded Cartesian candidate path exists.
+- [x] Candidate and validation counts reconcile to independently authored truth.
+- [x] Similarity, comparison state, linkage weight, model posterior and decision are distinct.
+- [x] The package makes no empirical calibration claim.
+- [x] Missing evidence is explicit and its modelling assumption is documented.
+- [x] Routine outputs are value-free; record IDs and comparison values require opt-in.
+- [x] The synthetic Mexican-name workflow covers the full issue reference set without a Mexico-specific engine.
+- [x] No probabilistic result enters an exact crosswalk or identity registry automatically.
+- [x] Required focused, local, CRAN-oriented and hosted checks pass or any exception is explicitly accepted.
 - [ ] Review notes record independent comparison of code, statistical truth, privacy behaviour and rendered documentation.
 - [ ] Each issue, branch, commit, PR, merge and successor/terminal state is read back and reconciled.
+
+## Local implementation evidence
+
+- Focused linkage selection: 233 expectations passed, including the existing exact `epi_sec_*` linkage contract.
+- Focused coverage across the three linkage source files: 92.98%; `R/epi_linkage_score.R` measured 95.56%. Coverage guided edge-test additions and is not treated as independent statistical validation.
+- `scripts/check-local.sh`: all tests and six vignettes passed; R CMD check completed with 0 errors, 0 warnings and the two existing current-time/top-level-`docs` notes.
+- `scripts/check-cran.sh`: build, tests, vignette rebuild and PDF/HTML manuals passed with 0 errors and 0 warnings; three expected notes cover incoming feasibility, current time and top-level `docs`.
+- `scripts/check-workflow-state.sh --offline` is structurally consistent and `git diff --check` passes.
+- Planning PR #363, foundation PR #364 and terminal implementation PR #365 passed Ubuntu R CMD check, PostgreSQL integration, coverage, Codecov project/patch and CodeFactor at their recorded implementation heads. The one initial foundation coverage run failed in an unrelated existing civil-date transaction test; its single retry passed all steps.
+- Behaviour-sensitive independent review remains pending.

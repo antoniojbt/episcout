@@ -34,7 +34,7 @@ documents:
 review_required: true
 check_commands:
   - scripts/rscript_env_caller.R -e "options(repos = c(CRAN = 'https://cloud.r-project.org')); devtools::test(filter = 'linkage-foundation', reporter = 'summary', stop_on_failure = TRUE)"
-  - scripts/rscript_env_caller.R -e "lapply(c('R/epi_linkage_spec.R', 'R/epi_linkage_prepare.R'), lintr::lint)"
+  - scripts/rscript_env_caller.R -e "devtools::load_all(quiet = TRUE); findings <- lintr::lint_package(); print(findings); stopifnot(length(findings) == 0L)"
   - scripts/check-workflow-state.sh
   - scripts/check-local.sh
   - git diff --check
