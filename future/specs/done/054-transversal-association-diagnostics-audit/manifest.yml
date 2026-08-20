@@ -2,7 +2,7 @@ id: "054"
 slug: "transversal-association-diagnostics-audit"
 workflow_version: 1
 deliverable: design
-status: review
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/transversal-association-audit
@@ -12,8 +12,8 @@ updated: 2026-08-20
 tracking_issue: 358
 source_issues: []
 pull_request: 367
-merge_commit: null
-successor_issue: null
+merge_commit: 3d8bbdb27cf29d674c32a9bc2955c4ab263c529d
+successor_issue: 369
 terminal_reason: null
 
 related_files:
@@ -43,3 +43,5 @@ notes:
   - This is a design-only audit for issue 358 and changes no package behaviour.
   - The audit uses only repository-owned synthetic fixtures and aggregate evidence from Oferta.
   - Any implementation is owned by one separately approved successor and must not begin through this specification.
+  - PR 367 merged to canonical master as 3d8bbdb27cf29d674c32a9bc2955c4ab263c529d after Ubuntu, PostgreSQL, coverage and CodeFactor passed; one unrelated civil-date coverage flake passed on retry.
+  - Successor issue 369 is explicitly blocked pending separate owner promotion.

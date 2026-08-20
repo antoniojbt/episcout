@@ -1,7 +1,7 @@
 # Brief
 
 Spec ID: `054-transversal-association-diagnostics-audit`
-Status: Review
+Status: Completed
 
 ## Problem
 

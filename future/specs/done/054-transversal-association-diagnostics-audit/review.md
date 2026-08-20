@@ -1,7 +1,7 @@
 # Review
 
 Spec ID: `054-transversal-association-diagnostics-audit`
-Status: Review
+Status: Completed
 
 ## Independent Behaviour Evidence
 
@@ -67,3 +67,9 @@ Appending a declared zero-total column to the 2×2 table retained `V = 0.5833333
 - The audit does not claim that existing historical `epi_stats_*` tests fully validate inferential statistics; their broader truth gaps remain separately documented.
 - No real or non-repository Oferta data were inspected.
 - Successor names, roxygen wording and exact R column types will be fixed in the successor's pre-code specification; issue 358 fixes the behaviour and ownership boundary only.
+
+## Hosted Integration Evidence
+
+PR #367 passed Ubuntu R CMD check, PostgreSQL integration, test coverage and CodeFactor at final head `b70c09a`. The first coverage attempt failed one unrelated civil-date rollback equality assertion involving `timestamp without time zone`; canonical `master` had passed the same workflow, this design changed no executable files, and a failed-job retry passed 4,535 assertions. No actionable review comment or attributable CI failure remained before merge.
+
+PR #367 merged to canonical `master` as `3d8bbdb27cf29d674c32a9bc2955c4ab263c529d`. Successor issue #369 records the implementation contract and remains `dispatch:blocked`; no package implementation or Oferta migration began.

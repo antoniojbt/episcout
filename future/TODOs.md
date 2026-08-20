@@ -14,7 +14,7 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
-Issue-358/spec-054 is the active design-only transversal-association audit. It changes no package behaviour. The review reuses current stratified categorical aggregates rather than adding a second cross-tab engine, keeps Oferta's selections, plots, labels, SIAP semantics and `PLZOCU=0` location grouping downstream, and proposes at most one separately blocked implementation successor for the demonstrated numeric-association, aggregate Cramér's V and domain-bound gaps.
+Issue-358/spec-054 completed through PR #367 at `3d8bbdb` without changing package behaviour. The accepted audit reuses current stratified categorical aggregates rather than adding a second cross-tab engine, keeps Oferta's selections, plots, labels, SIAP semantics and `PLZOCU=0` location grouping downstream, and records issue #369 as the sole separately blocked implementation successor for the demonstrated numeric-association, aggregate Cramér's V and domain-bound gaps.
 
 Issue-360/spec-052 completed the generic two-source probabilistic-linkage contract through PR #363 at `a92ed8e`; foundation issue-361/spec-053/PR #364 merged at `3feb5c8`; and terminal scoring, classification, complete-truth validation and synthetic-guide issue-362/PR #365 merged at `a9e8177`. Probabilistic output remains separate from exact alias resolution and never enters the persistent identity registry automatically. All three issues are closed, completed records are under `future/specs/done/`, and no automatic successor is authorised.
 
