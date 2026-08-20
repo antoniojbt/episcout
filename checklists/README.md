@@ -12,3 +12,5 @@ Use these checklists during work and before handoff. They are routed by `AGENTS.
 6. Report evidence, failures, unresolved uncertainty and limitations at handoff.
 
 For ordinary work, report the applicable checks and material exceptions in the handoff or pull request. For high-stakes, unusually consequential or explicitly audited work, save a review record with the deliverable and state whether the review was independent.
+
+Use `statistical-test-audit.md` only for an explicitly requested, bounded read-only assessment of tests as independent correctness evidence. It defaults to 2–4 selected functions and prohibits test execution or code changes unless separately authorised.

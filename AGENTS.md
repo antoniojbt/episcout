@@ -35,6 +35,7 @@ For analytical and missingness semantics, expected values must come from authori
 ## Project checks and records
 
 - Apply `checklists/software-verification.md` to code and interfaces; add truth, analysis, figure, copy-edit, or render checklists when their subject is in scope.
+- Apply `checklists/statistical-test-audit.md` only when explicitly auditing whether tests independently establish consequential statistical, epidemiological or longitudinal behaviour; keep that audit read-only and bounded to 2–4 selected functions by default.
 - Use coverage to find untested changed behaviour, not as a substitute for assertions or as an unmeasured blanket target.
 - Treat CodeFactor as non-blocking unless its evidenced finding affects correctness, data integrity, security, privacy, performance, resource lifetime, compatibility, or a consequential claim.
 - GitHub issues and PRs are the live work record. Use optional numbered specifications only when semantics, dependencies, migration risk, or cross-session handoff justify them. Do not create successor records merely to satisfy process.
