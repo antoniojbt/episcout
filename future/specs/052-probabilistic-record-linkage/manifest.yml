@@ -2,7 +2,7 @@ id: "052"
 slug: "probabilistic-record-linkage"
 workflow_version: 1
 deliverable: design
-status: active
+status: review
 owner: MacBotticus
 base_branch: master
 working_branch: feature/probabilistic-linkage-spec
@@ -11,7 +11,7 @@ updated: 2026-08-20
 
 tracking_issue: 360
 source_issues: [338, 340, 360]
-pull_request: null
+pull_request: 363
 merge_commit: null
 successor_issue: 361
 terminal_reason: null
