@@ -9,11 +9,13 @@ Draft PR #363 is open against canonical `master`. Review must challenge the publ
 
 ## Implementation review
 
-Pending. The behaviour-sensitive label requires independent comparison of the accepted design, implementation and hand-derived truth before either implementation slice is declared review-ready.
+Draft foundation PR #364 and terminal scoring/validation PR #365 are open in order on the planning branch history. Local self-review compared the implementation with the declared schemas and hand-derived truth: 233 focused expectations pass; candidate recall and classification measures reconcile over complete Cartesian truth; source-order changes retain record-key decisions; privacy canaries are absent from routine methods; and neither implementation accepts a persistence target. Combined linkage-source coverage is 92.98%, with 95.56% for scoring/validation. This is implementation evidence, not independent review.
+
+The behaviour-sensitive label still requires independent comparison of the accepted design, implementation, statistical truth, privacy behaviour and rendered guide before either implementation PR merges. Hosted checks are also pending.
 
 ## Closeout
 
 - Planning PR and merge commit: #363 / pending.
-- Foundation issue/PR: #361 / pending.
-- Terminal implementation issue/PR: #362 / pending.
-- Required checks and material exceptions: pending.
+- Foundation issue/PR: #361 / #364, draft and unmerged.
+- Terminal implementation issue/PR: #362 / #365, draft and unmerged.
+- Required local checks: passed with the existing documented notes; hosted checks and independent review pending.
