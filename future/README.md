@@ -50,6 +50,8 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 ## Current Status
 
+Issue [#358](https://github.com/antoniojbt/episcout/issues/358)/spec 054 is in review as a design-only audit. It maps Oferta's current aggregate association calculations onto existing Episcout contracts and proposes no package change in the audit contribution. The current decision is to reuse stratified EDA for cross-tabs, retain project plotting and SIAP semantics downstream, and gate one later implementation successor for explicit-pair Spearman, aggregate-count Cramér's V and bounded stratified domains.
+
 Probabilistic-linkage issues [#360](https://github.com/antoniojbt/episcout/issues/360), [#361](https://github.com/antoniojbt/episcout/issues/361) and [#362](https://github.com/antoniojbt/episcout/issues/362) completed through PRs #363, #364 and #365. Specs 052 and 053 are archived under `future/specs/done/`; no automatic successor is authorised and no roadmap is active.
 
 Completed spec `027-epi-geo-phase-a` records issue [#226](https://github.com/antoniojbt/episcout/issues/226) and PR [#234](https://github.com/antoniojbt/episcout/pull/234), merged to canonical `master` as `b37b391`. Completed spec `028-epi-geo-postgis` records issue [#233](https://github.com/antoniojbt/episcout/issues/233) and PR [#238](https://github.com/antoniojbt/episcout/pull/238), merged to canonical `master` as `460acd0`. Completed terminal Phase-C spec `029-eda-reviewed-coordinate-roles` records issue [#237](https://github.com/antoniojbt/episcout/issues/237), planning PR [#240](https://github.com/antoniojbt/episcout/pull/240) and implementation PR [#241](https://github.com/antoniojbt/episcout/pull/241), merged as `308d544`; all required CI passed.

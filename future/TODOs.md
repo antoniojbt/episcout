@@ -14,6 +14,8 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
+Issue-358/spec-054 is the active design-only transversal-association audit. It changes no package behaviour. The review reuses current stratified categorical aggregates rather than adding a second cross-tab engine, keeps Oferta's selections, plots, labels, SIAP semantics and `PLZOCU=0` location grouping downstream, and proposes at most one separately blocked implementation successor for the demonstrated numeric-association, aggregate Cramér's V and domain-bound gaps.
+
 Issue-360/spec-052 completed the generic two-source probabilistic-linkage contract through PR #363 at `a92ed8e`; foundation issue-361/spec-053/PR #364 merged at `3feb5c8`; and terminal scoring, classification, complete-truth validation and synthetic-guide issue-362/PR #365 merged at `a9e8177`. Probabilistic output remains separate from exact alias resolution and never enters the persistent identity registry automatically. All three issues are closed, completed records are under `future/specs/done/`, and no automatic successor is authorised.
 
 Issue-346/spec-048 completed through PR-350, merged to canonical `master` as `commit-54ed478`, with lifecycle closeout PR-351. Issue-347/spec-049 completed through PR-352, merged as `commit-b4eddf0`, with lifecycle closeout PR-353. Issue-348/spec-050 completed through PR-354, merged as `commit-dc2e616`, with lifecycle closeout PR-355. Issue-349/spec-051 completed through PR-356, merged as `commit-0a5e3a8`; the package now has generic aggregate-only population/key QC, drift, categorical transitions and post-curation long-form EDA. Project-specific reporting and pipeline integration are tracked downstream, not as another package successor.
