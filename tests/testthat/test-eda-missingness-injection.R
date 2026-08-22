@@ -132,7 +132,7 @@ test_that("invalid declarations and seeds fail without a result", {
     epi_eda_inject_missingness(setNames(data, c("", "group", "date")), c(group = 1)),
     "unique, non-empty"
   )
-  expect_error(epi_eda_inject_missingness(data, c(1)), "named by variable")
+  expect_error(epi_eda_inject_missingness(data, 1), "named by variable")
   expect_error(
     epi_eda_inject_missingness(data, c(measure = 1, measure = 1)),
     "duplicate"
