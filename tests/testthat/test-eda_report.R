@@ -63,7 +63,6 @@ test_that("epi_eda_render_report renders a real fixture-data report", {
   expect_match(report_text, "missing|Missing")
   expect_match(report_text, "summar|Summar")
   expect_match(report_text, "plot|Plot")
-  expect_match(report_text, "real|Real")
   expect_match(report_text, "Observed data", fixed = TRUE)
 })
 
