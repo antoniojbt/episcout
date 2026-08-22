@@ -40,6 +40,7 @@ test_that("EDA workflow exports use the epi_eda prefix", {
     "epi_eda_profile_summaries",
     "epi_eda_profile_plots",
     "epi_eda_generate_synthetic_data",
+    "epi_eda_inject_missingness",
     "epi_eda_run",
     "epi_eda_render_report",
     "epi_eda_create_project"

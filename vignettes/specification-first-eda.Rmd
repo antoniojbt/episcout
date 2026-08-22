@@ -26,6 +26,8 @@ episcout creates the outputs explicitly requested by the analyst and does not de
 
 Use the data-frame path when the caller has already loaded an authorised in-memory data frame. `epi_eda_intake_run()` is the guided audit/apply and owned-bundle entry point. `epi_eda_run()` and `epi_eda_render_report()` are lower-level analysis and reporting entry points; they do not call `epi_eda_prepare()`.
 
+When a caller supplies a synthetic fixture, set `data_origin = "caller_declared_synthetic"` so workflow metadata and reports do not mislabel it as observed. This declaration is explicitly unverified: synthetic provenance and fixture integrity do not establish anonymisation, disclosure safety, representativeness, scientific validity or production readiness. `epi_eda_inject_missingness()` can add exact seeded counts of R missing values and literal blanks to a neutral fixture without changing the complete-data default of `epi_eda_generate_synthetic_data()`.
+
 Use the PostgreSQL path when observations must remain in one supported database relation. The caller creates and owns the connection and credentials, then passes separate schema and relation identifiers to `epi_eda_postgres_source()`. episcout does not create a server, manage credentials, accept arbitrary SQL or prepare database values.
 
 The installed `project-template/README.md` provides a file-based data-frame scaffold. The installed `examples/db-to-report/README.md` and `walkthrough.R` provide a runnable synthetic example of database inventory, separate pseudonymisation policy and PostgreSQL EDA delivery.

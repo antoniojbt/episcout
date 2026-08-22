@@ -14,11 +14,12 @@ epi_eda_render_report(
   quiet = TRUE,
   maps = FALSE,
   map_vars = character(),
-  max_map_points = 10000L
+  max_map_points = 10000L,
+  data_origin = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing observed data. Required when \code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
+\item{data}{A data frame containing observed or caller-declared synthetic data. Required when \code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
 
 \item{spec}{An EDA specification data frame or CSV path accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
@@ -38,6 +39,11 @@ coordinate pair.}
 \item{map_vars}{Unique declared variables for additional thematic maps.}
 
 \item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
+
+\item{data_origin}{Optional canonical origin for \code{data}. One of \code{"observed"},
+\code{"episcout_generated_synthetic"} or \code{"caller_declared_synthetic"}.
+When omitted, \code{synthetic = FALSE} maps to \code{"observed"} and
+\code{synthetic = TRUE} maps to \code{"episcout_generated_synthetic"}.}
 }
 \value{
 A single character string containing the rendered HTML report path.

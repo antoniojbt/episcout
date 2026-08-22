@@ -64,6 +64,7 @@ test_that("epi_eda_render_report renders a real fixture-data report", {
   expect_match(report_text, "summar|Summar")
   expect_match(report_text, "plot|Plot")
   expect_match(report_text, "real|Real")
+  expect_match(report_text, "Observed data", fixed = TRUE)
 })
 
 test_that("epi_eda_render_report labels synthetic fixture reports", {
@@ -81,7 +82,32 @@ test_that("epi_eda_render_report labels synthetic fixture reports", {
   )
 
   expect_report_file(report_path)
-  expect_match(read_report_text(report_path), "synthetic|Synthetic")
+  report_text <- read_report_text(report_path)
+  expect_match(report_text, "Episcout-generated synthetic data", fixed = TRUE)
+  expect_match(report_text, "do not establish\\s+anonymisation")
+})
+
+test_that("epi_eda_render_report labels caller-declared synthetic provenance", {
+  data <- read.csv(data_path, check.names = FALSE)
+  spec <- epi_eda_spec(spec_path)
+  output_dir <- tempfile("eda-report-caller-synthetic-")
+  dir.create(output_dir)
+
+  report_path <- epi_eda_render_report(
+    data = data,
+    spec = spec,
+    output_dir = output_dir,
+    data_origin = "caller_declared_synthetic"
+  )
+
+  expect_report_file(report_path)
+  report_text <- read_report_text(report_path)
+  expect_match(report_text, "Caller-declared synthetic data", fixed = TRUE)
+  expect_match(report_text, "provenance is unverified", fixed = TRUE)
+  expect_match(report_text, "do not establish\\s+anonymisation")
+  metadata <- utils::read.csv(file.path(output_dir, "metadata.csv"))
+  expect_true(metadata$synthetic)
+  expect_identical(metadata$data_origin, "caller_declared_synthetic")
 })
 
 test_that("epi_eda_render_report writes machine-readable workflow outputs", {
@@ -153,6 +179,25 @@ test_that("epi_eda_render_report requires an existing output directory", {
     ),
     regexp = "output_dir|directory|exist"
   )
+})
+
+test_that("epi_eda_render_report rejects contradictory provenance before writing", {
+  data <- read.csv(data_path, check.names = FALSE)
+  spec <- epi_eda_spec(spec_path)
+  output_dir <- tempfile("eda-report-contradiction-")
+  dir.create(output_dir)
+
+  expect_error(
+    epi_eda_render_report(
+      data,
+      spec,
+      output_dir,
+      synthetic = TRUE,
+      data_origin = "observed"
+    ),
+    "synthetic = TRUE requires"
+  )
+  expect_length(list.files(output_dir, all.files = TRUE, no.. = TRUE), 0L)
 })
 
 test_that("epi_eda_render_report embeds declared point maps", {
