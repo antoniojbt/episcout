@@ -4,6 +4,7 @@ Use this checklist when explicitly asked to assess whether tests provide credibl
 
 ## Boundary and selection
 
+- [ ] Confirm that the audit evaluates the selected tests against the original stated end goal and higher-priority requirements; an internally consistent implementation and test suite does not validate a narrowed or substitute contract.
 - [ ] Select 2–4 functions only and state why each is consequential. Prefer a shared primitive and a public interface that composes it when this makes the evidence chain clearer.
 - [ ] State the exact audit boundary, including backend or interface paths that are excluded.
 - [ ] Do not run tests or coverage, generate fixtures, update snapshots, modify code or tests, or open implementation work unless separately authorised.

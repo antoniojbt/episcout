@@ -4,6 +4,7 @@ Apply this checklist to rendered vignettes, HTML reports, package tarballs and r
 
 ## Blocking checks
 
+- [ ] Compare the exact artefact with the original requested end goal and required deliverables. A polished, complete, internally consistent render fails if it changes, narrows, defers or substitutes any unauthorised part.
 - [ ] Generate the deliverable from the intended current source and inspect the exact artifact intended for handoff or release.
 - [ ] Preserve a requested prior version, confirm the intended baseline and inspect the version-to-version diff for requested changes and unrelated edits.
 - [ ] Check every relevant page or view for missing content, overflow, clipping, overlap, broken fonts, corrupt symbols, misplaced objects, blank pages and failed navigation.

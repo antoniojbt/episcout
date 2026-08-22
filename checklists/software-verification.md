@@ -4,6 +4,7 @@ Apply this checklist before handing off R code, scripts, pipelines or package-in
 
 ## Blocking checks
 
+- [ ] Compare observable behaviour with the original stated end goal and higher-priority instructions. Agreement among code, tests, fixtures, snapshots, schemas, documentation and workflow is not evidence that an unauthorised change, narrowing, deferral or substitution is acceptable.
 - [ ] State the required observable behaviour and its basis; do not infer correctness solely from existing code or tests.
 - [ ] Apply `truth-and-semantics.md` when the change interprets data or domain rules.
 - [ ] Validate required inputs, failure behaviour, side effects, output locations and important boundaries.

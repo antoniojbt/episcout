@@ -2,6 +2,12 @@
 
 Episcout is a public R package for cleaning, exploring, and visualising epidemiological data. Apply the repository-specific rules below.
 
+## End goal and instruction hierarchy
+
+Treat the user's stated end goal, required deliverables, and stop condition as the acceptance contract. Before accepting any design decision, ask: does this change, narrow, defer or substitute any part of the stated end goal?
+
+Never use package conventions, specifications, GitHub records, workflows, tests, snapshots, schemas, implementation constraints, or internal consistency to override a higher-priority instruction or silently alter that contract. If a higher-priority instruction requires a limit, surface the conflict; otherwise obtain the user's explicit agreement before changing the end goal.
+
 ## Start here
 
 Consult `PROJECT_MAP.md` when current, then inspect the relevant functions, callers, tests, documentation, configuration, `scripts/`, and CI workflow before changing behaviour or adding a helper command. Treat `future/`, `archive/`, and `legacy/` as planning or historical evidence, not current package behaviour.
