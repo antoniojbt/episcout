@@ -50,6 +50,171 @@ epi_eda_generate_synthetic_data <- function(spec, n = 100, seed = NULL) { # noli
   as.data.frame(columns, stringsAsFactors = FALSE, check.names = FALSE)
 }
 
+#' Inject exact missing and blank values into an EDA fixture
+#'
+#' Deterministically replace eligible values in a data frame with exact
+#' caller-declared counts of R missing values and literal blank strings. This
+#' helper is intended for neutral test and pipeline-preparation fixtures. It
+#' does not infer missing-value semantics, validate fixture provenance or
+#' establish privacy, representativeness or scientific validity.
+#' Existing R missing values and literal blanks are preserved and excluded from
+#' eligible positions; reported counts describe newly injected values.
+#'
+#' @param data A data frame with unique, non-empty column names.
+#' @param missing A named numeric vector giving the exact number of R missing
+#'   values to inject per declared variable.
+#' @param blanks Optional named numeric vector giving the exact number of
+#'   literal `""` values to inject per declared character variable.
+#' @param seed Optional non-negative whole-number seed. When supplied, repeated
+#'   calls with the same data and declarations select identical positions and
+#'   restore the caller's random-number state.
+#'
+#' @return A named list containing the modified `data`, per-variable realised
+#'   `counts`, and compact reproducibility `metadata`.
+#'
+#' @export
+epi_eda_inject_missingness <- function(data, missing, blanks = NULL, seed = NULL) {
+  validate_injection_data(data)
+  missing <- validate_injection_counts(missing, "missing", names(data))
+  blanks <- validate_injection_counts(blanks, "blanks", names(data), allow_null = TRUE)
+  seed <- validate_injection_seed(seed)
+  validate_injection_targets(data, missing, blanks)
+
+  declared <- names(data)[names(data) %in% union(names(missing), names(blanks))]
+  realised <- data.frame(
+    variable = declared,
+    n_missing = as.integer(missing[declared]),
+    n_blank = as.integer(blanks[declared]),
+    stringsAsFactors = FALSE
+  )
+  realised$n_missing[is.na(realised$n_missing)] <- 0L
+  realised$n_blank[is.na(realised$n_blank)] <- 0L
+
+  if (!is.null(seed)) {
+    old_seed <- if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+    } else {
+      NULL
+    }
+    on.exit({
+      if (is.null(old_seed)) {
+        if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+          rm(".Random.seed", envir = .GlobalEnv)
+        }
+      } else {
+        assign(".Random.seed", old_seed, envir = .GlobalEnv) # nolint: object_name_linter
+      }
+    }, add = TRUE)
+    set.seed(seed)
+  }
+
+  result <- data
+  for (i in seq_along(declared)) {
+    variable <- declared[[i]]
+    n_missing <- realised$n_missing[[i]]
+    n_blank <- realised$n_blank[[i]]
+    total <- n_missing + n_blank
+    if (total == 0L) {
+      next
+    }
+
+    values <- result[[variable]]
+    eligible <- !is.na(values)
+    if (is.character(values)) {
+      eligible <- eligible & values != ""
+    }
+    positions <- which(eligible)
+    selected <- positions[sample.int(length(positions), total, replace = FALSE)]
+    if (n_missing > 0L) {
+      result[[variable]][selected[seq_len(n_missing)]] <- NA
+    }
+    if (n_blank > 0L) {
+      blank_index <- seq.int(n_missing + 1L, total)
+      result[[variable]][selected[blank_index]] <- ""
+    }
+  }
+
+  list(
+    data = result,
+    counts = realised,
+    metadata = data.frame(
+      seed = if (is.null(seed)) NA_real_ else seed,
+      n_rows = as.integer(nrow(data)),
+      n_declared_variables = as.integer(length(declared)),
+      stringsAsFactors = FALSE
+    )
+  )
+}
+
+validate_injection_data <- function(data) {
+  if (!is.data.frame(data)) {
+    stop("data must be a data frame.", call. = FALSE)
+  }
+  data_names <- names(data)
+  if (anyNA(data_names) || any(!nzchar(data_names)) || anyDuplicated(data_names)) {
+    stop("data must have unique, non-empty column names.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
+validate_injection_counts <- function(counts, argument, data_names, allow_null = FALSE) {
+  if (is.null(counts) && allow_null) {
+    return(stats::setNames(numeric(), character()))
+  }
+  if (!is.numeric(counts) || is.object(counts) || anyNA(counts) ||
+        any(!is.finite(counts)) || any(counts < 0) || any(counts != floor(counts))) {
+    stop(argument, " must contain exact non-negative whole-number counts.", call. = FALSE)
+  }
+  count_names <- names(counts)
+  invalid_names <- length(counts) > 0L && (
+    is.null(count_names) || anyNA(count_names) || any(!nzchar(count_names))
+  )
+  if (invalid_names) {
+    stop(argument, " must be named by variable.", call. = FALSE)
+  }
+  if (anyDuplicated(count_names)) {
+    stop(argument, " must not contain duplicate variable declarations.", call. = FALSE)
+  }
+  if (any(!(count_names %in% data_names))) {
+    stop(argument, " contains an unknown variable.", call. = FALSE)
+  }
+  stats::setNames(as.numeric(counts), count_names)
+}
+
+validate_injection_seed <- function(seed) {
+  if (is.null(seed)) {
+    return(NULL)
+  }
+  if (!is.numeric(seed) || is.object(seed) || length(seed) != 1L ||
+        is.na(seed) || !is.finite(seed) || seed < 0 || seed != floor(seed) ||
+        seed > .Machine$integer.max) {
+    stop("seed must be NULL or a non-negative whole number within the R integer range.", call. = FALSE)
+  }
+  as.numeric(seed)
+}
+
+validate_injection_targets <- function(data, missing, blanks) {
+  blank_variables <- names(blanks)[blanks > 0]
+  if (any(!vapply(data[blank_variables], is.character, logical(1)))) {
+    stop("blanks can be injected only into character variables.", call. = FALSE)
+  }
+
+  declared <- union(names(missing), names(blanks))
+  for (variable in declared) {
+    values <- data[[variable]]
+    eligible <- !is.na(values)
+    if (is.character(values)) {
+      eligible <- eligible & values != ""
+    }
+    n_missing <- if (variable %in% names(missing)) missing[[variable]] else 0
+    n_blank <- if (variable %in% names(blanks)) blanks[[variable]] else 0
+    if (n_missing + n_blank > sum(eligible)) {
+      stop("Requested injections exceed the eligible values for a variable.", call. = FALSE)
+    }
+  }
+  invisible(TRUE)
+}
+
 generate_synthetic_column <- function(row, n) {
   type <- row$analysis_type[[1]]
 

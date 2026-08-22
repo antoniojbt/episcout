@@ -29,6 +29,8 @@ test_that("epi_eda_run returns expected components for real fixture data", {
   expect_type(observed$plots, "list")
   expect_type(observed$maps, "list")
   expect_s3_class(observed$map_inventory, "data.frame")
+  expect_false(observed$metadata$synthetic)
+  expect_identical(observed$metadata$data_origin, "observed")
 })
 
 test_that("epi_eda_run real-data workflow matches component functions", {
@@ -67,9 +69,77 @@ test_that("epi_eda_run supports synthetic fixture workflow", {
   expect_type(observed, "list")
   expect_named(observed, expected_components)
   expect_equal(observed$metadata$synthetic, TRUE)
+  expect_identical(
+    observed$metadata$data_origin,
+    "episcout_generated_synthetic"
+  )
   expect_equal(observed$metadata$n_rows, 25L)
   expect_equal(observed$schema$status, rep("present", nrow(spec)))
   expect_named(observed$plots, spec$name)
+})
+
+test_that("epi_eda_run profiles caller-declared synthetic data unchanged", {
+  data <- read.csv(data_path, check.names = FALSE)
+  spec <- epi_eda_spec(spec_path)
+
+  observed <- epi_eda_run(
+    data = data,
+    spec = spec,
+    synthetic = FALSE,
+    data_origin = "caller_declared_synthetic"
+  )
+
+  expect_true(observed$metadata$synthetic)
+  expect_identical(observed$metadata$data_origin, "caller_declared_synthetic")
+  expect_equal(observed$schema, epi_eda_check_schema(data, spec), ignore_attr = TRUE)
+  expect_equal(observed$missing, epi_eda_profile_missing(data, spec), ignore_attr = TRUE)
+})
+
+test_that("epi_eda_run rejects contradictory origins before writing", {
+  data <- read.csv(data_path, check.names = FALSE)
+  spec <- epi_eda_spec(spec_path)
+  output_dir <- tempfile("run-eda-contradiction-")
+  dir.create(output_dir)
+
+  expect_error(
+    epi_eda_run(
+      data,
+      spec,
+      output_dir = output_dir,
+      synthetic = TRUE,
+      data_origin = "caller_declared_synthetic"
+    ),
+    "synthetic = TRUE requires"
+  )
+  expect_length(list.files(output_dir, all.files = TRUE, no.. = TRUE), 0L)
+
+  expect_error(
+    epi_eda_run(
+      data,
+      spec,
+      output_dir = output_dir,
+      data_origin = "episcout_generated_synthetic"
+    ),
+    "requires synthetic = TRUE"
+  )
+  expect_length(list.files(output_dir, all.files = TRUE, no.. = TRUE), 0L)
+
+  expect_error(
+    epi_eda_run(data, spec, output_dir = output_dir, data_origin = "synthetic"),
+    "data_origin must be"
+  )
+  expect_length(list.files(output_dir, all.files = TRUE, no.. = TRUE), 0L)
+
+  expect_error(
+    epi_eda_run(
+      NULL,
+      spec,
+      output_dir = output_dir,
+      data_origin = "caller_declared_synthetic"
+    ),
+    "requires a supplied data frame"
+  )
+  expect_length(list.files(output_dir, all.files = TRUE, no.. = TRUE), 0L)
 })
 
 test_that("epi_eda_run writes workflow outputs to a temporary output directory", {

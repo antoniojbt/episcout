@@ -2,7 +2,7 @@
 #'
 #' Run the specification-first EDA workflow and render a bundled Quarto HTML report from the workflow outputs.
 #'
-#' @param data A data frame containing observed data. Required when `synthetic = FALSE`; ignored when `synthetic = TRUE`.
+#' @param data A data frame containing observed or caller-declared synthetic data. Required when `synthetic = FALSE`; ignored when `synthetic = TRUE`.
 #' @param spec An EDA specification data frame or CSV path accepted by [epi_eda_spec()].
 #' @param output_dir Directory where machine-readable workflow outputs and the rendered report are written. The directory must already exist.
 #' @param synthetic Logical; when `TRUE`, generate synthetic data from `spec` before running the workflow.
@@ -13,6 +13,10 @@
 #'   coordinate pair.
 #' @param map_vars Unique declared variables for additional thematic maps.
 #' @param max_map_points Inclusive maximum number of rows allowed for mapping.
+#' @param data_origin Optional canonical origin for `data`. One of `"observed"`,
+#'   `"episcout_generated_synthetic"` or `"caller_declared_synthetic"`.
+#'   When omitted, `synthetic = FALSE` maps to `"observed"` and
+#'   `synthetic = TRUE` maps to `"episcout_generated_synthetic"`.
 #' @return A single character string containing the rendered HTML report path.
 #'
 #' @export
@@ -25,7 +29,8 @@ epi_eda_render_report <- function(data,
                                   quiet = TRUE,
                                   maps = FALSE,
                                   map_vars = character(),
-                                  max_map_points = 10000L) {
+                                  max_map_points = 10000L,
+                                  data_origin = NULL) {
   validate_run_eda_output_dir(output_dir)
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
@@ -51,7 +56,8 @@ epi_eda_render_report <- function(data,
     seed = seed,
     maps = maps,
     map_vars = map_vars,
-    max_map_points = max_map_points
+    max_map_points = max_map_points,
+    data_origin = data_origin
   )
 
   render_input <- file.path(tempdir(), "episcout-eda-report.qmd")
@@ -63,7 +69,7 @@ epi_eda_render_report <- function(data,
     output_dir = output_dir,
     params = list(
       results = results,
-      synthetic = isTRUE(results$metadata$synthetic[[1]])
+      data_origin = results$metadata$data_origin[[1]]
     ),
     quiet = quiet,
     envir = new.env(parent = globalenv())

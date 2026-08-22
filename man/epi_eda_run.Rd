@@ -14,11 +14,12 @@ epi_eda_run(
   maps = FALSE,
   map_vars = character(),
   max_map_points = 10000L,
-  plot_style = NULL
+  plot_style = NULL,
+  data_origin = NULL
 )
 }
 \arguments{
-\item{data}{A data frame containing observed data. Required when \code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
+\item{data}{A data frame containing observed or caller-declared synthetic data. Required when \code{synthetic = FALSE}; ignored when \code{synthetic = TRUE}.}
 
 \item{spec}{An EDA specification data frame or CSV path accepted by \code{\link[=epi_eda_spec]{epi_eda_spec()}}.}
 
@@ -38,6 +39,11 @@ coordinate pair.}
 \item{max_map_points}{Inclusive maximum number of rows allowed for mapping.}
 
 \item{plot_style}{Optional function passed to \code{\link[=epi_eda_profile_plots]{epi_eda_profile_plots()}}.}
+
+\item{data_origin}{Optional canonical origin for \code{data}. One of \code{"observed"},
+\code{"episcout_generated_synthetic"} or \code{"caller_declared_synthetic"}.
+When omitted, \code{synthetic = FALSE} maps to \code{"observed"} and
+\code{synthetic = TRUE} maps to \code{"episcout_generated_synthetic"}.}
 }
 \value{
 A named list with \code{metadata}, \code{schema}, \code{missing}, \code{geo},
