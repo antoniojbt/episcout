@@ -2,9 +2,13 @@
 
 Use these checklists during work and before handoff. They are routed by `AGENTS.md`, support self-review and do not constitute independent review.
 
+## End-goal gate
+
+Before applying specialist checks, compare the planned and actual deliverable with the original stated end goal and the applicable instruction hierarchy. A deliverable does not pass merely because its specification, implementation, tests, snapshots, sources, or workflow agree internally. Record any unauthorised change, narrowing, deferral, or substitution of the end goal as `fail`; do not convert it to `not applicable` or rationalise it as package behaviour.
+
 ## Common workflow
 
-1. Define the intended software behaviour, analytical answer or communication purpose.
+1. Define the stated end goal, its required deliverables, and the intended software behaviour, analytical answer or communication purpose without substituting an easier proxy.
 2. Identify authoritative specifications, domain rules, benchmarks or independently derived expected results.
 3. Resolve material ambiguity before implementation. Mark an unresolved item as `not verified` and stop when the choice could change the result materially.
 4. Implement or draft the deliverable.

@@ -4,6 +4,7 @@ Apply this checklist to README, NEWS, vignettes, roxygen documentation, captions
 
 ## Blocking checks
 
+- [ ] Confirm that the revised deliverable still fulfils the requested communication end goal; do not let brevity, package style, structural consistency or the existing draft silently narrow or substitute it.
 - [ ] Preserve verified facts, values, directions of effect, uncertainty, technical meaning, citations and conclusions; revalidate any edit that changes them.
 - [ ] Check names, dates, units, numerical values, table and figure references, citations, links and cross-references against their sources.
 - [ ] Keep claims within the strength and scope of supporting evidence and retain material limitations when shortening.

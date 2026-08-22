@@ -4,6 +4,7 @@ Apply this checklist to package plots, charts and report graphics. Verify analyt
 
 ## Blocking checks
 
+- [ ] Confirm that the delivered figure answers the requested visual or analytical end goal, not merely the comparison most convenient for the available data or plotting implementation.
 - [ ] Reconcile plotted data, filters, transformations, denominators and summaries against verified analysis outputs or source data.
 - [ ] Confirm that the chart type and visual encoding represent the intended comparison without distorting magnitude, time, uncertainty or grouping.
 - [ ] Check axes, scales, limits, baselines, units, labels, legends, categories, ordering, time periods and sample definitions.

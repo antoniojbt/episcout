@@ -4,6 +4,7 @@ Apply this checklist to analytical functions, metrics, statistical summaries, ta
 
 ## Blocking checks
 
+- [ ] Confirm that the analytical endpoint is the one the user requested, not a proxy selected because it fits available data, a package method, pipeline, or internally consistent outputs. Mark any necessary change, narrowing, deferral, or substitution explicitly.
 - [ ] Define the question, target and source populations, unit of observation, time period, analysis population and required measure or estimand where applicable.
 - [ ] Identify source fields, provenance, versions, units, coding, inclusion criteria, exclusions and transformations.
 - [ ] Define handling of missingness, zeroes, censoring, competing events, suppression, duplicates and unmatched keys.

@@ -4,6 +4,7 @@ Apply this checklist whenever code or documentation interprets epidemiological d
 
 ## Blocking checks
 
+- [ ] Compare the intended answer, behaviour, decision or claim with the original stated end goal and higher-priority instructions. Identify any change, narrowing, deferral or substitution rather than reconciling it away through package logic or internal consistency.
 - [ ] State the intended behaviour, answer or claim and identify the population, records or users to which it applies.
 - [ ] Identify the authoritative specification, protocol, data dictionary, source-system documentation, statistical definition or independently justified expectation that defines correctness.
 - [ ] Trace important fields, values, classifications and claims to their provenance; treat existing code, tests, fixtures and outputs only as evidence of prior behaviour.
