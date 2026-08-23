@@ -172,6 +172,126 @@ test_that("PostgreSQL grouping preserves omitted, zero and unexpected strata", {
   )
 })
 
+test_that("PostgreSQL stratum bounds are exact and query-bounded", {
+  con <- stratified_postgres_connection()
+  fixture <- stratified_postgres_fixture(con)
+  on.exit(stratified_postgres_cleanup(con, fixture), add = TRUE)
+  source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
+  spec <- fixture$spec[fixture$spec$name == "arm", , drop = FALSE]
+  queries <- list()
+  original <- getFromNamespace("eda_db_fetch", "episcout")
+  testthat::local_mocked_bindings(
+    eda_db_fetch = function(con,
+                            statement,
+                            params = list(),
+                            query_kind,
+                            limit,
+                            timing_env = NULL,
+                            variable_index = NA_integer_,
+                            name = NA_character_) {
+      queries[[length(queries) + 1L]] <<- list(
+        statement = as.character(statement),
+        query_kind = query_kind,
+        limit = limit
+      )
+      original(
+        con, statement, params, query_kind, limit, timing_env,
+        variable_index, name
+      )
+    },
+    .package = "episcout"
+  )
+
+  exact <- epi_eda_profile_stratified(
+    source, spec, "arm", max_levels = 4
+  )
+
+  expect_s3_class(exact, "epi_eda_stratified")
+  group_queries <- queries[vapply(
+    queries,
+    function(query) identical(query$query_kind, "stratified_group_counts"),
+    logical(1)
+  )]
+  expect_length(group_queries, 1L)
+  expect_identical(group_queries[[1L]]$limit, 6)
+  expect_match(group_queries[[1L]]$statement, "LIMIT 6", fixed = TRUE)
+  expect_error(
+    epi_eda_profile_stratified(source, spec, "arm", max_levels = 3),
+    "PostgreSQL stratum domain exceeds max_levels"
+  )
+  expect_false(getFromNamespace("eda_pg_is_transacting", "episcout")(con))
+  expect_true(DBI::dbIsValid(con))
+})
+
+test_that("PostgreSQL compared domains bound declared and unexpected unions", {
+  con <- stratified_postgres_connection()
+  fixture <- stratified_postgres_fixture(con)
+  on.exit(stratified_postgres_cleanup(con, fixture), add = TRUE)
+  relation_sql <- as.character(DBI::dbQuoteIdentifier(
+    con, DBI::Id(schema = fixture$schema, table = fixture$relation)
+  ))
+  DBI::dbExecute(con, paste0(
+    "DELETE FROM ", relation_sql, " WHERE arm = 'C'"
+  ))
+  DBI::dbExecute(con, paste0(
+    "UPDATE ", relation_sql, " SET status = 'other' WHERE arm = 'B'"
+  ))
+  source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
+  spec <- fixture$spec[fixture$spec$name %in% c("arm", "status"), , drop = FALSE]
+  spec$missing_codes[spec$name == "status"] <- "NA"
+  queries <- list()
+  original <- getFromNamespace("eda_db_fetch", "episcout")
+  testthat::local_mocked_bindings(
+    eda_db_fetch = function(con,
+                            statement,
+                            params = list(),
+                            query_kind,
+                            limit,
+                            timing_env = NULL,
+                            variable_index = NA_integer_,
+                            name = NA_character_) {
+      queries[[length(queries) + 1L]] <<- list(
+        statement = as.character(statement),
+        query_kind = query_kind,
+        limit = limit
+      )
+      original(
+        con, statement, params, query_kind, limit, timing_env,
+        variable_index, name
+      )
+    },
+    .package = "episcout"
+  )
+
+  exact <- epi_eda_profile_stratified(
+    source, spec, "arm", max_levels = 4
+  )
+
+  expect_s3_class(exact, "epi_eda_stratified")
+  categorical_queries <- queries[vapply(
+    queries,
+    function(query) identical(query$query_kind, "categorical_frequency"),
+    logical(1)
+  )]
+  expect_gt(length(categorical_queries), 0L)
+  expect_true(all(vapply(
+    categorical_queries,
+    function(query) identical(query$limit, 5L),
+    logical(1)
+  )))
+  expect_true(all(vapply(
+    categorical_queries,
+    function(query) grepl("LIMIT 5", query$statement, fixed = TRUE),
+    logical(1)
+  )))
+  expect_error(
+    epi_eda_profile_stratified(source, spec, "arm", max_levels = 3),
+    "categorical period domain exceeds max_levels"
+  )
+  expect_false(getFromNamespace("eda_pg_is_transacting", "episcout")(con))
+  expect_true(DBI::dbIsValid(con))
+})
+
 test_that("PostgreSQL stratification never fetches an analysis-value vector", {
   con <- stratified_postgres_connection()
   fixture <- stratified_postgres_fixture(con)

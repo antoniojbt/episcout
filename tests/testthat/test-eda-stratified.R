@@ -33,7 +33,8 @@ test_that("stratified contract preserves group order, empty groups and reconcili
   observed <- epi_eda_profile_stratified(fixture$data, fixture$spec, "arm")
 
   expect_named(formals(epi_eda_profile_stratified), c(
-    "data", "spec", "strata", "include_overall", "include_missing_stratum"
+    "data", "spec", "strata", "include_overall", "include_missing_stratum",
+    "max_levels"
   ))
   expect_s3_class(observed, "epi_eda_stratified")
   expect_named(observed, c(
@@ -84,6 +85,64 @@ test_that("stratified contract preserves group order, empty groups and reconcili
   expect_type(observed$groups$group_order, "integer")
   expect_type(observed$variables$status, "character")
   expect_type(observed$categorical$is_missing_level, "logical")
+})
+
+test_that("finite categorical bounds fail without truncation", {
+  data <- data.frame(
+    group = c("a", "b", "a"),
+    compared = c("x", "y", "z"),
+    stringsAsFactors = FALSE
+  )
+  spec <- data.frame(
+    name = c("group", "compared"),
+    label = c("Group", "Compared"),
+    database_type = "text",
+    analysis_type = "categorical",
+    role = "measure",
+    levels = c("a;b", "x;y"),
+    stringsAsFactors = FALSE
+  )
+
+  default <- epi_eda_profile_stratified(data, spec, "group")
+  explicit_unbounded <- epi_eda_profile_stratified(
+    data, spec, "group", max_levels = Inf
+  )
+  exact <- epi_eda_profile_stratified(data, spec, "group", max_levels = 3)
+
+  expect_identical(explicit_unbounded, default)
+  expect_identical(exact, default)
+  expect_error(
+    epi_eda_profile_stratified(data, spec, "group", max_levels = 2),
+    "categorical variable domain exceeds max_levels"
+  )
+
+  stratum_over <- transform(
+    data,
+    group = c("a", "b", "c"),
+    compared = "x"
+  )
+  stratum_spec <- spec[spec$name == "group", , drop = FALSE]
+  expect_s3_class(
+    epi_eda_profile_stratified(
+      stratum_over["group"], stratum_spec, "group", max_levels = 3
+    ),
+    "epi_eda_stratified"
+  )
+  expect_error(
+    epi_eda_profile_stratified(
+      stratum_over["group"], stratum_spec, "group", max_levels = 2
+    ),
+    "stratum domain exceeds max_levels"
+  )
+
+  for (invalid in list(
+    0, -1, 1.5, NA_real_, -Inf, 1 + 0i, .Machine$integer.max - 1
+  )) {
+    expect_error(
+      epi_eda_profile_stratified(data, spec, "group", max_levels = invalid),
+      "Inf or a positive whole number"
+    )
+  }
 })
 
 test_that("group numeric results reuse canonical values and expose denominators", {

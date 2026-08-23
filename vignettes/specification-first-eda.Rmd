@@ -334,13 +334,42 @@ results$categorical_display
 stratified <- epi_eda_profile_stratified(
   prepared$data,
   spec,
-  strata = "study_group"
+  strata = "study_group",
+  max_levels = 10
 )
 table1 <- epi_eda_table1(stratified)
 table1
 ```
 
-`epi_eda_profile_stratified()` accepts either a data frame or an `epi_eda_postgres_source` for exactly one declared categorical or binary stratifier. PostgreSQL stratification runs in one read-only repeatable-read transaction and returns only grouped or scalar aggregates. It does not collect the analysis-value vector required by Shapiro-Wilk, so PostgreSQL stratified numeric `shapiro_p` values are unavailable and this limitation is recorded in result metadata. The returned object works unchanged with `epi_eda_table1()` and `epi_eda_categorical_display()`.
+`epi_eda_profile_stratified()` accepts either a data frame or an `epi_eda_postgres_source` for exactly one declared categorical or binary stratifier. Its omitted `max_levels = Inf` default preserves the released unbounded result. A supplied finite positive whole-number bound applies independently to the ordinary stratum domain, every compared categorical or binary domain and each declared-plus-observed union. One value over the bound fails the complete call without truncation; PostgreSQL collection is limited in the query path. PostgreSQL stratification runs in one read-only repeatable-read transaction and returns only grouped or scalar aggregates. It does not collect the analysis-value vector required by Shapiro-Wilk, so PostgreSQL stratified numeric `shapiro_p` values are unavailable and this limitation is recorded in result metadata. The returned object works unchanged with `epi_eda_table1()` and `epi_eda_categorical_display()`.
+
+Explicit numeric associations remain caller-selected. `epi_eda_profile_spearman()` takes an ordered two-column character data frame, rejects identifiers and unsupported or duplicate pairs, and reranks each eligible pair independently after excluding standard missing values, declared missing codes and non-finite values. PostgreSQL returns one aggregate row per pair from one read-only repeatable-read transaction; neither backend returns a p-value, confidence interval, threshold or interpretation.
+
+```{r}
+numeric_pairs <- data.frame(
+  left = "age",
+  right = "longitude",
+  stringsAsFactors = FALSE
+)
+spearman <- epi_eda_profile_spearman(prepared$data, spec, numeric_pairs)
+spearman
+```
+
+`epi_eda_cramers_v()` consumes long-form aggregate contingency counts rather than source rows. The required columns are `left`, `right`, `row_level`, `column_level` and `n`. Explicit zero-count rows retain declared domain evidence, while zero-total margins are removed from the active dimensions before the coefficient is calculated. Missing row/column combinations among supplied levels are treated as zero cells. Zero totals and one-dimensional active tables return typed unavailable evidence.
+
+```{r}
+contingency_counts <- data.frame(
+  left = "group",
+  right = "outcome",
+  row_level = rep(c("r1", "r2"), each = 2L),
+  column_level = rep(c("c1", "c2"), 2L),
+  n = c(30, 10, 10, 50),
+  stringsAsFactors = FALSE
+)
+epi_eda_cramers_v(contingency_counts)
+```
+
+To reuse a bounded stratified categorical component, retain ordinary non-missing group and level rows, map `group_value`, `name`, `level` and `n` to `row_level`, `right`, `column_level` and `n`, and repeat `stratified$metadata$strata` as `left`. This transformation uses the existing aggregate object and requires no source-row access or second PostgreSQL query. Pair selection, labels, ranking, presentation and scientific interpretation remain caller responsibilities.
 
 `epi_eda_categorical_display()` is the shared aggregate calculation behind categorical presentation. Every row retains an integer `numerator`, integer `denominator`, numeric `proportion`, percentage-basis fields and explicit missingness treatment. Standard missing values and declared missing codes are combined into one missing-level row. A zero denominator remains integer zero and its proportion is `NA_real_`; it is never presented as zero percent.
 
@@ -404,7 +433,7 @@ db_results <- epi_eda_db_run(
 DBI::dbDisconnect(con)
 ```
 
-The five direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`, `epi_eda_profile_summaries()`, `epi_eda_profile_plots()` and `epi_eda_profile_stratified()` also accept a PostgreSQL source; each direct call owns its own read-only repeatable-read transaction. `epi_eda_db_run()` performs catalogue revalidation, schema and missingness checks, canonical summaries, identifier QA, compact plot preparation, optional stratification and map-readiness QA in one read-only repeatable-read snapshot. Rendering and atomic filesystem publication occur after the snapshot ends. Supplying `strata` adds manifest-owned stratified components and Table 1 while leaving the default bundle unchanged. Stratified database bundles reject source-row maps and disable Shapiro-Wilk in both Overall and grouped numeric summaries to preserve the no-analysis-vector boundary.
+The six direct profilers `epi_eda_check_schema()`, `epi_eda_profile_missing()`, `epi_eda_profile_summaries()`, `epi_eda_profile_plots()`, `epi_eda_profile_stratified()` and `epi_eda_profile_spearman()` also accept a PostgreSQL source; each direct call owns its own read-only repeatable-read transaction. `epi_eda_db_run()` performs catalogue revalidation, schema and missingness checks, canonical summaries, identifier QA, compact plot preparation, optional stratification and map-readiness QA in one read-only repeatable-read snapshot. Rendering and atomic filesystem publication occur after the snapshot ends. Supplying `strata` adds manifest-owned stratified components and Table 1 while leaving the default bundle unchanged. Stratified database bundles reject source-row maps and disable Shapiro-Wilk in both Overall and grouped numeric summaries to preserve the no-analysis-vector boundary.
 
 Without maps, the database bundle contains aggregates, the caller-authored specification and aggregate plot inputs only. When maps are requested, coordinates and selected thematic observations are collected only for map-ready pairs within the inclusive row limit. The query projects only the required coordinates and themes, applies a defensive `max_map_points + 1` limit, and fails rather than truncating or silently dropping rows. The bundle never contains a source-row table, arbitrary SQL, query parameters, credentials or connection attributes; database and driver logs remain the caller's infrastructure responsibility.
 

@@ -1086,7 +1086,8 @@ eda_postgres_summaries_inside <- function(source,
                                           spec,
                                           timing_env = NULL,
                                           n_total = NULL,
-                                          allow_value_vectors = TRUE) {
+                                          allow_value_vectors = TRUE,
+                                          max_levels = Inf) {
   if (is.null(n_total)) n_total <- eda_postgres_row_count(source, timing_env)
   outputs <- list(
     variables = list(), numeric = list(), categorical = list(), text = list(),
@@ -1142,7 +1143,8 @@ eda_postgres_summaries_inside <- function(source,
       )
     } else if (type %in% c("categorical", "binary")) {
       eda_pg_categorical_summary(
-        source, column, contract, row, index, n_total, timing_env
+        source, column, contract, row, index, n_total, timing_env,
+        max_levels = max_levels
       )
     } else if (type == "text") {
       eda_postgres_text_summary(source, column, contract, index, timing_env)

@@ -33,6 +33,8 @@ test_that("EDA workflow exports use the epi_eda prefix", {
     "epi_eda_prepare",
     "epi_eda_intake_run",
     "epi_eda_profile_stratified",
+    "epi_eda_profile_spearman",
+    "epi_eda_cramers_v",
     "epi_eda_categorical_display",
     "epi_eda_table1",
     "epi_eda_check_schema",

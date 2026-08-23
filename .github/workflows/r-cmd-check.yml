@@ -135,5 +135,5 @@ jobs:
 
       - name: Run PostgreSQL integration tests
         run: |
-          devtools::test(filter = "eda-postgres|eda-longitudinal-postgres|eda-geo-postgres|epi-geo-postgis|sec-pseudonymise-postgres|sec-identity-universe-postgres", reporter = "summary")
+          devtools::test(filter = "eda-postgres|eda-stratified-postgres|eda-association-spearman-postgres|eda-longitudinal-postgres|eda-geo-postgres|epi-geo-postgis|sec-pseudonymise-postgres|sec-identity-universe-postgres", reporter = "summary", stop_on_failure = TRUE)
         shell: Rscript {0}

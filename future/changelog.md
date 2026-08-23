@@ -1,5 +1,9 @@
 # Future Workspace Changelog
 
+## 2026-08-23
+
+- Implemented `issue-369` through PR #379 with explicit-pair descriptive Spearman for data-frame and PostgreSQL backends, aggregate-count Cramér's V and opt-in fail-not-truncate bounds for stratified categorical domains. Independently authored tied-rank and contingency-table truth, pairwise missing/non-finite and degenerate cases, default compatibility, bounded PostgreSQL queries, concurrent snapshot, rollback and privacy evidence cover the accepted behaviour; local and CRAN-oriented checks passed with only inherited repository notes. The existing stratified cross-tab engine remains the aggregate source, historical `epi_stats_corr()` is unchanged, all project selection and interpretation remain downstream, and no successor is authorised.
+
 ## 2026-08-20
 
 - Completed design-only `issue-358`/`spec-054-transversal-association-diagnostics-audit` through PR #367, merged to canonical `master` as `commit-3d8bbdb`. Current stratified EDA is the retained categorical cross-tab engine; no duplicate query or plotting API is justified, and Oferta keeps pair/group selection, SIAP semantics, labels, AEIS styling, report composition and `PLZOCU=0` location grouping. Independent tied-rank, direct-SQL cross-tab and hand-derived 2×2/3×2 Cramér's V evidence identified one bounded successor for explicit-pair Spearman, aggregate-count Cramér's V and fail-not-truncate stratified domains. Ubuntu, PostgreSQL, coverage and CodeFactor passed; one unrelated civil-date coverage flake passed on retry. Successor issue #369 is blocked pending separate owner promotion, and issue #358 changed no package or Oferta behaviour.
