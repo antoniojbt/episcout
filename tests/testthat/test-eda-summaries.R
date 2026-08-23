@@ -109,10 +109,51 @@ test_that("numeric summaries use finite values and hand-derived expectations", {
   expect_equal(numeric$iqr, 4.5)
   expect_equal(numeric$variance, 73 / 3)
   expect_equal(numeric$sd, sqrt(73 / 3))
+  expect_equal(numeric$sem, sqrt(73) / 3)
+  expect_equal(numeric$cv, sqrt(219) / 13)
   expect_equal(numeric$lower_fence, -5.25)
   expect_equal(numeric$upper_fence, 12.75)
   expect_equal(numeric$outlier_count, 0L)
   expect_equal(numeric$outlier_percentage, 0)
+})
+
+test_that("all-missing incompatible storage remains a typed numeric summary", {
+  data <- data.frame(value = c("999", NA_character_))
+  spec <- data.frame(
+    name = "value",
+    label = "Value",
+    database_type = "text", analysis_type = "numeric",
+    role = "covariate",
+    missing_codes = "999",
+    stringsAsFactors = FALSE
+  )
+
+  observed <- epi_eda_profile_summaries(data, spec)
+  audit <- observed$variables
+  numeric <- observed$numeric
+
+  expect_identical(audit$n, 2L)
+  expect_identical(audit$n_missing, 2L)
+  expect_identical(audit$n_observed, 0L)
+  expect_identical(audit$n_unique, 0L)
+  expect_identical(audit$n_infinite, 0L)
+  expect_identical(audit$status, "summarised")
+  expect_true(is.na(audit$reason))
+
+  expect_identical(numeric$name, "value")
+  expect_identical(numeric$n_finite, 0L)
+  unavailable <- c(
+    "sum", "min", "q1", "mean", "median", "q3", "max", "iqr", "sd",
+    "variance", "sem", "cv", "skewness", "kurtosis", "shapiro_p",
+    "lower_fence", "upper_fence"
+  )
+  expect_true(all(vapply(numeric[unavailable], is.double, logical(1))))
+  expect_true(all(vapply(numeric[unavailable], is.na, logical(1))))
+  expect_identical(numeric$n_below_lower, 0L)
+  expect_identical(numeric$n_above_upper, 0L)
+  expect_identical(numeric$outlier_count, 0L)
+  expect_true(is.na(numeric$outlier_percentage))
+  expect_identical(nrow(observed$skipped), 0L)
 })
 
 test_that("numeric summaries do not invent zero totals", {
