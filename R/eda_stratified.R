@@ -13,6 +13,11 @@
 #' @param include_missing_stratum Retain standard and declared-sentinel missing
 #'   strata as an explicit group. When false, metadata records omitted rows and
 #'   Overall describes only retained rows.
+#' @param max_levels Optional hard bound for the ordinary stratum domain and
+#'   every categorical or binary declared-plus-observed domain. The default
+#'   `Inf` preserves the released unbounded behaviour. A finite value must be a
+#'   positive whole number below the R integer maximum; excess fails without
+#'   truncation or a partial result.
 #'
 #' @return An `epi_eda_stratified` list with `groups`, `variables`, `numeric`,
 #'   `categorical`, `text`, `temporal`, `skipped`, and `metadata` data frames.
@@ -29,14 +34,17 @@ epi_eda_profile_stratified <- function(data,
                                        spec,
                                        strata,
                                        include_overall = TRUE,
-                                       include_missing_stratum = TRUE) {
+                                       include_missing_stratum = TRUE,
+                                       max_levels = Inf) {
+  max_levels <- stratified_validate_max_levels(max_levels)
   if (inherits(data, "epi_eda_postgres_source")) {
     return(eda_pg_profile_stratified(
       data,
       spec,
       strata,
       include_overall,
-      include_missing_stratum
+      include_missing_stratum,
+      max_levels
     ))
   }
   stratified_validate_data(data)
@@ -75,11 +83,11 @@ epi_eda_profile_stratified <- function(data,
   included <- if (include_missing_stratum) rep(TRUE, nrow(data)) else !strata_missing
   groups <- stratified_groups(
     strata_values, strata_missing, included, strata_row,
-    include_overall, include_missing_stratum
+    include_overall, include_missing_stratum, max_levels
   )
   exclusions <- stratified_exclusions(data, spec)
   universes <- stratified_level_universes(
-    data[included, , drop = FALSE], spec, exclusions
+    data[included, , drop = FALSE], spec, exclusions, max_levels
   )
   components <- lapply(seq_len(nrow(groups)), function(index) {
     mask <- stratified_group_mask(groups[index, , drop = FALSE], strata_values, strata_missing, included)
@@ -130,12 +138,30 @@ stratified_validate_flag <- function(value, name) {
   invisible(TRUE)
 }
 
+stratified_validate_max_levels <- function(max_levels) {
+  numeric_type <- is.integer(max_levels) || is.double(max_levels)
+  valid <- numeric_type && length(max_levels) == 1L &&
+    !is.na(max_levels) && max_levels > 0 &&
+    (is.infinite(max_levels) || (
+      max_levels == floor(max_levels) &&
+        max_levels <= .Machine$integer.max - 2L
+    ))
+  if (!valid) {
+    stop(
+      "max_levels must be Inf or a positive whole number below the R integer maximum.",
+      call. = FALSE
+    )
+  }
+  as.numeric(max_levels)
+}
+
 stratified_groups <- function(values,
                               missing,
                               included,
                               strata_row,
                               include_overall,
-                              include_missing) {
+                              include_missing,
+                              max_levels = Inf) {
   declared <- if ("levels" %in% names(strata_row)) {
     eda_spec_levels(strata_row$levels)
   } else {
@@ -147,6 +173,9 @@ stratified_groups <- function(values,
   }
   unexpected <- sort(setdiff(unique(observed), declared), method = "radix")
   levels <- c(declared, unexpected)
+  if (length(levels) > max_levels) {
+    stop("The stratum domain exceeds max_levels.", call. = FALSE)
+  }
   rows <- list()
   if (include_overall) {
     rows[[length(rows) + 1L]] <- stratified_group_row(
@@ -207,7 +236,10 @@ stratified_group_mask <- function(group, values, missing, included) {
   included & !missing & as.character(values) == group$group_value[[1]]
 }
 
-stratified_level_universes <- function(data, spec, exclusions) {
+stratified_level_universes <- function(data,
+                                       spec,
+                                       exclusions,
+                                       max_levels = Inf) {
   names <- spec$name[
     spec$analysis_type %in% c("categorical", "binary") &
       spec$name %in% names(data) & !spec$name %in% names(exclusions)
@@ -223,6 +255,9 @@ stratified_level_universes <- function(data, spec, exclusions) {
     core <- summary_categorical_core(
       data[[name]], codes, if (length(declared) > 0L) declared else NULL
     )
+    if (nrow(core) > max_levels) {
+      stop("A categorical variable domain exceeds max_levels.", call. = FALSE)
+    }
     out[[name]] <- core
   }
   out

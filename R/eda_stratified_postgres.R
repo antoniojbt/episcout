@@ -2,7 +2,8 @@ eda_pg_profile_stratified <- function(source,
                                       spec,
                                       strata,
                                       include_overall,
-                                      include_missing_stratum) {
+                                      include_missing_stratum,
+                                      max_levels = Inf) {
   spec <- epi_eda_spec(spec)
   stratified_validate_flag(include_overall, "include_overall")
   stratified_validate_flag(
@@ -28,7 +29,8 @@ eda_pg_profile_stratified <- function(source,
       contract$column,
       contract$missing,
       include_overall,
-      include_missing_stratum
+      include_missing_stratum,
+      max_levels = max_levels
     )
   )
 }
@@ -101,7 +103,8 @@ eda_pg_stratified_inside <- function(source,
                                      missing_contract,
                                      include_overall,
                                      include_missing_stratum,
-                                     timing_env = NULL) {
+                                     timing_env = NULL,
+                                     max_levels = Inf) {
   group_profile <- eda_pg_strata_groups(
     source,
     strata_row,
@@ -109,7 +112,8 @@ eda_pg_stratified_inside <- function(source,
     missing_contract,
     include_overall,
     include_missing_stratum,
-    timing_env
+    timing_env,
+    max_levels
   )
   groups <- group_profile$groups
   included_source <- eda_pg_filtered_source(
@@ -121,7 +125,8 @@ eda_pg_stratified_inside <- function(source,
     spec,
     timing_env,
     n_total = group_profile$n_included,
-    allow_value_vectors = FALSE
+    allow_value_vectors = FALSE,
+    max_levels = max_levels
   )
   universes <- eda_pg_stratified_universes(included_summary, spec)
   extras <- setdiff(source$columns$name, spec$name)
@@ -139,7 +144,8 @@ eda_pg_stratified_inside <- function(source,
         spec,
         timing_env,
         n_total = group$n[[1]],
-        allow_value_vectors = FALSE
+        allow_value_vectors = FALSE,
+        max_levels = max_levels
       )
     }
     eda_pg_stratified_component(
@@ -184,12 +190,32 @@ eda_pg_strata_groups <- function(source,
                                  missing_contract,
                                  include_overall,
                                  include_missing,
-                                 timing_env = NULL) {
+                                 timing_env = NULL,
+                                 max_levels = Inf) {
   expression <- eda_postgres_value_expression(
     source,
     column,
     strata_row$analysis_type[[1]]
   )
+  declared <- if ("levels" %in% names(strata_row)) {
+    eda_spec_levels(strata_row$levels)
+  } else {
+    character()
+  }
+  if (length(declared) == 0L &&
+        eda_postgres_storage_family(column) == "boolean") {
+    declared <- c("FALSE", "TRUE")
+  }
+  if (length(declared) > max_levels) {
+    stop("The PostgreSQL stratum domain exceeds max_levels.", call. = FALSE)
+  }
+  bounded <- is.finite(max_levels)
+  fetch_limit <- if (bounded) max_levels + 2 else Inf
+  sql_limit <- if (bounded) {
+    paste0(" LIMIT ", format(fetch_limit, scientific = FALSE, trim = TRUE))
+  } else {
+    ""
+  }
   observed <- eda_db_fetch(
     source$con,
     paste0(
@@ -199,11 +225,11 @@ eda_pg_strata_groups <- function(source,
       "SELECT CASE WHEN missing THEN NULL ELSE value END AS level, ",
       "missing, count(*)::text AS n FROM v ",
       "GROUP BY CASE WHEN missing THEN NULL ELSE value END, missing ",
-      "ORDER BY missing, level"
+      "ORDER BY missing, level", sql_limit
     ),
     params = missing_contract$params,
     query_kind = "stratified_group_counts",
-    limit = Inf,
+    limit = fetch_limit,
     timing_env = timing_env,
     name = column$name[[1]]
   )
@@ -226,22 +252,19 @@ eda_pg_strata_groups <- function(source,
   }
   missing_n <- sum(counts[observed$missing])
   ordinary <- observed[!observed$missing, , drop = FALSE]
+  if (nrow(ordinary) > max_levels) {
+    stop("The PostgreSQL stratum domain exceeds max_levels.", call. = FALSE)
+  }
   ordinary_counts <- counts[!observed$missing]
   names(ordinary_counts) <- as.character(ordinary$level)
-  declared <- if ("levels" %in% names(strata_row)) {
-    eda_spec_levels(strata_row$levels)
-  } else {
-    character()
-  }
-  if (length(declared) == 0L &&
-        eda_postgres_storage_family(column) == "boolean") {
-    declared <- c("FALSE", "TRUE")
-  }
   unexpected <- sort(
     setdiff(names(ordinary_counts), declared),
     method = "radix"
   )
   levels <- c(declared, unexpected)
+  if (length(levels) > max_levels) {
+    stop("The PostgreSQL stratum domain exceeds max_levels.", call. = FALSE)
+  }
   level_counts <- unname(ordinary_counts[levels])
   level_counts[is.na(level_counts)] <- 0L
   n_input <- as.integer(sum(counts))

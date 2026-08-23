@@ -9,7 +9,8 @@ epi_eda_profile_stratified(
   spec,
   strata,
   include_overall = TRUE,
-  include_missing_stratum = TRUE
+  include_missing_stratum = TRUE,
+  max_levels = Inf
 )
 }
 \arguments{
@@ -26,6 +27,12 @@ included analysis population.}
 \item{include_missing_stratum}{Retain standard and declared-sentinel missing
 strata as an explicit group. When false, metadata records omitted rows and
 Overall describes only retained rows.}
+
+\item{max_levels}{Optional hard bound for the ordinary stratum domain and
+every categorical or binary declared-plus-observed domain. The default
+\code{Inf} preserves the released unbounded behaviour. A finite value must be a
+positive whole number below the R integer maximum; excess fails without
+truncation or a partial result.}
 }
 \value{
 An \code{epi_eda_stratified} list with \code{groups}, \code{variables}, \code{numeric},
