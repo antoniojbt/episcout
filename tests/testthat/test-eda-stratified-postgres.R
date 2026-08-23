@@ -238,6 +238,7 @@ test_that("PostgreSQL compared domains bound declared and unexpected unions", {
   ))
   source <- epi_eda_postgres_source(con, fixture$schema, fixture$relation)
   spec <- fixture$spec[fixture$spec$name %in% c("arm", "status"), , drop = FALSE]
+  spec$missing_codes[spec$name == "status"] <- "NA"
   queries <- list()
   original <- getFromNamespace("eda_db_fetch", "episcout")
   testthat::local_mocked_bindings(
