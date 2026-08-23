@@ -8,14 +8,14 @@ episcout provides lower-level helper functions and specification-first workflows
 
 ## Install
 
-Install the published 0.4.1 release from GitHub:
+Install the published 0.5.0 release from GitHub:
 
 ```r
 install.packages("devtools")
-devtools::install_github("AntonioJBT/episcout@0.4.1")
+devtools::install_github("AntonioJBT/episcout@0.5.0")
 ```
 
-The immutable 0.4.1 tag retains `Version: 0.4.0` in its `DESCRIPTION`. Published history is preserved; current `master` uses development version `0.4.1.9000`.
+The immutable 0.4.1 tag retains `Version: 0.4.0` in its `DESCRIPTION`. Published history is preserved; the 0.5.0 tag declares `Version: 0.5.0`.
 
 Install from `master` only when you deliberately need the current development version:
 

@@ -1,6 +1,6 @@
 # episcout News
 
-## 0.4.1.9000
+## 0.5.0
 
 - Added explicit-pair descriptive Spearman profiling for reviewed numeric and integer variables on data-frame and PostgreSQL backends, plus aggregate-count Cramér's V. The PostgreSQL path returns aggregates from one read-only repeatable-read snapshot, and optional finite `max_levels` bounds on stratified categorical domains fail rather than truncate. These interfaces return no inferential tests, thresholds or interpretation, and the historical `epi_stats_corr()` contract remains unchanged.
 - Added truthful supplied-synthetic provenance to `epi_eda_run()` and `epi_eda_render_report()` while preserving legacy `synthetic` generation behaviour, and added `epi_eda_inject_missingness()` for exact seeded, non-overlapping R missing-value and literal-blank injection into neutral fixtures. Caller-declared provenance remains explicitly unverified, and neither synthetic provenance nor fixture integrity establishes privacy or scientific validity.
