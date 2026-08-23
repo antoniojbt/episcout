@@ -334,6 +334,93 @@ test_that("live ordered aggregates match hand-derived population and key evidenc
   }
 })
 
+test_that("live history summaries group entities with the same observed periods", {
+  con <- longitudinal_pg_connection()
+  suffix <- longitudinal_runtime_suffix()
+  schema <- paste0("longitudinal_grouped_history_", suffix)
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0(
+          "DROP SCHEMA IF EXISTS ",
+          longitudinal_quote(con, schema), " CASCADE"
+        ))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
+  DBI::dbExecute(con, paste("CREATE SCHEMA", longitudinal_quote(con, schema)))
+
+  period_labels <- c("P1", "P2", "P3")
+  relations <- paste("period", seq_along(period_labels))
+  entity_values <- paste0(
+    "runtime_grouped_history_entity_", letters[1:4], "_", suffix
+  )
+  memberships <- list(
+    c(1L, 2L, 3L),
+    c(1L, 2L, 4L),
+    c(1L, 2L, 4L)
+  )
+  sources <- stats::setNames(lapply(seq_along(relations), function(index) {
+    longitudinal_create_table(con, schema, relations[[index]])
+    rows <- data.frame(
+      "entity id" = entity_values[memberships[[index]]],
+      "key part" = NA_character_,
+      "key sequence" = NA_integer_,
+      check.names = FALSE,
+      stringsAsFactors = FALSE
+    )
+    DBI::dbAppendTable(
+      con,
+      DBI::Id(schema = schema, table = relations[[index]]),
+      rows
+    )
+    epi_eda_postgres_source(con, schema, relations[[index]])
+  }), period_labels)
+
+  observed <- epi_eda_longitudinal_qc(sources, entity_id = "entity id")
+  history <- observed$history_summary
+
+  expect_identical(
+    names(history),
+    c(
+      "first_period_index", "first_period_label", "last_period_index",
+      "last_period_label", "periods_observed", "gap_periods", "has_gap",
+      "n_entities", "proportion_denominator", "proportion"
+    )
+  )
+  expect_identical(history$first_period_index, c(1L, 1L, 2L))
+  expect_identical(history$first_period_label, c("P1", "P1", "P2"))
+  expect_identical(history$last_period_index, c(1L, 3L, 3L))
+  expect_identical(history$last_period_label, c("P1", "P3", "P3"))
+  expect_identical(history$periods_observed, c(1L, 3L, 2L))
+  expect_identical(history$gap_periods, c(0L, 0L, 0L))
+  expect_identical(history$has_gap, c(FALSE, FALSE, FALSE))
+  expect_identical(history$n_entities, c(1, 2, 1))
+  expect_identical(history$proportion_denominator, c(4, 4, 4))
+  expect_equal(history$proportion, c(1 / 4, 1 / 2, 1 / 4))
+
+  expect_true(all(vapply(history[c(
+    "first_period_index", "last_period_index", "periods_observed", "gap_periods"
+  )], is.integer, logical(1))))
+  expect_type(history$has_gap, "logical")
+  expect_true(all(vapply(history[c(
+    "n_entities", "proportion_denominator", "proportion"
+  )], is.double, logical(1))))
+  expect_identical(sum(history$n_entities), 4)
+  expect_equal(sum(history$proportion), 1)
+  expect_false(getFromNamespace("eda_pg_is_transacting", "episcout")(con))
+  expect_true(DBI::dbIsValid(con))
+
+  result_text <- paste(unlist(observed), collapse = "\n")
+  print_text <- paste(capture.output(print(observed)), collapse = "\n")
+  for (value in entity_values) {
+    expect_false(grepl(value, result_text, fixed = TRUE))
+    expect_false(grepl(value, print_text, fixed = TRUE))
+  }
+})
+
 test_that("live ordering, optional keys, empty periods and source kinds stay explicit", {
   con <- longitudinal_pg_connection()
   fixture <- longitudinal_fixture(con)
