@@ -265,8 +265,11 @@ eda_pg_strata_groups <- function(source,
   if (length(levels) > max_levels) {
     stop("The PostgreSQL stratum domain exceeds max_levels.", call. = FALSE)
   }
-  level_counts <- unname(ordinary_counts[levels])
-  level_counts[is.na(level_counts)] <- 0L
+  level_counts <- eda_pg_align_level_counts(
+    levels,
+    as.character(ordinary$level),
+    ordinary_counts
+  )
   n_input <- as.integer(sum(counts))
   n_included <- as.integer(
     if (include_missing) n_input else n_input - missing_n
