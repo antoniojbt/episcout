@@ -208,6 +208,74 @@ test_that("live PostgreSQL profiles reproduce independently stated aggregate exp
   expect_true(DBI::dbIsValid(con))
 })
 
+test_that("empty categorical values retain parity across PostgreSQL text families", {
+  con <- postgres_eda_connection()
+  schema <- paste0("epi_empty_", Sys.getpid(), "_", sample.int(1000000L, 1L))
+  schema_sql <- as.character(DBI::dbQuoteIdentifier(con, schema))
+  table_sql <- paste0(
+    schema_sql,
+    ".",
+    as.character(DBI::dbQuoteIdentifier(con, "category values"))
+  )
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", schema_sql, " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
+  DBI::dbExecute(con, paste0("CREATE SCHEMA ", schema_sql))
+  DBI::dbExecute(con, paste0(
+    "CREATE TABLE ", table_sql, " (",
+    "category_text text, category_varchar varchar(8), category_bpchar bpchar(1))"
+  ))
+  DBI::dbExecute(con, paste0(
+    "INSERT INTO ", table_sql, " VALUES ",
+    "('', '', ''), ('A', 'A', 'A'), (NULL, NULL, NULL), ('M', 'M', 'M')"
+  ))
+  names <- c("category_text", "category_varchar", "category_bpchar")
+  spec <- data.frame(
+    name = names,
+    label = names,
+    database_type = "text",
+    analysis_type = "categorical",
+    role = "category",
+    levels = "A",
+    missing_codes = "M",
+    required = FALSE,
+    stringsAsFactors = FALSE
+  )
+  frame <- as.data.frame(
+    setNames(rep(list(c("", "A", NA_character_, "M")), 3L), names),
+    stringsAsFactors = FALSE
+  )
+  source <- epi_eda_postgres_source(con, schema, "category values")
+
+  observed <- epi_eda_profile_summaries(source, spec)
+  expected <- epi_eda_profile_summaries(frame, spec)
+
+  expect_identical(observed$categorical, expected$categorical)
+  expect_identical(observed$variables, expected$variables)
+  expect_identical(observed$categorical$level, rep(c("A", ""), 3L))
+  expect_identical(observed$categorical$n, rep(c(1L, 1L), 3L))
+  expect_equal(observed$categorical$p_total, rep(c(0.25, 0.25), 3L))
+  expect_equal(observed$categorical$p_observed, rep(c(0.5, 0.5), 3L))
+
+  observed_stratified <- epi_eda_profile_stratified(
+    source,
+    spec,
+    "category_bpchar"
+  )
+  expected_stratified <- epi_eda_profile_stratified(
+    frame,
+    spec,
+    "category_bpchar"
+  )
+  expect_identical(observed_stratified$groups, expected_stratified$groups)
+})
+
 test_that("PostgreSQL percentile_cont matches independently evaluated R type-7 edges", {
   con <- postgres_eda_connection()
   on.exit(DBI::dbDisconnect(con), add = TRUE)

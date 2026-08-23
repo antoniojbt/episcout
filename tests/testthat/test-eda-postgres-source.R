@@ -65,6 +65,48 @@ test_that("categorical summaries reuse the supplied relation count", {
   )
 })
 
+test_that("categorical summaries retain observed empty-string counts", {
+  categorical_summary <- getFromNamespace(
+    "eda_pg_categorical_summary",
+    "episcout"
+  )
+  observed <- with_mocked_bindings(
+    categorical_summary(
+      list(con = NULL),
+      data.frame(name = "group", stringsAsFactors = FALSE),
+      list(sql = "FALSE", params = list()),
+      data.frame(
+        database_type = "text",
+        analysis_type = "categorical",
+        levels = "A",
+        stringsAsFactors = FALSE
+      ),
+      1L,
+      3L,
+      NULL
+    ),
+    eda_postgres_value_expression = function(...) "value",
+    eda_postgres_table_sql = function(...) "fixture_relation",
+    eda_db_fetch = function(...) {
+      data.frame(
+        level = c("", "A"),
+        n = c("1", "1"),
+        stringsAsFactors = FALSE
+      )
+    },
+    .package = "episcout"
+  )
+
+  expect_identical(observed$data$level, c("A", ""))
+  expect_identical(observed$data$n, c(1L, 1L))
+  expect_equal(observed$data$p_total, c(1 / 3, 1 / 3), tolerance = 1e-12)
+  expect_equal(observed$data$p_observed, c(0.5, 0.5), tolerance = 1e-12)
+  expect_identical(
+    observed$counts,
+    list(n_missing = 1L, n_observed = 2L, n_unique = 2L, n_infinite = 0L)
+  )
+})
+
 test_that("categorical plot companions reuse summaries without a database fetch", {
   plot_data <- getFromNamespace("eda_postgres_plot_data_inside", "episcout")
   spec <- data.frame(

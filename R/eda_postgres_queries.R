@@ -931,8 +931,11 @@ eda_pg_categorical_summary <- function(source,
   if (bounded && length(levels_out) > max_levels) {
     stop("A PostgreSQL categorical period domain exceeds max_levels.", call. = FALSE)
   }
-  level_counts <- unname(counts[levels_out])
-  level_counts[is.na(level_counts)] <- 0L
+  level_counts <- eda_pg_align_level_counts(
+    levels_out,
+    as.character(observed$level),
+    counts
+  )
   n_observed <- sum(level_counts)
   is_declared <- if (has_declared) levels_out %in% declared else rep(NA, length(levels_out))
   data <- data.frame(
@@ -953,6 +956,16 @@ eda_pg_categorical_summary <- function(source,
       n_infinite = 0L
     )
   )
+}
+
+eda_pg_align_level_counts <- function(levels,
+                                      observed_levels,
+                                      observed_counts) {
+  indexes <- match(levels, observed_levels)
+  aligned <- integer(length(levels))
+  present <- !is.na(indexes)
+  aligned[present] <- observed_counts[indexes[present]]
+  aligned
 }
 
 eda_postgres_text_summary <- function(source, column, contract, index, timing_env) {
