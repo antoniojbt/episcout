@@ -276,7 +276,7 @@ test_that("PostgreSQL compared domains bound declared and unexpected unions", {
   expect_gt(length(categorical_queries), 0L)
   expect_true(all(vapply(
     categorical_queries,
-    function(query) identical(query$limit, 5),
+    function(query) identical(query$limit, 5L),
     logical(1)
   )))
   expect_true(all(vapply(

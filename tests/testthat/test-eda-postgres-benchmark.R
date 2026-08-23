@@ -58,7 +58,23 @@ expect_benchmark_bundle <- function(run) {
   expect_equal(run$metadata$n_spec_variables, 8L)
 
   created_plots <- run$plot_inventory$status == "created"
-  expect_equal(sum(created_plots), 9L)
+  expected_plots <- data.frame(
+    name = c(
+      "record_id", "record_id", "measurement", "measurement",
+      "whole_number", "whole_number", "treatment", "flag", "note",
+      "specimen_date", "specimen_time"
+    ),
+    plot_type = c(
+      "histogram", "quantile_box", "histogram", "quantile_box",
+      "histogram", "quantile_box", "frequency", "frequency", "text_length",
+      "temporal", "temporal"
+    ),
+    stringsAsFactors = FALSE
+  )
+  expect_identical(
+    run$plot_inventory[created_plots, c("name", "plot_type")],
+    expected_plots
+  )
   plot_paths <- run$plot_inventory$path[created_plots]
   expect_setequal(run$manifest$path[run$manifest$type == "plot"], plot_paths)
   svg_paths <- file.path(run$output_dir, plot_paths)
