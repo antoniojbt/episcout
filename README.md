@@ -15,7 +15,7 @@ install.packages("devtools")
 devtools::install_github("AntonioJBT/episcout@0.5.0")
 ```
 
-The immutable 0.4.1 tag retains `Version: 0.4.0` in its `DESCRIPTION`. Published history is preserved; the 0.5.0 tag declares `Version: 0.5.0`.
+The immutable 0.4.1 tag retains `Version: 0.4.0` in its `DESCRIPTION`. Published history is preserved; the 0.5.0 tag declares `Version: 0.5.0`, and current `master` uses development version `0.5.0.9000`.
 
 Install from `master` only when you deliberately need the current development version:
 
