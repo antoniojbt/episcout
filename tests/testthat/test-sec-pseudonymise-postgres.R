@@ -2026,22 +2026,34 @@ test_that("identifier preparation, registry migration and assignment import are 
   DBI::dbExecute(connection, paste("CREATE TABLE", import_table, "(source_identifier text, prior_token text)"))
   DBI::dbAppendTable(
     connection, DBI::Id(schema = schemas[["source"]], table = "prior_assignments"),
-    data.frame(source_identifier = c(" old-a ", "old-b"), prior_token = c("LEGACY-A", "LEGACY-B"))
+    data.frame(
+      source_identifier = c(" old-a ", "old-b", "bad!"),
+      prior_token = c("LEGACY-A", "LEGACY-B", "LEGACY-C")
+    )
   )
   imported_audit <- epi_sec_identity_registry_import(
     connection, schemas[["registry"]], schemas[["source"]], "prior_assignments",
-    "source_identifier", "prior_token", "legacy_codes", normalization = "trim", mode = "audit"
+    "source_identifier", "prior_token", "legacy_codes",
+    normalization = "trim_upper", validity_regex = "^OLD-[AB]$",
+    invalid_policy = "retain_and_flag", mode = "audit"
   )
   expect_identical(imported_audit$status, "audit_complete")
   expect_false(imported_audit$writes)
+  expect_equal(imported_audit$counts$n_regex_invalid, 1)
+  expect_true(any(imported_audit$issues$issue_code == "identifier_regex_mismatch"))
   imported <- epi_sec_identity_registry_import(
     connection, schemas[["registry"]], schemas[["source"]], "prior_assignments",
-    "source_identifier", "prior_token", "legacy_codes", normalization = "trim", mode = "apply"
+    "source_identifier", "prior_token", "legacy_codes",
+    normalization = "trim_upper", validity_regex = "^OLD-[AB]$",
+    invalid_policy = "retain_and_flag", mode = "apply"
   )
   expect_identical(imported$status, "complete")
   expect_equal(
     DBI::dbGetQuery(connection, paste("SELECT source_id, entity_token FROM", registry("aliases"), "WHERE identity_namespace = 'legacy_codes' ORDER BY source_id")),
-    data.frame(source_id = c("old-a", "old-b"), entity_token = c("LEGACY-A", "LEGACY-B"))
+    data.frame(
+      source_id = c("BAD!", "OLD-A", "OLD-B"),
+      entity_token = c("LEGACY-C", "LEGACY-A", "LEGACY-B")
+    )
   )
 
   entities <- pg_pseudonym_quote(connection, schemas[["source"]], "entities")
