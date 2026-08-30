@@ -115,7 +115,8 @@ sec_registry_import_audit <- function(con, registry_schema, source_schema, sourc
   id <- sec_quote_identifier(con, identifier_column)
   token <- sec_quote_identifier(con, token_column)
   prepared <- sec_identifier_expression(con, rule, id)
-  regex_invalid <- if (is.na(rule$validity_regex[[1]])) "FALSE" else paste0("NOT (", prepared, " ~ ", sec_quote_literal(con, rule$validity_regex[[1]]), ")")
+  prepared_alias <- sec_quote_identifier(con, "source_id")
+  regex_invalid <- if (is.na(rule$validity_regex[[1]])) "FALSE" else paste0("NOT (", prepared_alias, " ~ ", sec_quote_literal(con, rule$validity_regex[[1]]), ")")
   aliases <- sec_quote_table(con, registry_schema, "aliases")
   counts <- DBI::dbGetQuery(con, paste0(
     "WITH prepared AS (SELECT ", id, "::text COLLATE \"C\" AS raw_id, ", prepared,

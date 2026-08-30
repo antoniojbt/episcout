@@ -1,5 +1,9 @@
 # episcout News
 
+## 0.6.1
+
+- Fixed registry-import audit and apply with a non-null validity regular expression. Regex checks now use the prepared identifier column in the summary scope, preserving value-free diagnostics and transactional import for both fail and retain-and-flag policies.
+
 ## 0.6.0
 
 - Added structured pseudonymisation privilege preflight for source and crosswalk reads, registry DML, database temporary tables, output-schema creation and replacement ownership. Apply repeats the same checks transactionally; inherited owning-role membership is recognised, and Episcout neither grants privileges nor selects roles.
