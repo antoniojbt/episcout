@@ -1,0 +1,45 @@
+name: CURP macOS ARM64 validation
+
+on:
+  pull_request:
+
+permissions: read-all
+
+jobs:
+  curp-macos-arm64:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.5.3'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          needs: check
+
+      - name: Install package
+        run: R CMD INSTALL --no-multiarch --with-keep.source .
+
+      - name: Validate warning-free fresh process
+        run: |
+          reference_date <- as.Date("2000-01-01")
+          warnings <- character()
+          audit <- withCallingHandlers(
+            episcout::epi_clean_curp_audit(
+              "XEXX000101MASXXXA0",
+              birth_date = reference_date
+            ),
+            warning = function(condition) {
+              warnings <<- c(warnings, conditionMessage(condition))
+              invokeRestart("muffleWarning")
+            }
+          )
+          stopifnot(
+            length(warnings) == 0L,
+            identical(audit$records$status, "valid"),
+            identical(audit$comparison$birth_date, "match")
+          )
+        shell: Rscript --vanilla {0}
