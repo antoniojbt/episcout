@@ -14,7 +14,7 @@ universe_legacy_source_columns <- function() {
 #' Create a deterministic, value-free contract for an exact identifier-universe operation across at least two PostgreSQL tables. The specification names relations and identifier columns but never contains identifier values.
 #'
 #' @param sources A data frame or CSV path with exactly `source_schema`, `source_table`, `id_column`, `identity_namespace` and `provenance`.
-#' @param normalization Identifier normalisation rule. Version 2 supports only exact `"identity"` normalisation.
+#' @param normalization Identifier normalisation rule: exact `"identity"`, `"trim"` or `"trim_upper"`.
 #' @param validity_regex `NULL` or one non-empty PostgreSQL regular expression applied to the textual representation of each non-null, non-blank identifier.
 #'
 #' @return An `epi_sec_identity_universe_spec` list containing normalised `sources`, `normalization`, `validity_regex`, `contract_version` and `fingerprint_sha256`. It contains metadata only.
@@ -65,8 +65,8 @@ epi_sec_identity_universe_spec <- function(sources,
     stop("sources must declare exactly one shared identity_namespace in version 2.", call. = FALSE)
   }
   if (!is.character(normalization) || length(normalization) != 1L ||
-        is.na(normalization) || normalization != "identity") {
-    stop("normalization must be 'identity' in version 2.", call. = FALSE)
+        is.na(normalization) || !(normalization %in% c("identity", "trim", "trim_upper"))) {
+    stop("normalization must be identity, trim or trim_upper.", call. = FALSE)
   }
   if (!is.null(validity_regex) &&
         (!is.character(validity_regex) || length(validity_regex) != 1L ||
@@ -330,32 +330,37 @@ universe_context <- function(con, spec) {
   list(spec = spec, family = families[[1]], valid_union = universe_union_sql(con, spec))
 }
 
-universe_source_predicates <- function(con, source, validity_regex) {
+universe_source_predicates <- function(con, source, validity_regex, normalization = "identity") {
   id <- sec_quote_identifier(con, source$id_column)
+  prepared <- sec_identifier_expression(
+    con,
+    data.frame(normalization = normalization, stringsAsFactors = FALSE),
+    id
+  )
   non_null <- paste0(id, " IS NOT NULL")
-  non_blank <- paste0("btrim(", id, "::text) <> ''")
+  non_blank <- paste0("btrim(", prepared, ") <> ''")
   valid <- paste(non_null, non_blank, sep = " AND ")
   if (!is.null(validity_regex)) {
     valid <- paste0(
-      valid, " AND (", id, "::text ~ ",
+      valid, " AND (", prepared, " ~ ",
       sec_quote_literal(con, validity_regex), ")"
     )
   }
-  list(id = id, non_null = non_null, non_blank = non_blank, valid = valid)
+  list(id = id, prepared = prepared, non_null = non_null, non_blank = non_blank, valid = valid)
 }
 
 universe_union_sql <- function(con, spec) {
   paste(vapply(seq_len(nrow(spec$sources)), function(index) {
     source <- spec$sources[index, , drop = FALSE]
     predicates <- universe_source_predicates(
-      con, source, spec$validity_regex
+      con, source, spec$validity_regex, spec$normalization
     )
     paste0(
       "SELECT ", index, "::integer AS source_index, ",
       sec_quote_literal(con, source$identity_namespace),
       "::text AS identity_namespace, (", predicates$id,
-      "::text COLLATE \"C\") AS raw_identifier, (", predicates$id,
-      "::text COLLATE \"C\") AS canonical_identifier FROM ",
+      "::text COLLATE \"C\") AS raw_identifier, ", predicates$prepared,
+      " AS canonical_identifier FROM ",
       sec_quote_table(con, source$source_schema, source$source_table),
       " WHERE ", predicates$valid
     )
@@ -366,14 +371,14 @@ universe_source_audit <- function(con, spec) {
   rows <- lapply(seq_len(nrow(spec$sources)), function(index) {
     source <- spec$sources[index, , drop = FALSE]
     predicates <- universe_source_predicates(
-      con, source, spec$validity_regex
+      con, source, spec$validity_regex, spec$normalization
     )
     invalid <- if (is.null(spec$validity_regex)) {
       "FALSE"
     } else {
       paste0(
         predicates$non_null, " AND ", predicates$non_blank,
-        " AND NOT (", predicates$id, "::text ~ ",
+        " AND NOT (", predicates$prepared, " ~ ",
         sec_quote_literal(con, spec$validity_regex), ")"
       )
     }

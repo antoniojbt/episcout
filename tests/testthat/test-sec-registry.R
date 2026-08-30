@@ -6,7 +6,7 @@ context("identity-registry technical contract")
 registry_metadata_fixture <- function() {
   data.frame(
     registry_id = "registry-fixture",
-    registry_version = 1L,
+    registry_version = 2L,
     token_prefix = "E",
     n_bytes = 24L,
     created_at = as.POSIXct("2026-01-01", tz = "UTC"),
@@ -64,7 +64,7 @@ test_that("registry inspection classifies structure without ownership or grants"
       },
       .package = "DBI"
     ),
-    sec_registry_structure_ok = function(con, schema) TRUE,
+    sec_registry_structure_ok = function(con, schema, version) TRUE,
     sec_quote_table = function(con, schema, table) {
       paste0('"', schema, '"."', table, '"')
     },

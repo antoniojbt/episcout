@@ -93,7 +93,15 @@ test_that("identity-universe specification requires compatible technical metadat
 
   expect_error(
     epi_sec_identity_universe_spec(sources, normalization = "lowercase"),
-    "must be 'identity'"
+    "identity, trim or trim_upper"
+  )
+  expect_identical(
+    epi_sec_identity_universe_spec(sources, normalization = "trim")$normalization,
+    "trim"
+  )
+  expect_identical(
+    epi_sec_identity_universe_spec(sources, normalization = "trim_upper")$normalization,
+    "trim_upper"
   )
   expect_error(
     epi_sec_identity_universe_spec(sources, validity_regex = ""),
