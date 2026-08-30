@@ -222,14 +222,25 @@ if ! gh auth status >/dev/null 2>&1; then
   exit 2
 fi
 
-upstream_url="$(git -C "$repo_root" remote get-url upstream 2>/dev/null)"
-if [[ -z $upstream_url ]]; then
-  echo "Canonical upstream remote is unavailable." >&2
+canonical_remote="origin"
+canonical_url="$(git -C "$repo_root" remote get-url "$canonical_remote" 2>/dev/null)"
+if [[ -z $canonical_url ]]; then
+  echo "Canonical origin remote is unavailable." >&2
   exit 2
 fi
 
-repository="$(gh repo view "$upstream_url" --json nameWithOwner --jq .nameWithOwner 2>/dev/null)"
-default_branch="$(gh repo view "$upstream_url" --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null)"
+origin_is_fork="$(gh repo view "$canonical_url" --json isFork --jq .isFork 2>/dev/null)"
+if [[ $origin_is_fork == "true" ]]; then
+  canonical_remote="upstream"
+  canonical_url="$(git -C "$repo_root" remote get-url "$canonical_remote" 2>/dev/null)"
+  if [[ -z $canonical_url ]]; then
+    echo "A fork origin requires a canonical upstream remote." >&2
+    exit 2
+  fi
+fi
+
+repository="$(gh repo view "$canonical_url" --json nameWithOwner --jq .nameWithOwner 2>/dev/null)"
+default_branch="$(gh repo view "$canonical_url" --json defaultBranchRef --jq .defaultBranchRef.name 2>/dev/null)"
 if [[ -z $repository || -z $default_branch ]]; then
   echo "Unable to resolve the canonical GitHub repository and default branch." >&2
   exit 2
@@ -243,7 +254,7 @@ if [[ -n $roadmap_issue ]]; then
   fi
 fi
 
-default_ref="refs/remotes/upstream/${default_branch}"
+default_ref="refs/remotes/${canonical_remote}/${default_branch}"
 if ! git -C "$repo_root" show-ref --verify --quiet "$default_ref"; then
   echo "Canonical remote-tracking ref is unavailable: ${default_ref}" >&2
   exit 2
