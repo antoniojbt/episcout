@@ -132,7 +132,6 @@ epi_eda_db_run <- function(source,
     {
       n_total <- eda_postgres_row_count(source, timing_env)
       schema <- eda_postgres_schema_inside(source, spec, timing_env)
-      missing <- eda_postgres_missing_inside(source, spec, timing_env, n_total)
       geo <- eda_postgres_geo_inside(source, spec, timing_env)
       map_data <- eda_postgres_map_data_inside(
         source, spec, geo, map_options, timing_env, n_total
@@ -143,6 +142,9 @@ epi_eda_db_run <- function(source,
         timing_env,
         n_total,
         allow_value_vectors = is.null(stratified_options)
+      )
+      missing <- eda_pg_missing_from_summaries(
+        source, spec, summaries, n_total
       )
       identifier_qa <- eda_pg_identifier_qa_inside(source, spec, timing_env, n_total)
       plot_data <- eda_postgres_plot_data_inside(
