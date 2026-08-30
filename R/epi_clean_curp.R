@@ -278,7 +278,11 @@ epi_clean_curp_audit <- function(curp,
       future_date
   )
   valid <- !missing & !invalid
-  status <- ifelse(missing, "missing", ifelse(valid, "valid", "invalid"))
+  status <- as.character(ifelse(
+    missing,
+    "missing",
+    ifelse(valid, "valid", "invalid")
+  ))
 
   record_date <- derived_date
   record_date[!valid] <- as.Date(NA_character_)
@@ -286,15 +290,23 @@ epi_clean_curp_audit <- function(curp,
     input_index = seq_len(n),
     status = status,
     birth_date = record_date,
-    sex_code = ifelse(valid, segment(11L), NA_character_),
-    birthplace_code = ifelse(valid, segment(12L, 13L), NA_character_),
-    initials = ifelse(valid, segment(1L, 4L), NA_character_),
-    century_marker_class = ifelse(
+    sex_code = as.character(ifelse(valid, segment(11L), NA_character_)),
+    birthplace_code = as.character(ifelse(
+      valid,
+      segment(12L, 13L),
+      NA_character_
+    )),
+    initials = as.character(ifelse(valid, segment(1L, 4L), NA_character_)),
+    century_marker_class = as.character(ifelse(
       valid,
       ifelse(grepl("^[0-9]$", marker), "1900-1999", "2000-2099"),
       NA_character_
-    ),
-    checksum_status = ifelse(valid, "not_verified", NA_character_)
+    )),
+    checksum_status = as.character(ifelse(
+      valid,
+      "not_verified",
+      NA_character_
+    ))
   )
 
   date_reference <- .curp_reference(
