@@ -1916,3 +1916,94 @@ test_that("live PostgreSQL identifier families preserve exact declared identity"
     expect_identical(observed, output[[table]])
   }
 })
+
+test_that("identifier preparation, registry migration and assignment import are atomic", {
+  skip_if_not(identical(Sys.getenv("EPISCOUT_TEST_POSTGRES", unset = ""), "1"))
+  skip_if_not_installed("RPostgres")
+  connection <- pg_pseudonym_connection()
+  suffix <- pg_pseudonym_suffix()
+  schemas <- c(
+    source = pg_pseudonym_schema("source_data", suffix),
+    registry = pg_pseudonym_schema("identity_registry", suffix),
+    output = pg_pseudonym_schema("analysis_data", suffix)
+  )
+  on.exit({
+    for (schema in rev(unname(schemas))) {
+      try(DBI::dbExecute(connection, paste("DROP SCHEMA IF EXISTS", pg_pseudonym_quote(connection, schema), "CASCADE")), silent = TRUE)
+    }
+    if (DBI::dbIsValid(connection)) DBI::dbDisconnect(connection)
+  }, add = TRUE)
+  for (schema in schemas) DBI::dbExecute(connection, paste("CREATE SCHEMA", pg_pseudonym_quote(connection, schema)))
+
+  registry <- function(table) pg_pseudonym_quote(connection, schemas[["registry"]], table)
+  expect_identical(epi_sec_identity_registry_init(connection, schemas[["registry"]], mode = "apply")$status, "ready")
+  DBI::dbExecute(connection, paste("ALTER TABLE", registry("namespaces"), "DROP COLUMN preparation_hash, DROP COLUMN validity_regex, DROP COLUMN normalization"))
+  DBI::dbExecute(connection, paste("UPDATE", registry("registry_metadata"), "SET registry_version = 1"))
+  expect_identical(epi_sec_identity_registry_init(connection, schemas[["registry"]], mode = "audit")$status, "migration_required")
+  migrated <- epi_sec_identity_registry_init(connection, schemas[["registry"]], mode = "apply")
+  expect_identical(migrated$status, "ready")
+  expect_true(migrated$writes)
+  expect_equal(migrated$metadata$registry_version, 2L)
+
+  import_table <- pg_pseudonym_quote(connection, schemas[["source"]], "prior_assignments")
+  DBI::dbExecute(connection, paste("CREATE TABLE", import_table, "(source_identifier text, prior_token text)"))
+  DBI::dbAppendTable(
+    connection, DBI::Id(schema = schemas[["source"]], table = "prior_assignments"),
+    data.frame(source_identifier = c(" old-a ", "old-b"), prior_token = c("LEGACY-A", "LEGACY-B"))
+  )
+  imported_audit <- epi_sec_identity_registry_import(
+    connection, schemas[["registry"]], schemas[["source"]], "prior_assignments",
+    "source_identifier", "prior_token", "legacy_codes", normalization = "trim", mode = "audit"
+  )
+  expect_identical(imported_audit$status, "audit_complete")
+  expect_false(imported_audit$writes)
+  imported <- epi_sec_identity_registry_import(
+    connection, schemas[["registry"]], schemas[["source"]], "prior_assignments",
+    "source_identifier", "prior_token", "legacy_codes", normalization = "trim", mode = "apply"
+  )
+  expect_identical(imported$status, "complete")
+  expect_equal(
+    DBI::dbGetQuery(connection, paste("SELECT source_id, entity_token FROM", registry("aliases"), "WHERE identity_namespace = 'legacy_codes' ORDER BY source_id")),
+    data.frame(source_id = c("old-a", "old-b"), entity_token = c("LEGACY-A", "LEGACY-B"))
+  )
+
+  entities <- pg_pseudonym_quote(connection, schemas[["source"]], "entities")
+  events <- pg_pseudonym_quote(connection, schemas[["source"]], "events")
+  DBI::dbExecute(connection, paste("CREATE TABLE", entities, "(person_id text NOT NULL, payload text NOT NULL)"))
+  DBI::dbExecute(connection, paste("CREATE TABLE", events, "(person_id text NOT NULL, payload text NOT NULL)"))
+  DBI::dbAppendTable(connection, DBI::Id(schema = schemas[["source"]], table = "entities"), data.frame(person_id = c(" a1 ", " bad "), payload = c("one", "two")))
+  DBI::dbAppendTable(connection, DBI::Id(schema = schemas[["source"]], table = "events"), data.frame(person_id = c("A1", "BAD"), payload = c("event-one", "event-two")))
+  dictionary <- pg_family_dictionary(connection, schemas[["source"]], c("entities", "events"), c("person_id", "person_id"))
+  linkage <- epi_sec_linkage_spec(
+    data.frame(
+      source_schema = schemas[["source"]], source_table = c("entities", "events"),
+      id_column = "person_id", identity_namespace = "prepared_people",
+      can_enrol = c(TRUE, FALSE), one_row_per_entity = TRUE,
+      destination_table = c("entities_safe", "events_safe"), provenance = "synthetic",
+      stringsAsFactors = FALSE
+    ),
+    pg_pseudonym_columns(dictionary, "person_id"),
+    data.frame(source_schema = character(), source_table = character(), key_column = character(), key_order = integer()),
+    data.frame(crosswalk_schema = character(), crosswalk_table = character(), alias_namespace = character(), alias_id_column = character(), canonical_namespace = character(), canonical_id_column = character(), provenance = character())
+  )
+  rules <- epi_sec_identifier_spec(linkage)$rules
+  rules$normalization <- "trim_upper"
+  rules$validity_regex <- "^[A-Z][0-9]$"
+  rules$invalid_policy <- "retain_and_flag"
+  rules$validity_column <- "identifier_valid"
+  identifiers <- epi_sec_identifier_spec(linkage, rules)
+  audit <- epi_sec_pseudonymise_db(
+    connection, dictionary, linkage, schemas[["registry"]], schemas[["output"]],
+    identifiers = identifiers, mode = "audit"
+  )
+  expect_identical(audit$status, "audit_complete")
+  expect_false(any(audit$issues$severity == "error"))
+  expect_true(any(audit$issues$issue_code == "identifier_regex_mismatch"))
+  applied <- epi_sec_pseudonymise_db(
+    connection, dictionary, linkage, schemas[["registry"]], schemas[["output"]],
+    identifiers = identifiers, mode = "apply"
+  )
+  expect_identical(applied$status, "complete")
+  safe <- DBI::dbGetQuery(connection, paste("SELECT identifier_valid FROM", pg_pseudonym_quote(connection, schemas[["output"]], "entities_safe"), "ORDER BY payload"))
+  expect_identical(safe$identifier_valid, c(TRUE, FALSE))
+})

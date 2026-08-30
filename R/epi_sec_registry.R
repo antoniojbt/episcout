@@ -6,16 +6,16 @@
 #' @param registry_schema A single existing PostgreSQL schema for the identity registry.
 #' @param token_prefix A non-empty prefix for generated entity tokens.
 #' @param n_bytes Number of cryptographically random bytes per token; at least 16.
-#' @param mode Either `"audit"` to inspect without writing or `"apply"` to create the registry tables transactionally.
+#' @param mode Either `"audit"` to inspect without writing or `"apply"` to create or migrate the registry transactionally.
 #'
-#' @return An `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `incompatible` when existing objects do not have the expected structure or version, `initialisation_required` when audit finds no registry objects and `ready` when a compatible registry exists or has been created.
+#' @return An `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `incompatible` when existing objects do not have an accepted structure, `migration_required` for a structurally valid version-1 registry in audit mode, `initialisation_required` when audit finds no registry objects and `ready` when a version-2 registry exists or has been created or migrated.
 #'
-#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` in one transaction using the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges. Audit reports structurally incompatible existing objects as `incompatible`; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
+#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables`, or migrates a complete version-1 registry to version 2, in one transaction using configured PostgreSQL permissions. Migration classifies existing namespaces as exact `identity` preparation and preserves assignments. The function does not query or change privileges. Audit reports structurally incompatible objects as `incompatible`; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
 #'
 #' The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data are not anonymous or automatically disclosure-controlled. See `vignette("longitudinal-pseudonymisation")` for the technical workflow and recovery behaviour.
 #'
 #' @export
-#' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_pseudonymise_db()], [epi_db_inventory()]
+#' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_identity_registry_import()], [epi_sec_pseudonymise_db()], [epi_db_inventory()]
 #' @family longitudinal pseudonymisation
 epi_sec_identity_registry_init <- function(con,
                                            registry_schema,
@@ -45,6 +45,31 @@ epi_sec_identity_registry_init <- function(con,
           metadata = observed$metadata,
           objects = observed$objects,
           next_action = "Use the registry with epi_sec_pseudonymise_db()."
+        ))
+      }
+      if (observed$state == "migration_required") {
+        if (mode == "audit") {
+          return(sec_registry_result(
+            status = "migration_required", mode = mode, writes = FALSE,
+            registry_schema = registry_schema, metadata = observed$metadata,
+            objects = observed$objects,
+            next_action = "Rerun with mode = 'apply' to migrate this version-1 registry transactionally."
+          ))
+        }
+        DBI::dbWithTransaction(con, {
+          DBI::dbExecute(con, "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+          inside <- sec_registry_inspect(con, registry_schema)
+          if (inside$state != "migration_required") {
+            stop("registry_schema changed during migration; the transaction was rolled back.", call. = FALSE)
+          }
+          sec_registry_migrate_v1(con, registry_schema)
+        })
+        migrated <- sec_registry_inspect(con, registry_schema)
+        return(sec_registry_result(
+          status = "ready", mode = mode, writes = TRUE,
+          registry_schema = registry_schema, metadata = migrated$metadata,
+          objects = migrated$objects,
+          next_action = "Use the migrated registry with a compatible identifier specification."
         ))
       }
       if (observed$state == "incompatible") {
@@ -115,7 +140,7 @@ sec_registry_tables <- function() {
   c("registry_metadata", "namespaces", "entities", "aliases", "runs", "run_tables")
 }
 
-sec_registry_version <- function() 1L
+sec_registry_version <- function() 2L
 
 sec_registry_inspect <- function(con, schema) {
   relations <- DBI::dbGetQuery(
@@ -142,24 +167,30 @@ sec_registry_inspect <- function(con, schema) {
   if (!setequal(found, sec_registry_tables()) || !all(ordinary)) {
     return(list(state = "incompatible", metadata = sec_empty_registry_metadata(), objects = objects))
   }
-  if (!sec_registry_structure_ok(con, schema)) {
-    objects$status <- "incompatible_structure"
-    return(list(state = "incompatible", metadata = sec_empty_registry_metadata(), objects = objects))
-  }
   metadata <- DBI::dbGetQuery(
     con,
     paste("SELECT registry_id, registry_version, token_prefix, n_bytes, created_at FROM", sec_quote_table(con, schema, "registry_metadata"))
   )
-  if (nrow(metadata) != 1L || !identical(as.integer(metadata$registry_version[[1]]), sec_registry_version())) {
+  version <- if (nrow(metadata) == 1L) as.integer(metadata$registry_version[[1]]) else NA_integer_
+  if (is.na(version) || !(version %in% c(1L, sec_registry_version())) ||
+        !sec_registry_structure_ok(con, schema, version)) {
+    objects$status <- "incompatible_structure"
     return(list(state = "incompatible", metadata = sec_empty_registry_metadata(), objects = objects))
+  }
+  if (version == 1L) {
+    return(list(state = "migration_required", metadata = metadata, objects = objects))
   }
   list(state = "compatible", metadata = metadata, objects = objects)
 }
 
-sec_registry_structure_ok <- function(con, schema) {
+sec_registry_structure_ok <- function(con, schema, version = sec_registry_version()) {
   expected_columns <- list(
     registry_metadata = c("registry_id:text:NO", "registry_version:int4:NO", "token_prefix:text:NO", "n_bytes:int4:NO", "created_at:timestamptz:NO"),
-    namespaces = c("identity_namespace:text:NO", "type_family:text:NO", "created_at:timestamptz:NO"),
+    namespaces = if (version == 1L) {
+      c("identity_namespace:text:NO", "type_family:text:NO", "created_at:timestamptz:NO")
+    } else {
+      c("identity_namespace:text:NO", "type_family:text:NO", "created_at:timestamptz:NO", "normalization:text:NO", "validity_regex:text:YES", "preparation_hash:text:NO")
+    },
     entities = c("entity_token:text:NO", "created_at:timestamptz:NO"),
     aliases = c("identity_namespace:text:NO", "source_id:text:NO", "entity_token:text:NO", "created_at:timestamptz:NO"),
     runs = c("run_id:text:NO", "completed_at:timestamptz:NO", "configuration_hash:text:NO", "exact_duplicates:text:NO", "status:text:NO"),
@@ -204,7 +235,8 @@ sec_registry_structure_ok <- function(con, schema) {
     ),
     namespaces = c(
       "^PRIMARY KEY \\(identity_namespace\\)$",
-      "^CHECK \\(\\(type_family = ANY \\(ARRAY\\['text'::text, 'integer'::text, 'uuid'::text\\]\\)\\)\\)$"
+      "^CHECK \\(\\(type_family = ANY \\(ARRAY\\['text'::text, 'integer'::text, 'uuid'::text\\]\\)\\)\\)$",
+      if (version == sec_registry_version()) "^CHECK \\(\\(normalization = ANY \\(ARRAY\\['identity'::text, 'trim'::text, 'trim_upper'::text\\]\\)\\)\\)$" else NULL
     ),
     entities = "^PRIMARY KEY \\(entity_token\\)$",
     aliases = c(
@@ -242,6 +274,9 @@ sec_registry_structure_ok <- function(con, schema) {
     "registry_metadata:created_at:CURRENT_TIMESTAMP",
     "runs:completed_at:CURRENT_TIMESTAMP"
   )
+  if (version == sec_registry_version()) {
+    expected_defaults <- c(expected_defaults, "namespaces:normalization:'identity'::text")
+  }
   if (!setequal(observed_defaults, expected_defaults)) {
     return(FALSE)
   }
@@ -259,7 +294,9 @@ sec_registry_create <- function(con, schema, token_prefix, n_bytes) {
   DBI::dbExecute(con, paste0(
     "CREATE TABLE ", table_name("namespaces"), " (",
     "identity_namespace text COLLATE \"C\" PRIMARY KEY, type_family text NOT NULL ",
-    "CHECK (type_family IN ('text', 'integer', 'uuid')), created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP)"
+    "CHECK (type_family IN ('text', 'integer', 'uuid')), created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, ",
+    "normalization text NOT NULL DEFAULT 'identity' CHECK (normalization IN ('identity', 'trim', 'trim_upper')), ",
+    "validity_regex text, preparation_hash text NOT NULL)"
   ))
   DBI::dbExecute(con, paste0(
     "CREATE TABLE ", table_name("entities"), " (",
@@ -289,6 +326,22 @@ sec_registry_create <- function(con, schema, token_prefix, n_bytes) {
     con,
     paste("INSERT INTO", table_name("registry_metadata"), "(registry_id, registry_version, token_prefix, n_bytes) VALUES ($1, $2, $3, $4)"),
     params = list(registry_id, sec_registry_version(), token_prefix, n_bytes)
+  )
+  invisible(TRUE)
+}
+
+sec_registry_migrate_v1 <- function(con, schema) {
+  namespaces <- sec_quote_table(con, schema, "namespaces")
+  DBI::dbExecute(con, paste("ALTER TABLE", namespaces, "ADD COLUMN normalization text NOT NULL DEFAULT 'identity' CHECK (normalization IN ('identity', 'trim', 'trim_upper'))"))
+  DBI::dbExecute(con, paste("ALTER TABLE", namespaces, "ADD COLUMN validity_regex text"))
+  DBI::dbExecute(con, paste("ALTER TABLE", namespaces, "ADD COLUMN preparation_hash text"))
+  legacy_hash <- eda_postgres_fingerprint(list(normalization = "identity", validity_regex = NA_character_))
+  DBI::dbExecute(con, paste("UPDATE", namespaces, "SET preparation_hash = $1"), params = list(legacy_hash))
+  DBI::dbExecute(con, paste("ALTER TABLE", namespaces, "ALTER COLUMN preparation_hash SET NOT NULL"))
+  DBI::dbExecute(
+    con,
+    paste("UPDATE", sec_quote_table(con, schema, "registry_metadata"), "SET registry_version = $1"),
+    params = list(sec_registry_version())
   )
   invisible(TRUE)
 }

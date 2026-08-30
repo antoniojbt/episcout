@@ -21,25 +21,27 @@ epi_sec_identity_registry_init(
 
 \item{n_bytes}{Number of cryptographically random bytes per token; at least 16.}
 
-\item{mode}{Either \code{"audit"} to inspect without writing or \code{"apply"} to create the registry tables transactionally.}
+\item{mode}{Either \code{"audit"} to inspect without writing or \code{"apply"} to create or migrate the registry transactionally.}
 }
 \value{
-An \code{epi_sec_registry_result} with scalar \code{status}, \code{mode}, \code{writes}, \code{registry_schema} and \code{next_action}; \code{metadata} columns \code{registry_id}, \code{registry_version}, \code{token_prefix}, \code{n_bytes}, \code{created_at}; and \code{objects} columns \code{object}, \code{status}. Status is \code{incompatible} when existing objects do not have the expected structure or version, \code{initialisation_required} when audit finds no registry objects and \code{ready} when a compatible registry exists or has been created.
+An \code{epi_sec_registry_result} with scalar \code{status}, \code{mode}, \code{writes}, \code{registry_schema} and \code{next_action}; \code{metadata} columns \code{registry_id}, \code{registry_version}, \code{token_prefix}, \code{n_bytes}, \code{created_at}; and \code{objects} columns \code{object}, \code{status}. Status is \code{incompatible} when existing objects do not have an accepted structure, \code{migration_required} for a structurally valid version-1 registry in audit mode, \code{initialisation_required} when audit finds no registry objects and \code{ready} when a version-2 registry exists or has been created or migrated.
 }
 \description{
 Audit or create the tables used to assign pseudonym tokens across related PostgreSQL tables. Assignments remain stable when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability. The registry schema must already exist.
 }
 \details{
-Audit mode is the default and never writes. Apply creates \code{registry_metadata}, \code{namespaces}, \code{entities}, \code{aliases}, \code{runs} and \code{run_tables} in one transaction using the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges. Audit reports structurally incompatible existing objects as \code{incompatible}; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
+Audit mode is the default and never writes. Apply creates \code{registry_metadata}, \code{namespaces}, \code{entities}, \code{aliases}, \code{runs} and \code{run_tables}, or migrates a complete version-1 registry to version 2, in one transaction using configured PostgreSQL permissions. Migration classifies existing namespaces as exact \code{identity} preparation and preserves assignments. The function does not query or change privileges. Audit reports structurally incompatible objects as \code{incompatible}; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
 
 The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data are not anonymous or automatically disclosure-controlled. See \code{vignette("longitudinal-pseudonymisation")} for the technical workflow and recovery behaviour.
 }
 \seealso{
-\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_db_inventory]{epi_db_inventory()}}
+\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_import]{epi_sec_identity_registry_import()}}, \code{\link[=epi_sec_pseudonymise_db]{epi_sec_pseudonymise_db()}}, \code{\link[=epi_db_inventory]{epi_db_inventory()}}
 
 Other longitudinal pseudonymisation:
 \code{\link[=epi_sec_alias_db]{epi_sec_alias_db()}},
 \code{\link[=epi_sec_alias_spec]{epi_sec_alias_spec()}},
+\code{\link[=epi_sec_identifier_spec]{epi_sec_identifier_spec()}},
+\code{\link[=epi_sec_identity_registry_import]{epi_sec_identity_registry_import()}},
 \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}},

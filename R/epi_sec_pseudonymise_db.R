@@ -17,6 +17,7 @@
 #' @param sensitive_issues Deprecated compatibility alias for `include_issue_values`. `NULL` leaves the new argument unchanged; an explicit logical value warns and cannot conflict with an explicitly supplied new value.
 #' @param lock_timeout Maximum seconds to wait for transaction-scoped PostgreSQL locks.
 #' @param include_issue_values Logical; return identifier values for `invalid_identifier` and `unmatched_identifier` findings in an ordinary `issue_values` data frame. Other value families are not collected.
+#' @param identifiers Optional identifier-preparation contract returned by [epi_sec_identifier_spec()]. `NULL` preserves exact released matching.
 #'
 #' @return An `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `output_type`. When `include_issue_values = TRUE`, ordinary `issue_values` columns are `issue_code`, source relation/column metadata and `source_value`. Status is `audit_complete`, `not_written` or `complete`.
 #'
@@ -30,14 +31,14 @@
 #'
 #' The semantic dictionary must completely and currently cover every declared source table. The linkage `columns` component requires exactly the declared ID column to use `output_action = "pseudonymise"`; pseudonymised and dropped columns are excluded, while `retain` columns form the output. The generated token is semantic identifier metadata. `output_dictionary` and `output_catalogues` can pass directly to [epi_eda_dictionary_spec()].
 #'
-#' Identifier families are PostgreSQL `text`/`varchar`, integral types and `uuid`. Fixed-width character identifiers and nondeterministic text collations are rejected. Text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons; UUIDs follow PostgreSQL UUID identity. Matching never trims, case-folds, hashes or infers identity.
+#' Identifier families are PostgreSQL `text`/`varchar`, integral types and `uuid`. Fixed-width character identifiers and nondeterministic text collations are rejected. With `identifiers = NULL`, text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons and UUIDs follow PostgreSQL UUID identity. An explicit identifier contract may trim or uppercase prepared identifiers; it detects preparation collisions before writes and never hashes or infers identity.
 #'
 #' Exact projected duplicates are retained under `exact_duplicates = "report"` and explicitly removed under `"drop"`. Equal declared record keys with different retained payloads produce an error-severity issue; no conflicting observation is selected, aggregated or overwritten. With no record key, only exact projected duplicates can be assessed.
 #'
 #' Pseudonymisation is reversible through the registry and is not anonymisation or automatic disclosure control. episcout does not decide whether an output may be used or disclosed and does not control PostgreSQL, driver, backup, administrator or server logging. See `vignette("longitudinal-pseudonymisation")` for the complete technical workflow and recovery guidance.
 #'
 #' @export
-#' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_identity_registry_init()], [epi_eda_dictionary_spec()]
+#' @seealso [epi_sec_linkage_scaffold()], [epi_sec_linkage_spec()], [epi_sec_identifier_spec()], [epi_sec_identity_registry_init()], [epi_sec_identity_registry_import()], [epi_eda_dictionary_spec()]
 #' @family longitudinal pseudonymisation
 epi_sec_pseudonymise_db <- function(con,
                                     dictionary,
@@ -51,7 +52,8 @@ epi_sec_pseudonymise_db <- function(con,
                                     existing = c("error", "replace"),
                                     sensitive_issues = NULL,
                                     lock_timeout = 30,
-                                    include_issue_values = FALSE) {
+                                    include_issue_values = FALSE,
+                                    identifiers = NULL) {
   include_issue_values_supplied <- !missing(include_issue_values)
   diagnostics <- sec_diagnostic_options(
     sensitive_issues,
@@ -90,6 +92,11 @@ epi_sec_pseudonymise_db <- function(con,
         linkage$record_keys,
         linkage$crosswalks
       )
+      if (is.null(identifiers)) {
+        identifiers <- epi_sec_identifier_spec(linkage)
+      } else {
+        sec_identifier_validate(identifiers, linkage)
+      }
       if (mode == "apply" && sec_connection_is_transacting(con)) {
         stop("mode = 'apply' requires a connection that is not already inside a caller-managed transaction.", call. = FALSE)
       }
@@ -124,7 +131,7 @@ epi_sec_pseudonymise_db <- function(con,
       context <- sec_pseudonym_context(
         con, dictionary, catalogues, linkage, registry_schema, output_schema,
         token_column, exact_duplicates, existing, include_issue_values,
-        legacy_issue_values_alias
+        legacy_issue_values_alias, identifiers
       )
       audit <- sec_pseudonym_audit(
         con,
@@ -170,7 +177,7 @@ epi_sec_pseudonymise_db <- function(con,
           inside_context <- sec_pseudonym_context(
             con, dictionary, catalogues, linkage, registry_schema, output_schema,
             token_column, exact_duplicates, existing, include_issue_values,
-            legacy_issue_values_alias
+            legacy_issue_values_alias, identifiers
           )
           inside <- sec_pseudonym_audit(
             con,
@@ -254,7 +261,7 @@ print.epi_sec_pseudonymisation_result <- function(x, ...) { # nolint: object_len
   invisible(x)
 }
 
-sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, include_issue_values, legacy_issue_values_alias) {
+sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, include_issue_values, legacy_issue_values_alias, identifiers) {
   table_contexts <- lapply(seq_len(nrow(linkage$tables)), function(index) {
     declaration <- linkage$tables[index, , drop = FALSE]
     relation <- sec_relation_state(con, declaration$source_schema, declaration$source_table)
@@ -308,8 +315,19 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     }
     retained <- action_rows$output_action == "retain"
     retained_columns <- dictionary_rows$source_column[retained]
+    identifier_rule <- sec_identifier_rule(identifiers, declaration)
+    if (!is.na(identifier_rule$validity_regex[[1]])) {
+      DBI::dbGetQuery(
+        con,
+        paste0("SELECT ''::text ~ ", sec_quote_literal(con, identifier_rule$validity_regex[[1]]), " AS valid")
+      )
+    }
     if (token_column %in% retained_columns) {
       stop("token_column collides with a retained source column in ", declaration$source_schema, ".", declaration$source_table, ".", call. = FALSE)
+    }
+    if (!is.na(identifier_rule$validity_column[[1]]) &&
+          identifier_rule$validity_column[[1]] %in% c(token_column, retained_columns)) {
+      stop("validity_column collides with an output column in ", declaration$source_schema, ".", declaration$source_table, ".", call. = FALSE)
     }
     keys <- linkage$record_keys[
       linkage$record_keys$source_schema == declaration$source_schema &
@@ -331,11 +349,13 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
       dictionary = dictionary_rows,
       actions = action_rows,
       id_family = id_family,
+      identifier_rule = identifier_rule,
       retained_columns = retained_columns,
       record_keys = keys
     )
   })
   names(table_contexts) <- vapply(table_contexts, function(item) paste(item$declaration$source_schema, item$declaration$source_table, sep = "."), character(1))
+  sec_validate_ns_preparation(con, registry_schema, table_contexts)
   sec_validate_crosswalks_db(con, linkage$crosswalks, table_contexts)
   sec_validate_ns_families(con, registry_schema, table_contexts, linkage$crosswalks)
   sec_validate_catalogues(
@@ -345,6 +365,7 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     dictionary = dictionary,
     catalogues = catalogues,
     linkage = linkage,
+    identifiers = identifiers,
     registry_schema = registry_schema,
     output_schema = output_schema,
     token_column = token_column,
@@ -371,17 +392,40 @@ sec_pseudonym_audit <- function(con, context, include_issue_values = FALSE, regi
     declaration <- item$declaration
     source <- sec_quote_table(con, declaration$source_schema, declaration$source_table)
     id <- sec_quote_identifier(con, declaration$id_column)
-    invalid_id <- DBI::dbGetQuery(
+    prepared <- sec_identifier_expression(con, item$identifier_rule, id)
+    missing_or_blank <- DBI::dbGetQuery(
       con,
-      paste0("SELECT COUNT(*)::bigint AS n FROM ", source, " WHERE ", id, " IS NULL OR btrim(", id, "::text) = ''")
+      paste0("SELECT COUNT(*)::bigint AS n FROM ", source, " WHERE ", id, " IS NULL OR btrim(", prepared, ") = ''")
     )$n[[1]]
+    regex_invalid <- if (is.na(item$identifier_rule$validity_regex[[1]])) 0 else DBI::dbGetQuery(
+      con,
+      paste0(
+        "SELECT COUNT(*)::bigint AS n FROM ", source, " WHERE ", id,
+        " IS NOT NULL AND btrim(", prepared, ") <> '' AND NOT (", prepared,
+        " ~ ", sec_quote_literal(con, item$identifier_rule$validity_regex[[1]]), ")"
+      )
+    )$n[[1]]
+    collisions <- DBI::dbGetQuery(
+      con,
+      paste0(
+        "SELECT COUNT(*)::bigint AS n FROM (SELECT ", prepared,
+        " AS prepared_id FROM ", source, " WHERE ", id,
+        " IS NOT NULL AND btrim(", prepared, ") <> '' GROUP BY ", prepared,
+        " HAVING COUNT(DISTINCT (", id, "::text COLLATE \"C\")) > 1) q"
+      )
+    )$n[[1]]
+    invalid_id <- as.numeric(missing_or_blank) + as.numeric(regex_invalid)
+    fatal_invalid <- as.numeric(missing_or_blank) +
+      if (item$identifier_rule$invalid_policy[[1]] == "fail") as.numeric(regex_invalid) else 0
     n_input <- DBI::dbGetQuery(con, paste("SELECT COUNT(*)::bigint AS n FROM", source))$n[[1]]
     unmatched_query <- sec_unmatched_query(con, context, item, mapping)
     n_unmatched <- DBI::dbGetQuery(con, unmatched_query)$n[[1]]
     key_missing <- sec_record_key_missing(con, item)
     destination <- sec_destination_state(con, context$output_schema, declaration$destination_table)
 
-    if (invalid_id > 0) issues <- rbind(issues, sec_issue("invalid_identifier", "error", "identity", declaration, declaration$id_column, invalid_id, "Identifier values are missing or blank.", "Correct the source identifiers and retry."))
+    if (missing_or_blank > 0) issues <- rbind(issues, sec_issue("invalid_identifier", "error", "identity", declaration, declaration$id_column, missing_or_blank, "Prepared identifier values are missing or blank.", "Correct the source identifiers and retry."))
+    if (regex_invalid > 0) issues <- rbind(issues, sec_issue("identifier_regex_mismatch", if (item$identifier_rule$invalid_policy[[1]] == "fail") "error" else "warning", "identity", declaration, declaration$id_column, regex_invalid, "Prepared identifiers do not satisfy validity_regex.", if (item$identifier_rule$invalid_policy[[1]] == "fail") "Correct the identifiers or revise the reviewed rule." else "Inspect the generated validity flag before use."))
+    if (collisions > 0) issues <- rbind(issues, sec_issue("normalization_collision", "error", "identity", declaration, declaration$id_column, collisions, "Identifier preparation maps distinct source identifiers to the same value.", "Correct the source identifiers or use a non-colliding preparation rule."))
     if (n_unmatched > 0) issues <- rbind(issues, sec_issue("unmatched_identifier", "error", "identity", declaration, declaration$id_column, n_unmatched, "Identifiers cannot be resolved through the registry, enrolment source or declared crosswalk.", "Check the namespace or add a database-resident crosswalk, then retry."))
     if (key_missing > 0) issues <- rbind(issues, sec_issue("missing_record_key", "error", "duplicates", declaration, paste(item$record_keys$key_column, collapse = ","), key_missing, "Declared record-key values are missing.", "Correct the record keys or revise the linkage specification."))
     if (destination$exists && context$existing == "error") issues <- rbind(issues, sec_issue("destination_exists", "error", "output", declaration, NA_character_, 1L, "The declared destination table already exists.", "Choose a new destination or explicitly use existing = 'replace'."))
@@ -391,10 +435,10 @@ sec_pseudonym_audit <- function(con, context, include_issue_values = FALSE, regi
     if (duplicate$n_conflicting > 0) issues <- rbind(issues, sec_issue("conflicting_record_key", "error", "duplicates", declaration, NA_character_, duplicate$n_conflicting, "Equal record keys have different retained payloads.", "Resolve the conflicting records; episcout never selects or aggregates them."))
     if (nrow(item$record_keys) == 0L && !isTRUE(declaration$one_row_per_entity)) issues <- rbind(issues, sec_issue("record_key_not_declared", "warning", "duplicates", declaration, NA_character_, 0L, "No record key is declared, so only exact projected duplicates can be checked.", "Declare record-key columns when conflicting repeated observations must be detected."))
 
-    if (include_issue_values && invalid_id > 0) {
+    if (include_issue_values && missing_or_blank > 0) {
       values <- DBI::dbGetQuery(
         con,
-        paste0("SELECT ", id, "::text AS source_value FROM ", source, " WHERE ", id, " IS NULL OR btrim(", id, "::text) = ''")
+        paste0("SELECT ", id, "::text AS source_value FROM ", source, " WHERE ", id, " IS NULL OR btrim(", prepared, ") = ''")
       )
       issue_values <- rbind(issue_values, sec_issue_value_rows("invalid_identifier", declaration, declaration$id_column, values$source_value))
     }
@@ -411,7 +455,7 @@ sec_pseudonym_audit <- function(con, context, include_issue_values = FALSE, regi
       n_invalid_id = as.numeric(invalid_id),
       n_unmatched = as.numeric(n_unmatched),
       n_missing_key = as.numeric(key_missing),
-      n_output = if (invalid_id == 0 && n_unmatched == 0 && key_missing == 0 && duplicate$n_conflicting == 0) {
+      n_output = if (fatal_invalid == 0 && collisions == 0 && n_unmatched == 0 && key_missing == 0 && duplicate$n_conflicting == 0) {
         as.numeric(n_input) - if (context$exact_duplicates == "drop") as.numeric(duplicate$n_exact_excess) else 0
       } else {
         NA_real_
@@ -452,22 +496,25 @@ sec_mapping_ctes <- function(con, context, registry_complete) {
   enrol <- enrol_item$declaration
   enrol_source <- sec_quote_table(con, enrol$source_schema, enrol$source_table)
   enrol_id <- sec_quote_identifier(con, enrol$id_column)
+  enrol_prepared <- sec_identifier_expression(con, enrol_item$identifier_rule, enrol_id)
   crosswalk_sql <- sec_crosswalk_union(con, context$linkage$crosswalks)
   observed_sql <- paste(vapply(context$tables, function(item) {
     d <- item$declaration
+    id <- sec_quote_identifier(con, d$id_column)
+    prepared <- sec_identifier_expression(con, item$identifier_rule, id)
     paste0(
       "SELECT ", sec_quote_literal(con, d$identity_namespace), "::text COLLATE \"C\" AS identity_namespace, ",
-      "(", sec_quote_identifier(con, d$id_column), "::text COLLATE \"C\") AS source_id FROM ",
+      prepared, " AS source_id FROM ",
       sec_quote_table(con, d$source_schema, d$source_table), " WHERE ",
-      sec_quote_identifier(con, d$id_column), " IS NOT NULL AND btrim(", sec_quote_identifier(con, d$id_column), "::text) <> ''"
+      id, " IS NOT NULL AND btrim(", prepared, ") <> ''"
     )
   }, character(1)), collapse = " UNION ")
   aliases <- sec_quote_table(con, context$registry_schema, "aliases")
   list(
     enrol_namespace = enrol$identity_namespace,
     prefix = paste0(
-      "WITH enrol_ids AS (SELECT DISTINCT (", enrol_id, "::text COLLATE \"C\") AS source_id FROM ", enrol_source,
-      " WHERE ", enrol_id, " IS NOT NULL AND btrim(", enrol_id, "::text) <> ''), ",
+      "WITH enrol_ids AS (SELECT DISTINCT ", enrol_prepared, " AS source_id FROM ", enrol_source,
+      " WHERE ", enrol_id, " IS NOT NULL AND btrim(", enrol_prepared, ") <> ''), ",
       "crosswalk_rows AS (", crosswalk_sql, "), ",
       "observed_ids AS (", observed_sql, "), ",
       "active_crosswalk AS (SELECT DISTINCT c.* FROM crosswalk_rows c INNER JOIN observed_ids o ON o.identity_namespace = c.alias_namespace AND o.source_id = c.alias_id), ",
@@ -490,12 +537,13 @@ sec_unmatched_query <- function(con, context, item, mapping, return_values = FAL
   d <- item$declaration
   source <- sec_quote_table(con, d$source_schema, d$source_table)
   id <- sec_quote_identifier(con, d$id_column)
+  prepared <- sec_identifier_expression(con, item$identifier_rule, paste0("s.", id))
   select <- if (return_values) paste0("SELECT ", id, "::text AS source_value") else "SELECT COUNT(*)::bigint AS n"
   paste0(
     mapping$prefix,
     select, " FROM ", source, " s LEFT JOIN prospective p ON p.identity_namespace = ",
-    sec_quote_literal(con, d$identity_namespace), " AND p.source_id = (", id, "::text COLLATE \"C\") WHERE ",
-    id, " IS NOT NULL AND btrim(", id, "::text) <> '' AND p.entity_key IS NULL"
+    sec_quote_literal(con, d$identity_namespace), " AND p.source_id = ", prepared, " WHERE ",
+    "s.", id, " IS NOT NULL AND btrim(", prepared, ") <> '' AND p.entity_key IS NULL"
   )
 }
 
@@ -503,13 +551,14 @@ sec_duplicate_audit <- function(con, context, item, mapping) {
   d <- item$declaration
   source <- sec_quote_table(con, d$source_schema, d$source_table)
   id <- sec_quote_identifier(con, d$id_column)
+  prepared <- sec_identifier_expression(con, item$identifier_rule, paste0("s.", id))
   retained <- vapply(item$retained_columns, function(name) paste0("s.", sec_quote_identifier(con, name)), character(1))
   group_projection <- paste(c("p.entity_key", retained), collapse = ", ")
   resolved <- paste0(
     mapping$prefix,
     ", resolved_rows AS (SELECT p.entity_key, s.* FROM ", source,
     " s INNER JOIN prospective p ON p.identity_namespace = ", sec_quote_literal(con, d$identity_namespace),
-    " AND p.source_id = (", id, "::text COLLATE \"C\")) "
+    " AND p.source_id = ", prepared, ") "
   )
   exact_query <- paste0(
     resolved,
@@ -587,14 +636,21 @@ sec_apply_registry <- function(con, context) {
   namespaces <- unique(data.frame(
     identity_namespace = vapply(context$tables, function(item) item$declaration$identity_namespace, character(1)),
     type_family = vapply(context$tables, function(item) item$id_family, character(1)),
+    normalization = vapply(context$tables, function(item) item$identifier_rule$normalization[[1]], character(1)),
+    validity_regex = vapply(context$tables, function(item) item$identifier_rule$validity_regex[[1]], character(1)),
+    preparation_hash = vapply(context$tables, function(item) sec_preparation_hash(item$identifier_rule), character(1)),
     stringsAsFactors = FALSE
   ))
   namespace_table <- sec_quote_table(con, context$registry_schema, "namespaces")
   for (index in seq_len(nrow(namespaces))) {
     DBI::dbExecute(
       con,
-      paste("INSERT INTO", namespace_table, "(identity_namespace, type_family) VALUES ($1, $2) ON CONFLICT (identity_namespace) DO NOTHING"),
-      params = list(namespaces$identity_namespace[[index]], namespaces$type_family[[index]])
+      paste("INSERT INTO", namespace_table, "(identity_namespace, type_family, normalization, validity_regex, preparation_hash) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (identity_namespace) DO NOTHING"),
+      params = list(
+        namespaces$identity_namespace[[index]], namespaces$type_family[[index]],
+        namespaces$normalization[[index]], namespaces$validity_regex[[index]],
+        namespaces$preparation_hash[[index]]
+      )
     )
   }
 
@@ -640,6 +696,34 @@ sec_apply_registry <- function(con, context) {
   invisible(TRUE)
 }
 
+sec_preparation_hash <- function(rule) {
+  eda_postgres_fingerprint(list(
+    normalization = rule$normalization[[1]],
+    validity_regex = rule$validity_regex[[1]]
+  ))
+}
+
+sec_validate_ns_preparation <- function(con, registry_schema, table_contexts) {
+  declared <- data.frame(
+    identity_namespace = vapply(table_contexts, function(item) item$declaration$identity_namespace, character(1)),
+    preparation_hash = vapply(table_contexts, function(item) sec_preparation_hash(item$identifier_rule), character(1)),
+    stringsAsFactors = FALSE
+  )
+  if (any(vapply(split(declared$preparation_hash, declared$identity_namespace), function(x) length(unique(x)) != 1L, logical(1)))) {
+    stop("Every table in an identity namespace must use the same identifier preparation.", call. = FALSE)
+  }
+  existing <- DBI::dbGetQuery(
+    con,
+    paste("SELECT identity_namespace, preparation_hash FROM", sec_quote_table(con, registry_schema, "namespaces"))
+  )
+  matched <- match(declared$identity_namespace, existing$identity_namespace)
+  conflicts <- !is.na(matched) & declared$preparation_hash != existing$preparation_hash[matched]
+  if (any(conflicts)) {
+    stop("Identifier preparation conflicts with an existing registry namespace; use a new namespace or registry.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 sec_apply_outputs <- function(con, context, audit) {
   run_id <- sec_generate_tokens(1L, 16L, "U")
   table_audit <- audit$table_audit
@@ -655,6 +739,7 @@ sec_apply_outputs <- function(con, context, audit) {
     source <- sec_quote_table(con, d$source_schema, d$source_table)
     aliases <- sec_quote_table(con, context$registry_schema, "aliases")
     id <- sec_quote_identifier(con, d$id_column)
+    prepared <- sec_identifier_expression(con, item$identifier_rule, paste0("s.", id))
     fields <- character()
     for (row in seq_len(nrow(item$dictionary))) {
       column <- item$dictionary$source_column[[row]]
@@ -665,11 +750,16 @@ sec_apply_outputs <- function(con, context, audit) {
         fields <- c(fields, paste0("s.", sec_quote_identifier(con, column)))
       }
     }
+    if (item$identifier_rule$invalid_policy[[1]] == "retain_and_flag") {
+      regex <- item$identifier_rule$validity_regex[[1]]
+      validity <- if (is.na(regex)) "TRUE" else paste0("(", prepared, " ~ ", sec_quote_literal(con, regex), ")")
+      fields <- c(fields, paste0(validity, " AS ", sec_quote_identifier(con, item$identifier_rule$validity_column[[1]])))
+    }
     select_prefix <- if (context$exact_duplicates == "drop") "SELECT DISTINCT" else "SELECT"
     DBI::dbExecute(con, paste0(
       "CREATE TABLE ", destination, " AS ", select_prefix, " ", paste(fields, collapse = ", "),
       " FROM ", source, " s INNER JOIN ", aliases, " a ON a.identity_namespace = ",
-      sec_quote_literal(con, d$identity_namespace), " AND a.source_id = (s.", id, "::text COLLATE \"C\")"
+      sec_quote_literal(con, d$identity_namespace), " AND a.source_id = ", prepared
     ))
     not_null_columns <- c(
       context$token_column,
@@ -1161,6 +1251,21 @@ sec_output_dictionary <- function(context) {
     rows$description[[id_index]] <- "Generated pseudonym token."
     rows$catalog_name[[id_index]] <- ""
     rows$provenance[[id_index]] <- "generated_pseudonymisation"
+    if (item$identifier_rule$invalid_policy[[1]] == "retain_and_flag") {
+      flag <- rows[id_index, , drop = FALSE]
+      flag$source_column <- item$identifier_rule$validity_column[[1]]
+      flag$source_data_type <- "boolean"
+      flag$source_udt_name <- "bool"
+      flag$source_is_nullable <- "NO"
+      flag$label <- "Identifier validity"
+      flag$database_type <- "logical"
+      flag$analysis_type <- "binary"
+      flag$role <- "variable"
+      flag$description <- "Whether the prepared identifier satisfied validity_regex."
+      flag$provenance <- "generated_identifier_validation"
+      rows <- rbind(rows, flag)
+      rows$source_ordinal <- seq_len(nrow(rows))
+    }
     rows
   })
   result <- do.call(rbind, output)
@@ -1195,6 +1300,7 @@ sec_configuration_hash <- function(context) {
     context$output_schema,
     context$token_column,
     context$exact_duplicates,
+    context$identifiers$fingerprint_sha256,
     unlist(context$linkage$tables, use.names = FALSE),
     unlist(context$linkage$columns, use.names = FALSE),
     unlist(context$linkage$record_keys, use.names = FALSE),

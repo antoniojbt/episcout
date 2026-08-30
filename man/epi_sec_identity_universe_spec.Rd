@@ -13,7 +13,7 @@ epi_sec_identity_universe_spec(
 \arguments{
 \item{sources}{A data frame or CSV path with exactly \code{source_schema}, \code{source_table}, \code{id_column}, \code{identity_namespace} and \code{provenance}.}
 
-\item{normalization}{Identifier normalisation rule. Version 2 supports only exact \code{"identity"} normalisation.}
+\item{normalization}{Identifier normalisation rule: exact \code{"identity"}, \code{"trim"} or \code{"trim_upper"}.}
 
 \item{validity_regex}{\code{NULL} or one non-empty PostgreSQL regular expression applied to the textual representation of each non-null, non-blank identifier.}
 }
@@ -34,6 +34,8 @@ For one development cycle, the former exact six-column source schema is accepted
 Other longitudinal pseudonymisation:
 \code{\link[=epi_sec_alias_db]{epi_sec_alias_db()}},
 \code{\link[=epi_sec_alias_spec]{epi_sec_alias_spec()}},
+\code{\link[=epi_sec_identifier_spec]{epi_sec_identifier_spec()}},
+\code{\link[=epi_sec_identity_registry_import]{epi_sec_identity_registry_import()}},
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
 \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
 \code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}},

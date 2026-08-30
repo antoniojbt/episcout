@@ -17,7 +17,8 @@ epi_sec_pseudonymise_db(
   existing = c("error", "replace"),
   sensitive_issues = NULL,
   lock_timeout = 30,
-  include_issue_values = FALSE
+  include_issue_values = FALSE,
+  identifiers = NULL
 )
 }
 \arguments{
@@ -48,6 +49,8 @@ epi_sec_pseudonymise_db(
 \item{lock_timeout}{Maximum seconds to wait for transaction-scoped PostgreSQL locks.}
 
 \item{include_issue_values}{Logical; return identifier values for \code{invalid_identifier} and \code{unmatched_identifier} findings in an ordinary \code{issue_values} data frame. Other value families are not collected.}
+
+\item{identifiers}{Optional identifier-preparation contract returned by \code{\link[=epi_sec_identifier_spec]{epi_sec_identifier_spec()}}. \code{NULL} preserves exact released matching.}
 }
 \value{
 An \code{epi_sec_pseudonymisation_result} list containing \code{status}; \code{metadata} columns \code{mode}, \code{writes}, \code{registry_schema}, \code{output_schema}, \code{next_action}; \code{identity_audit} columns \code{n_crosswalk_rows}, \code{n_unused_crosswalk_rows}, \code{n_crosswalk_conflicts}; \code{table_audit} columns \code{source_schema}, \code{source_table}, \code{destination_table}, \code{n_input}, \code{n_invalid_id}, \code{n_unmatched}, \code{n_missing_key}, \code{n_output}, \code{n_exact_removed}; \code{duplicate_audit} columns \code{source_schema}, \code{source_table}, \code{n_exact_excess}, \code{n_conflicting_keys}, \code{action}; \code{issues}; \code{output_dictionary}; \code{output_catalogues}; and \code{manifest} columns \code{source_schema}, \code{source_table}, \code{output_schema}, \code{output_table}, \code{status}, \code{output_type}. When \code{include_issue_values = TRUE}, ordinary \code{issue_values} columns are \code{issue_code}, source relation/column metadata and \code{source_value}. Status is \code{audit_complete}, \code{not_written} or \code{complete}.
@@ -66,18 +69,20 @@ A completed audit always returns \code{status = "audit_complete"}, whether or no
 
 The semantic dictionary must completely and currently cover every declared source table. The linkage \code{columns} component requires exactly the declared ID column to use \code{output_action = "pseudonymise"}; pseudonymised and dropped columns are excluded, while \code{retain} columns form the output. The generated token is semantic identifier metadata. \code{output_dictionary} and \code{output_catalogues} can pass directly to \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}.
 
-Identifier families are PostgreSQL \code{text}/\code{varchar}, integral types and \code{uuid}. Fixed-width character identifiers and nondeterministic text collations are rejected. Text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons; UUIDs follow PostgreSQL UUID identity. Matching never trims, case-folds, hashes or infers identity.
+Identifier families are PostgreSQL \code{text}/\code{varchar}, integral types and \code{uuid}. Fixed-width character identifiers and nondeterministic text collations are rejected. With \code{identifiers = NULL}, text matching preserves case, leading zeros and nonblank whitespace using deterministic byte-distinguishing comparisons and UUIDs follow PostgreSQL UUID identity. An explicit identifier contract may trim or uppercase prepared identifiers; it detects preparation collisions before writes and never hashes or infers identity.
 
 Exact projected duplicates are retained under \code{exact_duplicates = "report"} and explicitly removed under \code{"drop"}. Equal declared record keys with different retained payloads produce an error-severity issue; no conflicting observation is selected, aggregated or overwritten. With no record key, only exact projected duplicates can be assessed.
 
 Pseudonymisation is reversible through the registry and is not anonymisation or automatic disclosure control. episcout does not decide whether an output may be used or disclosed and does not control PostgreSQL, driver, backup, administrator or server logging. See \code{vignette("longitudinal-pseudonymisation")} for the complete technical workflow and recovery guidance.
 }
 \seealso{
-\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}
+\code{\link[=epi_sec_linkage_scaffold]{epi_sec_linkage_scaffold()}}, \code{\link[=epi_sec_linkage_spec]{epi_sec_linkage_spec()}}, \code{\link[=epi_sec_identifier_spec]{epi_sec_identifier_spec()}}, \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}}, \code{\link[=epi_sec_identity_registry_import]{epi_sec_identity_registry_import()}}, \code{\link[=epi_eda_dictionary_spec]{epi_eda_dictionary_spec()}}
 
 Other longitudinal pseudonymisation:
 \code{\link[=epi_sec_alias_db]{epi_sec_alias_db()}},
 \code{\link[=epi_sec_alias_spec]{epi_sec_alias_spec()}},
+\code{\link[=epi_sec_identifier_spec]{epi_sec_identifier_spec()}},
+\code{\link[=epi_sec_identity_registry_import]{epi_sec_identity_registry_import()}},
 \code{\link[=epi_sec_identity_registry_init]{epi_sec_identity_registry_init()}},
 \code{\link[=epi_sec_identity_universe_db]{epi_sec_identity_universe_db()}},
 \code{\link[=epi_sec_identity_universe_spec]{epi_sec_identity_universe_spec()}},

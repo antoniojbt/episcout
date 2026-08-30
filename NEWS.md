@@ -2,6 +2,8 @@
 
 ## 0.5.0.9000
 
+- Added explicit `identity`, `trim` and `trim_upper` identifier-preparation contracts for PostgreSQL pseudonymisation, reviewed invalid-identifier retention flags, transactional version-1 registry migration and aggregate-only import of existing identifier/token assignments. Omitted preparation preserves released exact matching, while populated namespaces reject preparation changes.
+
 ## 0.5.0
 
 - Added explicit-pair descriptive Spearman profiling for reviewed numeric and integer variables on data-frame and PostgreSQL backends, plus aggregate-count Cramér's V. The PostgreSQL path returns aggregates from one read-only repeatable-read snapshot, and optional finite `max_levels` bounds on stratified categorical domains fail rather than truncate. These interfaces return no inferential tests, thresholds or interpretation, and the historical `epi_stats_corr()` contract remains unchanged.
