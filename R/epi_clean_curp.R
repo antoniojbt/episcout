@@ -4,6 +4,10 @@
   "QR", "SP", "SL", "SR", "TC", "TS", "TL", "VZ", "YN", "ZS", "NE"
 )
 
+# Days from 1970-01-01 to 1900-01-01, stored directly to avoid
+# platform-specific warnings from parsing pre-1902 character dates.
+.curp_birth_date_lower_bound <- structure(-25567, class = "Date")
+
 .curp_empty_legacy <- function() {
   tibble::tibble(
     CURP = character(),
@@ -304,7 +308,7 @@ epi_clean_curp_audit <- function(curp,
       check = function(value) {
         all(
           is.na(value) |
-            (value >= as.Date("1900-01-01") & value <= Sys.Date())
+            (value >= .curp_birth_date_lower_bound & value <= Sys.Date())
         )
       }
     )

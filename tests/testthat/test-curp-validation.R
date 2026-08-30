@@ -254,6 +254,33 @@ test_that("comparison references are validated without exposing values", {
   )
 })
 
+test_that("birth-date reference bounds are warning-free and inclusive", {
+  lower_bound <- structure(-25567, class = "Date")
+  before_lower_bound <- lower_bound - 1
+  current_date <- Sys.Date()
+
+  expect_silent(lower <- epi_clean_curp_audit(
+    curp_1999_end,
+    birth_date = lower_bound
+  ))
+  expect_equal(lower$comparison$birth_date, "mismatch")
+  expect_silent(current <- epi_clean_curp_audit(
+    curp_2000_leap,
+    birth_date = current_date
+  ))
+  expect_equal(current$comparison$birth_date, "mismatch")
+  expect_error(
+    epi_clean_curp_audit(curp_1999_end, birth_date = before_lower_bound),
+    "dates from 1900 through the current date",
+    fixed = TRUE
+  )
+  expect_error(
+    epi_clean_curp_audit(curp_2000_leap, birth_date = current_date + 1),
+    "dates from 1900 through the current date",
+    fixed = TRUE
+  )
+})
+
 test_that("printing and str disclose only aggregate status", {
   audit <- epi_clean_curp_audit(curp_2000_leap)
   printed <- capture.output(print(audit))
