@@ -26,7 +26,7 @@ This vignette describes the technical workflow and recovery behaviour. For a run
 
 Use this workflow when related PostgreSQL tables each have one declared entity-ID column and must use the same pseudonymous token over time. A dictionary and linkage specification declare the requested projection and exact identity semantics. Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity mapping; separate registries do not establish cross-run stability.
 
-The workflow performs exact matching only. It does not trim or case-fold text identifiers, infer identity from similar records, detect personal information, perform fuzzy linkage, aggregate conflicting observations or make data anonymous. PostgreSQL through RPostgres is the supported persistent backend.
+The default workflow performs exact matching. An explicit metadata-only identifier contract can instead apply `trim` or `trim_upper`, validate prepared identifiers with a PostgreSQL regular expression and either fail or retain-and-flag reviewed mismatches. Preparation collisions always fail before writes. The workflow does not infer identity from similar records, detect personal information, perform fuzzy linkage, aggregate conflicting observations or make data anonymous. PostgreSQL through RPostgres is the supported persistent backend.
 
 Supported identity columns are PostgreSQL `text` or `varchar`, integral types and `uuid`. Fixed-width character identifiers and nondeterministic collations are rejected because they cannot guarantee this contract. Text matching distinguishes case, leading zeros and every nonblank whitespace byte; UUID matching follows PostgreSQL UUID identity rather than lexical formatting.
 
@@ -36,16 +36,18 @@ Use `epi_sec_pseudonym()` instead when you need a one-off in-memory bridge for o
 
 ## 1A. Public objects and statuses
 
-The seven public entry points return the following current objects. Their function help defines the exact formal arguments and nested data-frame columns.
+The nine public entry points return the following current objects. Their function help defines the exact formal arguments and nested data-frame columns.
 
 | Entry point | Returned object | Modes or statuses |
 |---|---|---|
 | `epi_sec_pseudonym()` | A tibble with `participant_id` and `token_id` | No mode or status field |
-| `epi_sec_identity_universe_spec()` | `epi_sec_identity_universe_spec`: `sources`, `normalization`, `validity_regex`, `contract_version`, `fingerprint_sha256` | Exact `identity` normalisation in contract version 2 |
+| `epi_sec_identity_universe_spec()` | `epi_sec_identity_universe_spec`: `sources`, `normalization`, `validity_regex`, `contract_version`, `fingerprint_sha256` | `identity`, `trim` or `trim_upper` normalisation |
 | `epi_sec_identity_universe_db()` | `epi_sec_identity_universe_result`: `status`, `metadata`, `source_audit`, `namespace_audit`, `overlap_audit`, `issues` | `audit_complete`, `not_written`, `complete` |
 | `epi_sec_linkage_scaffold()` | `epi_sec_linkage_scaffold`: `tables`, `columns`, `record_keys`, `crosswalks` | Editable metadata; no status field |
 | `epi_sec_linkage_spec()` | `epi_sec_linkage_spec` with the same four components | Validated metadata; no status field |
-| `epi_sec_identity_registry_init()` | `epi_sec_registry_result`: `status`, `mode`, `writes`, `registry_schema`, `metadata`, `objects`, `next_action` | `initialisation_required`, `incompatible`, `ready` |
+| `epi_sec_identifier_spec()` | `epi_sec_identifier_spec`: value-free `rules`, `contract_version`, `fingerprint_sha256` | Validated metadata; no status field |
+| `epi_sec_identity_registry_init()` | `epi_sec_registry_result`: `status`, `mode`, `writes`, `registry_schema`, `metadata`, `objects`, `next_action` | `initialisation_required`, `migration_required`, `incompatible`, `ready` |
+| `epi_sec_identity_registry_import()` | `epi_sec_registry_import_result`: `status`, `mode`, `writes`, aggregate `counts`, value-free `issues` | `audit_complete`, `not_written`, `complete` |
 | `epi_sec_pseudonymise_db()` | `epi_sec_pseudonymisation_result`: `status`, `metadata`, `identity_audit`, `table_audit`, `duplicate_audit`, `issues`, `output_dictionary`, `output_catalogues`, `manifest`, plus requested diagnostic components | `audit_complete`, `not_written`, `complete` |
 
 A status describes only the requested technical operation. It does not decide whether processing, use, sharing or publication may proceed.
@@ -56,7 +58,7 @@ This example uses four caller-selected schemas named `source_data`, `identity_da
 
 - Source relations and any crosswalk are ordinary PostgreSQL tables, not views or materialised views.
 - The connected role has the PostgreSQL permissions required to read declared sources and crosswalks, inspect or initialise the registry, and create or replace the requested output tables.
-- PostgreSQL permissions are configured outside episcout. The registry and pseudonymisation functions neither query nor change schema or table privileges.
+- PostgreSQL permissions are configured outside episcout. Pseudonymisation audit queries effective capabilities and returns structured missing-privilege issues; apply repeats them. No function grants privileges or selects a role.
 - Named-role grants, storage encryption, backups, restore tests, retention and database logging are configured and operated outside episcout.
 - Identity-universe operations require a connection outside a caller-managed transaction. Registry and pseudonymisation apply require the same; their audit modes do not start a write transaction.
 
@@ -501,17 +503,64 @@ registry_apply <- epi_sec_identity_registry_init(
 registry_apply
 ```
 
-Apply creates or validates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` transactionally. It uses the connected role's configured PostgreSQL permissions without granting or revoking privileges. The alias table remains re-identifying plaintext. Do not edit registry rows manually; handle an incomplete registry, incompatible version or changed token setting through a separate recovery operation.
+Apply creates or validates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables` transactionally. A complete version-1 registry is reported as `migration_required`; apply migrates it to version 2, preserves every assignment and classifies existing namespaces as exact identity. The alias table remains re-identifying plaintext. Do not edit registry rows manually; handle an incomplete registry, incompatible structure or changed token setting through a separate recovery operation.
+
+### Preserve reviewed existing assignments
+
+When a predecessor already owns accepted identifier/token pairs, stage those two reviewed columns in an ordinary PostgreSQL table and audit the neutral import. Values remain inside PostgreSQL. The import rejects blanks, preparation collisions, one identifier mapped to several tokens, immutable-registry conflicts and namespace-contract changes before any write.
+
+```{r registry-import, eval = FALSE}
+import_audit <- epi_sec_identity_registry_import(
+  con,
+  registry_schema = "identity_registry",
+  source_schema = "identity_data",
+  source_table = "reviewed_prior_assignments",
+  identifier_column = "source_identifier",
+  token_column = "existing_token",
+  identity_namespace = "entity_id",
+  normalization = "trim_upper",
+  validity_regex = "^[A-Z0-9-]+$",
+  mode = "audit"
+)
+
+stopifnot(!any(import_audit$issues$severity == "error"))
+import_apply <- epi_sec_identity_registry_import(
+  con,
+  registry_schema = "identity_registry",
+  source_schema = "identity_data",
+  source_table = "reviewed_prior_assignments",
+  identifier_column = "source_identifier",
+  token_column = "existing_token",
+  identity_namespace = "entity_id",
+  normalization = "trim_upper",
+  validity_regex = "^[A-Z0-9-]+$",
+  mode = "apply"
+)
+```
+
+The staging relation and external backup remain caller-owned. Import is not a backup, restore or acceptance decision.
 
 ## 8. Optional audit without a data write
 
-Run pseudonymisation in its default `mode = "audit"`. This checks schemas, inventory and drift, dictionary gates, destinations, exact identity resolution, crosswalk consistency, record keys, projected duplicates and row reconciliation without enrolling identities or creating output.
+Create one preparation rule per linked source table. Omitting `identifiers` is exactly equivalent to the default contract below. A populated namespace cannot change preparation; use a new namespace or registry instead.
+
+```{r identifier-rules, eval = FALSE}
+identifier_rules <- epi_sec_identifier_spec(linkage)
+# For a reviewed legacy convention, edit every row consistently, then rebuild:
+# rules <- identifier_rules$rules
+# rules$normalization <- "trim_upper"
+# rules$validity_regex <- "^[A-Z0-9-]+$"
+# identifier_rules <- epi_sec_identifier_spec(linkage, rules)
+```
+
+Run pseudonymisation in its default `mode = "audit"`. This checks effective privileges, schemas, inventory and drift, dictionary gates, destinations, prepared identity resolution, crosswalk consistency, record keys, projected duplicates and row reconciliation without enrolling identities or creating output.
 
 ```{r workflow-audit, eval = FALSE}
 audit <- epi_sec_pseudonymise_db(
   con,
   dictionary = dictionary,
   linkage = linkage,
+  identifiers = identifier_rules,
   registry_schema = "identity_registry",
   output_schema = "analysis_data"
 )
@@ -550,6 +599,7 @@ applied <- epi_sec_pseudonymise_db(
   con,
   dictionary = dictionary,
   linkage = linkage,
+  identifiers = identifier_rules,
   registry_schema = "identity_registry",
   output_schema = "analysis_data",
   mode = "apply",
@@ -562,7 +612,7 @@ applied$table_audit
 applied$manifest
 ```
 
-Confirm each table's `n_input`, `n_output` and `n_exact_removed` counts reconcile, and compare `duplicate_audit$n_exact_excess` with the chosen report/drop action. The `n_invalid_id`, `n_unmatched` and `n_missing_key` columns are zero on a completed run. The function neither queries nor changes schema or table privileges; PostgreSQL applies the connected role's ownership and default-privilege configuration to newly created tables. Do not print tokens merely to verify the workflow.
+Confirm each table's `n_input`, `n_output` and `n_exact_removed` counts reconcile, and compare `duplicate_audit$n_exact_excess` with the chosen report/drop action. The `n_invalid_id`, `n_unmatched` and `n_missing_key` columns are zero on a completed run. Completed manifests and registry run tables retain source/output reconciliation fingerprints; `token_batch_size` changes bounded allocation memory only and is excluded from semantic fingerprints. Do not print tokens merely to verify the workflow.
 
 To confirm stability, create a second linkage specification with new destination names, inspect or apply it against the same persisted registry, then compare token sets inside PostgreSQL and return only an aggregate Boolean. Stability applies only to that registry assignment: registry, identity namespace and any alias/crosswalk mapping must resolve the identifier to the same stored entity token. A separate registry is not a stability comparison.
 
@@ -672,7 +722,9 @@ PostgreSQL grants, retention, backup and restore controls, logging and decisions
 | Symptom | What it means | Exact next action |
 |---|---|---|
 | Registry audit returns `initialisation_required` | The existing schema contains no registry objects. | Run registry initialisation with `mode = "apply"` if a new registry is required. |
-| Registry audit returns `incompatible` | One or more registry objects has the wrong relation kind, structure or registry version. | Inspect the registry structure and use a separate recovery operation; do not edit registry rows manually. |
+| Registry audit returns `migration_required` | A complete version-1 registry can be upgraded without changing assignments. | Back up through the caller's normal process, then rerun initialisation with `mode = "apply"`. |
+| Registry audit returns `incompatible` | One or more registry objects has the wrong relation kind or structure. | Inspect the registry structure and use a separate recovery operation; do not edit registry rows manually. |
+| A `*_missing` privilege issue appears | The connected role lacks one effective capability needed by apply. | Arrange the named grant or owning-role membership outside episcout, then repeat audit. |
 | `unmatched_identifier` | A dependent identity cannot resolve exactly through its namespace, registry or declared crosswalk. | Check the namespace and crosswalk, then correct the source or metadata. Do not use fuzzy matching. |
 | `conflicting_record_key` | One declared record key has different retained payloads. | Resolve the source conflict under an applicable data rule, or correct the declared key. episcout will not select a winner. |
 | `destination_exists` | The output name is already occupied. | Choose a new destination, or inspect PostgreSQL ownership and dependencies before explicitly selecting `existing = "replace"`. |

@@ -310,6 +310,10 @@ linkage <- epi_sec_linkage_spec(
   record_keys = record_keys
 )
 
+# Omitted identifier rules have the same exact behaviour. Keeping this explicit
+# object makes the preparation fingerprint and migration boundary visible.
+identifier_rules <- epi_sec_identifier_spec(linkage)
+
 registry_audit <- epi_sec_identity_registry_init(
   con,
   registry_schema = registry_schema,
@@ -334,6 +338,7 @@ pseudonym_audit <- epi_sec_pseudonymise_db(
   con,
   dictionary = dictionary,
   linkage = linkage,
+  identifiers = identifier_rules,
   registry_schema = registry_schema,
   output_schema = output_schema,
   catalogues = catalogues,
@@ -350,6 +355,7 @@ pseudonymised <- epi_sec_pseudonymise_db(
   con,
   dictionary = dictionary,
   linkage = linkage,
+  identifiers = identifier_rules,
   registry_schema = registry_schema,
   output_schema = output_schema,
   catalogues = catalogues,
@@ -363,6 +369,8 @@ pseudonymised$manifest
 stopifnot(pseudonymised$status == "complete")
 stopifnot(all(pseudonymised$table_audit$n_invalid_id == 0))
 stopifnot(all(pseudonymised$table_audit$n_unmatched == 0))
+stopifnot(all(grepl("^[a-f0-9]{64}$", pseudonymised$manifest$source_fingerprint)))
+stopifnot(all(grepl("^[a-f0-9]{64}$", pseudonymised$manifest$output_fingerprint)))
 
 # 7. Hand the pseudonymised visit dictionary into PostgreSQL-backed EDA --------
 

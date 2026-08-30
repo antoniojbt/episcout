@@ -44,8 +44,8 @@ For a repository checkout, open `inst/examples/db-to-report/walkthrough.R` direc
 2. Confirm and remove only the intentional exact duplicate.
 3. Connect to the approved disposable database and create three uniquely named restricted schemas.
 4. Inventory source metadata, scaffold the extended dictionary, declare its semantics and profile only explicitly selected catalogue fields.
-5. Declare linkage tables, columns and record keys, then initialise the identity registry.
-6. Audit and explicitly apply pseudonymisation into the output schema.
+5. Declare linkage tables, columns, record keys and explicit exact identifier preparation, then initialise the identity registry.
+6. Audit effective capabilities and explicitly apply bounded pseudonymisation into the output schema; inspect counts and reconciliation fingerprints.
 7. Convert the pseudonymisation output dictionary into the 16-field EDA specification, profile the PostgreSQL relation and publish `layout = "delivery"`.
 8. Reconcile the five-column manifest, disconnect and optionally remove the disposable schemas.
 
