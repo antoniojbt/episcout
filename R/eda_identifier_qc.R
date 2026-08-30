@@ -10,6 +10,10 @@ identifier_qc_columns <- function() {
 #'
 #' @param identifiers A data frame or CSV path with exactly `name`,
 #'   `expected_length`, `pattern`, `case_sensitive`, and `provenance`.
+#'   `case_sensitive = TRUE` applies PostgreSQL's case-sensitive regular-
+#'   expression match; `FALSE` applies its case-insensitive match. This setting
+#'   affects only `pattern` evaluation and does not change the independent
+#'   `n_case_variations` diagnostic.
 #'
 #' @return A normalised identifier-QC declaration.
 #' @family EDA
@@ -128,7 +132,15 @@ identifier_qc_one <- function(source, row) {
   id <- eda_postgres_column_sql(source, row$name[[1]])
   table <- eda_postgres_table_sql(source)
   pattern <- row$pattern[[1]]
-  pattern_sql <- if (is.na(pattern)) "FALSE" else paste0("NOT (value ~ ", sec_quote_literal(source$con, pattern), ")")
+  operator <- if (isTRUE(row$case_sensitive[[1]])) "~" else "~*"
+  pattern_sql <- if (is.na(pattern)) {
+    "FALSE"
+  } else {
+    paste0(
+      "NOT (value ", operator, " ",
+      sec_quote_literal(source$con, pattern), ")"
+    )
+  }
   expected_sql <- if (is.na(row$expected_length[[1]])) "FALSE" else paste0("char_length(value) <> ", row$expected_length[[1]])
   query <- paste0("WITH values AS (SELECT ", id, "::text COLLATE \"C\" AS value FROM ", table, "), nonblank AS (SELECT value FROM values WHERE value IS NOT NULL AND btrim(value) <> ''), frequencies AS (SELECT value, COUNT(*)::bigint AS n FROM nonblank GROUP BY value), case_groups AS (SELECT lower(value) AS folded, COUNT(DISTINCT value)::bigint AS variants FROM nonblank GROUP BY lower(value)) SELECT COUNT(*)::bigint AS n_input, COUNT(*) FILTER (WHERE value IS NULL)::bigint AS n_null, COUNT(*) FILTER (WHERE value IS NOT NULL AND btrim(value) = '')::bigint AS n_blank, COUNT(*) FILTER (WHERE value IS NOT NULL AND btrim(value) <> '')::bigint AS n_nonblank, COUNT(DISTINCT value) FILTER (WHERE value IS NOT NULL AND btrim(value) <> '')::bigint AS n_distinct, (SELECT COALESCE(SUM(n - 1), 0)::bigint FROM frequencies WHERE n > 1) AS duplicate_excess, (SELECT COALESCE(MAX(n), 0)::bigint FROM frequencies) AS max_frequency, COUNT(*) FILTER (WHERE value ~ '^[[:space:]]')::bigint AS n_leading_whitespace, COUNT(*) FILTER (WHERE value ~ '[[:space:]]$')::bigint AS n_trailing_whitespace, COUNT(*) FILTER (WHERE btrim(value) ~ '[[:space:]]')::bigint AS n_internal_whitespace, COALESCE(MIN(char_length(value)) FILTER (WHERE value IS NOT NULL AND btrim(value) <> ''), 0)::bigint AS min_length, COALESCE(MAX(char_length(value)) FILTER (WHERE value IS NOT NULL AND btrim(value) <> ''), 0)::bigint AS max_length, COUNT(*) FILTER (WHERE value IS NOT NULL AND btrim(value) <> '' AND ", expected_sql, ")::bigint AS n_expected_length_violations, COUNT(*) FILTER (WHERE value IS NOT NULL AND btrim(value) <> '' AND ", pattern_sql, ")::bigint AS n_pattern_violations, (SELECT COUNT(*)::bigint FROM case_groups WHERE variants > 1) AS n_case_variations FROM values")
   observed <- DBI::dbGetQuery(source$con, query)
