@@ -1,0 +1,44 @@
+id: "055"
+slug: "pseudonymisation-consolidation"
+workflow_version: 1
+deliverable: design
+status: active
+owner: repository-owner
+base_branch: master
+working_branch: feature/pseudonymisation-consolidation-spec
+created: 2026-08-30
+updated: 2026-08-30
+
+tracking_issue: 384
+source_issues: []
+pull_request: null
+merge_commit: null
+successor_issue: null
+terminal_reason: null
+
+related_files:
+  - R/epi_sec_identity_universe.R
+  - R/epi_sec_linkage.R
+  - R/epi_sec_registry.R
+  - R/epi_sec_pseudonymise_db.R
+  - tests/testthat/test-sec-identity-universe.R
+  - tests/testthat/test-sec-pseudonymise-postgres.R
+  - vignettes/longitudinal-pseudonymisation.Rmd
+
+documents:
+  brief: brief.md
+  sdd: sdd.md
+  tdd: tdd.md
+  acceptance: acceptance.md
+  review: review.md
+
+review_required: true
+
+check_commands:
+  - scripts/check-workflow-state.sh
+  - scripts/check-local.sh
+  - git diff --check
+
+notes:
+  - This design records the accepted issue-384 sequence and changes no package behaviour.
+  - Successors are dependent and merge bottom-up; release 0.6.0 is the replacement gate.

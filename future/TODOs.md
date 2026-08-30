@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. The probabilistic-linkage sequence is complete and no roadmap is currently active.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. The active roadmap issue [#384](https://github.com/antoniojbt/episcout/issues/384) coordinates the bounded pseudonymisation-consolidation sequence.
 
 ## Maintenance notes
 
@@ -13,6 +13,8 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 - Never record an old or replacement Codecov credential.
 
 ## Current sequence
+
+Roadmap issue [#384](https://github.com/antoniojbt/episcout/issues/384) accepts spec 055 and sequences four dependent slices: identifier preparation plus registry migration/import; bounded token allocation plus fingerprints; privilege/preflight parity; then the migration guide and end-to-end acceptance. The lane adds no general workflow engine or permanent CLI. Release 0.6.0 is the accepted replacement gate for downstream migration.
 
 Issue-358/spec-054 completed the design audit through PR #367 at `3d8bbdb`. Issue-369/PR-379 carries its authorised package implementation: explicit-pair descriptive Spearman, aggregate-count Cramér's V and opt-in fail-not-truncate stratified domains. It reuses current stratified categorical aggregates rather than adding a second cross-tab engine and keeps Oferta's selections, plots, labels, SIAP semantics and `PLZOCU=0` location grouping downstream. No successor is authorised.
 

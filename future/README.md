@@ -50,6 +50,8 @@ Do not use bare `Rscript` in future specs or check instructions. For `devtools::
 
 ## Current Status
 
+Active roadmap [issue #384](https://github.com/antoniojbt/episcout/issues/384) is governed by spec `055-pseudonymisation-consolidation`. It sequences a compatible Episcout 0.6.0 replacement for identifier preparation, persistent mapping import, bounded token allocation, reconciliation fingerprints, privilege preflight and operator documentation. Project-specific orchestration, credentials, backups and disclosure decisions remain downstream.
+
 Issue [#358](https://github.com/antoniojbt/episcout/issues/358)/spec 054 completed the design audit through PR #367, merged to canonical `master` as `3d8bbdb`. Its authorised implementation is [issue #369](https://github.com/antoniojbt/episcout/issues/369)/[PR #379](https://github.com/antoniojbt/episcout/pull/379): explicit-pair descriptive Spearman, aggregate-count Cramér's V and opt-in bounded stratified domains. The design record remains under `future/specs/done/`; no successor is authorised.
 
 Probabilistic-linkage issues [#360](https://github.com/antoniojbt/episcout/issues/360), [#361](https://github.com/antoniojbt/episcout/issues/361) and [#362](https://github.com/antoniojbt/episcout/issues/362) completed through PRs #363, #364 and #365. Specs 052 and 053 are archived under `future/specs/done/`; no automatic successor is authorised and no roadmap is active.
