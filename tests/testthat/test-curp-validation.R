@@ -38,8 +38,46 @@ test_that("structural audit handles empty, scalar and vector inputs", {
   expect_equal(nrow(empty$records), 0L)
   expect_equal(nrow(empty$issues), 0L)
   expect_equal(nrow(empty$comparison), 0L)
+  expect_equal(nrow(empty$summary), 0L)
+
+  classes <- function(data) {
+    vapply(
+      data,
+      function(column) paste(class(column), collapse = "/"),
+      character(1)
+    )
+  }
+  expect_identical(
+    classes(empty$records),
+    c(
+      input_index = "integer", status = "character", birth_date = "Date",
+      sex_code = "character", birthplace_code = "character",
+      initials = "character", century_marker_class = "character",
+      checksum_status = "character"
+    )
+  )
+  expect_identical(
+    classes(empty$issues),
+    c(
+      input_index = "integer", issue_code = "character",
+      stage = "character", severity = "character"
+    )
+  )
+  expect_identical(
+    classes(empty$comparison),
+    c(
+      input_index = "integer", birth_date = "character",
+      sex_code = "character", birthplace_code = "character",
+      initials = "character"
+    )
+  )
+  expect_identical(
+    classes(empty$summary),
+    c(type = "character", value = "character", n = "integer")
+  )
 
   audit <- epi_clean_curp_audit(c(curp_1999_end, curp_2000_leap))
+  expect_identical(classes(empty$records), classes(audit$records))
   expect_equal(audit$records$status, c("valid", "valid"))
   expect_equal(audit$records$birth_date, as.Date(c("1999-12-31", "2000-02-29")))
   expect_equal(audit$records$century_marker_class, c("1900-1999", "2000-2099"))
