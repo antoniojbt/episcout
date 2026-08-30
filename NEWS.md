@@ -2,6 +2,7 @@
 
 ## 0.5.0.9000
 
+- Bounded new registry-token allocation to caller-selected batches, replacing whole-universe generation and per-token database lookups with stable ordering and set-based collision checks. Completed runs now persist deterministic configuration, source and output reconciliation fingerprints alongside counts; batch size is operational and excluded from semantic fingerprints.
 - Added explicit `identity`, `trim` and `trim_upper` identifier-preparation contracts for PostgreSQL pseudonymisation, reviewed invalid-identifier retention flags, transactional version-1 registry migration and aggregate-only import of existing identifier/token assignments. Omitted preparation preserves released exact matching, while populated namespaces reject preparation changes.
 
 ## 0.5.0
