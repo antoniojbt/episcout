@@ -726,6 +726,40 @@ eda_postgres_missing_inside <- function(source, spec, timing_env = NULL, n_total
   )
 }
 
+eda_pg_missing_from_summaries <- function(source, spec, summaries, n_total) {
+  variables <- summaries$variables
+  if (!identical(as.character(variables$name), as.character(spec$name))) {
+    stop("PostgreSQL summary counts cannot be reconciled with missingness.", call. = FALSE)
+  }
+  valid <- vapply(seq_len(nrow(spec)), function(index) {
+    name <- spec$name[[index]]
+    column <- eda_postgres_column(source, name)
+    if (is.null(column)) {
+      return(FALSE)
+    }
+    contract <- eda_postgres_missing_contract(
+      source,
+      column,
+      spec$analysis_type[[index]],
+      eda_missing_codes(spec, name)
+    )
+    isTRUE(contract$valid)
+  }, logical(1))
+  n_missing <- as.integer(variables$n_missing)
+  n_missing[!valid] <- NA_integer_
+  data.frame(
+    name = spec$name,
+    n = rep(as.integer(n_total), nrow(spec)),
+    n_missing = n_missing,
+    p_missing = if (n_total > 0L) {
+      n_missing / n_total
+    } else {
+      rep(NA_real_, nrow(spec))
+    },
+    stringsAsFactors = FALSE
+  )
+}
+
 eda_postgres_basic_counts <- function(source, column, contract, expression, index, timing_env) {
   observed <- eda_db_fetch(
     source$con,
@@ -755,13 +789,33 @@ eda_postgres_numeric_summary <- function(source,
                                          contract,
                                          index,
                                          timing_env,
-                                         allow_value_vector = TRUE) {
+                                         allow_value_vector = TRUE,
+                                         require_integer_exact = FALSE) {
   expression <- eda_postgres_value_expression(source, column, "numeric")
   finite <- "value NOT IN ('Infinity'::double precision, '-Infinity'::double precision)"
+  bigint <- require_integer_exact &&
+    identical(as.character(column$base_udt_name[[1]]), "int8")
+  exact_value <- if (bigint) {
+    paste0(
+      ", ", eda_postgres_column_sql(source, column$name[[1]]),
+      "::numeric AS exact_value"
+    )
+  } else {
+    ""
+  }
+  exact_aggregate <- if (bigint) {
+    paste0(
+      "coalesce(bool_and(abs(exact_value) <= 9007199254740991::numeric) ",
+      "FILTER (WHERE NOT missing), TRUE)"
+    )
+  } else {
+    "TRUE"
+  }
   observed <- eda_db_fetch(
     source$con,
     paste0(
-      "WITH v AS (SELECT ", expression, " AS value, ", contract$sql, " AS missing FROM ",
+      "WITH v AS (SELECT ", expression, " AS value, ", contract$sql,
+      " AS missing", exact_value, " FROM ",
       eda_postgres_table_sql(source), ") ",
       "SELECT count(*) FILTER (WHERE missing)::text AS n_missing, ",
       "count(*) FILTER (WHERE NOT missing)::text AS n_observed, ",
@@ -776,7 +830,8 @@ eda_postgres_numeric_summary <- function(source,
       "percentile_cont(0.75) WITHIN GROUP (ORDER BY value) FILTER (WHERE NOT missing AND ", finite, ") AS q3, ",
       "max(value) FILTER (WHERE NOT missing AND ", finite, ") AS max, ",
       "stddev_samp(value) FILTER (WHERE NOT missing AND ", finite, ") AS sd, ",
-      "var_samp(value) FILTER (WHERE NOT missing AND ", finite, ") AS variance ",
+      "var_samp(value) FILTER (WHERE NOT missing AND ", finite, ") AS variance, ",
+      exact_aggregate, " AS integer_exact ",
       "FROM v"
     ),
     params = contract$params,
@@ -787,6 +842,10 @@ eda_postgres_numeric_summary <- function(source,
     name = column$name[[1]]
   )
   counts <- lapply(observed[c("n_missing", "n_observed", "n_unique", "n_infinite", "n_finite")], eda_checked_count)
+  integer_exact <- isTRUE(observed$integer_exact[[1L]])
+  if (!integer_exact) {
+    return(list(data = NULL, counts = counts, integer_exact = FALSE))
+  }
   n_finite <- counts$n_finite
   numbers <- lapply(observed[c("sum", "min", "q1", "mean", "median", "q3", "max", "sd", "variance")], function(value) {
     if (length(value) == 0L || is.na(value[[1]])) NA_real_ else as.numeric(value[[1]])
@@ -882,7 +941,7 @@ eda_postgres_numeric_summary <- function(source,
     outlier_percentage = summary_safe_proportion(outliers * 100, n_finite),
     stringsAsFactors = FALSE, check.names = FALSE
   )
-  list(data = data, counts = counts)
+  list(data = data, counts = counts, integer_exact = TRUE)
 }
 
 eda_pg_categorical_summary <- function(source,
@@ -1079,8 +1138,9 @@ eda_postgres_integer_exact <- function(source, column, contract, index, timing_e
   observed <- eda_db_fetch(
     source$con,
     paste0(
-      "SELECT max(abs(", column_sql, "::numeric)) FILTER (WHERE NOT ", contract$sql, ")::text AS maximum FROM ",
-      eda_postgres_table_sql(source)
+      "SELECT max(abs(", column_sql,
+      "::numeric)) FILTER (WHERE NOT ", contract$sql,
+      ")::text AS maximum FROM ", eda_postgres_table_sql(source)
     ),
     params = contract$params,
     query_kind = "integer_exactness",
@@ -1127,15 +1187,19 @@ eda_postgres_summaries_inside <- function(source,
     compatibility <- eda_pg_type_compatibility(column, type, levels)
     contract <- eda_postgres_missing_contract(source, column, type, eda_missing_codes(spec, name))
     reason <- if (!contract$valid) contract$reason else if (compatibility$status == "incompatible") compatibility$reason else NA_character_
-    expression <- eda_postgres_value_expression(source, column, type)
-    counts <- tryCatch(
-      eda_postgres_basic_counts(source, column, contract, expression, index, timing_env),
-      error = function(error) c(n_missing = NA_integer_, n_observed = NA_integer_, n_unique = NA_integer_)
-    )
-    if (type == "integer" && is.na(reason) && !eda_postgres_integer_exact(source, column, contract, index, timing_env)) {
-      reason <- "PostgreSQL bigint values exceed the exact R double integer range."
-    }
     if (!is.na(reason)) {
+      expression <- eda_postgres_value_expression(source, column, type)
+      counts <- tryCatch(
+        eda_postgres_basic_counts(
+          source, column, contract, expression, index, timing_env
+        ),
+        error = function(error) {
+          c(
+            n_missing = NA_integer_, n_observed = NA_integer_,
+            n_unique = NA_integer_
+          )
+        }
+      )
       outputs$variables[[length(outputs$variables) + 1L]] <- canonical_variable_row(
         name, label, type, role, required, n_total, counts[["n_missing"]],
         counts[["n_observed"]], counts[["n_unique"]], 0L, "skipped", reason
@@ -1152,7 +1216,8 @@ eda_postgres_summaries_inside <- function(source,
         contract,
         index,
         timing_env,
-        allow_value_vector = allow_value_vectors
+        allow_value_vector = allow_value_vectors,
+        require_integer_exact = type == "integer"
       )
     } else if (type %in% c("categorical", "binary")) {
       eda_pg_categorical_summary(
@@ -1165,6 +1230,17 @@ eda_postgres_summaries_inside <- function(source,
       eda_postgres_temporal_summary(source, column, contract, type, index, timing_env)
     }
     counts <- result$counts
+    if (type == "integer" && !isTRUE(result$integer_exact)) {
+      reason <- "PostgreSQL bigint values exceed the exact R double integer range."
+      outputs$variables[[length(outputs$variables) + 1L]] <- canonical_variable_row(
+        name, label, type, role, required, n_total, counts$n_missing,
+        counts$n_observed, counts$n_unique, 0L, "skipped", reason
+      )
+      outputs$skipped[[length(outputs$skipped) + 1L]] <- canonical_skipped_row(
+        name, type, as.character(column$formatted_type[[1]]), reason
+      )
+      next
+    }
     n_infinite <- if (type %in% c("numeric", "integer")) counts$n_infinite else 0L
     outputs$variables[[length(outputs$variables) + 1L]] <- canonical_variable_row(
       name, label, type, role, required, n_total, counts$n_missing,

@@ -276,6 +276,70 @@ test_that("empty categorical values retain parity across PostgreSQL text familie
   expect_identical(observed_stratified$groups, expected_stratified$groups)
 })
 
+test_that("database runs reuse counts and preserve bigint exactness boundaries", {
+  con <- postgres_eda_connection()
+  schema <- paste0("epi_count_reuse_", Sys.getpid(), "_", sample.int(1000000L, 1L))
+  schema_sql <- as.character(DBI::dbQuoteIdentifier(con, schema))
+  table_sql <- paste0(
+    schema_sql,
+    ".",
+    as.character(DBI::dbQuoteIdentifier(con, "integer boundaries"))
+  )
+  on.exit(
+    {
+      if (DBI::dbIsValid(con)) {
+        DBI::dbExecute(con, paste0("DROP SCHEMA ", schema_sql, " CASCADE"))
+        DBI::dbDisconnect(con)
+      }
+    },
+    add = TRUE
+  )
+  DBI::dbExecute(con, paste0("CREATE SCHEMA ", schema_sql))
+  DBI::dbExecute(con, paste0(
+    "CREATE TABLE ", table_sql,
+    " (safe bigint, beyond bigint, invalid_missing integer)"
+  ))
+  DBI::dbExecute(con, paste0(
+    "INSERT INTO ", table_sql,
+    " VALUES (9007199254740991, 9007199254740992, NULL)"
+  ))
+  names <- c("safe", "beyond", "invalid_missing")
+  spec <- data.frame(
+    name = names,
+    label = names,
+    database_type = "integer",
+    analysis_type = "integer",
+    role = "measure",
+    missing_codes = c("", "", "not-an-integer"),
+    required = TRUE,
+    stringsAsFactors = FALSE
+  )
+  source <- epi_eda_postgres_source(con, schema, "integer boundaries")
+  run <- epi_eda_db_run(
+    source,
+    spec,
+    tempfile("postgres-count-reuse-"),
+    plots = FALSE
+  )
+
+  expect_identical(
+    run$summaries$variables$status,
+    c("summarised", "skipped", "skipped")
+  )
+  expect_identical(run$summaries$variables$n_missing, c(0L, 0L, 1L))
+  expect_identical(run$summaries$variables$n_observed, c(1L, 1L, 0L))
+  expect_identical(run$missing$n_missing, c(0L, 0L, NA_integer_))
+  expect_match(
+    run$summaries$variables$reason[[2L]],
+    "exact R double integer range",
+    fixed = TRUE
+  )
+  expect_identical(sum(run$timings$query_kind == "numeric_first_pass"), 2L)
+  expect_identical(sum(run$timings$query_kind == "variable_counts"), 1L)
+  expect_identical(sum(run$timings$query_kind == "missing_scalar"), 0L)
+  expect_identical(sum(run$timings$query_kind == "integer_exactness"), 0L)
+})
+
 test_that("PostgreSQL percentile_cont matches independently evaluated R type-7 edges", {
   con <- postgres_eda_connection()
   on.exit(DBI::dbDisconnect(con), add = TRUE)
@@ -433,6 +497,13 @@ test_that("live PostgreSQL run publishes an exact aggregate-only owned bundle", 
   expect_equal(nrow(run$map_inventory), 0L)
   expect_identical(names(run$manifest), c("artifact", "type", "path", "status", "checksum_md5"))
   expect_identical(sum(run$timings$query_kind == "row_count"), 1L)
+  expect_identical(sum(run$timings$query_kind == "missing_scalar"), 0L)
+  expect_identical(sum(run$timings$query_kind == "variable_counts"), 1L)
+  expect_identical(sum(run$timings$query_kind == "integer_exactness"), 0L)
+  expect_identical(
+    run$missing$n_missing,
+    c(1L, 3L, 0L, 2L, 1L, 2L, 2L, 1L, 1L)
+  )
   expect_equal(run$identifier_qa$n_distinct, 3L)
   expect_equal(run$identifier_qa$n_repeated_values, 2L)
   expect_equal(run$identifier_qa$duplicate_excess, 2L)
