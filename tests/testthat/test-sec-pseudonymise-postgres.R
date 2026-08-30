@@ -412,6 +412,52 @@ test_that("live PostgreSQL workflow is stable, neutral, and atomic", {
   )
   expect_identical(public_access, public_access_before)
 
+  preflight_role <- paste0("episcout_preflight_", suffix)
+  quoted_preflight_role <- as.character(DBI::dbQuoteIdentifier(connection, preflight_role))
+  on.exit({
+    if (DBI::dbIsValid(connection)) {
+      try(DBI::dbExecute(connection, "RESET ROLE"), silent = TRUE)
+      try(DBI::dbExecute(connection, paste("DROP OWNED BY", quoted_preflight_role)), silent = TRUE)
+      try(DBI::dbExecute(connection, paste("DROP ROLE IF EXISTS", quoted_preflight_role)), silent = TRUE)
+      try(DBI::dbExecute(connection, paste("GRANT CREATE ON SCHEMA", pg_pseudonym_quote(connection, schemas[["output"]]), "TO PUBLIC")), silent = TRUE)
+    }
+  }, add = TRUE)
+  DBI::dbExecute(connection, paste("CREATE ROLE", quoted_preflight_role))
+  for (schema in schemas) {
+    DBI::dbExecute(connection, paste("GRANT USAGE ON SCHEMA", pg_pseudonym_quote(connection, schema), "TO", quoted_preflight_role))
+  }
+  DBI::dbExecute(connection, paste("REVOKE CREATE ON SCHEMA", pg_pseudonym_quote(connection, schemas[["output"]]), "FROM PUBLIC"))
+  DBI::dbExecute(connection, paste("GRANT SELECT ON", entities, ",", events, ",", aliases, "TO", quoted_preflight_role))
+  DBI::dbExecute(
+    connection,
+    paste(
+      "GRANT SELECT ON ALL TABLES IN SCHEMA",
+      pg_pseudonym_quote(connection, schemas[["registry"]]), "TO", quoted_preflight_role
+    )
+  )
+  DBI::dbExecute(connection, paste("SET ROLE", quoted_preflight_role))
+  least_privilege_audit <- epi_sec_pseudonymise_db(
+    connection, dictionary, linkage, schemas[["registry"]], schemas[["output"]],
+    catalogues = catalogues, mode = "audit"
+  )
+  expect_identical(least_privilege_audit$status, "audit_complete")
+  expect_true(all(c("registry_insert_missing", "output_schema_create_missing") %in% least_privilege_audit$issues$issue_code))
+  expect_false(any(c("source_select_missing", "registry_select_missing") %in% least_privilege_audit$issues$issue_code))
+  DBI::dbExecute(connection, "RESET ROLE")
+  DBI::dbExecute(connection, paste("REVOKE SELECT ON", entities, "FROM", quoted_preflight_role))
+  DBI::dbExecute(connection, paste("SET ROLE", quoted_preflight_role))
+  unreadable_source <- epi_sec_pseudonymise_db(
+    connection, dictionary, linkage, schemas[["registry"]], schemas[["output"]],
+    catalogues = catalogues, mode = "audit"
+  )
+  expect_identical(unreadable_source$status, "audit_complete")
+  expect_true("source_select_missing" %in% unreadable_source$issues$issue_code)
+  DBI::dbExecute(connection, "RESET ROLE")
+  DBI::dbExecute(connection, paste("DROP OWNED BY", quoted_preflight_role))
+  DBI::dbExecute(connection, paste("DROP ROLE", quoted_preflight_role))
+  DBI::dbExecute(connection, paste("GRANT CREATE ON SCHEMA", pg_pseudonym_quote(connection, schemas[["output"]]), "TO PUBLIC"))
+  preflight_role <- ""
+
   registry_aliases <- pg_pseudonym_quote(connection, schemas[["registry"]], "aliases")
   registry_privilege_audit <- epi_sec_identity_registry_init(
     connection,
@@ -869,8 +915,10 @@ test_that("live PostgreSQL workflow is stable, neutral, and atomic", {
   expect_identical(pg_advisory_lock_count(connection), 0L)
   expect_identical(applied_report$status, "complete")
   expect_true(applied_report$metadata$writes[[1]])
+  expect_true(any(grepl("has_(schema|table)_privilege", observed_sql$statements, ignore.case = TRUE)))
+  expect_gte(sum(grepl("has_database_privilege", observed_sql$statements, fixed = TRUE)), 2L)
   expect_false(any(grepl(
-    "has_(schema|table)_privilege|\\b(GRANT|REVOKE)\\b",
+    "\\b(GRANT|REVOKE)\\b",
     observed_sql$statements,
     ignore.case = TRUE,
     perl = TRUE
@@ -1020,6 +1068,26 @@ test_that("live PostgreSQL workflow is stable, neutral, and atomic", {
     fixed = TRUE
   )))
 
+  inherited_owner <- paste0("episcout_output_owner_", suffix)
+  quoted_inherited_owner <- as.character(DBI::dbQuoteIdentifier(connection, inherited_owner))
+  on.exit({
+    if (nzchar(inherited_owner) && DBI::dbIsValid(connection)) {
+      try(DBI::dbExecute(connection, paste("ALTER TABLE", output_entities, "OWNER TO", as.character(DBI::dbQuoteIdentifier(connection, current_user)))), silent = TRUE)
+      try(DBI::dbExecute(connection, paste("ALTER TABLE", output_events, "OWNER TO", as.character(DBI::dbQuoteIdentifier(connection, current_user)))), silent = TRUE)
+      try(DBI::dbExecute(connection, paste("REVOKE", quoted_inherited_owner, "FROM", as.character(DBI::dbQuoteIdentifier(connection, current_user)))), silent = TRUE)
+      try(DBI::dbExecute(connection, paste("DROP ROLE IF EXISTS", quoted_inherited_owner)), silent = TRUE)
+    }
+  }, add = TRUE)
+  DBI::dbExecute(connection, paste("CREATE ROLE", quoted_inherited_owner))
+  DBI::dbExecute(connection, paste("GRANT", quoted_inherited_owner, "TO", as.character(DBI::dbQuoteIdentifier(connection, current_user))))
+  DBI::dbExecute(connection, paste("ALTER TABLE", output_entities, "OWNER TO", quoted_inherited_owner))
+  DBI::dbExecute(connection, paste("ALTER TABLE", output_events, "OWNER TO", quoted_inherited_owner))
+  inherited_owner_audit <- epi_sec_pseudonymise_db(
+    connection, dictionary, linkage, schemas[["registry"]], schemas[["output"]],
+    catalogues = catalogues, mode = "audit", exact_duplicates = "drop",
+    existing = "replace"
+  )
+  expect_false("destination_ownership_missing" %in% inherited_owner_audit$issues$issue_code)
   applied_drop <- epi_sec_pseudonymise_db(
     connection,
     dictionary,
@@ -1032,6 +1100,11 @@ test_that("live PostgreSQL workflow is stable, neutral, and atomic", {
     existing = "replace"
   )
   expect_identical(applied_drop$status, "complete")
+  DBI::dbExecute(connection, paste("ALTER TABLE", output_entities, "OWNER TO", as.character(DBI::dbQuoteIdentifier(connection, current_user))))
+  DBI::dbExecute(connection, paste("ALTER TABLE", output_events, "OWNER TO", as.character(DBI::dbQuoteIdentifier(connection, current_user))))
+  DBI::dbExecute(connection, paste("REVOKE", quoted_inherited_owner, "FROM", as.character(DBI::dbQuoteIdentifier(connection, current_user))))
+  DBI::dbExecute(connection, paste("DROP ROLE", quoted_inherited_owner))
+  inherited_owner <- ""
   expect_equal(
     setNames(applied_drop$table_audit$n_output, applied_drop$table_audit$source_table),
     c(entities = 2, events = 3)

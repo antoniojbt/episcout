@@ -28,7 +28,7 @@
 #'
 #' New canonical identifiers are ordered in PostgreSQL and allocated in bounded batches. Candidate collisions are checked set-wise and retried at most five times per batch. The complete operation remains one atomic transaction; it is not a resumable workflow. `token_batch_size` changes memory and statement size only and is excluded from the configuration fingerprint.
 #'
-#' Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
+#' Audit reports value-free structured issues for effective source/crosswalk reads, database temporary-table capability, required registry DML, output-schema creation and replacement ownership. Apply repeats the same preflight inside its transaction. The function never grants privileges or selects a role; authentication failures and unexpected permission denials remain sanitised technical database errors.
 #'
 #' A completed audit always returns `status = "audit_complete"`, whether or not technical issues are present. The value-free issue table contains `issue_code`, `severity`, `stage`, `source_schema`, `source_table`, `source_column`, `n_affected`, `message` and `recommended_action`; severity is `error` or `warning`. Apply returns `not_written` when error-severity findings or a lock timeout prevent commit. Malformed arguments, unsupported types and unsafe database or infrastructure state remain errors; apply errors roll back before returning a sanitised condition.
 #'
@@ -118,6 +118,23 @@ epi_sec_pseudonymise_db <- function(con,
       source_schemas <- unique(linkage$tables$source_schema)
       if (registry_schema == output_schema || registry_schema %in% source_schemas || output_schema %in% source_schemas) {
         stop("Source, registry and output schemas must be distinct.", call. = FALSE)
+      }
+      initial_preflight <- sec_privilege_issues(
+        con, linkage, registry_schema, output_schema, existing
+      )
+      read_codes <- c(
+        "source_schema_usage_missing", "source_select_missing",
+        "crosswalk_schema_usage_missing", "crosswalk_select_missing",
+        "registry_schema_usage_missing", "registry_select_missing"
+      )
+      if (any(initial_preflight$issue_code %in% read_codes)) {
+        return(sec_preflight_result(
+          if (mode == "audit") "audit_complete" else "not_written",
+          mode, dictionary, catalogues, linkage, registry_schema, output_schema,
+          token_column, exact_duplicates, existing, identifiers,
+          include_issue_values, legacy_issue_values_alias, token_batch_size,
+          initial_preflight
+        ))
       }
       registry_observed <- sec_registry_inspect(con, registry_schema)
       if (registry_observed$state != "compatible") {
@@ -267,6 +284,132 @@ print.epi_sec_pseudonymisation_result <- function(x, ...) { # nolint: object_len
   invisible(x)
 }
 
+sec_privilege_issues <- function(con, linkage, registry_schema, output_schema, existing) {
+  issues <- sec_empty_issues()
+  add <- function(code, stage, declaration, message, action) {
+    sec_issue(code, "error", stage, declaration, NA_character_, 1L, message, action)
+  }
+  schema_ok <- function(schema, privilege) {
+    isTRUE(DBI::dbGetQuery(
+      con,
+      "SELECT has_schema_privilege(current_user, $1, $2) AS allowed",
+      params = list(schema, privilege)
+    )$allowed[[1]])
+  }
+  table_ok <- function(schema, table, privilege) {
+    observed <- DBI::dbGetQuery(
+      con,
+      paste(
+        "SELECT has_table_privilege(current_user, c.oid, $3) AS allowed",
+        "FROM pg_class c INNER JOIN pg_namespace n ON n.oid = c.relnamespace",
+        "WHERE n.nspname = $1 AND c.relname = $2"
+      ),
+      params = list(schema, table, privilege)
+    )
+    nrow(observed) == 0L || isTRUE(observed$allowed[[1]])
+  }
+
+  for (index in seq_len(nrow(linkage$tables))) {
+    declaration <- linkage$tables[index, , drop = FALSE]
+    if (!schema_ok(declaration$source_schema, "USAGE")) {
+      issues <- rbind(issues, add("source_schema_usage_missing", "privilege", declaration, "The connected role lacks effective USAGE on a source schema.", "Grant effective schema usage outside episcout, then retry."))
+    }
+    if (!table_ok(declaration$source_schema, declaration$source_table, "SELECT")) {
+      issues <- rbind(issues, add("source_select_missing", "privilege", declaration, "The connected role lacks effective SELECT on a source table.", "Grant effective source-table SELECT outside episcout, then retry."))
+    }
+  }
+  if (nrow(linkage$crosswalks) > 0L) {
+    for (index in seq_len(nrow(linkage$crosswalks))) {
+      row <- linkage$crosswalks[index, , drop = FALSE]
+      declaration <- data.frame(source_schema = row$crosswalk_schema, source_table = row$crosswalk_table)
+      if (!schema_ok(row$crosswalk_schema, "USAGE")) {
+        issues <- rbind(issues, add("crosswalk_schema_usage_missing", "privilege", declaration, "The connected role lacks effective USAGE on a crosswalk schema.", "Grant effective schema usage outside episcout, then retry."))
+      }
+      if (!table_ok(row$crosswalk_schema, row$crosswalk_table, "SELECT")) {
+        issues <- rbind(issues, add("crosswalk_select_missing", "privilege", declaration, "The connected role lacks effective SELECT on a crosswalk table.", "Grant effective crosswalk SELECT outside episcout, then retry."))
+      }
+    }
+  }
+
+  registry_declaration <- function(table) data.frame(source_schema = registry_schema, source_table = table)
+  if (!schema_ok(registry_schema, "USAGE")) {
+    issues <- rbind(issues, add("registry_schema_usage_missing", "privilege", registry_declaration("registry_metadata"), "The connected role lacks effective USAGE on the registry schema.", "Grant effective registry-schema usage outside episcout, then retry."))
+  }
+  for (table in c("registry_metadata", "namespaces", "entities", "aliases")) {
+    if (!table_ok(registry_schema, table, "SELECT")) {
+      issues <- rbind(issues, add("registry_select_missing", "privilege", registry_declaration(table), "The connected role lacks required effective SELECT on a registry table.", "Grant the required registry-table SELECT outside episcout, then retry."))
+    }
+  }
+  for (table in c("namespaces", "entities", "aliases", "runs", "run_tables")) {
+    if (!table_ok(registry_schema, table, "INSERT")) {
+      issues <- rbind(issues, add("registry_insert_missing", "privilege", registry_declaration(table), "The connected role lacks required effective INSERT on a registry table.", "Grant the required registry-table INSERT outside episcout, then retry."))
+    }
+  }
+  global <- registry_declaration("registry_metadata")
+  temp_ok <- isTRUE(DBI::dbGetQuery(
+    con,
+    "SELECT has_database_privilege(current_user, current_database(), 'TEMP') AS allowed"
+  )$allowed[[1]])
+  if (!temp_ok) {
+    issues <- rbind(issues, add("database_temp_missing", "privilege", global, "The connected role lacks effective TEMP on the current database.", "Grant database TEMP outside episcout, then retry."))
+  }
+  if (!schema_ok(output_schema, "USAGE")) {
+    issues <- rbind(issues, add("output_schema_usage_missing", "privilege", data.frame(source_schema = output_schema, source_table = ""), "The connected role lacks effective USAGE on the output schema.", "Grant output-schema usage outside episcout, then retry."))
+  }
+  if (!schema_ok(output_schema, "CREATE")) {
+    issues <- rbind(issues, add("output_schema_create_missing", "privilege", data.frame(source_schema = output_schema, source_table = ""), "The connected role lacks effective CREATE on the output schema.", "Grant output-schema create outside episcout, then retry."))
+  }
+  if (existing == "replace") {
+    for (index in seq_len(nrow(linkage$tables))) {
+      declaration <- linkage$tables[index, , drop = FALSE]
+      state <- sec_destination_state(con, output_schema, declaration$destination_table)
+      if (state$exists && !state$owned) {
+        issues <- rbind(issues, add("destination_ownership_missing", "privilege", declaration, "Replacement requires effective membership in the destination owning role.", "Use an effectively owning role or a new destination."))
+      }
+    }
+  }
+  issues
+}
+
+sec_preflight_result <- function(status, mode, dictionary, catalogues, linkage,
+                                 registry_schema, output_schema, token_column,
+                                 exact_duplicates, existing, identifiers,
+                                 include_issue_values, legacy_issue_values_alias,
+                                 token_batch_size, issues) {
+  context <- list(
+    registry_schema = registry_schema, output_schema = output_schema,
+    token_column = token_column, exact_duplicates = exact_duplicates,
+    existing = existing, identifiers = identifiers,
+    include_issue_values = include_issue_values,
+    legacy_issue_values_alias = legacy_issue_values_alias,
+    token_batch_size = token_batch_size, linkage = linkage
+  )
+  audit <- list(
+    identity_audit = data.frame(
+      n_crosswalk_rows = NA_real_, n_unused_crosswalk_rows = NA_real_,
+      n_crosswalk_conflicts = NA_real_
+    ),
+    table_audit = data.frame(
+      source_schema = linkage$tables$source_schema,
+      source_table = linkage$tables$source_table,
+      destination_table = linkage$tables$destination_table,
+      n_input = NA_real_, n_invalid_id = NA_real_, n_unmatched = NA_real_,
+      n_missing_key = NA_real_, n_output = NA_real_, n_exact_removed = NA_real_
+    ),
+    duplicate_audit = data.frame(
+      source_schema = linkage$tables$source_schema,
+      source_table = linkage$tables$source_table,
+      n_exact_excess = NA_real_, n_conflicting_keys = NA_real_,
+      action = exact_duplicates
+    ),
+    issues = issues, issue_values = sec_empty_issue_values(),
+    output_dictionary = dictionary[0, , drop = FALSE],
+    output_catalogues = if (is.null(catalogues)) NULL else catalogues[0, , drop = FALSE],
+    manifest = sec_output_manifest(context, created = FALSE)
+  )
+  sec_pseudonym_result(status, mode, FALSE, context, audit)
+}
+
 sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, include_issue_values, legacy_issue_values_alias, identifiers, token_batch_size) {
   table_contexts <- lapply(seq_len(nrow(linkage$tables)), function(index) {
     declaration <- linkage$tables[index, , drop = FALSE]
@@ -380,12 +523,15 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     existing = existing,
     include_issue_values = include_issue_values,
     legacy_issue_values_alias = legacy_issue_values_alias,
+    preflight_issues = sec_privilege_issues(
+      con, linkage, registry_schema, output_schema, existing
+    ),
     tables = table_contexts
   )
 }
 
 sec_pseudonym_audit <- function(con, context, include_issue_values = FALSE, registry_complete = FALSE) {
-  issues <- sec_empty_issues()
+  issues <- context$preflight_issues
   issue_values <- sec_empty_issue_values()
   table_rows <- vector("list", length(context$tables))
   duplicate_rows <- vector("list", length(context$tables))
@@ -436,7 +582,7 @@ sec_pseudonym_audit <- function(con, context, include_issue_values = FALSE, regi
     if (n_unmatched > 0) issues <- rbind(issues, sec_issue("unmatched_identifier", "error", "identity", declaration, declaration$id_column, n_unmatched, "Identifiers cannot be resolved through the registry, enrolment source or declared crosswalk.", "Check the namespace or add a database-resident crosswalk, then retry."))
     if (key_missing > 0) issues <- rbind(issues, sec_issue("missing_record_key", "error", "duplicates", declaration, paste(item$record_keys$key_column, collapse = ","), key_missing, "Declared record-key values are missing.", "Correct the record keys or revise the linkage specification."))
     if (destination$exists && context$existing == "error") issues <- rbind(issues, sec_issue("destination_exists", "error", "output", declaration, NA_character_, 1L, "The declared destination table already exists.", "Choose a new destination or explicitly use existing = 'replace'."))
-    if (destination$exists && !destination$replaceable) issues <- rbind(issues, sec_issue("unsafe_destination", "error", "output", declaration, NA_character_, 1L, "The destination is not an ordinary table owned by the current database role.", "Choose an owned ordinary destination table; dependencies and views are never replaced."))
+    if (destination$exists && !destination$replaceable) issues <- rbind(issues, sec_issue("unsafe_destination", "error", "output", declaration, NA_character_, 1L, "The destination is not an ordinary table under effective owning-role authority.", "Choose an effectively owned ordinary destination table; dependencies and views are never replaced."))
 
     duplicate <- sec_duplicate_audit(con, context, item, mapping)
     if (duplicate$n_conflicting > 0) issues <- rbind(issues, sec_issue("conflicting_record_key", "error", "duplicates", declaration, NA_character_, duplicate$n_conflicting, "Equal record keys have different retained payloads.", "Resolve the conflicting records; episcout never selects or aggregates them."))
@@ -1223,7 +1369,7 @@ sec_destination_state <- function(con, schema, table) {
   observed <- DBI::dbGetQuery(
     con,
     paste(
-      "SELECT c.relkind, c.relispartition, pg_get_userbyid(c.relowner) = current_user AS owned,",
+      "SELECT c.relkind, c.relispartition, pg_has_role(current_user, c.relowner, 'MEMBER') AS owned,",
       "EXISTS (SELECT 1 FROM pg_depend d WHERE d.refobjid = c.oid AND d.objid <> c.oid AND d.deptype NOT IN ('i', 'a')) OR",
       "EXISTS (SELECT 1 FROM pg_depend d WHERE d.objid = c.oid AND d.deptype = 'e') AS has_dependencies",
       "FROM pg_class c INNER JOIN pg_namespace n ON n.oid = c.relnamespace",
@@ -1232,14 +1378,15 @@ sec_destination_state <- function(con, schema, table) {
     params = list(schema, table)
   )
   if (nrow(observed) == 0L) {
-    return(list(exists = FALSE, replaceable = TRUE))
+    return(list(exists = FALSE, replaceable = TRUE, owned = FALSE))
   }
   list(
     exists = TRUE,
     replaceable = identical(observed$relkind[[1]], "r") &&
       !isTRUE(observed$relispartition[[1]]) &&
       isTRUE(observed$owned[[1]]) &&
-      !isTRUE(observed$has_dependencies[[1]])
+      !isTRUE(observed$has_dependencies[[1]]),
+    owned = isTRUE(observed$owned[[1]])
   )
 }
 
