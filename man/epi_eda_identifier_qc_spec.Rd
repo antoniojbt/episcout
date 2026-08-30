@@ -8,7 +8,11 @@ epi_eda_identifier_qc_spec(identifiers)
 }
 \arguments{
 \item{identifiers}{A data frame or CSV path with exactly \code{name},
-\code{expected_length}, \code{pattern}, \code{case_sensitive}, and \code{provenance}.}
+\code{expected_length}, \code{pattern}, \code{case_sensitive}, and \code{provenance}.
+\code{case_sensitive = TRUE} applies PostgreSQL's case-sensitive regular-
+expression match; \code{FALSE} applies its case-insensitive match. This setting
+affects only \code{pattern} evaluation and does not change the independent
+\code{n_case_variations} diagnostic.}
 }
 \value{
 A normalised identifier-QC declaration.
