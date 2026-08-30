@@ -68,7 +68,7 @@ Recurring identities retain their pseudonymous identifiers when later runs reuse
 
 New canonical identifiers are ordered in PostgreSQL and allocated in bounded batches. Candidate collisions are checked set-wise and retried at most five times per batch. The complete operation remains one atomic transaction; it is not a resumable workflow. \code{token_batch_size} changes memory and statement size only and is excluded from the configuration fingerprint.
 
-Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
+Audit reports value-free structured issues for effective source/crosswalk reads, database temporary-table capability, required registry DML, output-schema creation and replacement ownership. Apply repeats the same preflight inside its transaction. The function never grants privileges or selects a role; authentication failures and unexpected permission denials remain sanitised technical database errors.
 
 A completed audit always returns \code{status = "audit_complete"}, whether or not technical issues are present. The value-free issue table contains \code{issue_code}, \code{severity}, \code{stage}, \code{source_schema}, \code{source_table}, \code{source_column}, \code{n_affected}, \code{message} and \code{recommended_action}; severity is \code{error} or \code{warning}. Apply returns \code{not_written} when error-severity findings or a lock timeout prevent commit. Malformed arguments, unsupported types and unsafe database or infrastructure state remain errors; apply errors roll back before returning a sanitised condition.
 
