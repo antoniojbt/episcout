@@ -18,7 +18,8 @@ epi_sec_pseudonymise_db(
   sensitive_issues = NULL,
   lock_timeout = 30,
   include_issue_values = FALSE,
-  identifiers = NULL
+  identifiers = NULL,
+  token_batch_size = 50000L
 )
 }
 \arguments{
@@ -51,9 +52,11 @@ epi_sec_pseudonymise_db(
 \item{include_issue_values}{Logical; return identifier values for \code{invalid_identifier} and \code{unmatched_identifier} findings in an ordinary \code{issue_values} data frame. Other value families are not collected.}
 
 \item{identifiers}{Optional identifier-preparation contract returned by \code{\link[=epi_sec_identifier_spec]{epi_sec_identifier_spec()}}. \code{NULL} preserves exact released matching.}
+
+\item{token_batch_size}{Maximum new tokens generated and held in R at once, from 1 to 1,000,000. This operational setting does not change semantic fingerprints.}
 }
 \value{
-An \code{epi_sec_pseudonymisation_result} list containing \code{status}; \code{metadata} columns \code{mode}, \code{writes}, \code{registry_schema}, \code{output_schema}, \code{next_action}; \code{identity_audit} columns \code{n_crosswalk_rows}, \code{n_unused_crosswalk_rows}, \code{n_crosswalk_conflicts}; \code{table_audit} columns \code{source_schema}, \code{source_table}, \code{destination_table}, \code{n_input}, \code{n_invalid_id}, \code{n_unmatched}, \code{n_missing_key}, \code{n_output}, \code{n_exact_removed}; \code{duplicate_audit} columns \code{source_schema}, \code{source_table}, \code{n_exact_excess}, \code{n_conflicting_keys}, \code{action}; \code{issues}; \code{output_dictionary}; \code{output_catalogues}; and \code{manifest} columns \code{source_schema}, \code{source_table}, \code{output_schema}, \code{output_table}, \code{status}, \code{output_type}. When \code{include_issue_values = TRUE}, ordinary \code{issue_values} columns are \code{issue_code}, source relation/column metadata and \code{source_value}. Status is \code{audit_complete}, \code{not_written} or \code{complete}.
+An \code{epi_sec_pseudonymisation_result} list containing \code{status}; \code{metadata} columns \code{mode}, \code{writes}, \code{registry_schema}, \code{output_schema}, \code{next_action}; \code{identity_audit} columns \code{n_crosswalk_rows}, \code{n_unused_crosswalk_rows}, \code{n_crosswalk_conflicts}; \code{table_audit} columns \code{source_schema}, \code{source_table}, \code{destination_table}, \code{n_input}, \code{n_invalid_id}, \code{n_unmatched}, \code{n_missing_key}, \code{n_output}, \code{n_exact_removed}; \code{duplicate_audit} columns \code{source_schema}, \code{source_table}, \code{n_exact_excess}, \code{n_conflicting_keys}, \code{action}; \code{issues}; \code{output_dictionary}; \code{output_catalogues}; and \code{manifest} columns \code{source_schema}, \code{source_table}, \code{output_schema}, \code{output_table}, \code{status}, \code{output_type}, \code{source_fingerprint} and \code{output_fingerprint}. Planned fingerprints are missing; completed fingerprints are lowercase SHA-256 reconciliation evidence. When \code{include_issue_values = TRUE}, ordinary \code{issue_values} columns are \code{issue_code}, source relation/column metadata and \code{source_value}. Status is \code{audit_complete}, \code{not_written} or \code{complete}.
 }
 \description{
 Audit or transactionally create pseudonymised copies of related PostgreSQL tables. Exact linkage metadata, explicit output actions and a semantic multi-table dictionary control identity matching, retained columns and longitudinal duplicate checks.
@@ -62,6 +65,8 @@ Audit or transactionally create pseudonymised copies of related PostgreSQL table
 Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. \code{existing = "replace"} is deliberately opt-in and is limited to declared ordinary destination tables without \code{CASCADE}. Source tables are never altered.
 
 Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity namespace and alias/crosswalk mapping. A separate registry creates independent assignments and does not establish cross-run identity stability.
+
+New canonical identifiers are ordered in PostgreSQL and allocated in bounded batches. Candidate collisions are checked set-wise and retried at most five times per batch. The complete operation remains one atomic transaction; it is not a resumable workflow. \code{token_batch_size} changes memory and statement size only and is excluded from the configuration fingerprint.
 
 Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 

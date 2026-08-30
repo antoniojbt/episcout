@@ -18,12 +18,15 @@
 #' @param lock_timeout Maximum seconds to wait for transaction-scoped PostgreSQL locks.
 #' @param include_issue_values Logical; return identifier values for `invalid_identifier` and `unmatched_identifier` findings in an ordinary `issue_values` data frame. Other value families are not collected.
 #' @param identifiers Optional identifier-preparation contract returned by [epi_sec_identifier_spec()]. `NULL` preserves exact released matching.
+#' @param token_batch_size Maximum new tokens generated and held in R at once, from 1 to 1,000,000. This operational setting does not change semantic fingerprints.
 #'
-#' @return An `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `output_type`. When `include_issue_values = TRUE`, ordinary `issue_values` columns are `issue_code`, source relation/column metadata and `source_value`. Status is `audit_complete`, `not_written` or `complete`.
+#' @return An `epi_sec_pseudonymisation_result` list containing `status`; `metadata` columns `mode`, `writes`, `registry_schema`, `output_schema`, `next_action`; `identity_audit` columns `n_crosswalk_rows`, `n_unused_crosswalk_rows`, `n_crosswalk_conflicts`; `table_audit` columns `source_schema`, `source_table`, `destination_table`, `n_input`, `n_invalid_id`, `n_unmatched`, `n_missing_key`, `n_output`, `n_exact_removed`; `duplicate_audit` columns `source_schema`, `source_table`, `n_exact_excess`, `n_conflicting_keys`, `action`; `issues`; `output_dictionary`; `output_catalogues`; and `manifest` columns `source_schema`, `source_table`, `output_schema`, `output_table`, `status`, `output_type`, `source_fingerprint` and `output_fingerprint`. Planned fingerprints are missing; completed fingerprints are lowercase SHA-256 reconciliation evidence. When `include_issue_values = TRUE`, ordinary `issue_values` columns are `issue_code`, source relation/column metadata and `source_value`. Status is `audit_complete`, `not_written` or `complete`.
 #'
 #' @details Audit mode is the default and performs no writes. Apply mode repeats the checks within one repeatable-read transaction, acquires bounded transaction-scoped advisory locks, and either commits the registry and output changes together or rolls them all back. `existing = "replace"` is deliberately opt-in and is limited to declared ordinary destination tables without `CASCADE`. Source tables are never altered.
 #'
 #' Recurring identities retain their pseudonymous identifiers when later runs reuse the same persisted registry and compatible identity namespace and alias/crosswalk mapping. A separate registry creates independent assignments and does not establish cross-run identity stability.
+#'
+#' New canonical identifiers are ordered in PostgreSQL and allocated in bounded batches. Candidate collisions are checked set-wise and retried at most five times per batch. The complete operation remains one atomic transaction; it is not a resumable workflow. `token_batch_size` changes memory and statement size only and is excluded from the configuration fingerprint.
 #'
 #' Registry, crosswalk and output operations use the connected role's configured PostgreSQL permissions. The function does not query or change schema or table privileges; authentication and permission denials are returned as sanitised technical database errors.
 #'
@@ -53,7 +56,8 @@ epi_sec_pseudonymise_db <- function(con,
                                     sensitive_issues = NULL,
                                     lock_timeout = 30,
                                     include_issue_values = FALSE,
-                                    identifiers = NULL) {
+                                    identifiers = NULL,
+                                    token_batch_size = 50000L) {
   include_issue_values_supplied <- !missing(include_issue_values)
   diagnostics <- sec_diagnostic_options(
     sensitive_issues,
@@ -72,6 +76,8 @@ epi_sec_pseudonymise_db <- function(con,
       output_schema <- sec_scalar_text(output_schema, "output_schema")
       token_column <- sec_scalar_text(token_column, "token_column")
       lock_timeout <- sec_whole_number(lock_timeout, "lock_timeout", minimum = 1L)
+      token_batch_size <- sec_whole_number(token_batch_size, "token_batch_size", minimum = 1L)
+      if (token_batch_size > 1000000L) stop("token_batch_size must be no greater than 1000000.", call. = FALSE)
       if (!inherits(linkage, "epi_sec_linkage_spec") ||
         !identical(
           names(linkage),
@@ -131,7 +137,7 @@ epi_sec_pseudonymise_db <- function(con,
       context <- sec_pseudonym_context(
         con, dictionary, catalogues, linkage, registry_schema, output_schema,
         token_column, exact_duplicates, existing, include_issue_values,
-        legacy_issue_values_alias, identifiers
+        legacy_issue_values_alias, identifiers, token_batch_size
       )
       audit <- sec_pseudonym_audit(
         con,
@@ -177,7 +183,7 @@ epi_sec_pseudonymise_db <- function(con,
           inside_context <- sec_pseudonym_context(
             con, dictionary, catalogues, linkage, registry_schema, output_schema,
             token_column, exact_duplicates, existing, include_issue_values,
-            legacy_issue_values_alias, identifiers
+            legacy_issue_values_alias, identifiers, token_batch_size
           )
           inside <- sec_pseudonym_audit(
             con,
@@ -261,7 +267,7 @@ print.epi_sec_pseudonymisation_result <- function(x, ...) { # nolint: object_len
   invisible(x)
 }
 
-sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, include_issue_values, legacy_issue_values_alias, identifiers) {
+sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry_schema, output_schema, token_column, exact_duplicates, existing, include_issue_values, legacy_issue_values_alias, identifiers, token_batch_size) {
   table_contexts <- lapply(seq_len(nrow(linkage$tables)), function(index) {
     declaration <- linkage$tables[index, , drop = FALSE]
     relation <- sec_relation_state(con, declaration$source_schema, declaration$source_table)
@@ -366,6 +372,7 @@ sec_pseudonym_context <- function(con, dictionary, catalogues, linkage, registry
     catalogues = catalogues,
     linkage = linkage,
     identifiers = identifiers,
+    token_batch_size = token_batch_size,
     registry_schema = registry_schema,
     output_schema = output_schema,
     token_column = token_column,
@@ -659,22 +666,9 @@ sec_apply_registry <- function(con, context) {
   enrol_namespace <- mapping$enrol_namespace
   aliases <- sec_quote_table(con, context$registry_schema, "aliases")
   entities <- sec_quote_table(con, context$registry_schema, "entities")
-  new_count <- DBI::dbGetQuery(con, paste0(
-    "SELECT COUNT(*)::integer AS n FROM (SELECT e.source_id FROM episcout_enrol_ids e ",
-    "LEFT JOIN ", aliases, " a ON a.identity_namespace = ", sec_quote_literal(con, enrol_namespace), " AND a.source_id = e.source_id ",
-    "LEFT JOIN episcout_active_crosswalk c ON c.alias_namespace = ", sec_quote_literal(con, enrol_namespace), " AND c.alias_id = e.source_id ",
-    "WHERE a.source_id IS NULL AND c.alias_id IS NULL UNION SELECT c.canonical_id FROM episcout_active_crosswalk c ",
-    "LEFT JOIN ", aliases, " a ON a.identity_namespace = c.canonical_namespace AND a.source_id = c.canonical_id ",
-    "WHERE a.source_id IS NULL) q"
-  ))$n[[1]]
-  tokens <- sec_generate_registry_tokens(con, context$registry_schema, new_count)
-  DBI::dbExecute(con, "CREATE TEMP TABLE episcout_tokens (sequence integer PRIMARY KEY, entity_token text NOT NULL) ON COMMIT DROP")
-  if (length(tokens) > 0L) {
-    DBI::dbAppendTable(con, "episcout_tokens", data.frame(sequence = seq_along(tokens), entity_token = tokens, stringsAsFactors = FALSE))
-  }
   DBI::dbExecute(con, paste0(
     "CREATE TEMP TABLE episcout_new_canonical ON COMMIT DROP AS ",
-    "SELECT identity_namespace, source_id, row_number() OVER (ORDER BY identity_namespace, source_id)::integer AS sequence FROM (",
+    "SELECT identity_namespace, source_id, row_number() OVER (ORDER BY identity_namespace, source_id)::bigint AS sequence FROM (",
     "SELECT ", sec_quote_literal(con, enrol_namespace), "::text AS identity_namespace, e.source_id FROM episcout_enrol_ids e ",
     "LEFT JOIN ", aliases, " a ON a.identity_namespace = ", sec_quote_literal(con, enrol_namespace), " AND a.source_id = e.source_id ",
     "LEFT JOIN episcout_active_crosswalk c ON c.alias_namespace = ", sec_quote_literal(con, enrol_namespace), " AND c.alias_id = e.source_id ",
@@ -682,6 +676,11 @@ sec_apply_registry <- function(con, context) {
     "SELECT c.canonical_namespace, c.canonical_id FROM episcout_active_crosswalk c LEFT JOIN ", aliases,
     " a ON a.identity_namespace = c.canonical_namespace AND a.source_id = c.canonical_id WHERE a.source_id IS NULL) q"
   ))
+  new_count <- DBI::dbGetQuery(con, "SELECT COUNT(*)::bigint AS n FROM episcout_new_canonical")$n[[1]]
+  DBI::dbExecute(con, "CREATE TEMP TABLE episcout_tokens (sequence bigint PRIMARY KEY, entity_token text NOT NULL UNIQUE) ON COMMIT DROP")
+  sec_fill_registry_tokens(
+    con, context$registry_schema, as.numeric(new_count), context$token_batch_size
+  )
   DBI::dbExecute(con, paste("INSERT INTO", entities, "(entity_token) SELECT t.entity_token FROM episcout_tokens t ORDER BY t.sequence"))
   DBI::dbExecute(con, paste(
     "INSERT INTO", aliases, "(identity_namespace, source_id, entity_token)",
@@ -737,6 +736,7 @@ sec_apply_outputs <- function(con, context, audit) {
       DBI::dbExecute(con, paste("DROP TABLE", destination))
     }
     source <- sec_quote_table(con, d$source_schema, d$source_table)
+    manifest$source_fingerprint[[index]] <- sec_relation_fingerprint(con, source)
     aliases <- sec_quote_table(con, context$registry_schema, "aliases")
     id <- sec_quote_identifier(con, d$id_column)
     prepared <- sec_identifier_expression(con, item$identifier_rule, paste0("s.", id))
@@ -774,6 +774,7 @@ sec_apply_outputs <- function(con, context, audit) {
       )
     }
     n_output <- DBI::dbGetQuery(con, paste("SELECT COUNT(*)::bigint AS n FROM", destination))$n[[1]]
+    manifest$output_fingerprint[[index]] <- sec_relation_fingerprint(con, destination)
     expected_output <- table_audit$n_output[[index]]
     expected_removed <- table_audit$n_exact_removed[[index]]
     if (is.na(expected_output) || as.numeric(n_output) != expected_output || table_audit$n_input[[index]] - as.numeric(n_output) != expected_removed) {
@@ -781,15 +782,17 @@ sec_apply_outputs <- function(con, context, audit) {
     }
   }
   configuration_hash <- sec_configuration_hash(context)
+  source_fingerprint <- eda_postgres_fingerprint(manifest[c("source_schema", "source_table", "source_fingerprint")])
+  output_fingerprint <- eda_postgres_fingerprint(manifest[c("output_schema", "output_table", "output_fingerprint")])
   DBI::dbExecute(
     con,
-    paste("INSERT INTO", sec_quote_table(con, context$registry_schema, "runs"), "(run_id, configuration_hash, exact_duplicates, status) VALUES ($1, $2, $3, 'complete')"),
-    params = list(run_id, configuration_hash, context$exact_duplicates)
+    paste("INSERT INTO", sec_quote_table(con, context$registry_schema, "runs"), "(run_id, configuration_hash, exact_duplicates, status, source_fingerprint, output_fingerprint) VALUES ($1, $2, $3, 'complete', $4, $5)"),
+    params = list(run_id, configuration_hash, context$exact_duplicates, source_fingerprint, output_fingerprint)
   )
   for (index in seq_len(nrow(table_audit))) {
     DBI::dbExecute(
       con,
-      paste("INSERT INTO", sec_quote_table(con, context$registry_schema, "run_tables"), "(run_id, source_schema, source_table, output_schema, output_table, n_input, n_output, n_exact_removed) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"),
+      paste("INSERT INTO", sec_quote_table(con, context$registry_schema, "run_tables"), "(run_id, source_schema, source_table, output_schema, output_table, n_input, n_output, n_exact_removed, source_fingerprint, output_fingerprint) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"),
       params = list(
         run_id,
         table_audit$source_schema[[index]],
@@ -798,7 +801,9 @@ sec_apply_outputs <- function(con, context, audit) {
         context$linkage$tables$destination_table[[index]],
         table_audit$n_input[[index]],
         table_audit$n_output[[index]],
-        table_audit$n_exact_removed[[index]]
+        table_audit$n_exact_removed[[index]],
+        manifest$source_fingerprint[[index]],
+        manifest$output_fingerprint[[index]]
       )
     )
   }
@@ -809,26 +814,52 @@ sec_apply_outputs <- function(con, context, audit) {
   audit
 }
 
-sec_generate_registry_tokens <- function(con, registry_schema, n) {
+sec_relation_fingerprint <- function(con, relation) {
+  aggregate <- DBI::dbGetQuery(con, paste0(
+    "SELECT COUNT(*)::bigint AS n, md5(COALESCE(string_agg(row_hash, '' ORDER BY row_hash), '')) AS digest ",
+    "FROM (SELECT md5(row_to_json(source_row)::text) AS row_hash FROM ", relation, " source_row) q"
+  ))
+  as.character(openssl::sha256(charToRaw(paste(aggregate$n[[1]], aggregate$digest[[1]], sep = ":"))))
+}
+
+sec_fill_registry_tokens <- function(con, registry_schema, n, batch_size) {
   if (n == 0L) {
-    return(character())
+    return(invisible(TRUE))
   }
   metadata <- DBI::dbGetQuery(con, paste("SELECT token_prefix, n_bytes FROM", sec_quote_table(con, registry_schema, "registry_metadata")))
   entities <- sec_quote_table(con, registry_schema, "entities")
-  for (attempt in seq_len(5L)) {
-    tokens <- sec_generate_tokens(n, as.integer(metadata$n_bytes[[1]]), as.character(metadata$token_prefix[[1]]))
-    collision <- any(vapply(tokens, function(token) {
-      DBI::dbGetQuery(
-        con,
-        paste0("SELECT EXISTS (SELECT 1 FROM ", entities, " WHERE entity_token = $1) AS present"),
-        params = list(token)
-      )$present[[1]]
-    }, logical(1)))
-    if (!collision) {
-      return(tokens)
+  DBI::dbExecute(con, "CREATE TEMP TABLE episcout_token_candidates (sequence bigint PRIMARY KEY, entity_token text NOT NULL) ON COMMIT DROP")
+  starts <- seq.int(1, n, by = batch_size)
+  for (start in starts) {
+    size <- min(batch_size, n - start + 1)
+    accepted <- FALSE
+    for (attempt in seq_len(5L)) {
+      DBI::dbExecute(con, "TRUNCATE episcout_token_candidates")
+      tokens <- sec_generate_tokens(size, as.integer(metadata$n_bytes[[1]]), as.character(metadata$token_prefix[[1]]))
+      candidates <- data.frame(
+        sequence = seq.int(start, length.out = size),
+        entity_token = tokens,
+        stringsAsFactors = FALSE
+      )
+      DBI::dbAppendTable(con, "episcout_token_candidates", candidates)
+      collisions <- DBI::dbGetQuery(con, paste0(
+        "SELECT ((SELECT COUNT(*) FROM episcout_token_candidates) <> ",
+        "(SELECT COUNT(DISTINCT entity_token) FROM episcout_token_candidates) OR EXISTS (",
+        "SELECT 1 FROM episcout_token_candidates c INNER JOIN ", entities,
+        " e USING (entity_token))) AS collision"
+      ))$collision[[1]]
+      if (!isTRUE(collisions)) {
+        DBI::dbExecute(
+          con,
+          "INSERT INTO episcout_tokens (sequence, entity_token) SELECT sequence, entity_token FROM episcout_token_candidates ORDER BY sequence"
+        )
+        accepted <- TRUE
+        break
+      }
     }
+    if (!accepted) stop("Unique registry tokens could not be generated safely.", call. = FALSE)
   }
-  stop("Unique registry tokens could not be generated safely.", call. = FALSE)
+  invisible(TRUE)
 }
 
 sec_lock_keys <- function(context) {
@@ -1290,6 +1321,8 @@ sec_output_manifest <- function(context, created) {
     output_table = context$linkage$tables$destination_table,
     status = if (created) "created" else "planned",
     output_type = "pseudonymised_table",
+    source_fingerprint = NA_character_,
+    output_fingerprint = NA_character_,
     stringsAsFactors = FALSE
   )
 }

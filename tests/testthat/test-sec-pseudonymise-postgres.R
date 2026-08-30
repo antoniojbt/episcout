@@ -883,8 +883,10 @@ test_that("live PostgreSQL workflow is stable, neutral, and atomic", {
   expect_false("issue_values" %in% names(applied_report))
   expect_named(applied_report$manifest, c(
     "source_schema", "source_table", "output_schema", "output_table",
-    "status", "output_type"
+    "status", "output_type", "source_fingerprint", "output_fingerprint"
   ))
+  expect_true(all(grepl("^[a-f0-9]{64}$", applied_report$manifest$source_fingerprint)))
+  expect_true(all(grepl("^[a-f0-9]{64}$", applied_report$manifest$output_fingerprint)))
   expect_true(all(applied_report$manifest$output_type == "pseudonymised_table"))
   expect_silent(epi_eda_dictionary_validate(
     applied_report$output_dictionary,
@@ -1938,6 +1940,8 @@ test_that("identifier preparation, registry migration and assignment import are 
   registry <- function(table) pg_pseudonym_quote(connection, schemas[["registry"]], table)
   expect_identical(epi_sec_identity_registry_init(connection, schemas[["registry"]], mode = "apply")$status, "ready")
   DBI::dbExecute(connection, paste("ALTER TABLE", registry("namespaces"), "DROP COLUMN preparation_hash, DROP COLUMN validity_regex, DROP COLUMN normalization"))
+  DBI::dbExecute(connection, paste("ALTER TABLE", registry("runs"), "DROP COLUMN output_fingerprint, DROP COLUMN source_fingerprint"))
+  DBI::dbExecute(connection, paste("ALTER TABLE", registry("run_tables"), "DROP COLUMN output_fingerprint, DROP COLUMN source_fingerprint"))
   DBI::dbExecute(connection, paste("UPDATE", registry("registry_metadata"), "SET registry_version = 1"))
   expect_identical(epi_sec_identity_registry_init(connection, schemas[["registry"]], mode = "audit")$status, "migration_required")
   migrated <- epi_sec_identity_registry_init(connection, schemas[["registry"]], mode = "apply")
@@ -2001,7 +2005,7 @@ test_that("identifier preparation, registry migration and assignment import are 
   expect_true(any(audit$issues$issue_code == "identifier_regex_mismatch"))
   applied <- epi_sec_pseudonymise_db(
     connection, dictionary, linkage, schemas[["registry"]], schemas[["output"]],
-    identifiers = identifiers, mode = "apply"
+    identifiers = identifiers, token_batch_size = 1L, mode = "apply"
   )
   expect_identical(applied$status, "complete")
   safe <- DBI::dbGetQuery(connection, paste("SELECT identifier_valid FROM", pg_pseudonym_quote(connection, schemas[["output"]], "entities_safe"), "ORDER BY payload"))

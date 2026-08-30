@@ -10,7 +10,7 @@
 #'
 #' @return An `epi_sec_registry_result` with scalar `status`, `mode`, `writes`, `registry_schema` and `next_action`; `metadata` columns `registry_id`, `registry_version`, `token_prefix`, `n_bytes`, `created_at`; and `objects` columns `object`, `status`. Status is `incompatible` when existing objects do not have an accepted structure, `migration_required` for a structurally valid version-1 registry in audit mode, `initialisation_required` when audit finds no registry objects and `ready` when a version-2 registry exists or has been created or migrated.
 #'
-#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables`, or migrates a complete version-1 registry to version 2, in one transaction using configured PostgreSQL permissions. Migration classifies existing namespaces as exact `identity` preparation and preserves assignments. The function does not query or change privileges. Audit reports structurally incompatible objects as `incompatible`; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
+#' @details Audit mode is the default and never writes. Apply creates `registry_metadata`, `namespaces`, `entities`, `aliases`, `runs` and `run_tables`, or migrates a complete version-1 registry to version 2, in one transaction using configured PostgreSQL permissions. Migration classifies existing namespaces as exact `identity` preparation, preserves assignments and marks historical run fingerprints unavailable. New runs retain configuration, source and output reconciliation fingerprints. The function does not query or change privileges. Audit reports structurally incompatible objects as `incompatible`; apply treats them as an error and changes no object. Repair or replace an incomplete registry through a separate recovery operation rather than editing registry rows manually.
 #'
 #' The registry alias table contains source identifiers in plaintext and remains re-identifying. Pseudonymised data are not anonymous or automatically disclosure-controlled. See `vignette("longitudinal-pseudonymisation")` for the technical workflow and recovery behaviour.
 #'
@@ -193,8 +193,17 @@ sec_registry_structure_ok <- function(con, schema, version = sec_registry_versio
     },
     entities = c("entity_token:text:NO", "created_at:timestamptz:NO"),
     aliases = c("identity_namespace:text:NO", "source_id:text:NO", "entity_token:text:NO", "created_at:timestamptz:NO"),
-    runs = c("run_id:text:NO", "completed_at:timestamptz:NO", "configuration_hash:text:NO", "exact_duplicates:text:NO", "status:text:NO"),
-    run_tables = c("run_id:text:NO", "source_schema:text:NO", "source_table:text:NO", "output_schema:text:NO", "output_table:text:NO", "n_input:int8:NO", "n_output:int8:NO", "n_exact_removed:int8:NO")
+    runs = c(
+      "run_id:text:NO", "completed_at:timestamptz:NO", "configuration_hash:text:NO",
+      "exact_duplicates:text:NO", "status:text:NO",
+      if (version != 1L) c("source_fingerprint:text:NO", "output_fingerprint:text:NO") else NULL
+    ),
+    run_tables = c(
+      "run_id:text:NO", "source_schema:text:NO", "source_table:text:NO",
+      "output_schema:text:NO", "output_table:text:NO", "n_input:int8:NO",
+      "n_output:int8:NO", "n_exact_removed:int8:NO",
+      if (version != 1L) c("source_fingerprint:text:NO", "output_fingerprint:text:NO") else NULL
+    )
   )
   columns <- DBI::dbGetQuery(
     con,
@@ -311,13 +320,15 @@ sec_registry_create <- function(con, schema, token_prefix, n_bytes) {
   DBI::dbExecute(con, paste0(
     "CREATE TABLE ", table_name("runs"), " (",
     "run_id text PRIMARY KEY, completed_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP, ",
-    "configuration_hash text NOT NULL, exact_duplicates text NOT NULL, status text NOT NULL CHECK (status = 'complete'))"
+    "configuration_hash text NOT NULL, exact_duplicates text NOT NULL, status text NOT NULL CHECK (status = 'complete'), ",
+    "source_fingerprint text NOT NULL, output_fingerprint text NOT NULL)"
   ))
   DBI::dbExecute(con, paste0(
     "CREATE TABLE ", table_name("run_tables"), " (",
     "run_id text NOT NULL REFERENCES ", table_name("runs"), " (run_id), ",
     "source_schema text NOT NULL, source_table text NOT NULL, output_schema text NOT NULL, output_table text NOT NULL, ",
     "n_input bigint NOT NULL, n_output bigint NOT NULL, n_exact_removed bigint NOT NULL, ",
+    "source_fingerprint text NOT NULL, output_fingerprint text NOT NULL, ",
     "PRIMARY KEY (run_id, source_schema, source_table))"
   ))
 
@@ -338,6 +349,17 @@ sec_registry_migrate_v1 <- function(con, schema) {
   legacy_hash <- eda_postgres_fingerprint(list(normalization = "identity", validity_regex = NA_character_))
   DBI::dbExecute(con, paste("UPDATE", namespaces, "SET preparation_hash = $1"), params = list(legacy_hash))
   DBI::dbExecute(con, paste("ALTER TABLE", namespaces, "ALTER COLUMN preparation_hash SET NOT NULL"))
+  runs <- sec_quote_table(con, schema, "runs")
+  run_tables <- sec_quote_table(con, schema, "run_tables")
+  for (column in c("source_fingerprint", "output_fingerprint")) {
+    quoted <- sec_quote_identifier(con, column)
+    DBI::dbExecute(con, paste("ALTER TABLE", runs, "ADD COLUMN", quoted, "text"))
+    DBI::dbExecute(con, paste("UPDATE", runs, "SET", quoted, "= 'legacy_unavailable'"))
+    DBI::dbExecute(con, paste("ALTER TABLE", runs, "ALTER COLUMN", quoted, "SET NOT NULL"))
+    DBI::dbExecute(con, paste("ALTER TABLE", run_tables, "ADD COLUMN", quoted, "text"))
+    DBI::dbExecute(con, paste("UPDATE", run_tables, "SET", quoted, "= 'legacy_unavailable'"))
+    DBI::dbExecute(con, paste("ALTER TABLE", run_tables, "ALTER COLUMN", quoted, "SET NOT NULL"))
+  }
   DBI::dbExecute(
     con,
     paste("UPDATE", sec_quote_table(con, schema, "registry_metadata"), "SET registry_version = $1"),
