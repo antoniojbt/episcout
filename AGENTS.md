@@ -38,6 +38,14 @@ Use `scripts/check-local.sh` before review. Use `scripts/check-cran.sh` for rele
 
 For analytical and missingness semantics, expected values must come from authoritative methods, explicit domain rules, or independently justified fixtures; passing package tests and snapshots are not independent scientific validation.
 
+## Design principles
+
+Build small components with explicit contracts, then compose them into a complete workflow. Keep functions and modules focused on clear analytical or technical responsibilities, with explicit inputs, outputs and side effects. Reuse established R, PostgreSQL, PostGIS and other system interfaces rather than duplicating them.
+
+Keep EDA, QC, cleaning, linkage, pseudonymisation, longitudinal analysis and reporting as composable stages with clear boundaries where practical. Avoid hidden interactive or global state, and keep project-specific policy, cleaning choices, reports and workflow orchestration downstream unless they are demonstrably reusable package behaviour.
+
+Episcout remains a cohesive analytical package: this principle does not require splitting it into smaller packages or command-line programs, and a public function may coordinate several primitives when its overall contract is coherent and reviewable.
+
 ## Project checks and records
 
 - Apply `checklists/software-verification.md` to code and interfaces; add truth, analysis, figure, copy-edit, or render checklists when their subject is in scope.
