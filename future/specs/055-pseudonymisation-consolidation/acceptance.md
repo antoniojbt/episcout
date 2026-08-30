@@ -12,5 +12,5 @@ Status: Active
 - [x] Fingerprints distinguish semantic identity from operational batch size.
 - [x] Audit/apply privilege parity and inherited ownership are explicit.
 - [x] Project orchestration, backup and disclosure remain downstream.
-- [ ] Four successor issues are created and linked in dependency order.
+- [x] Successor issues #394, #395, #396 and #397 are linked in dependency order.
 - [ ] All successor acceptance checks pass and Episcout 0.6.0 is released.

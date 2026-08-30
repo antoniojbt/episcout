@@ -13,7 +13,7 @@ tracking_issue: 384
 source_issues: []
 pull_request: null
 merge_commit: null
-successor_issue: null
+successor_issue: 394
 terminal_reason: null
 
 related_files:
@@ -42,3 +42,4 @@ check_commands:
 notes:
   - This design records the accepted issue-384 sequence and changes no package behaviour.
   - Successors are dependent and merge bottom-up; release 0.6.0 is the replacement gate.
+  - Implementation sequence is issue 394, issue 395, issue 396 and terminal issue 397.
