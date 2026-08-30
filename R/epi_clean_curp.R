@@ -250,7 +250,7 @@ epi_clean_curp_audit <- function(curp,
     segment(7L, 8L)[date_candidates],
     segment(9L, 10L)[date_candidates]
   )
-  derived_date <- suppressWarnings(as.Date(date_text))
+  derived_date <- suppressWarnings(as.Date(date_text, format = "%Y-%m-%d"))
   calendar_ok <- date_candidates & !is.na(derived_date)
   future_date <- calendar_ok & derived_date > Sys.Date()
 

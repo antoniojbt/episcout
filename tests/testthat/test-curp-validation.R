@@ -142,6 +142,48 @@ test_that("calendar, leap-day and future-date semantics are explicit", {
   expect_true(is.na(audit$records$birth_date[[3L]]))
 })
 
+test_that("impossible calendar dates are audited without aborting a vector", {
+  inputs <- c(
+    curp_2000_leap,
+    "XEXX001301MASXXXA0",
+    "XEXX000431MASXXXA0",
+    "XEXX000229MASXXX00",
+    "XEXX040229MASXXXA0"
+  )
+
+  expect_silent(audit <- epi_clean_curp_audit(inputs))
+
+  expect_equal(
+    audit$records$status,
+    c("valid", "invalid", "invalid", "invalid", "valid")
+  )
+  invalid_indexes <- 2:4
+  invalid_issues <- audit$issues[
+    audit$issues$input_index %in% invalid_indexes &
+      audit$issues$issue_code == "invalid_calendar_date",
+    ,
+    drop = FALSE
+  ]
+  expect_equal(invalid_issues$input_index, invalid_indexes)
+  expect_equal(invalid_issues$stage, rep("date", length(invalid_indexes)))
+  expect_equal(invalid_issues$severity, rep("error", length(invalid_indexes)))
+  expect_equal(
+    audit$records$birth_date[c(1L, 5L)],
+    as.Date(c("2000-02-29", "2004-02-29"))
+  )
+  expect_true(all(is.na(audit$records$birth_date[invalid_indexes])))
+  derived_fields <- c(
+    "sex_code", "birthplace_code", "initials",
+    "century_marker_class", "checksum_status"
+  )
+  expect_true(all(vapply(
+    audit$records[invalid_indexes, derived_fields, drop = FALSE],
+    function(value) all(is.na(value)),
+    logical(1)
+  )))
+  expect_false(any(inputs %in% unlist(audit, use.names = FALSE)))
+})
+
 test_that("the pinned birthplace catalogue accepts all and only reviewed codes", {
   codes <- c(
     "AS", "BC", "BS", "CC", "CL", "CM", "CS", "CH", "DF", "DG", "GT",
