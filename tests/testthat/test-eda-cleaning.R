@@ -771,12 +771,21 @@ test_that("PostgreSQL publication is equivalent new-only and transactional", {
   source <- epi_eda_postgres_source(con, schema, "private_source_canary")
   before <- DBI::dbGetQuery(con, paste0("SELECT * FROM ", source_sql, " ORDER BY sequence"))
   memory <- epi_eda_apply_cleaning_rules(data, rules, keys)
-  database <- epi_eda_apply_cleaning_rules(
-    source,
-    rules,
-    keys,
-    destination_schema = schema,
-    destination_table = "private_destination_canary"
+  clean_fetch <- getFromNamespace("clean_pg_fetch", "episcout")
+  query_kinds <- character()
+  database <- with_mocked_bindings(
+    epi_eda_apply_cleaning_rules(
+      source,
+      rules,
+      keys,
+      destination_schema = schema,
+      destination_table = "private_destination_canary"
+    ),
+    clean_pg_fetch = function(con, statement, params = list(), kind) {
+      query_kinds <<- c(query_kinds, kind)
+      clean_fetch(con, statement, params, kind)
+    },
+    .package = "episcout"
   )
   destination_sql <- paste0(
     schema_sql,
@@ -801,6 +810,8 @@ test_that("PostgreSQL publication is equivalent new-only and transactional", {
   )
   expect_identical(database$audit$summary$publication, "postgresql")
   expect_true(database$audit$summary$publication_reconciled)
+  expect_identical(sum(query_kinds == "cleaning_source_audit"), 1L)
+  expect_identical(sum(query_kinds == "cleaning_destination_audit"), 1L)
   expect_true(DBI::dbExistsTable(
     con,
     DBI::Id(schema = schema, table = "private_destination_canary")
