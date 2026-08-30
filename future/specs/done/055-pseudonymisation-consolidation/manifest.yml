@@ -2,7 +2,7 @@ id: "055"
 slug: "pseudonymisation-consolidation"
 workflow_version: 1
 deliverable: design
-status: active
+status: completed
 owner: repository-owner
 base_branch: master
 working_branch: feature/pseudonymisation-consolidation-spec
@@ -11,10 +11,10 @@ updated: 2026-08-30
 
 tracking_issue: 384
 source_issues: []
-pull_request: null
-merge_commit: null
+pull_request: 393
+merge_commit: 193274ea7bfbd3e5820d4f4d8c5afbd9eff6defc
 successor_issue: 394
-terminal_reason: null
+terminal_reason: "Successors 394-397 merged; source-only releases 0.6.0 and 0.6.1 published; documented downstream transition verified."
 
 related_files:
   - R/epi_sec_identity_universe.R
@@ -41,5 +41,5 @@ check_commands:
 
 notes:
   - This design records the accepted issue-384 sequence and changes no package behaviour.
-  - Successors are dependent and merge bottom-up; release 0.6.0 is the replacement gate.
+  - Successors merged bottom-up; 0.6.0 established the replacement and 0.6.1 corrected regex-backed assignment import before downstream adoption.
   - Implementation sequence is issue 394, issue 395, issue 396 and terminal issue 397.

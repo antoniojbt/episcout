@@ -1,6 +1,6 @@
 # TODOs
 
-This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. The active roadmap issue [#384](https://github.com/antoniojbt/episcout/issues/384) coordinates the bounded pseudonymisation-consolidation sequence.
+This file is a maintained summary of deferred and completed work. GitHub issues and pull requests contain the live work state. No roadmap is currently active; new implementation requires a separately accepted tracker.
 
 ## Maintenance notes
 
@@ -14,7 +14,7 @@ This file is a maintained summary of deferred and completed work. GitHub issues 
 
 ## Current sequence
 
-Roadmap issue [#384](https://github.com/antoniojbt/episcout/issues/384) accepts spec 055 and sequences four dependent slices: [#394](https://github.com/antoniojbt/episcout/issues/394) identifier preparation plus registry migration/import; [#395](https://github.com/antoniojbt/episcout/issues/395) bounded token allocation plus fingerprints; [#396](https://github.com/antoniojbt/episcout/issues/396) privilege/preflight parity; then [#397](https://github.com/antoniojbt/episcout/issues/397) the migration guide and end-to-end acceptance. The lane adds no general workflow engine or permanent CLI. Release 0.6.0 is the accepted replacement gate for downstream migration.
+Roadmap issue [#384](https://github.com/antoniojbt/episcout/issues/384)/spec 055 completed its four dependent slices through #394-#397. Releases 0.6.0 and 0.6.1 provide the accepted replacement and regex-import correction; the maintained downstream transition was verified. The lane added no general workflow engine or permanent CLI.
 
 Issue-358/spec-054 completed the design audit through PR #367 at `3d8bbdb`. Issue-369/PR-379 carries its authorised package implementation: explicit-pair descriptive Spearman, aggregate-count Cramér's V and opt-in fail-not-truncate stratified domains. It reuses current stratified categorical aggregates rather than adding a second cross-tab engine and keeps Oferta's selections, plots, labels, SIAP semantics and `PLZOCU=0` location grouping downstream. No successor is authorised.
 

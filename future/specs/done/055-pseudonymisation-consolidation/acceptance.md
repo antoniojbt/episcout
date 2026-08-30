@@ -1,7 +1,7 @@
 # Acceptance
 
 Spec ID: `055-pseudonymisation-consolidation`
-Status: Active
+Status: Completed
 
 - [x] Consumer evidence is reduced to neutral capabilities and contains no private operational details.
 - [x] Released linkage structure and omitted-argument behaviour remain compatible.
@@ -13,4 +13,4 @@ Status: Active
 - [x] Audit/apply privilege parity and inherited ownership are explicit.
 - [x] Project orchestration, backup and disclosure remain downstream.
 - [x] Successor issues #394, #395, #396 and #397 are linked in dependency order.
-- [ ] All successor acceptance checks pass and Episcout 0.6.0 is released.
+- [x] All successor acceptance checks pass; source-only releases 0.6.0 and 0.6.1 are published, and the maintained downstream transition was verified without live-data mutation.
