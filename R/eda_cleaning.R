@@ -1015,49 +1015,80 @@ clean_pg_destination_state <- function(con, schema, table) {
   state
 }
 
-clean_pg_source_audit <- function(source, plan) {
+clean_pg_source_audits <- function(source, plans) {
+  fields <- unlist(lapply(seq_along(plans), function(index) {
+    c(
+      paste0(
+        "count(*) FILTER (WHERE ", plans[[index]]$standard,
+        ")::text AS n_missing_before_", index
+      ),
+      paste0(
+        "count(*) FILTER (WHERE ", plans[[index]]$transition,
+        ")::text AS n_transitioned_", index
+      )
+    )
+  }))
+  params <- unlist(
+    lapply(plans, `[[`, "params"),
+    recursive = FALSE,
+    use.names = FALSE
+  )
   observed <- clean_pg_fetch(
     source$con,
     paste0(
-      "SELECT count(*) FILTER (WHERE ", plan$standard,
-      ")::text AS n_missing_before, count(*) FILTER (WHERE ",
-      plan$transition, ")::text AS n_transitioned FROM ",
+      "SELECT ", paste(fields, collapse = ", "), " FROM ",
       eda_postgres_table_sql(source)
     ),
-    params = plan$params,
+    params = params,
     kind = "cleaning_source_audit"
   )
-  if (!identical(names(observed), c("n_missing_before", "n_transitioned"))) {
+  expected <- unlist(lapply(seq_along(plans), function(index) {
+    c(
+      paste0("n_missing_before_", index),
+      paste0("n_transitioned_", index)
+    )
+  }))
+  if (!identical(names(observed), expected) || nrow(observed) != 1L) {
     stop("PostgreSQL cleaning audit returned an invalid scalar schema.", call. = FALSE)
   }
-  c(
-    n_missing_before = eda_checked_count(
-      observed$n_missing_before[[1L]],
-      "PostgreSQL cleaning count"
-    ),
-    n_transitioned = eda_checked_count(
-      observed$n_transitioned[[1L]],
-      "PostgreSQL cleaning count"
+  lapply(seq_along(plans), function(index) {
+    c(
+      n_missing_before = eda_checked_count(
+        observed[[paste0("n_missing_before_", index)]][[1L]],
+        "PostgreSQL cleaning count"
+      ),
+      n_transitioned = eda_checked_count(
+        observed[[paste0("n_transitioned_", index)]][[1L]],
+        "PostgreSQL cleaning count"
+      )
     )
-  )
+  })
 }
 
-clean_pg_destination_missing <- function(con, table_sql, standard) {
+clean_pg_destination_audits <- function(con, table_sql, plans) {
+  fields <- vapply(seq_along(plans), function(index) {
+    paste0(
+      "count(*) FILTER (WHERE ", plans[[index]]$standard,
+      ")::text AS n_missing_after_", index
+    )
+  }, character(1))
   observed <- clean_pg_fetch(
     con,
     paste0(
-      "SELECT count(*) FILTER (WHERE ", standard,
-      ")::text AS n_missing_after FROM ", table_sql
+      "SELECT ", paste(fields, collapse = ", "), " FROM ", table_sql
     ),
     kind = "cleaning_destination_audit"
   )
-  if (!identical(names(observed), "n_missing_after")) {
+  expected <- paste0("n_missing_after_", seq_along(plans))
+  if (!identical(names(observed), expected) || nrow(observed) != 1L) {
     stop("PostgreSQL cleaning audit returned an invalid scalar schema.", call. = FALSE)
   }
-  eda_checked_count(
-    observed$n_missing_after[[1L]],
-    "PostgreSQL cleaning count"
-  )
+  vapply(expected, function(name) {
+    eda_checked_count(
+      observed[[name]][[1L]],
+      "PostgreSQL cleaning count"
+    )
+  }, integer(1), USE.NAMES = FALSE)
 }
 
 clean_pg_destination_catalogue <- function(con, schema, table) {
@@ -1157,20 +1188,9 @@ clean_apply_postgres <- function(source,
     stop("The PostgreSQL destination already exists and will not be replaced.", call. = FALSE)
   }
 
-  local_plans <- lapply(seq_len(nrow(rules)), function(index) {
-    clean_pg_rule_plan(
-      source,
-      rules[index, , drop = FALSE],
-      source_names[[index]],
-      0L
-    )
-  })
+  plans <- clean_pg_combined_plans(source, rules, source_names)
   source_rows <- eda_postgres_row_count(source)
-  before <- lapply(
-    local_plans,
-    function(plan) clean_pg_source_audit(source, plan)
-  )
-  combined_plans <- clean_pg_combined_plans(source, rules, source_names)
+  before <- clean_pg_source_audits(source, plans)
   destination_sql <- clean_pg_quote_table(
     con,
     destination_schema,
@@ -1179,10 +1199,10 @@ clean_apply_postgres <- function(source,
   create_statement <- clean_pg_create_statement(
     source,
     destination_sql,
-    combined_plans
+    plans
   )
   create_params <- unlist(
-    lapply(combined_plans, `[[`, "params"),
+    lapply(plans, `[[`, "params"),
     recursive = FALSE,
     use.names = FALSE
   )
@@ -1216,18 +1236,14 @@ clean_apply_postgres <- function(source,
     stop("PostgreSQL cleaning destination columns failed reconciliation.", call. = FALSE)
   }
 
-  variable_rows <- vector("list", length(local_plans))
-  for (index in seq_along(local_plans)) {
-    missing_after <- clean_pg_destination_missing(
-      con,
-      destination_sql,
-      local_plans[[index]]$standard
-    )
+  missing_after <- clean_pg_destination_audits(con, destination_sql, plans)
+  variable_rows <- vector("list", length(plans))
+  for (index in seq_along(plans)) {
     variable_rows[[index]] <- clean_variable_audit_row(
       rules$variable_key[[index]],
       source_rows,
       before[[index]][["n_missing_before"]],
-      missing_after,
+      missing_after[[index]],
       before[[index]][["n_transitioned"]]
     )
   }
