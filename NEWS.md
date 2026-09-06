@@ -2,6 +2,7 @@
 
 ## 0.6.1
 
+- Preserved categorical codes with leading zeroes when validating PostgreSQL EDA summary tables and plot-data companions before report publication. Delivery reports now retain codes such as `01` without weakening checksum or aggregate-consistency checks.
 - Fixed registry-import audit and apply with a non-null validity regular expression. Regex checks now use the prepared identifier column in the summary scope, preserving value-free diagnostics and transactional import for both fail and retain-and-flag policies.
 
 ## 0.6.0
