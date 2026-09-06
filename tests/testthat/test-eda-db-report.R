@@ -18,6 +18,7 @@ db_report_fixture <- function(layout = "bundle",
                               with_plot = TRUE,
                               with_skipped_map = FALSE,
                               categorical = FALSE,
+                              leading_zero = FALSE,
                               plot_data_contract = "compact-plot-data-2") {
   root <- tempfile("eda-db-report-bundle-")
   dir.create(root)
@@ -74,7 +75,8 @@ db_report_fixture <- function(layout = "bundle",
       },
       categorical = if (categorical) {
         data.frame(
-          name = c("status", "status"), level = c("no", "yes"),
+          name = c("status", "status"),
+          level = if (leading_zero) c("01", "02") else c("no", "yes"),
           n = c(15L, 25L), p_total = c(15 / 42, 25 / 42),
           p_observed = c(15 / 40, 25 / 40), stringsAsFactors = FALSE
         )
@@ -142,7 +144,10 @@ db_report_fixture <- function(layout = "bundle",
   if (layout == "delivery") {
     data <- if (categorical) {
       display <- getFromNamespace("eda_cat_display_frequency", "episcout")(
-        data.frame(level = c("no", "yes"), n = c(15L, 25L)),
+        data.frame(
+          level = if (leading_zero) c("01", "02") else c("no", "yes"),
+          n = c(15L, 25L)
+        ),
         "status", "Status", "categorical", 42L, 2L
       )
       compact <- getFromNamespace("eda_collapse_frequencies", "episcout")(
@@ -579,6 +584,17 @@ test_that("legacy frequency companions are enriched in memory only", {
   report <- epi_eda_render_db_report(root)
   expect_true(file.exists(report))
   expect_identical(readBin(path, "raw", n = file.info(path)$size), before)
+})
+
+test_that("frequency companions preserve leading zero codes", {
+  db_report_skip()
+  root <- db_report_fixture(
+    layout = "delivery", categorical = TRUE, leading_zero = TRUE
+  )
+
+  report <- epi_eda_render_db_report(root)
+
+  expect_true(file.exists(report))
 })
 
 test_that("inconsistent frequency companions fail before publication", {

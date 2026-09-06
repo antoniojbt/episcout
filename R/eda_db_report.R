@@ -299,11 +299,17 @@ eda_db_read_tables <- function(output_dir, manifest, artifacts) {
   artifacts <- setdiff(artifacts, "manifest")
   tables <- lapply(artifacts, function(artifact) {
     index <- match(artifact, manifest$artifact)
+    col_classes <- if (identical(artifact, "summary_categorical")) {
+      c(NA, "character", NA, NA, NA)
+    } else {
+      NA
+    }
     tryCatch(
       utils::read.csv(
         file.path(output_dir, manifest$path[index]),
         check.names = FALSE,
-        stringsAsFactors = FALSE, na.strings = character()
+        stringsAsFactors = FALSE, na.strings = character(),
+        colClasses = col_classes
       ),
       error = function(error) {
         stop("A required database-EDA aggregate CSV could not be read.", call. = FALSE)
@@ -637,7 +643,8 @@ eda_db_report_cat_companions <- function(bundle) {
       utils::read.csv(
         file.path(bundle$output_dir, path),
         check.names = FALSE,
-        stringsAsFactors = FALSE, na.strings = character()
+        stringsAsFactors = FALSE, na.strings = character(),
+        colClasses = c(level = "character")
       ),
       error = function(error) {
         stop("A database-EDA frequency companion could not be read.", call. = FALSE)
